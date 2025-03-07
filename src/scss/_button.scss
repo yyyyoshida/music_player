@@ -1,0 +1,112 @@
+.player-controls__button {
+  // padding: 8px 12px;
+  padding: 8px;
+  border-radius: 5px;
+  vertical-align: baseline;
+  cursor: pointer;
+  img {
+    width: 20px;
+    width: 18px;
+    user-select: none;
+  }
+  // transition: background-color 0.05s;
+  transition: background-color 0.2s;
+  &:hover {
+    // opacity: 0.8;
+    background-color: #3a3a3a;
+    box-shadow: 0 0px 2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.player-controls__button--volume {
+  margin-right: 10px;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
+.player-controls__button--play {
+  font-size: 48px;
+  position: relative;
+  width: 1em;
+  height: 1em;
+  border-radius: 100%;
+  background-color: #424242;
+  box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
+  &:hover {
+    background-color: #646464;
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-40%, -50%); /* 位置調整 */
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-left: 20px solid #ffffff;
+    border-bottom: 12px solid transparent;
+    // transition: all 0.2s;
+  }
+}
+//////////////////////////////////////
+.player-controls__button--pause {
+  font-size: 48px;
+  position: relative;
+  width: 1em;
+  height: 1em;
+  border-radius: 100%;
+  background-color: #424242;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
+  &:hover {
+    background-color: #646464;
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, #ffffff 0%, #ffffff 100%) left center /
+        8px 100% no-repeat,
+      linear-gradient(to bottom, #ffffff 0%, #ffffff 100%) right center / 8px
+        100% no-repeat;
+    // transition: all 0.2s;
+  }
+}
+
+/////////////////////////////////////////////////
+.player-controls__progress-bar {
+  // position: relative;
+  // flex-grow: 1;
+  // height: 8px;
+  // background-color: rgb(68, 68, 68);
+  // border-radius: 4px;
+  // overflow: hidden;
+  // cursor: pointer;
+}
+
+// .player-controls__progress-fill {
+//   width: 0%;
+//   height: 100%;
+//   // height: 3px;
+//   background-color: rgb(217, 22, 86);
+//   // background-image: linear-gradient(
+//   //   90deg,
+//   //   rgba(217, 22, 86, 1) 75%,
+//   //   rgba(255, 0, 61, 1) 85%
+//   // );
+//   background-image: linear-gradient(
+//     90deg,
+//     rgba(217, 22, 86, 1) 85%,
+//     rgb(255, 0, 119) 95%
+//   );
+//   border-radius: 4px;
+//   // position: relative;
+//   box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
+//   // transition: width 0.1s ease;
+// }
