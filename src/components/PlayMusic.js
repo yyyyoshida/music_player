@@ -26,7 +26,7 @@ export const songs = [
     cover: 'img/テストサムネ８.jpg',
   },
   {
-    path: 'music/［PV］Let Me Hear_Fear, and Loathing in Las Vegas.mp4',
+    path: 'music/【軽量版】［PV］Let Me Hear_Fear, and Loathing in Las Vegas.mp4',
     title: '［PV］Let Me Hear_Fear, and Loathing in Las Vegas',
     artist: 'Fear, and Loathing in Las Vegas',
     cover: 'img/テストサムネ２.jpg',
