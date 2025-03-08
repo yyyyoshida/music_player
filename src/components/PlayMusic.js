@@ -65,16 +65,29 @@ export const songs = [
 
 export let currentSongIndex = 0;
 
+export function setCurrentSongIndex(newIndex) {
+  currentSongIndex = newIndex;
+}
+
 export function playSong(index) {
-  if (music.src) {
-    music.play();
-  } else {
-    music.src = songs[index].path;
-    music.play();
-  }
+  // if (music.src) {
+  //   // console.log('trueの場合');
+  //   music.play();
+  // } else {
+  //   console.log('falseの場合');
+  //   music.src = songs[index].path;
+  //   music.play();
+  // }
+  music.src = songs[index].path;
+  music.play();
   // title.textContent = songs[index].title;
   // artist.textContent = songs[index].artist;
   // thumbnail.setAttribute('src', `${songs[index].cover}`);
 }
 
 // export { music, Songs, playSong };
+
+export function loadSong(index) {
+  music.src = songs[index].path;
+  music.load();
+}

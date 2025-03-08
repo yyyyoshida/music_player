@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { music } from './PlayMusic';
+// import { music, songs, currentSongIndex, setCurrentSongIndex, playSong } from './PlayMusic';
+import { music, songs, playSong } from './PlayMusic';
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
@@ -84,6 +85,10 @@ const Bar = ({ ParentClassName, type, value }) => {
       const updateProgress = () => {
         const newPercentage = (music.currentTime / music.duration) * 100;
         setPercentage(newPercentage);
+
+        if (music.currentTime >= music.duration) {
+          // playNextSong();
+        }
       };
       music.addEventListener('timeupdate', updateProgress);
       return () => {
@@ -91,6 +96,19 @@ const Bar = ({ ParentClassName, type, value }) => {
       };
     }
   }, [type]);
+
+  // function playNextSong() {
+  //   // if (repeat.classList.contains('is-repeat')) {
+  //   //   playSong(currentSongIndex);
+  //   //   return;
+  //   // }
+  //   // currentSongIndex = (currentSongIndex + 1) % songs.length;
+  //   const nextIndex = (currentSongIndex + 1) % songs.length;
+  //   setCurrentSongIndex(nextIndex);
+  //   music.src = songs[nextIndex].path;
+  //   music.play();
+  //   // playSong(nextIndex);
+  // }
 
   function updateVolumeIcon(percentage) {
     if (percentage === 0) {

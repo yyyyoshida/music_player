@@ -3,6 +3,7 @@ import ProgressBar from './ProgressBar';
 import TrackInfo from './TrackInfo';
 import PlayerActions from './PlayerActions';
 import PlayerOptions from './PlayerOptions';
+import { PlayerProvider } from './PlayerContext';
 
 const PlayerControls = () => {
   return (
@@ -10,7 +11,10 @@ const PlayerControls = () => {
       <ProgressBar />
       <div className="player-controls__info">
         <TrackInfo />
-        <PlayerActions />
+        {/* isPlayingを使いまわすため */}
+        <PlayerProvider>
+          <PlayerActions />
+        </PlayerProvider>
         <PlayerOptions />
       </div>
     </div>
