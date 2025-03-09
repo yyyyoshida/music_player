@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 export const music = new Audio();
 
 export const songs = [
@@ -63,23 +64,29 @@ export const songs = [
   },
 ];
 
-export let currentSongIndex = 0;
+// export let currentSongIndex = 0;
 
-export function setCurrentSongIndex(newIndex) {
-  currentSongIndex = newIndex;
-}
-
+// export function setCurrentSongIndex(newIndex) {
+//   currentSongIndex = newIndex;
+// }
+// const [firstClick, setFirstClick] = useState(true);
+let n = 0;
 export function playSong(index) {
   // if (music.src) {
   //   // console.log('trueの場合');
   //   music.play();
   // } else {
-  //   console.log('falseの場合');
-  //   music.src = songs[index].path;
-  //   music.play();
-  // }
+  //   // console.log('falseの場合');
+  //   // console.log('play');
+  // if (!music.paused) return;
+  music.paused ? console.log('停止中') : console.log(`再生中${n++}`);
+  if (n === 1) return;
+  // おおおおおおおおおできたぞおおおおおおお！！！！！
   music.src = songs[index].path;
   music.play();
+  // }
+  // // music.src = songs[index].path;
+  // music.play();
   // title.textContent = songs[index].title;
   // artist.textContent = songs[index].artist;
   // thumbnail.setAttribute('src', `${songs[index].cover}`);

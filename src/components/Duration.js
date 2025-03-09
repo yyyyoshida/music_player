@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { music, currentSongIndex } from './PlayMusic';
+import { music } from './PlayMusic';
 
 const Duration = () => {
   const [duration, setDuration] = useState('0:00');
