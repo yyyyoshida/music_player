@@ -83,6 +83,7 @@ export function playSong(index) {
   }
   music.src = songs[index].path;
   music.play();
+  // music.play();
   // title.textContent = songs[index].title;
   // artist.textContent = songs[index].artist;
   // thumbnail.setAttribute('src', `${songs[index].cover}`);
