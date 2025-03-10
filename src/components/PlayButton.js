@@ -27,14 +27,13 @@ const PlayButton = () => {
   };
 
   useEffect(() => {
-    // console.log('playButton側');
     if (isPlaying) {
-      // console.log('再生');
-      playSong(currentSongIndex);
-      // music.src = songs[currentSongIndex].path;
-      // music.play();
+      if (music.src) {
+        music.play();
+      } else {
+        playSong(currentSongIndex);
+      }
     } else {
-      // console.log('停止');
       music.pause();
     }
   }, [isPlaying]);
