@@ -5,41 +5,28 @@ import { usePlayerContext } from './PlayerContext';
 const TrackInfo = () => {
   const [title, setTitle] = useState('曲のタイトル');
   const [artist, setArtist] = useState('アーティスト・作者');
-  const [thumbnail, setThumbnail] = useState('');
-  // const [isHidden, setIsHidden] = useState('false');
-  // const [isHidden, setIsHidden] = useState('true');
-  // const [isHidden, setIsHidden] = useState(true);
-  const [isHidden, setIsHidden] = useState('visible');
+  // const [thumbnail, setThumbnail] = useState('');
+  const imgRef = useRef(null);
+  // const [isHidden, setIsHidden] = useState('visible');
   const { isPlaying, currentSongIndex } = usePlayerContext();
-  // const [firstClick, setFirstClick] = useState(true);
-  // const [firstClick, setFirstClick] = useState(1);
   const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      return;
-    }
-    setIsHidden('hidden');
-  }, [isPlaying, currentSongIndex]);
-
-  function updateTitle() {
-    setTitle(songs[currentSongIndex].title);
-  }
-  function upudateArtist() {
-    setArtist(songs[currentSongIndex].artist);
-  }
-  function updateThumbnail() {
-    setThumbnail(songs[currentSongIndex].cover);
-  }
+  // useEffect(() => {
+  //   if (isFirstRender.current) {
+  //     return;
+  //   }
+  //   setIsHidden('hidden');
+  // }, [isPlaying, currentSongIndex]);
 
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    updateTitle();
-    upudateArtist();
-    updateThumbnail();
+
+    setTitle(songs[currentSongIndex].title);
+    setArtist(songs[currentSongIndex].artist);
+    imgRef.current.src = songs[currentSongIndex].cover;
   }, [currentSongIndex, isPlaying]);
 
   return (
@@ -49,10 +36,13 @@ const TrackInfo = () => {
           <div id="js-track-thumbnail-wrapper" className="player-controls__track-thumbnail-wrapper">
             {/* <img id="js-track-thumbnail" src="img/写真アイコン4.png" alt="サムネイル" className="player-controls__track-thumbnail" /> */}
             <img
+              ref={imgRef}
               id="js-track-thumbnail"
-              src={thumbnail || 'img/写真アイコン4.png'}
+              src={'img/写真アイコン4.png'}
+              // src={thumbnail || 'img/写真アイコン4.png'}
               // src={`${thumbnail}`}
               alt="サムネイル"
+              // alt={title}
               className="player-controls__track-thumbnail"
             />
             <div
@@ -60,7 +50,8 @@ const TrackInfo = () => {
               className="player-controls__track-thumbnail-transition"
               // style={{ visibility: isHidden ? 'visible' : 'hidden' }}
               // style={{ visibility: isHidden ? 'hidden' : 'visible' }}
-              style={{ visibility: isHidden }}
+              // style={{ visibility: isHidden }}
+              style={{ visibility: 'hidden' }}
             ></div>
           </div>
           <figcaption id="js-track-meta" className="player-controls__track-meta">
