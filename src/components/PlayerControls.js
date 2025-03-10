@@ -8,15 +8,15 @@ import { PlayerProvider } from './PlayerContext';
 const PlayerControls = () => {
   return (
     <div id="js-player-controls" className="player-controls">
-      <ProgressBar />
-      <div className="player-controls__info">
-        <PlayerProvider>
+      <PlayerProvider>
+        <ProgressBar />
+        <div className="player-controls__info">
           <TrackInfo />
           {/* isPlayingを使いまわすため */}
           <PlayerActions />
-        </PlayerProvider>
-        <PlayerOptions />
-      </div>
+          <PlayerOptions />
+        </div>
+      </PlayerProvider>
     </div>
   );
 };
