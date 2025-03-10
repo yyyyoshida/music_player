@@ -10,9 +10,9 @@ const PlayerControls = () => {
     <div id="js-player-controls" className="player-controls">
       <ProgressBar />
       <div className="player-controls__info">
-        <TrackInfo />
-        {/* isPlayingを使いまわすため */}
         <PlayerProvider>
+          <TrackInfo />
+          {/* isPlayingを使いまわすため */}
           <PlayerActions />
         </PlayerProvider>
         <PlayerOptions />

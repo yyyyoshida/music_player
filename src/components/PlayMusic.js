@@ -64,32 +64,10 @@ export const songs = [
   },
 ];
 
-// export let currentSongIndex = 0;
-
-// export function setCurrentSongIndex(newIndex) {
-//   currentSongIndex = newIndex;
-// }
-// const [firstClick, setFirstClick] = useState(true);
-let n = 0;
 export function playSong(index) {
-  if (!music.paused && n === 0) {
-    n = 1;
-    music.src = songs[index].path;
-    music.play();
-    return;
-  } else if (n === 1) {
-    n = 0;
-    return;
-  }
   music.src = songs[index].path;
   music.play();
-  // music.play();
-  // title.textContent = songs[index].title;
-  // artist.textContent = songs[index].artist;
-  // thumbnail.setAttribute('src', `${songs[index].cover}`);
 }
-
-// export { music, Songs, playSong };
 
 export function loadSong(index) {
   music.src = songs[index].path;
