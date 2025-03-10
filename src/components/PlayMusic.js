@@ -72,21 +72,17 @@ export const songs = [
 // const [firstClick, setFirstClick] = useState(true);
 let n = 0;
 export function playSong(index) {
-  // if (music.src) {
-  //   // console.log('trueの場合');
-  //   music.play();
-  // } else {
-  //   // console.log('falseの場合');
-  //   // console.log('play');
-  // if (!music.paused) return;
-  music.paused ? console.log('停止中') : console.log(`再生中${n++}`);
-  if (n === 1) return;
-  // おおおおおおおおおできたぞおおおおおおお！！！！！
+  if (!music.paused && n === 0) {
+    n = 1;
+    music.src = songs[index].path;
+    music.play();
+    return;
+  } else if (n === 1) {
+    n = 0;
+    return;
+  }
   music.src = songs[index].path;
   music.play();
-  // }
-  // // music.src = songs[index].path;
-  // music.play();
   // title.textContent = songs[index].title;
   // artist.textContent = songs[index].artist;
   // thumbnail.setAttribute('src', `${songs[index].cover}`);
