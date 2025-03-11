@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { usePlayerContext } from './PlayerContext';
 import { music, songs, playSong, loadSong } from './PlayMusic';
 
 const PrevNextButton = ({ type }) => {
   const { isPlaying, setCurrentSongIndex } = usePlayerContext();
+  const [isClickable, setIsClickable] = useState(true);
+  const clickDelay = 350;
 
   function playLoadSong(index) {
     // console.log(index);
@@ -15,11 +17,16 @@ const PrevNextButton = ({ type }) => {
   }
 
   function handlePrevNextClick() {
+    if (!isClickable) return;
+    setIsClickable(false);
     if (type === 'prev') {
       prevSong(); // 曲を変更
     } else {
       nextSong();
     }
+    setTimeout(() => {
+      setIsClickable(true);
+    }, clickDelay);
   }
 
   function prevSong() {
