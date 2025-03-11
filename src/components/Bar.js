@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 // import { music, songs, currentSongIndex, setCurrentSongIndex, playSong } from './PlayMusic';
 import { music, songs, playSong } from './PlayMusic';
+import { usePlayerContext } from './PlayerContext';
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
   const [isDragging, setIsDragging] = useState(false);
-  const volumeValueRef = useRef(percentage);
   const [volumeIcon, setVolumeIcon] = useState(updateVolumeIcon(percentage));
+  const { currentSongIndex } = usePlayerContext();
   const barRef = useRef(null);
+  const volumeValueRef = useRef(percentage);
 
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
@@ -97,19 +99,6 @@ const Bar = ({ ParentClassName, type, value }) => {
     }
   }, [type]);
 
-  // function playNextSong() {
-  //   // if (repeat.classList.contains('is-repeat')) {
-  //   //   playSong(currentSongIndex);
-  //   //   return;
-  //   // }
-  //   // currentSongIndex = (currentSongIndex + 1) % songs.length;
-  //   const nextIndex = (currentSongIndex + 1) % songs.length;
-  //   setCurrentSongIndex(nextIndex);
-  //   music.src = songs[nextIndex].path;
-  //   music.play();
-  //   // playSong(nextIndex);
-  // }
-
   function updateVolumeIcon(percentage) {
     if (percentage === 0) {
       return 'img/volume-off.png';
@@ -121,6 +110,42 @@ const Bar = ({ ParentClassName, type, value }) => {
       return 'img/volume-full.png';
     }
   }
+
+  function restProgressBar() {
+    // console.log('リセットバー');
+    setPercentage(0);
+    console.log(percentage);
+    music.currentTime = 0;
+  }
+
+  useEffect(() => {
+    if (type !== 'progress') return;
+
+    // メタデータが読み込まれた際に実行される関数
+    function resetProgress() {
+      if (!isNaN(music.duration)) {
+        setPercentage(0);
+        music.currentTime = 0;
+      }
+    }
+
+    // music.durationが既にNaNでなければ即時処理
+    if (!isNaN(music.duration)) {
+      resetProgress();
+    } else {
+      // music.durationがNaNの場合、loadedmetadataを待つ
+      const onLoadedMetadata = () => {
+        resetProgress();
+        music.removeEventListener('loadedmetadata', onLoadedMetadata); // イベントリスナーを解除
+      };
+      music.addEventListener('loadedmetadata', onLoadedMetadata);
+
+      // クリーンアップ関数（コンポーネントのアンマウント時に実行される）
+      return () => {
+        music.removeEventListener('loadedmetadata', onLoadedMetadata);
+      };
+    }
+  }, [currentSongIndex, type]);
 
   return (
     <>
