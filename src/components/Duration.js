@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { music } from './PlayMusic';
+import { usePlayerContext } from './PlayerContext';
 
 const Duration = () => {
   const [duration, setDuration] = useState('0:00');
+  const { currentSongIndex } = usePlayerContext();
 
   function formatTime(time) {
     const minutes = Math.floor(time / 60);
@@ -16,7 +18,7 @@ const Duration = () => {
     const updateDuration = () => {
       setDuration(formatTime(music.duration));
     };
-
+    // updateDuration();
     music.addEventListener('loadedmetadata', updateDuration);
 
     return () => {
