@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { music, songs, playSong } from './PlayMusic';
+import React, { useEffect } from 'react';
+import { music, playSong } from './PlayMusic';
 import { usePlayerContext } from './PlayerContext';
+import Tooltip from './Tooltip';
+import useButtonTooltip from '../hooks/useButtonTooltip';
 
 const PlayButton = () => {
   const { isPlaying, togglePlayPause, currentSongIndex } = usePlayerContext();
+  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
 
-  const handlePlayPause = () => {
+  function handlePlayPause() {
     togglePlayPause();
-    // setIsPlaying((isPlaying) => !isPlaying);
-  };
+    handleButtonPress();
+  }
 
   useEffect(() => {
     if (isPlaying) {
@@ -21,15 +24,18 @@ const PlayButton = () => {
       music.pause();
     }
   }, [isPlaying]);
-  // }, [currentSongIndex]);
 
   return (
     <button
       onClick={handlePlayPause}
       id="js-play-button"
       className={`player-controls__button ${isPlaying ? 'player-controls__button--pause' : 'player-controls__button--play'}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <span className={`${isPlaying ? 'tooltip-pause' : 'tooltip-play'} tooltip`}>{isPlaying ? '再生' : '停止'}</span>
+      <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={isPlaying ? 'tooltip-pause' : 'tooltip-play'}>
+        {isPlaying ? '再生' : '停止'}
+      </Tooltip>
     </button>
   );
 };

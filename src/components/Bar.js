@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-// import { music, songs, currentSongIndex, setCurrentSongIndex, playSong } from './PlayMusic';
 import { music, songs, playSong } from './PlayMusic';
 import { usePlayerContext } from './PlayerContext';
+import Tooltip from './Tooltip';
+import useButtonTooltip from '../hooks/useButtonTooltip';
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
@@ -10,6 +11,9 @@ const Bar = ({ ParentClassName, type, value }) => {
   const { currentSongIndex } = usePlayerContext();
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
+
+  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
@@ -133,26 +137,40 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (!isNaN(music.duration)) {
       resetProgress();
     } else {
-      // music.durationがNaNの場合、loadedmetadataを待つ
       const onLoadedMetadata = () => {
         resetProgress();
-        music.removeEventListener('loadedmetadata', onLoadedMetadata); // イベントリスナーを解除
+        music.removeEventListener('loadedmetadata', onLoadedMetadata);
       };
       music.addEventListener('loadedmetadata', onLoadedMetadata);
 
-      // クリーンアップ関数（コンポーネントのアンマウント時に実行される）
       return () => {
         music.removeEventListener('loadedmetadata', onLoadedMetadata);
       };
     }
   }, [currentSongIndex, type]);
 
+  function toggleMute() {
+    handleButtonPress();
+
+    setIsMuted((prevMuted) => !prevMuted);
+    music.muted = !isMuted;
+    setVolumeIcon(!isMuted ? 'img/volume-off.png' : updateVolumeIcon(volumeValueRef.current));
+    if (!isMuted) volumeValueRef.current = percentage;
+  }
+
   return (
     <>
       {type === 'volume' && (
-        <button className="player-controls__button player-controls__button--volume">
+        <button
+          className="player-controls__button player-controls__button--volume"
+          onClick={toggleMute}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <img src={volumeIcon} alt="Volume Icon" className="player-controls__button--volume-icon" />
-          <span className="tooltip-volume tooltip">ボリューム</span>
+          <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-volume'}>
+            {isMuted ? 'ミュート解除' : 'ミュート'}
+          </Tooltip>
         </button>
       )}
       <div ref={barRef} className={`${ParentClassName}-bar--wrapper`} onMouseDown={handleMouseDown}>

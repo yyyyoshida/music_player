@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { usePlayerContext } from './PlayerContext';
-import { music, songs, playSong, loadSong } from './PlayMusic';
+import { songs, playSong, loadSong } from './PlayMusic';
+import Tooltip from './Tooltip';
+import useButtonTooltip from '../hooks/useButtonTooltip';
 
 const PrevNextButton = ({ type }) => {
   const { isPlaying, setCurrentSongIndex } = usePlayerContext();
   const [isClickable, setIsClickable] = useState(true);
   const clickDelay = 350;
+  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
 
   function playLoadSong(index) {
     // console.log(index);
@@ -18,9 +21,10 @@ const PrevNextButton = ({ type }) => {
 
   function handlePrevNextClick() {
     if (!isClickable) return;
+    handleButtonPress();
     setIsClickable(false);
     if (type === 'prev') {
-      prevSong(); // 曲を変更
+      prevSong();
     } else {
       nextSong();
     }
@@ -45,11 +49,18 @@ const PrevNextButton = ({ type }) => {
   }
 
   return (
-    <button className={`player-controls__button ${type === 'next' ? 'next-button' : 'prev-button'}`} onClick={handlePrevNextClick}>
+    <button
+      className={`player-controls__button ${type === 'next' ? 'next-button' : 'prev-button'}`}
+      onClick={handlePrevNextClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {type === 'next' && <img src="img/next-icon.png" alt="Next" />}
       {type === 'prev' && <img src="img/prev-icon.png" alt="Previous" />}
-      {type === 'next' && <span className="tooltip-next tooltip">次へ</span>}
-      {type === 'prev' && <span className="tooltip-prev tooltip">前へ</span>}
+
+      <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={type === 'next' ? 'tooltip-next' : 'tooltip-prev'}>
+        {type === 'next' ? '次へ' : '前へ'}
+      </Tooltip>
     </button>
   );
 };
