@@ -28,8 +28,9 @@ const PlayButton = () => {
       onClick={handlePlayPause}
       id="js-play-button"
       className={`player-controls__button ${isPlaying ? 'player-controls__button--pause' : 'player-controls__button--play'}`}
-      // className={`player-controls__button ${isPlaying ? 'player-controls__button--play' : 'player-controls__button--pause'}`}
-    ></button>
+    >
+      <span className={`${isPlaying ? 'tooltip-pause' : 'tooltip-play'} tooltip`}>{isPlaying ? '再生' : '停止'}</span>
+    </button>
   );
 };
 export default PlayButton;

@@ -3,6 +3,7 @@ import ShuffleButton from './ShuffleButton';
 import PlayButton from './PlayButton';
 import PrevNextButton from './PrevNextButton';
 import ParentComponent from './ParentComponent';
+import RepeatButton from './RepeatButton';
 
 const PlayerActions = () => {
   return (
@@ -11,9 +12,7 @@ const PlayerActions = () => {
       <PrevNextButton type="prev" />
       <PlayButton />
       <PrevNextButton type="next" />
-      <button id="js-repeat-button" className="player-controls__button player-controls__button--repeat">
-        <img id="js-repeat-icon" src="img/リピート.png" alt="" />
-      </button>
+      <RepeatButton />
     </div>
   );
 };
