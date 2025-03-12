@@ -1,19 +1,19 @@
 import React from 'react';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
+import { useRepeatContext } from './RepeatContext';
 
-const RepeatButton = ({ isRepeat, setIsRepeat }) => {
+const RepeatButton = () => {
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
-
-  const toggleRepeat = () => {
-    handleButtonPress();
-    setIsRepeat((prev) => !prev); // リピート状態を切り替える
-  };
+  const { isRepeat, toggleRepeat } = useRepeatContext();
 
   return (
     <button
       className="player-controls__button player-controls__button--repeat"
-      onClick={toggleRepeat}
+      onClick={() => {
+        toggleRepeat();
+        handleButtonPress();
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
