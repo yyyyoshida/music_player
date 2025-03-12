@@ -22,6 +22,7 @@ const PlayerOptions = () => {
         </div>
         <button id="js-more-options-button" className="player-controls__button player-controls__button--more">
           <img src="img/三点リーダーアイコン1.png" alt="" className="player-controls__button--more-icon" />
+          <span className="tooltip-other tooltip">その他のオプション</span>
         </button>
         <div id="js-options-menu" className="player-controls__options-menu">
           <ul className="player-controls__options-list">

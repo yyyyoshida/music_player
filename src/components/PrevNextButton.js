@@ -45,9 +45,11 @@ const PrevNextButton = ({ type }) => {
   }
 
   return (
-    <button className="player-controls__button" onClick={handlePrevNextClick}>
+    <button className={`player-controls__button ${type === 'next' ? 'next-button' : 'prev-button'}`} onClick={handlePrevNextClick}>
       {type === 'next' && <img src="img/next-icon.png" alt="Next" />}
       {type === 'prev' && <img src="img/prev-icon.png" alt="Previous" />}
+      {type === 'next' && <span className="tooltip-next tooltip">次へ</span>}
+      {type === 'prev' && <span className="tooltip-prev tooltip">前へ</span>}
     </button>
   );
 };

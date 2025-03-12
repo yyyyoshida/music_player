@@ -152,6 +152,7 @@ const Bar = ({ ParentClassName, type, value }) => {
       {type === 'volume' && (
         <button className="player-controls__button player-controls__button--volume">
           <img src={volumeIcon} alt="Volume Icon" className="player-controls__button--volume-icon" />
+          <span className="tooltip-volume tooltip">ボリューム</span>
         </button>
       )}
       <div ref={barRef} className={`${ParentClassName}-bar--wrapper`} onMouseDown={handleMouseDown}>
