@@ -5,14 +5,15 @@ import PrevNextButton from './PrevNextButton';
 import ParentComponent from './ParentComponent';
 import RepeatButton from './RepeatButton';
 
-const PlayerActions = () => {
+const PlayerActions = ({ isRepeat, setIsRepeat }) => {
   return (
     <div id="js-actions" className="player-controls__actions">
       <ShuffleButton />
       <PrevNextButton type="prev" />
       <PlayButton />
       <PrevNextButton type="next" />
-      <RepeatButton />
+      {/* <RepeatButton /> */}
+      <RepeatButton isRepeat={isRepeat} setIsRepeat={setIsRepeat} />
     </div>
   );
 };
