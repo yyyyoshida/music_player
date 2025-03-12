@@ -3,17 +3,21 @@ import { music, songs, playSong } from './PlayMusic';
 import { usePlayerContext } from './PlayerContext';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
+// import RepeatButton from './RepeatButton';
 
-const Bar = ({ ParentClassName, type, value }) => {
+const Bar = ({ ParentClassName, type, value, isRepeat, setIsRepeat }) => {
   const [percentage, setPercentage] = useState(value);
   const [isDragging, setIsDragging] = useState(false);
   const [volumeIcon, setVolumeIcon] = useState(updateVolumeIcon(percentage));
-  const { currentSongIndex } = usePlayerContext();
+  const { isPlaying, currentSongIndex, setCurrentSongIndex } = usePlayerContext();
+  const currentSongIndexRef = useRef(null);
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
 
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const [isMuted, setIsMuted] = useState(false);
+  // const [isRepeat, setIsRepeat] = useState(false);
+  const isRepeatRef = useRef(null);
 
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
@@ -86,6 +90,11 @@ const Bar = ({ ParentClassName, type, value }) => {
   }, [isDragging]);
 
   useEffect(() => {
+    isRepeatRef.current = isRepeat;
+    currentSongIndexRef.current = currentSongIndex;
+  }, [isRepeat, currentSongIndex]);
+
+  useEffect(() => {
     console.log('typeの再レンダリング');
     if (type === 'progress') {
       const updateProgress = () => {
@@ -93,7 +102,16 @@ const Bar = ({ ParentClassName, type, value }) => {
         setPercentage(newPercentage);
 
         if (music.currentTime >= music.duration) {
-          // playNextSong();
+          if (isRepeatRef.current) {
+            playSong(currentSongIndexRef.current);
+            return;
+          }
+          setCurrentSongIndex((prevIndex) => {
+            const newIndex = (prevIndex + 1) % songs.length;
+            playSong(newIndex);
+            restProgressBar();
+            return newIndex;
+          });
         }
       };
       music.addEventListener('timeupdate', updateProgress);
@@ -116,16 +134,13 @@ const Bar = ({ ParentClassName, type, value }) => {
   }
 
   function restProgressBar() {
-    // console.log('リセットバー');
     setPercentage(0);
-    console.log(percentage);
     music.currentTime = 0;
   }
 
   useEffect(() => {
     if (type !== 'progress') return;
 
-    // メタデータが読み込まれた際に実行される関数
     function resetProgress() {
       if (!isNaN(music.duration)) {
         setPercentage(0);
@@ -133,7 +148,6 @@ const Bar = ({ ParentClassName, type, value }) => {
       }
     }
 
-    // music.durationが既にNaNでなければ即時処理
     if (!isNaN(music.duration)) {
       resetProgress();
     } else {
