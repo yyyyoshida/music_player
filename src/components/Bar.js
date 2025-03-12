@@ -3,26 +3,28 @@ import { music, songs, playSong } from './PlayMusic';
 import { usePlayerContext } from './PlayerContext';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
-// import RepeatButton from './RepeatButton';
+import { useRepeatContext } from './RepeatContext';
 
-const Bar = ({ ParentClassName, type, value, isRepeat, setIsRepeat }) => {
+const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
   const [isDragging, setIsDragging] = useState(false);
   const [volumeIcon, setVolumeIcon] = useState(updateVolumeIcon(percentage));
-  const { isPlaying, currentSongIndex, setCurrentSongIndex } = usePlayerContext();
+  const [isMuted, setIsMuted] = useState(false);
+
   const currentSongIndexRef = useRef(null);
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
+  const isRepeatRef = useRef(null);
+
+  const { currentSongIndex, setCurrentSongIndex } = usePlayerContext();
+  const { isRepeat } = useRepeatContext();
 
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
-  const [isMuted, setIsMuted] = useState(false);
-  // const [isRepeat, setIsRepeat] = useState(false);
-  const isRepeatRef = useRef(null);
 
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
     music.volume = volumeValueRef.current / 100;
-    setVolumeIcon(updateVolumeIcon(volumeValueRef.current)); // アイコン更新
+    setVolumeIcon(updateVolumeIcon(volumeValueRef.current));
   }, []);
 
   const handleClickBar = (e) => {
