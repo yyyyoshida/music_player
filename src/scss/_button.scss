@@ -78,9 +78,9 @@
 }
 
 .player-controls__button:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-  transition: 0.2s visibility ease-in, opacity 0.2s ease-in;
+  // visibility: visible;
+  // opacity: 1;
+  // transition: 0.2s visibility ease-in, opacity 0.2s ease-in;
 }
 
 .tooltip-play,
@@ -102,9 +102,11 @@
 }
 .tooltip-volume {
   left: -25px;
+  letter-spacing: -2px;
 }
 .tooltip-other {
   right: 0;
+  letter-spacing: -1px;
 }
 
 /////////////////////////////////////////////////

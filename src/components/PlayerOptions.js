@@ -1,8 +1,11 @@
 import React from 'react';
 import Bar from './Bar';
 import { music, songs, playSong } from './PlayMusic';
+import Tooltip from './Tooltip';
+import useButtonTooltip from '../hooks/useButtonTooltip';
 
 const PlayerOptions = () => {
+  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   return (
     <>
       <div className="player-controls__options">
@@ -20,9 +23,15 @@ const PlayerOptions = () => {
             </div>
           </div> */}
         </div>
-        <button id="js-more-options-button" className="player-controls__button player-controls__button--more">
+        <button
+          className="player-controls__button player-controls__button--more"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <img src="img/三点リーダーアイコン1.png" alt="" className="player-controls__button--more-icon" />
-          <span className="tooltip-other tooltip">その他のオプション</span>
+          <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-other'}>
+            その他のオプション
+          </Tooltip>
         </button>
         <div id="js-options-menu" className="player-controls__options-menu">
           <ul className="player-controls__options-list">
