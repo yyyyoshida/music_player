@@ -2,10 +2,12 @@ import React from 'react';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
 import { useRepeatContext } from './RepeatContext';
+import useDelayedText from '../hooks/useDelayText';
 
 const RepeatButton = () => {
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const { isRepeat, toggleRepeat } = useRepeatContext();
+  const tooltipText = useDelayedText('オン', 'オフ', isRepeat, isRepeat);
 
   return (
     <button
@@ -20,7 +22,7 @@ const RepeatButton = () => {
       <img id="js-repeat-icon" src={isRepeat ? 'img/リピートオン.png' : 'img/リピート.png'} alt="Repeat Icon" />
 
       <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-repeat'}>
-        {`リピート：${isRepeat ? 'オン' : 'オフ'}`}
+        {`リピート：${tooltipText}`}
       </Tooltip>
     </button>
   );

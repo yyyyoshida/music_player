@@ -4,22 +4,24 @@ import { usePlayerContext } from './PlayerContext';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
 import { useRepeatContext } from './RepeatContext';
+import useDelayedText from '../hooks/useDelayText';
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
   const [isDragging, setIsDragging] = useState(false);
   const [volumeIcon, setVolumeIcon] = useState(updateVolumeIcon(percentage));
   const [isMuted, setIsMuted] = useState(false);
-
+  
   const currentSongIndexRef = useRef(null);
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
   const isRepeatRef = useRef(null);
-
+  
   const { currentSongIndex, setCurrentSongIndex } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
-
+  
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
+  const tooltipText = useDelayedText('ミュート解除', 'ミュート', isMuted, isMuted);
 
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
@@ -42,7 +44,7 @@ const Bar = ({ ParentClassName, type, value }) => {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
       music.volume = Math.max(0, Math.min(1, newPercentage / 100));
-      setVolumeIcon(updateVolumeIcon(newPercentage)); // アイコンも更新
+      setVolumeIcon(updateVolumeIcon(newPercentage));
     }
   };
 
@@ -68,7 +70,7 @@ const Bar = ({ ParentClassName, type, value }) => {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
       music.volume = Math.max(0, Math.min(1, newPercentage / 100));
-      setVolumeIcon(updateVolumeIcon(newPercentage)); // アイコン更新
+      setVolumeIcon(updateVolumeIcon(newPercentage));
     }
   };
 
@@ -185,7 +187,7 @@ const Bar = ({ ParentClassName, type, value }) => {
         >
           <img src={volumeIcon} alt="Volume Icon" className="player-controls__button--volume-icon" />
           <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-volume'}>
-            {isMuted ? 'ミュート解除' : 'ミュート'}
+            {tooltipText}
           </Tooltip>
         </button>
       )}
