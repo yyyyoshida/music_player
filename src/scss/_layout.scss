@@ -369,7 +369,11 @@ footer {
         background-color: #fff;
         // visibility: visible;
         opacity: 1;
-        transition: transform 0.15s ease-in-out, width 0.1s, height 0.1s, background-color 0.1s ease-in;
+        transition:
+          transform 0.15s ease-in-out,
+          width 0.1s,
+          height 0.1s,
+          background-color 0.1s ease-in;
         box-shadow: 0 0px 5px rgba(0, 0, 0, 0.8);
       }
     }
@@ -406,7 +410,9 @@ footer {
     box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
     transition: height 0.1s;
     position: relative;
-    transition: transform 0.3s, height 0.1s;
+    transition:
+      transform 0.3s,
+      height 0.1s;
     background: rgb(68, 68, 68);
   }
   &__progress-fill {
@@ -430,7 +436,12 @@ footer {
     opacity: 0;
     top: 50%;
     transform: translateY(-50%);
-    transition: transform 0.15s ease-in-out, width 0.1s, height 0.1s, background-color 0.1s ease-in, opacity 1s;
+    transition:
+      transform 0.15s ease-in-out,
+      width 0.1s,
+      height 0.1s,
+      background-color 0.1s ease-in,
+      opacity 1s;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
   }
   &__options {
@@ -452,7 +463,8 @@ footer {
     border-radius: 16px;
     border: 1px solid #3a3a3a;
     opacity: 0;
-    visibility: hidden;
+    pointer-events: none;
+    // visibility: hidden;
     backdrop-filter: blur(5px);
     user-select: none;
     transition: opacity 0.3s ease;
@@ -505,7 +517,9 @@ footer {
     box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
     transition: height 0.1s;
     position: relative;
-    transition: transform 0.3s, height 0.1s;
+    transition:
+      transform 0.3s,
+      height 0.1s;
     background: rgb(68, 68, 68);
   }
   &__volume-fill {
@@ -528,7 +542,11 @@ footer {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: transform 0.15s ease-in-out, width 0.15s, height 0.15s, background-color 0.1s ease-in;
+    transition:
+      transform 0.15s ease-in-out,
+      width 0.15s,
+      height 0.15s,
+      background-color 0.1s ease-in;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
   }
   &__info {
@@ -596,5 +614,9 @@ footer {
   background-color: rgba(19, 19, 19, 0.8);
 }
 .is-option {
+  // visibility: invisible;
+
+  // pointer-events: none;
+  pointer-events: painted;
   opacity: 1;
 }
