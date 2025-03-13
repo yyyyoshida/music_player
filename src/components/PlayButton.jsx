@@ -3,10 +3,12 @@ import { music, playSong } from './PlayMusic';
 import { usePlayerContext } from './PlayerContext';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
+import useDelayedText from '../hooks/useDelayText';
 
 const PlayButton = () => {
   const { isPlaying, togglePlayPause, currentSongIndex } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
+  const tooltipText = useDelayedText('一時停止', '再生', isPlaying, isPlaying);
 
   function handlePlayPause() {
     togglePlayPause();
@@ -34,7 +36,7 @@ const PlayButton = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={isPlaying ? 'tooltip-pause' : 'tooltip-play'}>
-        {isPlaying ? '再生' : '停止'}
+        {tooltipText}
       </Tooltip>
     </button>
   );
