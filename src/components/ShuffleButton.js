@@ -1,17 +1,17 @@
-import React,{useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
 import useDelayedText from '../hooks/useDelayText';
 
 const ShuffleButton = () => {
-  const [isShuffle, setIsShuffle] = useState(false)
+  const [isShuffle, setIsShuffle] = useState(false);
 
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText('オン', 'オフ', isShuffle, isShuffle);
- 
+
   function toggleShuffle() {
-    setIsShuffle((prev) => !prev)
-    handleButtonPress()
+    setIsShuffle((prev) => !prev);
+    handleButtonPress();
   }
 
   return (
