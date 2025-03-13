@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Tooltip = ({ isHovered, isButtonPressed, children, className }) => {
+const Tooltip = ({ isHovered, isButtonPressed, children, className, isOpenMenu}) => {
   const [tooltipOpacity, setTooltipOpacity] = useState(0);
   const [tooltipVisibility, setTooltipVisibility] = useState('hidden');
 
@@ -21,8 +21,10 @@ const Tooltip = ({ isHovered, isButtonPressed, children, className }) => {
     <span
       className={`tooltip ${className}`}
       style={{
-        opacity: tooltipOpacity,
+        // opacity: tooltipOpacity,
+        opacity: isOpenMenu ? 0 : tooltipOpacity,
         visibility: tooltipVisibility,
+        transition: isOpenMenu ? 'all 0s': '0.2s all ease-in',
       }}
     >
       {children}

@@ -71,7 +71,8 @@
     height: 22px;
     display: flex;
     justify-content: space-between;
-    background: linear-gradient(to bottom, #ffffff 0%, #ffffff 100%) left center / 8px 100% no-repeat,
+    background:
+      linear-gradient(to bottom, #ffffff 0%, #ffffff 100%) left center / 8px 100% no-repeat,
       linear-gradient(to bottom, #ffffff 0%, #ffffff 100%) right center / 8px 100% no-repeat;
     // transition: all 0.2s;
   }
