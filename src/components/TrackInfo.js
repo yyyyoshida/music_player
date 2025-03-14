@@ -6,10 +6,11 @@ const TrackInfo = () => {
   const [title, setTitle] = useState('曲のタイトル');
   const [artist, setArtist] = useState('アーティスト・作者');
   const imgRef = useRef(null);
-  const [isHidden, setIsHidden] = useState('visible');
+  const [isHidden, setIsHidden] = useState(false);
   const { isPlaying, currentSongIndex } = usePlayerContext();
   const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
+  const prevSongIndex = useRef(null);
 
   function fadeTransition() {
     const transitionElement = transitionRef.current;
@@ -28,25 +29,20 @@ const TrackInfo = () => {
 
   useEffect(() => {
     if (isFirstRender.current) {
-      return;
-    }
-    setIsHidden('hidden');
-  }, [isPlaying, currentSongIndex]);
-
-  useEffect(() => {
-    if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    console.log('２回目のレンダリング');
+    if (prevSongIndex.current !== currentSongIndex) {
+      fadeTransition();
+    }
+    prevSongIndex.current = currentSongIndex;
+
     setTitle(songs[currentSongIndex].title);
     setArtist(songs[currentSongIndex].artist);
     imgRef.current.src = songs[currentSongIndex].cover;
-  }, [currentSongIndex, isPlaying]);
 
-  useEffect(() => {
-    fadeTransition();
-  }, [currentSongIndex]);
+    setIsHidden(true);
+  }, [currentSongIndex, isPlaying]);
 
   return (
     <>
@@ -62,12 +58,8 @@ const TrackInfo = () => {
             />
             <div
               ref={transitionRef}
-              id="js-track-thumbnail-transition"
               className="player-controls__track-thumbnail-transition"
-              // style={{ visibility: isHidden ? 'visible' : 'hidden' }}
-              // style={{ visibility: isHidden ? 'hidden' : 'visible' }}
-              style={{ visibility: isHidden }}
-              // style={{ visibility: 'hidden' }}
+              style={{ visibility: isHidden ? 'hidden' : 'visible' }}
             ></div>
           </div>
           <figcaption id="js-track-meta" className="player-controls__track-meta">
