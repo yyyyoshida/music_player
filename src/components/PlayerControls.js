@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ProgressBar from './ProgressBar';
 import TrackInfo from './TrackInfo';
 import PlayerActions from './PlayerActions';
@@ -7,17 +7,17 @@ import { PlayerProvider } from './PlayerContext';
 import { RepeatProvider } from './RepeatContext';
 
 const PlayerControls = () => {
-  // const [isRepeat, setIsRepeat] = useState(false);
+  const actionsRef = useRef(null);
 
   return (
-    <div id="js-player-controls" className="player-controls">
+    <div className="player-controls">
       {/* isPlayingを使いまわすため */}
       <PlayerProvider>
         <RepeatProvider>
           <ProgressBar />
           <div className="player-controls__info">
-            <TrackInfo />
-            <PlayerActions />
+            <TrackInfo actionsRef={actionsRef} />
+            <PlayerActions actionsRef={actionsRef} />
             <PlayerOptions />
           </div>
         </RepeatProvider>
