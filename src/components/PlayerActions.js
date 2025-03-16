@@ -5,9 +5,9 @@ import PrevNextButton from './PrevNextButton';
 import ParentComponent from './ParentComponent';
 import RepeatButton from './RepeatButton';
 
-const PlayerActions = () => {
+const PlayerActions = ({ actionsRef }) => {
   return (
-    <div id="js-actions" className="player-controls__actions">
+    <div ref={actionsRef} className="player-controls__actions">
       <ShuffleButton />
       <PrevNextButton type="prev" />
       <PlayButton />
