@@ -6,20 +6,24 @@ import useButtonTooltip from '../hooks/useButtonTooltip';
 import { useRepeatContext } from './RepeatContext';
 import useDelayedText from '../hooks/useDelayText';
 
+import { IoVolumeOffSharp, IoVolumeLowSharp, IoVolumeMediumSharp, IoVolumeHighSharp } from 'react-icons/io5';
+import { IoVolumeOff, IoVolumeLow, IoVolumeMedium, IoVolumeHigh, IoVolumeMute } from 'react-icons/io5';
+import { IconContext } from 'react-icons';
+
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
   const [isDragging, setIsDragging] = useState(false);
   const [volumeIcon, setVolumeIcon] = useState(updateVolumeIcon(percentage));
   const [isMuted, setIsMuted] = useState(false);
-  
+
   const currentSongIndexRef = useRef(null);
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
   const isRepeatRef = useRef(null);
-  
+
   const { currentSongIndex, setCurrentSongIndex } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
-  
+
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText('ミュート解除', 'ミュート', isMuted, isMuted);
 
@@ -186,6 +190,19 @@ const Bar = ({ ParentClassName, type, value }) => {
           onMouseLeave={() => setIsHovered(false)}
         >
           <img src={volumeIcon} alt="Volume Icon" className="player-controls__button--volume-icon" />
+          <IconContext.Provider value={{ size: '20px' }}>
+            {/* <IconContext.Provider> */}
+            <IoVolumeOffSharp />
+            <IoVolumeLowSharp />
+            <IoVolumeMediumSharp />
+            <IoVolumeHighSharp />
+
+            <IoVolumeOff />
+            <IoVolumeLow />
+            <IoVolumeMedium />
+            <IoVolumeHigh />
+            <IoVolumeMute />
+          </IconContext.Provider>
           <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-volume'}>
             {tooltipText}
           </Tooltip>
