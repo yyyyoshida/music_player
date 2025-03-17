@@ -19,7 +19,23 @@
 }
 
 .player-controls__button--volume {
+  position: relative;
   margin-right: 10px;
+  width: 34px;
+  height: 34px;
+  // display: flex;
+  &-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 9px;
+  }
+  &-icon-high {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) translateX(3%) scale(1.06);
+    left: 9px;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////

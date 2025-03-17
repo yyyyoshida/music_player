@@ -5,15 +5,11 @@ import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
 import { useRepeatContext } from './RepeatContext';
 import useDelayedText from '../hooks/useDelayText';
-
-import { IoVolumeOffSharp, IoVolumeLowSharp, IoVolumeMediumSharp, IoVolumeHighSharp } from 'react-icons/io5';
-import { IoVolumeOff, IoVolumeLow, IoVolumeMedium, IoVolumeHigh, IoVolumeMute } from 'react-icons/io5';
-import { IconContext } from 'react-icons';
+import VolumeIcon from './VolumeIcon';
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
   const [isDragging, setIsDragging] = useState(false);
-  const [volumeIcon, setVolumeIcon] = useState(updateVolumeIcon(percentage));
   const [isMuted, setIsMuted] = useState(false);
 
   const currentSongIndexRef = useRef(null);
@@ -30,7 +26,6 @@ const Bar = ({ ParentClassName, type, value }) => {
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
     music.volume = volumeValueRef.current / 100;
-    setVolumeIcon(updateVolumeIcon(volumeValueRef.current));
   }, []);
 
   const handleClickBar = (e) => {
@@ -48,7 +43,6 @@ const Bar = ({ ParentClassName, type, value }) => {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
       music.volume = Math.max(0, Math.min(1, newPercentage / 100));
-      setVolumeIcon(updateVolumeIcon(newPercentage));
     }
   };
 
@@ -74,7 +68,6 @@ const Bar = ({ ParentClassName, type, value }) => {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
       music.volume = Math.max(0, Math.min(1, newPercentage / 100));
-      setVolumeIcon(updateVolumeIcon(newPercentage));
     }
   };
 
@@ -129,18 +122,6 @@ const Bar = ({ ParentClassName, type, value }) => {
     }
   }, [type]);
 
-  function updateVolumeIcon(percentage) {
-    if (percentage === 0) {
-      return 'img/volume-off.png';
-    } else if (percentage < 30) {
-      return 'img/volume-medium.png';
-    } else if (percentage < 70) {
-      return 'img/volume-high.png';
-    } else {
-      return 'img/volume-full.png';
-    }
-  }
-
   function restProgressBar() {
     setPercentage(0);
     music.currentTime = 0;
@@ -176,7 +157,6 @@ const Bar = ({ ParentClassName, type, value }) => {
 
     setIsMuted((prevMuted) => !prevMuted);
     music.muted = !isMuted;
-    setVolumeIcon(!isMuted ? 'img/volume-off.png' : updateVolumeIcon(volumeValueRef.current));
     if (!isMuted) volumeValueRef.current = percentage;
   }
 
@@ -189,20 +169,8 @@ const Bar = ({ ParentClassName, type, value }) => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <img src={volumeIcon} alt="Volume Icon" className="player-controls__button--volume-icon" />
-          <IconContext.Provider value={{ size: '20px' }}>
-            {/* <IconContext.Provider> */}
-            <IoVolumeOffSharp />
-            <IoVolumeLowSharp />
-            <IoVolumeMediumSharp />
-            <IoVolumeHighSharp />
+          <VolumeIcon volume={percentage} isMuted={isMuted} />
 
-            <IoVolumeOff />
-            <IoVolumeLow />
-            <IoVolumeMedium />
-            <IoVolumeHigh />
-            <IoVolumeMute />
-          </IconContext.Provider>
           <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-volume'}>
             {tooltipText}
           </Tooltip>
