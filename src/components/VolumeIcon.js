@@ -5,10 +5,8 @@ const VolumeIcon = ({ volume, isMuted }) => {
   let IconComponent;
   let iconClassName = 'player-controls__button--volume-icon';
 
-  if (isMuted) {
+  if (isMuted || volume === 0) {
     IconComponent = ImVolumeMute2;
-  } else if (volume === 0) {
-    IconComponent = ImVolumeMute;
   } else if (volume < 30) {
     IconComponent = ImVolumeLow;
   } else if (volume < 70) {
