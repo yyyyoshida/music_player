@@ -24,7 +24,7 @@ const TrackInfo = ({ actionsRef }) => {
 
   const [originalTextArray, setOriginalTextArray] = useState([]);
   const [removedCount, setRemovedCount] = useState(0);
-  const [isRestoring, setIsRestoring] = useState(false);
+  // const [isRestoring, setIsRestoring] = useState(false);
 
   const [isCollision, setIsCollision] = useState(false);
 
@@ -34,6 +34,17 @@ const TrackInfo = ({ actionsRef }) => {
   const [curWidth, setCurWidth] = useState(null);
 
   const isCollisionRef = useRef(null);
+
+  const [expandScreenSize, setExpandScreenSize] = useState(window.innerWidth);
+  const [shrinkScreenSize, setShrinkScreenSize] = useState(window.innerWidth);
+
+  const [triggerEffect, setTriggerEffect] = useState(false);
+
+  const [trimmedTitle, setTrimmedTitle] = useState(title);
+
+  // const [untrimmedTitle, setUntrimmedTitle] = useState(songs[currentSongIndex].title);
+  const untrimmedTitleRef = useRef(songs[currentSongIndex].title);
+
   // const [trackTitle, setTrackElement] = useState(trackMetaRef.current.firstElementChild);
 
   let previousWidth = window.innerWidth;
@@ -41,13 +52,14 @@ const TrackInfo = ({ actionsRef }) => {
   const handleResize = throttle(() => {
     const currentWidth = window.innerWidth;
     if (currentWidth > previousWidth) {
-      // console.log('画面が拡大されたので徐々に復元');
-      setCurWidth(currentWidth);
-      // restoreTrackTitle();
+      // 画面拡大
+      // setCurWidth(currentWidth);
+      setExpandScreenSize(currentWidth);
+      restoreTrackTitle();
     } else if (currentWidth < previousWidth) {
       setCurWidth(currentWidth);
-      // console.log('画面が縮小されたので省略処理');
-      // trimTrackTitle();
+      setShrinkScreenSize(currentWidth);
+      // 画面縮小
     }
     previousWidth = currentWidth;
     // }, 100); // 200msの遅延でイベントをまとめて処理
@@ -62,29 +74,29 @@ const TrackInfo = ({ actionsRef }) => {
   }, [currentSongIndex]);
 
   useLayoutEffect(() => {
-    setTimeout(() => {
-      if (!trackInfoRef.current || !actionsRef.current) return;
-
-      const trackInfoRect = trackInfoRef.current.getBoundingClientRect();
-      const actionsRect = actionsRef.current.getBoundingClientRect();
-
-      const collisionDetected = trackInfoRect.right > actionsRect.left && trackInfoRect.left < actionsRect.right;
-      setIsCollision((prev) => (prev !== collisionDetected ? collisionDetected : prev));
-    }, 1);
-    // Promise.resolve().then(() => {
+    // setTimeout(() => {
     //   if (!trackInfoRef.current || !actionsRef.current) return;
 
     //   const trackInfoRect = trackInfoRef.current.getBoundingClientRect();
     //   const actionsRect = actionsRef.current.getBoundingClientRect();
 
     //   const collisionDetected = trackInfoRect.right > actionsRect.left && trackInfoRect.left < actionsRect.right;
-
     //   setIsCollision((prev) => (prev !== collisionDetected ? collisionDetected : prev));
-    // });
+    // }, 1);
+    Promise.resolve().then(() => {
+      if (!trackInfoRef.current || !actionsRef.current) return;
+
+      const trackInfoRect = trackInfoRef.current.getBoundingClientRect();
+      const actionsRect = actionsRef.current.getBoundingClientRect();
+
+      const collisionDetected = trackInfoRect.right > actionsRect.left && trackInfoRect.left < actionsRect.right;
+
+      setIsCollision((prev) => (prev !== collisionDetected ? collisionDetected : prev));
+    });
 
     // }, [curWidth, isPlaying, title]);
     // }, [curWidth, title]);
-  }, [curWidth, title, isPlaying, currentSongIndex]);
+  }, [shrinkScreenSize, title, isPlaying, currentSongIndex, triggerEffect]);
 
   // 昔の値を参照してるっていうかボタンを押した瞬間の値変更する前の値を参照してる
   // setTimeoutで一時解決。だが、ほかの選択肢として、Promise.resolve().then(()これもある。
@@ -96,41 +108,19 @@ const TrackInfo = ({ actionsRef }) => {
 
   useEffect(() => {
     titleRef.current = title;
+
+    setTimeout(() => {
+      setTriggerEffect((prev) => !prev);
+    }, 0);
   }, [title]);
 
-  // function trimTrackTitle() {
-  //   let loopCount = 100; // 最大ループ回数
-  //   let titleTextArray = Array.from(titleRef.current);
-  //   let text = titleTextArray.slice(0, titleTextArray.length - removedCount);
-  //   let isEllipsisAdded = text[text.length - 1] === '…';
-
-  //   function processTrimming() {
-  //     console.log(isCollisionRef.current);
-  //     // if (!isCollisionRef.current || loopCount <= 0) return;
-  //     if (!isCollisionRef.current || trackInfoRef.current.clientWidth <= 331 || loopCount <= 0) return;
-
-  //     if (!isEllipsisAdded) {
-  //       text.push('…');
-  //       isEllipsisAdded = true;
-  //     } else {
-  //       text.splice(-2, 1);
-  //       // setRemovedCount((prev) => prev + 1);
-  //     }
-
-  //     setTitle(text.join(''));
-
-  //     loopCount--; // ループ回数を減らす
-  //     requestAnimationFrame(processTrimming); // 次のフレームで実行
-  //   }
-
-  //   requestAnimationFrame(processTrimming); // 初回実行
-  // }
-
   function trimTrackTitle() {
-    // これだからね
+    // console.log('トリムトラック');
+
     function processTrimming() {
       let titleTextArray = Array.from(titleRef.current);
-      let text = titleTextArray.slice(0, titleTextArray.length - removedCount);
+      // let text = titleTextArray.slice(0, titleTextArray.length - removedCount);
+      let text = titleTextArray.slice(0, titleTextArray.length);
       let isEllipsisAdded = text[text.length - 1] === '…';
 
       // `isCollision` の最新の値を取得
@@ -141,11 +131,12 @@ const TrackInfo = ({ actionsRef }) => {
             isEllipsisAdded = true;
           } else {
             text.splice(-2, 1);
-            // setRemovedCount((prev) => prev + 1);
+            setRemovedCount((prev) => prev + 1);
+            console.log(removedCount);
           }
           setTitle(text.join(''));
+          setTrimmedTitle(text.join(''));
 
-          // もう一度実行
           setTimeout(processTrimming, 0);
         }
         return prev;
@@ -158,35 +149,51 @@ const TrackInfo = ({ actionsRef }) => {
   useEffect(() => {
     isCollisionRef.current = isCollision;
     trimTrackTitle();
-    // }, [isCollision]);
   }, [isCollision, currentSongIndex, isPlaying]);
 
+  useEffect(() => {
+    untrimmedTitleRef.current = songs[currentSongIndex].title;
+    setRemovedCount(0);
+  }, [currentSongIndex]);
+
   const restoreTrackTitle = () => {
-    if (isRestoring || removedCount === 0) return;
-    setIsRestoring(true);
+    // console.log('リストラ');
 
-    const trackTitle = trackMetaRef.current.firstElementChild;
-    let text = originalTextArray.slice(0, originalTextArray.length - removedCount);
+    let isRestoring = false;
 
-    while (removedCount > 0) {
-      // if (isColliding()) {
-      if (isCollision) {
-        break;
-      }
-      const restoredChar = originalTextArray[originalTextArray.length - removedCount];
-      text.splice(text.length - 1, 0, restoredChar);
-      setRemovedCount((prev) => prev - 1);
-
-      if (removedCount === 0) {
-        text = originalTextArray.slice();
-      }
-
-      // trackTitle.textContent = text.join('');
-      setTitle(text.join(''));
-      // calcTrackInfoWidth();
+    function processRemoveTrimming() {
+      if (isRestoring || removedCount === 0) return;
+      isRestoring = true;
+      let titleTextArray = Array.from(untrimmedTitleRef.current);
+      console.log(titleTextArray);
     }
+    processRemoveTrimming();
 
-    setIsRestoring(false);
+    // if (isRestoring || removedCount === 0) return;
+    // setIsRestoring(true);
+
+    // const trackTitle = trackMetaRef.current.firstElementChild;
+    // let text = originalTextArray.slice(0, originalTextArray.length - removedCount);
+
+    // while (removedCount > 0) {
+    //   // if (isColliding()) {
+    //   if (isCollision) {
+    //     break;
+    //   }
+    //   const restoredChar = originalTextArray[originalTextArray.length - removedCount];
+    //   text.splice(text.length - 1, 0, restoredChar);
+    //   setRemovedCount((prev) => prev - 1);
+
+    //   if (removedCount === 0) {
+    //     text = originalTextArray.slice();
+    //   }
+
+    //   // trackTitle.textContent = text.join('');
+    //   setTitle(text.join(''));
+    //   // calcTrackInfoWidth();
+    // }
+
+    // setIsRestoring(false);
   };
 
   useLayoutEffect(() => {
@@ -217,7 +224,6 @@ const TrackInfo = ({ actionsRef }) => {
   }
 
   useEffect(() => {
-    // trimTrackTitle();
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
