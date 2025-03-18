@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useContext } from 'react';
 import { music, songs, playSong } from './PlayMusic';
 import { usePlayerContext } from './PlayerContext';
 // import { debounce } from 'lodash';
 import { throttle } from 'lodash';
+import { TrackInfoContext } from './TrackInfoContext';
 
 const TrackInfo = ({ actionsRef }) => {
   // const [title, setTitle] = useState('曲のタイトル');
@@ -44,6 +45,9 @@ const TrackInfo = ({ actionsRef }) => {
 
   // const [untrimmedTitle, setUntrimmedTitle] = useState(songs[currentSongIndex].title);
   const untrimmedTitleRef = useRef(songs[currentSongIndex].title);
+
+  // const [isVisible, setIsVisible] = useState(false);
+  const { handleTrackInfoClick } = useContext(TrackInfoContext);
 
   // const [trackTitle, setTrackElement] = useState(trackMetaRef.current.firstElementChild);
 
@@ -241,9 +245,15 @@ const TrackInfo = ({ actionsRef }) => {
   }, [currentSongIndex, isPlaying]);
   // }, [currentSongIndex]);
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // function handleTrackInfoClick() {
+  //   setIsVisible((prev) => !prev);
+  // }
+
   return (
     <>
-      <div ref={trackInfoRef} className="player-controls__track-info" style={{ width: `${width}px` }}>
+      <div ref={trackInfoRef} className="player-controls__track-info" style={{ width: `${width}px` }} onClick={handleTrackInfoClick}>
         {/* <div ref={trackInfoRef} className="player-controls__track-info"> */}
         <figure className="player-controls__track">
           <div id="js-track-thumbnail-wrapper" className="player-controls__track-thumbnail-wrapper">
