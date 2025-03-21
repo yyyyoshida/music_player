@@ -14,6 +14,7 @@ body {
   color: rgb(107, 171, 255);
   color: rgb(215, 250, 231);
   color: #fff;
+  background-color: #2e2e2e;
   // display: flex;
 
   // background-color: #00bcd4;
@@ -26,10 +27,28 @@ body {
   width: 100%;
   width: calc(100% - 300px);
   height: 100vh;
+  height: 85vh;
   background-color: #2e2e2e;
   margin-left: 300px;
+  // overflow: hidden;
   overflow-y: auto;
 }
+
+::-webkit-scrollbar {
+  width: 9px;
+  background: #444444;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
+  transition: all 0.2s ease;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: #757575;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8f8f8f;
+}
+
 .sidebar-header {
   width: 300px;
   height: 100vh;
