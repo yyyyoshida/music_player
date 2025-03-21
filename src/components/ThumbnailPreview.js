@@ -14,6 +14,7 @@ export const ThumbnailPreview = () => {
 
   const thumbnailPreviewRef = useRef(null);
   const coverArtRef = useRef(null);
+  const backgroundCoverArtRef = useRef('img/sarah-kilian-52jRtc2S_VE-unsplash.jpg');
   const transitionRef = useRef(null);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
@@ -61,7 +62,7 @@ export const ThumbnailPreview = () => {
     setTitle(songs[currentSongIndex].title);
     setArtist(songs[currentSongIndex].artist);
     coverArtRef.current.src = songs[currentSongIndex].cover;
-
+    backgroundCoverArtRef.current.src = songs[currentSongIndex].cover;
     fadeTransition();
   }, [currentSongIndex]);
 
@@ -119,7 +120,11 @@ export const ThumbnailPreview = () => {
         className={`thumbnail-preview ${isVisible ? 'is-visible' : ''}`}
         style={{ opacity: isVisible ? 1 : 0, visibility: delayedVisibility }}
       >
-        <div className="thumbnail-preview__background" style={{ backgroundImage: `url(${songs[currentSongIndex].cover})` }}></div>
+        <div
+          ref={backgroundCoverArtRef}
+          className="thumbnail-preview__background"
+          style={{ backgroundImage: `url(${backgroundCoverArtRef.current.src})` }}
+        ></div>
         <figure className="thumbnail-preview__content">
           <div className="thumbnail-preview__image-warpper" style={{ transform: `scale(${scale})` }}>
             <img ref={coverArtRef} className="thumbnail-preview__image" src="img/not-found.jpg" alt="" />

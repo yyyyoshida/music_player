@@ -18,17 +18,18 @@ const Tooltip = ({ isHovered, isButtonPressed, children, className, isOpenMenu }
   }, [isHovered, isButtonPressed]);
 
   return (
-    <span
-      className={`tooltip ${className}`}
-      style={{
-        // opacity: tooltipOpacity,
-        opacity: isOpenMenu ? 0 : tooltipOpacity,
-        visibility: tooltipVisibility,
-        transition: isOpenMenu ? 'all 0s' : '0.2s all ease-in',
-      }}
-    >
-      {children}
-    </span>
+    <>
+      <span
+        className={`tooltip ${className}`}
+        style={{
+          opacity: isOpenMenu ? 0 : tooltipOpacity,
+          visibility: tooltipVisibility,
+          transition: isOpenMenu ? 'all 0s' : '',
+        }}
+      >
+        {children}
+      </span>
+    </>
   );
 };
 

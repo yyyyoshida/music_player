@@ -1,9 +1,8 @@
 import { useState } from 'react';
 
-const useButtonTooltip = () => {
+const useButtonTooltip = (delay = 600) => {
   const [isButtonPressed, setIsButtonPressed] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const delay = 600;
 
   function handleButtonPress() {
     setIsButtonPressed(true);

@@ -16,6 +16,11 @@
     background-color: #3a3a3a;
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.2);
   }
+  &:active {
+    // background-color: #9e9d9d;
+    background-color: #555555;
+    background-color: #292929;
+  }
 }
 
 .player-controls__button--volume {
@@ -100,31 +105,36 @@
   // transition: 0.2s visibility ease-in, opacity 0.2s ease-in;
 }
 
-.tooltip-play,
-.tooltip-pause {
-  left: 50%;
-  transform: translateX(-50%);
-}
-.tooltip-prev {
-  left: 40px;
-}
-.tooltip-next {
-  right: 40px;
-}
-.tooltip-repeat {
-  right: -35px;
-}
-.tooltip-shuffle {
-  left: -40px;
-}
-.tooltip-volume {
-  left: -25px;
-  letter-spacing: -2px;
-}
-.tooltip-other {
-  right: 0;
-  letter-spacing: -1px;
-}
+// .tooltip-play,
+// .tooltip-pause {
+//   left: 50%;
+//   transform: translateX(-50%);
+// }
+// .tooltip-prev {
+//   left: 40px;
+// }
+// .tooltip-next {
+//   right: 40px;
+// }
+// .tooltip-repeat {
+//   right: -35px;
+// }
+// .tooltip-shuffle {
+//   left: -40px;
+// }
+// .tooltip-volume {
+//   left: -25px;
+//   letter-spacing: -2px;
+// }
+// .tooltip-other {
+//   right: 0;
+//   letter-spacing: -1px;
+// }
+// .tooltip-track-info {
+//   top: auto;
+//   bottom: 0px;
+//   right: 0;
+// }
 
 /////////////////////////////////////////////////
 .player-controls__progress-bar {
