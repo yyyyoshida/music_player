@@ -356,8 +356,12 @@ import { usePlayerContext } from './PlayerContext';
 // import { debounce } from 'lodash';
 import { throttle } from 'lodash';
 import { TrackInfoContext } from './TrackInfoContext';
+import Tooltip from './Tooltip';
+import useButtonTooltip from '../hooks/useButtonTooltip';
+import useDelayedText from '../hooks/useDelayText';
 
 const TrackInfo = ({ actionsRef }) => {
+  const [isFullScreen, setIsFullScreen] = useState(false);
   // const [title, setTitle] = useState('曲のタイトル');
   // const [title, setTitle] = useState('123456789123456789123456789123456789123456789123456789123456789');
   const [title, setTitle] = useState('123456789123456789123456789123456789123456789123456789');
@@ -365,6 +369,9 @@ const TrackInfo = ({ actionsRef }) => {
   const imgRef = useRef(null);
   const [isHidden, setIsHidden] = useState(false);
   const { isPlaying, currentSongIndex } = usePlayerContext();
+  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip(600);
+
+  const tooltipText = useDelayedText('全画面表示：オフ', '全画面表示', isFullScreen, isFullScreen, 0);
   const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
   const prevSongIndex = useRef(null);
@@ -678,12 +685,28 @@ const TrackInfo = ({ actionsRef }) => {
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // function handleTrackInfoClick() {
-  //   setIsVisible((prev) => !prev);
+  //   // setIsVisible((prev) => !prev);
+  //   isButtonPressed();
   // }
+  // useEffect(() => {
+
+  // })
 
   return (
     <>
-      <div ref={trackInfoRef} className="player-controls__track-info" style={{ width: `${width}px` }} onClick={handleTrackInfoClick}>
+      <div
+        ref={trackInfoRef}
+        className="player-controls__track-info"
+        style={{ width: `${width}px` }}
+        // onClick={handleTrackInfoClick}
+        onClick={() => {
+          handleTrackInfoClick();
+          handleButtonPress();
+          setIsFullScreen((prev) => !prev);
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         {/* <div ref={trackInfoRef} className="player-controls__track-info"> */}
         <figure className="player-controls__track">
           <div id="js-track-thumbnail-wrapper" className="player-controls__track-thumbnail-wrapper">
@@ -705,6 +728,9 @@ const TrackInfo = ({ actionsRef }) => {
             <p className="player-controls__artist">{artist}</p>
           </figcaption>
         </figure>
+        <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-track-info'}>
+          {tooltipText}
+        </Tooltip>
       </div>
     </>
   );

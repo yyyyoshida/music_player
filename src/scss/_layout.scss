@@ -572,12 +572,40 @@ footer {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
   position: absolute;
   text-wrap: nowrap;
-  transition: 0.2s all ease-in;
-  // letter-spacing: -2px;
+  transition:
+    right 1s,
+    opacity 0.2s ease-in;
+
+  z-index: 3000;
   cursor: auto;
-  &:hover {
-    // visibility: hidden;
-    // opacity: 0;
+  &-play,
+  &-pause {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  &-prev {
+    left: 40px;
+  }
+  &-next {
+    right: 40px;
+  }
+  &-repeat {
+    right: -35px;
+  }
+  &-shuffle {
+    left: -40px;
+  }
+  &-volume {
+    left: -25px;
+    letter-spacing: -2px;
+  }
+  &-other {
+    right: 0;
+    letter-spacing: -1px;
+  }
+  &-track-info {
+    top: -10px;
+    right: -35px;
   }
 }
 
