@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SearchBar from './SearchBar';
 
 function Header() {
   return (
@@ -7,12 +8,7 @@ function Header() {
         <h1 className="sidebar-header__logo">
           <a href="#">音楽プレイヤー</a>
         </h1>
-        <div className="search-bar">
-          <input className="search-input" type="text" id="js-search-input" placeholder="検索" />
-          <button id="js-search-button" className="search-button">
-            <img src="img/検索用の虫眼鏡アイコン 7.png" alt="" />
-          </button>
-        </div>
+        <SearchBar />
         <nav className="sidebar-header__nav">
           <ul className="sidebar-header__list">
             <li className="sidebar-header__item">
