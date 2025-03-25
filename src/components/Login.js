@@ -1,11 +1,7 @@
 import React from 'react';
 import LOGIN_URL from '../config/spotifyConfig'; // インポート
 
-const Login = ({ onLogin }) => {
-  function handleLogin() {
-    window.location.href = LOGIN_URL;
-  }
-
+const Login = () => {
   return (
     <div className="login">
       <div className="login__smoke"></div>
@@ -18,9 +14,7 @@ const Login = ({ onLogin }) => {
           さあ、音楽の世界に飛び込もう！
         </p>
 
-        <button className="login__button" onClick={handleLogin}>
-          Spotifyでログイン
-        </button>
+        <button className="login__button">Spotifyでログイン</button>
       </div>
     </div>
   );
