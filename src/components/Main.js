@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import Header from './Header';
+import React, { useState, useEffect, useContext } from 'react';
 import Footer from './Footer';
 import PlayerControls from './PlayerControls';
 import ThumbnailPreview from './ThumbnailPreview';
 import { PlayerProvider } from './PlayerContext';
 import { TrackInfoProvider } from './TrackInfoContext';
 import Login from './Login';
+import { SearchContext } from './SearchContext';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
-  const [searchResults, setSearchResults] = useState([]); // 検索結果を管理するステート
+  // const [searchResults, setSearchResults] = useState([]); // 検索結果を管理するステート
   const [isToken, setIsToken] = useState();
+  const { searchResults } = useContext(SearchContext);
 
   useEffect(() => {
     console.log(token);

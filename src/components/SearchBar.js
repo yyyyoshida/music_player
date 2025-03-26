@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { SearchContext } from './SearchContext';
 
 const SearchBar = ({ token }) => {
   const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]); // SearchBar内で管理
+  // const [searchResults, setSearchResults] = useState([]); // SearchBar内で管理
+  const { setSearchResults } = useContext(SearchContext);
   const [error, setError] = useState(null);
 
   const handleSearch = async () => {
@@ -38,7 +40,7 @@ const SearchBar = ({ token }) => {
         setSearchResults([]);
         setError('検索結果が見つかりませんでした。');
       }
-      setQuery(''); // 検索完了後に入力をクリア
+      // setQuery(''); // 検索完了後に入力をクリア
     } catch (err) {
       console.error('検索に失敗しました:', err);
       setError('検索に失敗しました。もう一度お試しください。');
@@ -54,24 +56,7 @@ const SearchBar = ({ token }) => {
           <img src="img/検索用の虫眼鏡アイコン 7.png" alt="検索" />
         </button>
       </div>
-      {error && <p className="error-message">{error}</p>} {/* エラーがある場合表示 */}
-      <h2 className="search-result__title">上位の検索結果</h2>
-      <ul className="search-result__list">
-        {searchResults.length > 0 ? (
-          searchResults.map((track) => (
-            <li key={track.id}>
-              <div>
-                <img src={track.album.images?.[0]?.url} alt={track.name} width="50" />
-                <p>
-                  {track.name} - {track.artists?.[0]?.name}
-                </p>
-              </div>
-            </li>
-          ))
-        ) : (
-          <li>検索結果がありません</li>
-        )}
-      </ul>
+      {error && <p className="error-message">{error}</p>}
     </>
   );
 };

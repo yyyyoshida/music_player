@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Main from './components/Main';
 import Login from './components/Login';
 import { getNewAccessToken } from './utils/spotifyAuth'; // getNewAccessTokenをインポート
+import { SearchProvider } from './components/SearchContext';
 
 function App() {
   const [token, setToken] = useState(null);
@@ -49,13 +50,13 @@ function App() {
   }
 
   return (
-    <>
+    <SearchProvider>
       {/* <h1>Spotifyアプリ</h1> */}
       {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
       <Header token={token} onSearchResults={handleSearchResults} />
       {/* {!token && <Login />} */}
       <Main token={token} searchResults={searchResults} />
-    </>
+    </SearchProvider>
   );
 }
 
