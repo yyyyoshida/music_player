@@ -1,7 +1,11 @@
 import React from 'react';
-import LOGIN_URL from '../config/spotifyConfig'; // インポート
+import LOGIN_URL from '../config/spotifyConfig';
 
 const Login = () => {
+  const handleLogin = () => {
+    window.location.href = LOGIN_URL; // Spotifyの認証ページにリダイレクト
+  };
+
   return (
     <div className="login">
       <div className="login__smoke"></div>
@@ -14,7 +18,9 @@ const Login = () => {
           さあ、音楽の世界に飛び込もう！
         </p>
 
-        <button className="login__button">Spotifyでログイン</button>
+        <button className="login__button" onClick={handleLogin}>
+          Spotifyでログイン
+        </button>
       </div>
     </div>
   );
