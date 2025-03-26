@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from './Footer';
 import PlayerControls from './PlayerControls';
 import ThumbnailPreview from './ThumbnailPreview';
 import { PlayerProvider } from './PlayerContext';
 import { TrackInfoProvider } from './TrackInfoContext';
+import Login from './Login';
 
-const Main = () => {
+const Main = ({ token }) => {
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    if (!token) return;
+
+    fetch('https://api.spotify.com/v1/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setProfile(data));
+  }, [token]);
+
+  if (!token) {
+    return <Login />;
+  }
+
   return (
     <div className="container">
       <maidn>
@@ -18,6 +36,15 @@ const Main = () => {
                 <li></li>
               </ul>
             </section>
+            {profile ? (
+              <div>
+                <h3>こんにちは、{profile.display_name} さん！</h3>
+                <p>メール: {profile.email}</p>
+                <img src={profile.images?.[0]?.url} alt="プロフィール画像" width="100" />
+              </div>
+            ) : (
+              <p>データを取得中...</p> // ユーザー情報が取得されるまで待機
+            )}
             {/* <section className="player">
               <div className="video-info">
                 <h2 id="js-video-title">動画タイトル</h2>
