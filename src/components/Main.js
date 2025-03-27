@@ -9,9 +9,8 @@ import { SearchContext } from './SearchContext';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
-  // const [searchResults, setSearchResults] = useState([]); // 検索結果を管理するステート
   const [isToken, setIsToken] = useState();
-  const { searchResults } = useContext(SearchContext);
+  const { query, searchResults } = useContext(SearchContext);
 
   useEffect(() => {
     console.log(token);
@@ -54,7 +53,14 @@ const Main = ({ token }) => {
           <TrackInfoProvider>
             <ThumbnailPreview />
             <section className="search-result">
-              <h2 className="search-result__title">上位の検索結果</h2>
+              <div className="search-result__header">
+                <h2 className="search-result__title">{`${query}の検索結果`}</h2>
+                <div className="search-result__header-info">
+                  <div className="search-result__header-rank">#</div>
+                  <p className="search-result__header-title">タイトル</p>
+                  <img className="search-result__header-duration" src="img/clock.png"></img>
+                </div>
+              </div>
               <ul className="search-result__list">
                 {searchResults.length > 0 ? (
                   searchResults.map((track) => (

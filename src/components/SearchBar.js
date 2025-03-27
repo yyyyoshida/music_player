@@ -1,13 +1,15 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { SearchContext } from './SearchContext';
 
 const SearchBar = ({ token }) => {
-  const [query, setQuery] = useState('');
-  const { setSearchResults } = useContext(SearchContext);
+  const { setQuery, setSearchResults } = useContext(SearchContext);
+  const queryRef = useRef('');
   const [error, setError] = useState(null);
 
   const handleSearch = async () => {
-    if (!query) return;
+    if (queryRef.current === '') return;
+    console.log('検索する値', queryRef.current.value);
+    setQuery(queryRef.current.value);
 
     console.log(token);
     if (!token) {
@@ -16,7 +18,7 @@ const SearchBar = ({ token }) => {
     }
 
     try {
-      const encodedQuery = encodeURIComponent(query); // クエリをURLエンコード
+      const encodedQuery = encodeURIComponent(queryRef.current.value); // クエリをURLエンコード
       const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track`, {
         method: 'GET',
         headers: {
@@ -48,7 +50,7 @@ const SearchBar = ({ token }) => {
   };
 
   function clearSearchText() {
-    setQuery('');
+    queryRef.current.value = '';
   }
 
   return (
@@ -58,8 +60,7 @@ const SearchBar = ({ token }) => {
         <input
           className="search-bar__input"
           type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          ref={queryRef}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           placeholder="検索"
         />
