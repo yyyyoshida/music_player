@@ -38,6 +38,14 @@ const Main = ({ token }) => {
       .then((data) => setProfile(data));
   }, [token]);
 
+  function formatDuration(ms) {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000)
+      .toString()
+      .padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
+
   return (
     <div className="container">
       {!isToken && <Login />}
@@ -50,12 +58,18 @@ const Main = ({ token }) => {
               <ul className="search-result__list">
                 {searchResults.length > 0 ? (
                   searchResults.map((track) => (
-                    <li key={track.id}>
-                      <div>
-                        <img src={track.album.images[0]?.url} alt={track.name} width="50" />
-                        <p>
-                          {track.name} - {track.artists[0]?.name}
-                        </p>
+                    <li className="search-result__item" key={track.id}>
+                      <div className="search-result__left"></div>
+                      <img className="search-result__cover-art" src={track.album.images[0]?.url} alt={track.name} width="50" />
+                      <div className="search-result__track-info">
+                        <p className="search-result__name">{track.name}</p>
+                        <p className="search-result__artist">{track.artists[0]?.name}</p>
+                      </div>
+                      <div className="search-result__right">
+                        <button className="search-result__button--add">
+                          <img className="search-result__icon--add" src="img/plus.png"></img>
+                        </button>
+                        <div className="search-result__track-duration">{formatDuration(track.duration_ms)}</div>
                       </div>
                     </li>
                   ))
