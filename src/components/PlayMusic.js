@@ -3,13 +3,13 @@ export const music = new Audio();
 
 export const songs = [
   {
-    path: 'music/Mr.Kitty - After Dark_part1_2.m4a',
+    path: 'music/Mr.Kitty-AfterDark_part1_2.m4a',
     title: 'Mr.Kitty - After Dark',
     artist: 'Mr.Kitty',
     cover: 'img/テストサムネ１３.jpg',
   },
   {
-    path: 'music/Daisuke full ver. (歌詞・和訳付き).m4a',
+    path: 'music/Daisukefullver.m4a',
     title: 'Daisuke full ver. (歌詞・和訳付き).m4a',
     artist: '上澤',
     cover: 'img/maxresdefault.jpg',
