@@ -94,12 +94,12 @@ body {
   }
 }
 main {
-  height: 100%;
+  // height: 100%;
   padding: 40px 60px;
 }
 footer {
   padding: 0 60px;
-  height: 100%;
+  // height: 100%;
 }
 .search-bar {
   margin-top: 20px;
@@ -114,6 +114,7 @@ footer {
 
   &__input {
     width: 100%;
+    height: 24px;
   }
   &__icon--search {
     position: absolute;
@@ -703,7 +704,44 @@ footer {
 }
 
 .search-result {
+  &__header {
+    margin-bottom: 20px;
+    position: fixed;
+    top: 0;
+    left: 300px; //横のヘッダーからの距離
+    width: calc(100% - 309px); //300が横のヘッダー幅で9pxがスクロールバーの幅
+    padding: 50px 60px 0 60px;
+    background-color: #2e2e2e;
+    z-index: 1000;
+  }
+  &__header-info {
+    border-bottom: 1px solid #b3b3b3;
+    border-bottom: 1px solid #636363;
+    margin-top: 10px;
+    height: 40px;
+    display: flex;
+    position: relative;
+  }
+  &__header-rank,
+  &__header-title,
+  &__header-duration {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &__header-rank {
+    left: 22px;
+    font-size: 18px;
+  }
+  &__header-title {
+    left: 122px;
+  }
+  &__header-duration {
+    right: 20px;
+    width: 16px;
+  }
   &__list {
+    margin-top: 100px;
     counter-reset: my-counter;
     position: relative;
     // user-select: none;
@@ -796,7 +834,5 @@ footer {
       background-color: #585858;
       box-shadow: 0 0px 2px rgba(0, 0, 0, 0.2);
     }
-  }
-  &__track-duration {
   }
 }
