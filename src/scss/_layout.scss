@@ -32,6 +32,10 @@ body {
   margin-left: 300px;
   // overflow: hidden;
   overflow-y: auto;
+  // background-image: url(/img/テストサムネ１.jpg);
+  // background-size: cover;
+  // background-position: top center;
+  // background-repeat: no-repeat;
 }
 
 ::-webkit-scrollbar {
@@ -90,40 +94,51 @@ body {
   }
 }
 main {
-  height: 100%;
+  // height: 100%;
   padding: 40px 60px;
 }
 footer {
   padding: 0 60px;
-  height: 100%;
+  // height: 100%;
 }
-.search {
-  &-bar {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    //   width: 100%;
-    //   display: flex;
-    //   margin: 0 5px;
-    line-height: 1;
-    background-color: #2e2e2e;
-    border-radius: 5px;
-    position: relative;
-    padding: 5px 10px;
-  }
-  &-input {
+.search-bar {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  position: relative;
+  line-height: 1;
+  background-color: #2e2e2e;
+  border-radius: 5px;
+  position: relative;
+  padding: 5px 10px;
+  padding-left: 40px;
+
+  &__input {
     width: 100%;
+    height: 24px;
   }
-  &-button {
+  &__icon--search {
     position: absolute;
-    right: 5px;
+    left: 0;
     top: 50%;
     transform: translateY(-50%);
     padding: 5px 10px;
+    z-index: 1000;
   }
-  &-button:hover {
-    background-color: #3a3a3a;
-    //  opacity: 0.5;
-    border-radius: 5px;
+  &__icon--clear {
+    width: 16px;
+    transform: scale(0.8);
+  }
+  &__button--clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 4px;
+    border-radius: 14.7%;
+    transition: background-color 0.2s;
+    &:hover {
+      background-color: #444444;
+    }
   }
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -686,4 +701,138 @@ footer {
   // pointer-events: none;
   pointer-events: painted;
   opacity: 1;
+}
+
+.search-result {
+  &__header {
+    margin-bottom: 20px;
+    position: fixed;
+    top: 0;
+    left: 300px; //横のヘッダーからの距離
+    width: calc(100% - 309px); //300が横のヘッダー幅で9pxがスクロールバーの幅
+    padding: 50px 60px 0 60px;
+    background-color: #2e2e2e;
+    z-index: 1000;
+  }
+  &__header-info {
+    border-bottom: 1px solid #b3b3b3;
+    border-bottom: 1px solid #636363;
+    margin-top: 10px;
+    height: 40px;
+    display: flex;
+    position: relative;
+  }
+  &__header-rank,
+  &__header-title,
+  &__header-duration {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &__header-rank {
+    left: 22px;
+    font-size: 18px;
+  }
+  &__header-title {
+    left: 122px;
+  }
+  &__header-duration {
+    right: 20px;
+    width: 16px;
+  }
+  &__list {
+    margin-top: 100px;
+    counter-reset: my-counter;
+    position: relative;
+    // user-select: none;
+  }
+  &__item {
+    position: relative;
+    padding: 7px;
+    display: flex;
+    transition: background-color 0.2s ease;
+    border-radius: 5px;
+  }
+  &__item:hover {
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    background-color: #444444;
+    .search-result__left::before {
+      content: '';
+      background-image: url(/img/play.png);
+      background-size: contain;
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      left: 55%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .search-result__button--add {
+      opacity: 1;
+    }
+  }
+  &__track-info {
+    margin-left: 20px;
+
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  &__name {
+  }
+  &__artist {
+    color: #d8d8d8;
+    color: #b3b3b3;
+    font-size: 14px;
+  }
+  &__cover-art {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+  }
+  &__left {
+    width: 40px;
+    height: 50px;
+    margin-right: 7px;
+    position: relative;
+  }
+  &__left::before {
+    content: counter(my-counter);
+    counter-increment: my-counter;
+    display: block;
+    float: left;
+    line-height: 50px;
+    font-size: 17px;
+    text-align: center;
+    width: 40px;
+    height: 50px;
+  }
+  &__right {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    // width: 120px;
+    // height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+  &__icon--add {
+    width: 18px;
+    transform: scale(0.9);
+  }
+  &__button--add {
+    opacity: 0;
+    padding: 8px;
+    transition:
+      background-color 0.2s ease,
+      opacity 0.2s ease;
+    border-radius: 14.7%;
+    &:hover {
+      background-color: #585858;
+      box-shadow: 0 0px 2px rgba(0, 0, 0, 0.2);
+    }
+  }
 }
