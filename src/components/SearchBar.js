@@ -3,7 +3,6 @@ import { SearchContext } from './SearchContext';
 
 const SearchBar = ({ token }) => {
   const [query, setQuery] = useState('');
-  // const [searchResults, setSearchResults] = useState([]); // SearchBar内で管理
   const { setSearchResults } = useContext(SearchContext);
   const [error, setError] = useState(null);
 
@@ -48,12 +47,24 @@ const SearchBar = ({ token }) => {
     }
   };
 
+  function clearSearchText() {
+    setQuery('');
+  }
+
   return (
     <>
       <div className="search-bar">
-        <input className="search-input" type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="検索" />
-        <button className="search-button" onClick={handleSearch}>
-          <img src="img/検索用の虫眼鏡アイコン 7.png" alt="検索" />
+        <img className="search-bar__icon--search" src="img/検索用の虫眼鏡アイコン 7.png" alt="" />
+        <input
+          className="search-bar__input"
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          placeholder="検索"
+        />
+        <button className="search-bar__button--clear" onClick={clearSearchText}>
+          <img className="search-bar__icon--clear" src="img/x.png"></img>
         </button>
       </div>
       {error && <p className="error-message">{error}</p>}
