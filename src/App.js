@@ -4,11 +4,12 @@ import Main from './components/Main';
 import Login from './components/Login';
 import { getNewAccessToken } from './utils/spotifyAuth'; // getNewAccessTokenをインポート
 import { SearchProvider } from './components/SearchContext';
+import { PlayerProvider } from './components/PlayerContext';
 
 function App() {
   const [token, setToken] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
-  console.log(window.localStorage.getItem('access_token'));
+  // console.log(window.localStorage.getItem('access_token'));
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -51,11 +52,13 @@ function App() {
 
   return (
     <SearchProvider>
-      {/* <h1>Spotifyアプリ</h1> */}
-      {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-      <Header token={token} onSearchResults={handleSearchResults} />
-      {/* {!token && <Login />} */}
-      <Main token={token} searchResults={searchResults} />
+      <PlayerProvider token={token}>
+        {/* <h1>Spotifyアプリ</h1> */}
+        {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
+        <Header token={token} onSearchResults={handleSearchResults} />
+        {/* {!token && <Login />} */}
+        <Main token={token} searchResults={searchResults} />
+      </PlayerProvider>
     </SearchProvider>
   );
 }
