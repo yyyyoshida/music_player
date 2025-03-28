@@ -15,17 +15,17 @@ const PlayButton = () => {
     handleButtonPress();
   }
 
-  useEffect(() => {
-    if (isPlaying) {
-      if (music.src) {
-        music.play();
-      } else {
-        playSong(currentSongIndex);
-      }
-    } else {
-      music.pause();
-    }
-  }, [isPlaying]);
+  // useEffect(() => {
+  //   if (isPlaying) {
+  //     if (music.src) {
+  //       music.play();
+  //     } else {
+  //       playSong(currentSongIndex);
+  //     }
+  //   } else {
+  //     music.pause();
+  //   }
+  // }, [isPlaying]);
 
   return (
     <button
