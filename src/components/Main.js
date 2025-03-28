@@ -15,7 +15,7 @@ const Main = ({ token }) => {
   const { playerTrack } = usePlayerContext();
 
   useEffect(() => {
-    console.log(token);
+    // console.log(token);
     if (!token) return;
 
     fetch('https://api.spotify.com/v1/me', {
