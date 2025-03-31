@@ -23,9 +23,12 @@ const Bar = ({ ParentClassName, type, value }) => {
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText('ミュート解除', 'ミュート', isMuted, isMuted);
 
+  const { updateVolume, player } = usePlayerContext();
+
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
     music.volume = volumeValueRef.current / 100;
+    // updateVolume(volumeValueRef.current / 100);
   }, []);
 
   const handleClickBar = (e) => {
@@ -159,6 +162,10 @@ const Bar = ({ ParentClassName, type, value }) => {
     music.muted = !isMuted;
     if (!isMuted) volumeValueRef.current = percentage;
   }
+
+  useEffect(() => {
+    updateVolume(volumeValueRef.current / 100);
+  }, [percentage]);
 
   return (
     <>

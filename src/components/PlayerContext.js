@@ -89,8 +89,34 @@ export const PlayerProvider = ({ children, token }) => {
       .catch((error) => console.error('❌ 再生エラー:', error));
   }
 
+  function updateVolume(volume) {
+    if (!player) {
+      console.error('Player is not initialized yer!');
+      return;
+    }
+    // ページロード時の２回再レンダリングを回避しないとエラーが２回表示されるぜ
+
+    // if (player) {
+    //   player.setVolume(volume).then(() => {
+    //     console.log('音量を変更');
+    //   });
+    // }
+    if (player) {
+      player
+        .setVolume(volume)
+        .then(() => {
+          // console.log('音量が変更されました:', volume);
+        })
+        .catch((error) => {
+          console.error('音量変更エラー:', error);
+        });
+    }
+  }
+
   return (
-    <PlayerContext.Provider value={{ isPlaying, togglePlayPause, currentSongIndex, setCurrentSongIndex, player, playerTrack }}>
+    <PlayerContext.Provider
+      value={{ isPlaying, togglePlayPause, currentSongIndex, setCurrentSongIndex, player, playerTrack, updateVolume }}
+    >
       {children}
     </PlayerContext.Provider>
   );
