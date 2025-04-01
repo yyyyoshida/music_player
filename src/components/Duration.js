@@ -1,34 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { music } from './PlayMusic';
+import React, { useState, useEffect } from 'react';
 import { usePlayerContext } from './PlayerContext';
 
 const Duration = () => {
-  const [duration, setDuration] = useState('0:00');
-  const { currentSongIndex } = usePlayerContext();
-
-  function formatTime(time) {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }
+  const [SongDuration, setSongDuration] = useState('0:00');
+  const { duration, formatTime } = usePlayerContext();
 
   useEffect(() => {
-    console.log('setDurationのレンダリング');
-    // setDuration(formatTime(music.duration));
-    const updateDuration = () => {
-      setDuration(formatTime(music.duration));
-    };
-    // updateDuration();
-    music.addEventListener('loadedmetadata', updateDuration);
+    setSongDuration(formatTime(duration));
+  }, [duration]);
 
-    return () => {
-      music.removeEventListener('loadedmetadata', updateDuration);
-    };
-    // }, [currentSongIndex]);
-  }, []);
   return (
     <span id="js-duration" className="player-controls__duration">
-      {duration}
+      {SongDuration}
     </span>
   );
 };
