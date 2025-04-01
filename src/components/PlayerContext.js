@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import { SearchContext } from './SearchContext';
 
 const PlayerContext = createContext();
@@ -10,6 +10,8 @@ export const PlayerProvider = ({ children, token }) => {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [player, setPlayer] = useState(null);
   const [deviceId, setDeviceId] = useState(null);
+  const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     if (isToken && token) return;
@@ -19,7 +21,7 @@ export const PlayerProvider = ({ children, token }) => {
       const playerInstance = new window.Spotify.Player({
         name: 'MyMusicPlayer',
         getOAuthToken: (cb) => cb(token),
-        volume: 0.5,
+        volume: 0.3,
       });
 
       playerInstance.addListener('ready', ({ device_id }) => {
@@ -62,7 +64,6 @@ export const PlayerProvider = ({ children, token }) => {
   };
 
   function playerTrack(trackUri) {
-    // console.log(trackUri);
     if (!deviceId) {
       console.error('❌ デバイス ID が取得できてない！');
       return;
@@ -90,32 +91,49 @@ export const PlayerProvider = ({ children, token }) => {
   }
 
   function updateVolume(volume) {
-    if (!player) {
-      console.error('Player is not initialized yer!');
-      return;
-    }
-    // ページロード時の２回再レンダリングを回避しないとエラーが２回表示されるぜ
-
-    // if (player) {
-    //   player.setVolume(volume).then(() => {
-    //     console.log('音量を変更');
-    //   });
-    // }
-    if (player) {
-      player
-        .setVolume(volume)
-        .then(() => {
-          // console.log('音量が変更されました:', volume);
-        })
-        .catch((error) => {
-          console.error('音量変更エラー:', error);
-        });
-    }
+    if (!player) return;
+    player.setVolume(volume);
   }
+
+  function seekTo(seekTime) {
+    if (!player) return;
+    player.seek(seekTime);
+  }
+
+  useEffect(() => {
+    if (!player) return;
+
+    player.addListener('player_state_changed', ({ position, duration }) => {
+      setPosition((position / duration) * 100);
+      setDuration(duration);
+    });
+
+    const interval = setInterval(() => {
+      player.getCurrentState().then((state) => {
+        if (!state) return;
+        setPosition((state.position / state.duration) * 100);
+      });
+    }, 200);
+
+    return () => {
+      clearInterval(interval);
+      player.removeListener('player_state_changed');
+    };
+  }, [player]);
 
   return (
     <PlayerContext.Provider
-      value={{ isPlaying, togglePlayPause, currentSongIndex, setCurrentSongIndex, player, playerTrack, updateVolume }}
+      value={{
+        isPlaying,
+        togglePlayPause,
+        currentSongIndex,
+        player,
+        playerTrack,
+        updateVolume,
+        seekTo,
+        duration,
+        position,
+      }}
     >
       {children}
     </PlayerContext.Provider>
