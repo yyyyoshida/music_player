@@ -51,6 +51,7 @@ const SearchBar = ({ token }) => {
 
   function clearSearchText() {
     queryRef.current.value = '';
+    queryRef.current?.focus();
   }
 
   return (
