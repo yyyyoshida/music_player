@@ -13,6 +13,9 @@ export const PlayerProvider = ({ children, token }) => {
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [trackImage, setTrackImage] = useState('img / 写真アイコン4.png');
+  const [trackTitle, setTrackTitle] = useState('曲のタイトル');
+  const [trackArtistName, setTrackArtistName] = useState('アーティスト・作者名');
 
   useEffect(() => {
     if (isToken && token) return;
@@ -85,10 +88,11 @@ export const PlayerProvider = ({ children, token }) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    })
-      // .then((response) => response.json())
-      .then((data) => console.log('再生結果:', data)) // 再生結果をログに表示
-      .catch((error) => console.error('❌ 再生エラー:', error));
+    });
+    // // .then((response) => response.json())
+    // .then((data) => console.log('再生結果:', data)) // 再生結果をログに表示
+    // .catch((error) => console.error('❌ 再生エラー:', error));
+    console.log('すみません。このエラーだけは調べて試行錯誤しても解決できませんでした。');
   }
 
   function updateVolume(volume) {
@@ -104,9 +108,12 @@ export const PlayerProvider = ({ children, token }) => {
   useEffect(() => {
     if (!player) return;
 
-    player.addListener('player_state_changed', ({ position, duration }) => {
+    player.addListener('player_state_changed', ({ position, duration, track_window: { current_track } }) => {
       setPosition((position / duration) * 100);
       setDuration(duration);
+      setTrackImage(current_track.album.images[0].url);
+      setTrackTitle(current_track.name);
+      setTrackArtistName(current_track.artists[0].name);
     });
 
     const interval = setInterval(() => {
@@ -147,6 +154,9 @@ export const PlayerProvider = ({ children, token }) => {
         position,
         currentTime,
         formatTime,
+        trackImage,
+        trackTitle,
+        trackArtistName,
       }}
     >
       {children}

@@ -5,7 +5,7 @@ import { usePlayerContext } from './PlayerContext';
 
 export const ThumbnailPreview = () => {
   const { isVisible } = useContext(TrackInfoContext);
-  const { currentSongIndex } = usePlayerContext();
+  const { currentSongIndex, trackImage, trackTitle, trackArtistName } = usePlayerContext();
 
   const [delayedVisibility, setDelayedVisibility] = useState('hidden');
   const [title, setTitle] = useState('曲がセットされていません。');
@@ -123,16 +123,18 @@ export const ThumbnailPreview = () => {
         <div
           ref={backgroundCoverArtRef}
           className="thumbnail-preview__background"
-          style={{ backgroundImage: `url(${backgroundCoverArtRef.current.src})` }}
+          // style={{ backgroundImage: `url(${backgroundCoverArtRef.current.src})` }}
+          style={{ backgroundImage: `url(${trackImage})` }}
         ></div>
         <figure className="thumbnail-preview__content">
           <div className="thumbnail-preview__image-warpper" style={{ transform: `scale(${scale})` }}>
-            <img ref={coverArtRef} className="thumbnail-preview__image" src="img/not-found.jpg" alt="" />
+            {/* <img ref={coverArtRef} className="thumbnail-preview__image" src="img/not-found.jpg" alt="" /> */}
+            <img ref={coverArtRef} className="thumbnail-preview__image" src={trackImage} alt="" />
             <div ref={transitionRef} className="thumbnail-preview__image-transition"></div>
           </div>
           <figcaption className="thumbnail-preview__info">
-            <p className="thumbnail-preview__title">{title}</p>
-            <p className="thumbnail-preview__artist">{artist}</p>
+            <p className="thumbnail-preview__title">{trackTitle}</p>
+            <p className="thumbnail-preview__artist">{trackArtistName}</p>
           </figcaption>
         </figure>
       </div>

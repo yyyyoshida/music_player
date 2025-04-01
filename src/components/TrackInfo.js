@@ -368,7 +368,7 @@ const TrackInfo = ({ actionsRef }) => {
   const [artist, setArtist] = useState('アーティスト・作者');
   const imgRef = useRef(null);
   const [isHidden, setIsHidden] = useState(false);
-  const { isPlaying, currentSongIndex } = usePlayerContext();
+  const { isPlaying, currentSongIndex, trackImage, trackTitle, trackArtistName } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip(600);
 
   const tooltipText = useDelayedText('全画面表示：オフ', '全画面表示', isFullScreen, isFullScreen, 0);
@@ -388,7 +388,7 @@ const TrackInfo = ({ actionsRef }) => {
 
   const [isCollision, setIsCollision] = useState(false);
 
-  const [trackTitle, setTrackElement] = useState(null);
+  // const [trackTitle, setTrackElement] = useState(null);
   const titleRef = useRef(title);
 
   const [curWidth, setCurWidth] = useState(null);
@@ -665,6 +665,7 @@ const TrackInfo = ({ actionsRef }) => {
   }
 
   useEffect(() => {
+    console.log('playerrrrrrrr');
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
@@ -672,15 +673,16 @@ const TrackInfo = ({ actionsRef }) => {
     if (prevSongIndex.current !== currentSongIndex) {
       fadeTransition();
     }
-    prevSongIndex.current = currentSongIndex;
+    // prevSongIndex.current = currentSongIndex;
 
-    setTitle(songs[currentSongIndex].title);
-    setArtist(songs[currentSongIndex].artist);
-    imgRef.current.src = songs[currentSongIndex].cover;
+    // setTitle(songs[currentSongIndex].title);
+    // setArtist(songs[currentSongIndex].artist);
+    // imgRef.current.src = songs[currentSongIndex].cover;
 
     setIsHidden(true);
     // }, [currentSongIndex, isPlaying]);
-  }, [currentSongIndex]);
+    // }, [currentSongIndex]);
+  }, [trackTitle]);
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -710,13 +712,8 @@ const TrackInfo = ({ actionsRef }) => {
         {/* <div ref={trackInfoRef} className="player-controls__track-info"> */}
         <figure className="player-controls__track">
           <div id="js-track-thumbnail-wrapper" className="player-controls__track-thumbnail-wrapper">
-            <img
-              ref={imgRef}
-              id="js-track-thumbnail"
-              src={'img/写真アイコン4.png'}
-              alt="サムネイル"
-              className="player-controls__track-thumbnail"
-            />
+            {/* <img ref={imgRef} src={trackImage} alt="サムネイル" className="player-controls__track-thumbnail" /> */}
+            <img ref={imgRef} src={trackImage} alt="thumbnail" className="player-controls__track-thumbnail" />
             <div
               ref={transitionRef}
               className="player-controls__track-thumbnail-transition"
@@ -724,8 +721,8 @@ const TrackInfo = ({ actionsRef }) => {
             ></div>
           </div>
           <figcaption ref={trackMetaRef} className="player-controls__track-meta">
-            <p className="player-controls__title">{title}</p>
-            <p className="player-controls__artist">{artist}</p>
+            <p className="player-controls__title">{trackTitle}</p>
+            <p className="player-controls__artist">{trackArtistName}</p>
           </figcaption>
         </figure>
         <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-track-info'}>

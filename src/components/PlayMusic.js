@@ -6,7 +6,7 @@ export const songs = [
     path: 'music/Mr.Kitty-AfterDark_part1_2.m4a',
     title: 'Mr.Kitty - After Dark',
     artist: 'Mr.Kitty',
-    cover: 'img/テストサムネ１３.jpg',
+    // cover: 'img/テストサムネ１３.jpg',
   },
   {
     path: 'music/Daisukefullver.m4a',
