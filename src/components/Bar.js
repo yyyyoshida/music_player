@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { music, songs, playSong } from './PlayMusic';
+import { music } from './PlayMusic';
 import { usePlayerContext } from './PlayerContext';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
@@ -17,35 +17,52 @@ const Bar = ({ ParentClassName, type, value }) => {
   const volumeValueRef = useRef(percentage);
   const isRepeatRef = useRef(null);
 
-  const { currentSongIndex, setCurrentSongIndex } = usePlayerContext();
+  const { currentSongIndex } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
 
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText('ミュート解除', 'ミュート', isMuted, isMuted);
 
-  const { updateVolume, player } = usePlayerContext();
+  // const { updateVolume, seekTo, getCurrentTrackDuration, duration, position } = usePlayerContext();
+  const { updateVolume, seekTo, duration, position } = usePlayerContext();
 
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
-    music.volume = volumeValueRef.current / 100;
-    // updateVolume(volumeValueRef.current / 100);
+    updateVolume(volumeValueRef.current / 100);
   }, []);
+
+  useEffect(() => {
+    if (type === 'volume') return;
+
+    if (duration !== 0 && duration !== null && !isNaN(duration)) {
+      const newTime = toFixedNumber(position);
+      setPercentage(newTime);
+    }
+  }, [position]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    if (type === 'volume' && duration) return;
+    const seekTime = Math.trunc((percentage / 100) * duration);
+    seekTo(seekTime);
+  }, [duration, percentage, isDragging]);
 
   const handleClickBar = (e) => {
     const barRect = barRef.current.getBoundingClientRect();
     const clickX = e.clientX - barRect.left;
-    const newPercentage = (clickX / barRect.width) * 100;
-    const newCurrentTime = (newPercentage / 100) * music.duration;
+    const newPercentage = toFixedNumber((clickX / barRect.width) * 100);
 
     if (type === 'progress') {
       setPercentage(newPercentage);
-      if (isFinite(newCurrentTime)) {
-        music.currentTime = newCurrentTime;
-      }
-    } else if (type === 'volume') {
+      return;
+    }
+
+    if (type === 'volume') {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
-      music.volume = Math.max(0, Math.min(1, newPercentage / 100));
+      updateVolume(volumeValueRef.current / 100);
+      return;
     }
   };
 
@@ -59,18 +76,18 @@ const Bar = ({ ParentClassName, type, value }) => {
 
     const barRect = barRef.current.getBoundingClientRect();
     const moveX = e.clientX - barRect.left;
-    const newPercentage = Math.min(Math.max((moveX / barRect.width) * 100, 0), 100);
-    const newCurrentTime = (newPercentage / 100) * music.duration;
+    const newPercentage = toFixedNumber(Math.min(Math.max((moveX / barRect.width) * 100, 0), 100));
 
     if (type === 'progress') {
       setPercentage(newPercentage);
-      if (isFinite(newCurrentTime)) {
-        music.currentTime = newCurrentTime;
-      }
-    } else if (type === 'volume') {
+      return;
+    }
+
+    if (type === 'volume') {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
-      music.volume = Math.max(0, Math.min(1, newPercentage / 100));
+      updateVolume(volumeValueRef.current / 100);
+      return;
     }
   };
 
@@ -79,14 +96,11 @@ const Bar = ({ ParentClassName, type, value }) => {
   };
 
   useEffect(() => {
-    console.log('isDraggingの再レンダリング');
     if (isDragging) {
       document.addEventListener('mousemove', handleDrag);
       document.addEventListener('mouseup', handleMouseUp);
-    } else {
-      document.removeEventListener('mousemove', handleDrag);
-      document.removeEventListener('mouseup', handleMouseUp);
     }
+
     return () => {
       document.removeEventListener('mousemove', handleDrag);
       document.removeEventListener('mouseup', handleMouseUp);
@@ -98,63 +112,6 @@ const Bar = ({ ParentClassName, type, value }) => {
     currentSongIndexRef.current = currentSongIndex;
   }, [isRepeat, currentSongIndex]);
 
-  useEffect(() => {
-    console.log('typeの再レンダリング');
-    if (type === 'progress') {
-      const updateProgress = () => {
-        const newPercentage = (music.currentTime / music.duration) * 100;
-        setPercentage(newPercentage);
-
-        if (music.currentTime >= music.duration) {
-          if (isRepeatRef.current) {
-            playSong(currentSongIndexRef.current);
-            return;
-          }
-          setCurrentSongIndex((prevIndex) => {
-            const newIndex = (prevIndex + 1) % songs.length;
-            playSong(newIndex);
-            restProgressBar();
-            return newIndex;
-          });
-        }
-      };
-      music.addEventListener('timeupdate', updateProgress);
-      return () => {
-        music.removeEventListener('timeupdate', updateProgress);
-      };
-    }
-  }, [type]);
-
-  function restProgressBar() {
-    setPercentage(0);
-    music.currentTime = 0;
-  }
-
-  useEffect(() => {
-    if (type !== 'progress') return;
-
-    function resetProgress() {
-      if (!isNaN(music.duration)) {
-        setPercentage(0);
-        music.currentTime = 0;
-      }
-    }
-
-    if (!isNaN(music.duration)) {
-      resetProgress();
-    } else {
-      const onLoadedMetadata = () => {
-        resetProgress();
-        music.removeEventListener('loadedmetadata', onLoadedMetadata);
-      };
-      music.addEventListener('loadedmetadata', onLoadedMetadata);
-
-      return () => {
-        music.removeEventListener('loadedmetadata', onLoadedMetadata);
-      };
-    }
-  }, [currentSongIndex, type]);
-
   function toggleMute() {
     handleButtonPress();
 
@@ -163,9 +120,9 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (!isMuted) volumeValueRef.current = percentage;
   }
 
-  useEffect(() => {
-    updateVolume(volumeValueRef.current / 100);
-  }, [percentage]);
+  function toFixedNumber(value) {
+    return parseFloat(value.toFixed(2));
+  }
 
   return (
     <>
