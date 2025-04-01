@@ -12,6 +12,7 @@ export const PlayerProvider = ({ children, token }) => {
   const [deviceId, setDeviceId] = useState(null);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
     if (isToken && token) return;
@@ -112,6 +113,7 @@ export const PlayerProvider = ({ children, token }) => {
       player.getCurrentState().then((state) => {
         if (!state) return;
         setPosition((state.position / state.duration) * 100);
+        setCurrentTime(state.position);
       });
     }, 200);
 
@@ -120,6 +122,16 @@ export const PlayerProvider = ({ children, token }) => {
       player.removeListener('player_state_changed');
     };
   }, [player]);
+
+  function formatTime(time) {
+    // useMemoとかで無駄な再レンダリングを回避しろ
+    const MS_MINUTE = 60000; // １分
+    const MS_SECOND = 1000; // １秒
+
+    const minutes = Math.floor(time / MS_MINUTE);
+    const seconds = Math.floor((time % MS_MINUTE) / MS_SECOND);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
 
   return (
     <PlayerContext.Provider
@@ -133,6 +145,8 @@ export const PlayerProvider = ({ children, token }) => {
         seekTo,
         duration,
         position,
+        currentTime,
+        formatTime,
       }}
     >
       {children}
