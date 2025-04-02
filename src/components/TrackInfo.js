@@ -647,7 +647,7 @@ const TrackInfo = ({ actionsRef }) => {
       }
       setWidth(newWidth);
     }, 0);
-  }, [currentSongIndex, isPlaying, title, isVisible]);
+  }, [currentSongIndex, isPlaying, title, isVisible, trackTitle]);
 
   function fadeTransition() {
     const transitionElement = transitionRef.current;
