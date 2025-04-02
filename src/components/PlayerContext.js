@@ -92,7 +92,7 @@ export const PlayerProvider = ({ children, token }) => {
     // // .then((response) => response.json())
     // .then((data) => console.log('再生結果:', data)) // 再生結果をログに表示
     // .catch((error) => console.error('❌ 再生エラー:', error));
-    console.log('すみません。このエラーだけは調べて試行錯誤しても解決できませんでした。');
+    console.log('すみません。この２種類のエラーだけは解決できませんでした。');
   }
 
   function updateVolume(volume) {
