@@ -2,17 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import Footer from './Footer';
 import PlayerControls from './PlayerControls';
 import ThumbnailPreview from './ThumbnailPreview';
-import { PlayerProvider } from './PlayerContext';
 import { TrackInfoProvider } from './TrackInfoContext';
 import Login from './Login';
 import { SearchContext } from './SearchContext';
-import { usePlayerContext } from './PlayerContext';
+import SearchResultList from './SearchResultList';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
-  // const [isToken, setIsToken] = useState();
-  const { query, searchResults, isToken, setIsToken } = useContext(SearchContext);
-  const { playerTrack } = usePlayerContext();
+  const { query, isToken, setIsToken } = useContext(SearchContext);
 
   useEffect(() => {
     // console.log(token);
@@ -39,70 +36,52 @@ const Main = ({ token }) => {
       .then((data) => setProfile(data));
   }, [token]);
 
-  function formatDuration(ms) {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000)
-      .toString()
-      .padStart(2, '0');
-    return `${minutes}:${seconds}`;
-  }
-
   return (
-    <div className="container">
-      {!isToken && <Login />}
-      <main>
-        {/* <PlayerProvider> */}
-        <TrackInfoProvider>
-          <ThumbnailPreview />
-          <section className="search-result">
-            <div className="search-result__header">
-              <h2 className="search-result__title">{`${query}の検索結果`}</h2>
-              <div className="search-result__header-info">
-                <div className="search-result__header-rank">#</div>
-                <p className="search-result__header-title">タイトル</p>
-                <img className="search-result__header-duration" src="img/clock.png"></img>
+    <>
+      {!isToken && <Login isToken={isToken} />}
+      <div className="container">
+        <main>
+          <TrackInfoProvider>
+            <ThumbnailPreview />
+            <section className="search-result">
+              <div className="search-result__header">
+                <h2 className="search-result__title">{`${query}の検索結果`}</h2>
+                <div className="search-result__header-info">
+                  <div className="search-result__header-rank">#</div>
+                  <p className="search-result__header-title">タイトル</p>
+                  <img className="search-result__header-duration" src="img/clock.png"></img>
+                </div>
               </div>
-            </div>
-            <ul className="search-result__list">
-              {searchResults.length > 0 ? (
-                searchResults.map((track) => (
-                  // <li className="search-result__item" key={track.id}>
-                  <li className="search-result__item" key={track.id} onClick={() => playerTrack(track.uri)}>
-                    <div className="search-result__left"></div>
-                    <img className="search-result__cover-art" src={track.album.images[0]?.url} alt={track.name} width="50" />
-                    <div className="search-result__track-info">
-                      <p className="search-result__name">{track.name}</p>
-                      <p className="search-result__artist">{track.artists[0]?.name}</p>
-                    </div>
-                    <div className="search-result__right">
-                      <button className="search-result__button--add">
-                        <img className="search-result__icon--add" src="img/plus.png"></img>
-                      </button>
-                      <div className="search-result__track-duration">{formatDuration(track.duration_ms)}</div>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li>検索結果がありません</li>
-              )}
-            </ul>
-          </section>
-          {profile ? (
-            <div>
-              <h3>こんにちは、{profile.display_name} さん！</h3>
-              <p>メール: {profile.email}</p>
-              <img src={profile.images?.[0]?.url} alt="プロフィール画像" width="100" />
-            </div>
-          ) : (
-            <p>データを取得中...</p>
-          )}
-          <PlayerControls />
-        </TrackInfoProvider>
-        {/* </PlayerProvider> */}
-      </main>
-      <Footer />
-    </div>
+              <SearchResultList />
+            </section>
+            {profile ? (
+              <div>
+                <h3>こんにちは、{profile.display_name} さん！</h3>
+                <p>メール: {profile.email}</p>
+                <img src={profile.images?.[0]?.url} alt="プロフィール画像" width="100" />
+              </div>
+            ) : (
+              <p>データを取得中...</p>
+            )}
+            <PlayerControls />
+          </TrackInfoProvider>
+        </main>
+        <Footer />
+      </div>
+    </>
   );
 };
 
 export default Main;
+
+// やることリスト
+// トラックの幅計算関数がSpotify apiのtrackTitleが変わったときに発火するように変更 ✅
+// 全画面表示の時にSpotify apiとビートアニメーションを連携する
+// 検索バーの全角文字を打つときにカクつく野を改善する
+// プレイリストが作られていない状態で次へを押すとどうなるか検証
+// Spotifyや他のサービスを見て見た目を変更・改善する
+// 曲を検索して表示するときにロード画面を表示する (AmazonMusic見本)
+// 可読性をあげる
+// マジックナンバーをなくす
+// 再生中の曲にビジュアライザーを表示する
+// 色合いが薄くてダサいから何とかする
