@@ -645,7 +645,11 @@ const TrackInfo = ({ actionsRef }) => {
       } else {
         newWidth = coverArtWidth + trackMetaWidth + offsetValue;
       }
-      setWidth(newWidth);
+      if (newWidth < 150) {
+        setWidth(150);
+      } else {
+        setWidth(newWidth);
+      }
     }, 0);
   }, [currentSongIndex, isPlaying, title, isVisible, trackTitle]);
 
