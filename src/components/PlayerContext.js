@@ -16,6 +16,8 @@ export const PlayerProvider = ({ children, token }) => {
   const [trackImage, setTrackImage] = useState('img / 写真アイコン4.png');
   const [trackTitle, setTrackTitle] = useState('曲のタイトル');
   const [trackArtistName, setTrackArtistName] = useState('アーティスト・作者名');
+  const [trackId, setTrackId] = useState(null);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   useEffect(() => {
     if (isToken && token) return;
@@ -108,12 +110,14 @@ export const PlayerProvider = ({ children, token }) => {
   useEffect(() => {
     if (!player) return;
 
-    player.addListener('player_state_changed', ({ position, duration, track_window: { current_track } }) => {
+    player.addListener('player_state_changed', ({ position, duration, track_window: { current_track }, paused }) => {
       setPosition((position / duration) * 100);
       setDuration(duration);
       setTrackImage(current_track.album.images[0].url);
       setTrackTitle(current_track.name);
       setTrackArtistName(current_track.artists[0].name);
+      setTrackId(current_track.id);
+      setIsStreaming(!paused);
     });
 
     const interval = setInterval(() => {
@@ -157,6 +161,9 @@ export const PlayerProvider = ({ children, token }) => {
         trackImage,
         trackTitle,
         trackArtistName,
+        token,
+        trackId,
+        isStreaming,
       }}
     >
       {children}
