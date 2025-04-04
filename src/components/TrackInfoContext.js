@@ -9,5 +9,5 @@ export const TrackInfoProvider = ({ children }) => {
     setIsVisible((prev) => !prev);
   };
 
-  return <TrackInfoContext.Provider value={{ isVisible, handleTrackInfoClick }}>{children}</TrackInfoContext.Provider>;
+  return <TrackInfoContext.Provider value={{ isVisible, setIsVisible, handleTrackInfoClick }}>{children}</TrackInfoContext.Provider>;
 };

@@ -155,9 +155,9 @@ footer {
   left: 0;
   z-index: 200;
   overflow: hidden;
-
   opacity: 0;
   transition: opacity 0.35s ease;
+  pointer-events: none;
   &__background {
     //////////////////////////////////////////////////
     background-repeat: no-repeat;
@@ -342,6 +342,8 @@ footer {
     transition: opacity 0.3s ease-out;
 
     border-radius: 5px;
+    border: #9292923b solid 1px;
+    border: #afafaf46 solid 1px;
     &::after {
       content: '';
       // background-image: url(/img/8分音符アイコン\ 3.png);
@@ -362,6 +364,7 @@ footer {
     height: 100%;
     object-fit: cover;
     border-radius: 5px;
+    border: #9292923b solid 1px;
   }
   &__track-meta {
     position: absolute; //横幅計算するやつコメント解除して
@@ -702,6 +705,7 @@ footer {
   // display: block;
   opacity: 1;
   transition: all 0.3s ease;
+  pointer-events: auto;
 }
 
 .has-overlay {
@@ -792,7 +796,9 @@ footer {
   }
   &__item.clicked {
     background-color: #1b1b1b;
-    .search-result__name {
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+    .search-result__name,
+    .search-result__left {
       font-weight: 700;
       color: rgb(217, 22, 86);
     }
@@ -817,6 +823,7 @@ footer {
     height: 50px;
     border-radius: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border: #9292923b solid 1px;
   }
   &__left {
     width: 40px;
