@@ -669,7 +669,7 @@ const TrackInfo = ({ actionsRef }) => {
   }
 
   useEffect(() => {
-    console.log('playerrrrrrrr');
+    // console.log('playerrrrrrrr');
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;

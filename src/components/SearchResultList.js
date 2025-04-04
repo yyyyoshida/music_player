@@ -3,7 +3,7 @@ import { usePlayerContext } from './PlayerContext';
 import { SearchContext } from './SearchContext';
 
 const TrackList = () => {
-  const { searchResults } = useContext(SearchContext);
+  const { searchResults, setIsTrackSet } = useContext(SearchContext);
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
 
   return (
@@ -18,7 +18,11 @@ const TrackList = () => {
             <li
               key={track.id}
               className={`search-result__item ${isTrackPlaying ? 'playing' : ''} ${isClicked ? 'clicked' : ''}`}
-              onClick={() => playerTrack(track.uri)}
+              // onClick={() => playerTrack(track.uri)}
+              onClick={() => {
+                playerTrack(track.uri);
+                setIsTrackSet(true);
+              }}
             >
               <div className="search-result__left">
                 <div className={`equalizer ${isTrackPlaying ? '' : 'hidden'}`}>

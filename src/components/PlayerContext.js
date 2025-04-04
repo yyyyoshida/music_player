@@ -13,7 +13,7 @@ export const PlayerProvider = ({ children, token }) => {
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [trackImage, setTrackImage] = useState('img / 写真アイコン4.png');
+  const [trackImage, setTrackImage] = useState('img/not-found.jpg');
   const [trackTitle, setTrackTitle] = useState('曲のタイトル');
   const [trackArtistName, setTrackArtistName] = useState('アーティスト・作者名');
   const [trackId, setTrackId] = useState(null);
