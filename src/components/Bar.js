@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { music } from './PlayMusic';
 import { usePlayerContext } from './PlayerContext';
 import Tooltip from './Tooltip';
@@ -6,6 +6,7 @@ import useButtonTooltip from '../hooks/useButtonTooltip';
 import { useRepeatContext } from './RepeatContext';
 import useDelayedText from '../hooks/useDelayText';
 import VolumeIcon from './VolumeIcon';
+import { SearchContext } from './SearchContext';
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
@@ -15,15 +16,13 @@ const Bar = ({ ParentClassName, type, value }) => {
   const currentSongIndexRef = useRef(null);
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
-  const isRepeatRef = useRef(null);
 
-  const { currentSongIndex } = usePlayerContext();
+  const { currentSongIndex, togglePlayPause, isPlaying, setIsPlaying, player } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
 
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText('ミュート解除', 'ミュート', isMuted, isMuted);
 
-  // const { updateVolume, seekTo, getCurrentTrackDuration, duration, position } = usePlayerContext();
   const { updateVolume, seekTo, duration, position } = usePlayerContext();
 
   useEffect(() => {
@@ -108,7 +107,6 @@ const Bar = ({ ParentClassName, type, value }) => {
   }, [isDragging]);
 
   useEffect(() => {
-    isRepeatRef.current = isRepeat;
     currentSongIndexRef.current = currentSongIndex;
   }, [isRepeat, currentSongIndex]);
 
@@ -123,6 +121,19 @@ const Bar = ({ ParentClassName, type, value }) => {
   function toFixedNumber(value) {
     return parseFloat(value.toFixed(2));
   }
+
+  useEffect(() => {
+    if (type === 'progress' && percentage === 0 && isRepeat) {
+      console.log('リピートの方発動');
+      togglePlayPause(isRepeat);
+      return;
+    }
+
+    if (type === 'progress' && percentage === 0 && !isRepeat) {
+      console.log('こっちが発動');
+      setIsPlaying(false);
+    }
+  }, [percentage, isRepeat]);
 
   return (
     <>

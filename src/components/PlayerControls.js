@@ -3,8 +3,7 @@ import ProgressBar from './ProgressBar';
 import TrackInfo from './TrackInfo';
 import PlayerActions from './PlayerActions';
 import PlayerOptions from './PlayerOptions';
-// import { PlayerProvider } from './PlayerContext';
-import { RepeatProvider } from './RepeatContext';
+// import { RepeatProvider } from './RepeatContext';
 import { TrackInfoContext } from './TrackInfoContext';
 
 const PlayerControls = () => {
@@ -16,14 +15,14 @@ const PlayerControls = () => {
     <div className={`player-controls ${isVisible ? 'thumbnail-expanded has-overlay' : ''}`}>
       {/* isPlayingを使いまわすため */}
       {/* <PlayerProvider> */}
-      <RepeatProvider>
-        <ProgressBar />
-        <div className="player-controls__info">
-          <TrackInfo actionsRef={actionsRef} />
-          <PlayerActions actionsRef={actionsRef} />
-          <PlayerOptions />
-        </div>
-      </RepeatProvider>
+      {/* <RepeatProvider> */}
+      <ProgressBar />
+      <div className="player-controls__info">
+        <TrackInfo actionsRef={actionsRef} />
+        <PlayerActions actionsRef={actionsRef} />
+        <PlayerOptions />
+      </div>
+      {/* </RepeatProvider> */}
       {/* </PlayerProvider> */}
     </div>
   );
