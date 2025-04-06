@@ -6,7 +6,6 @@ import useButtonTooltip from '../hooks/useButtonTooltip';
 import { useRepeatContext } from './RepeatContext';
 import useDelayedText from '../hooks/useDelayText';
 import VolumeIcon from './VolumeIcon';
-import { SearchContext } from './SearchContext';
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
@@ -17,7 +16,7 @@ const Bar = ({ ParentClassName, type, value }) => {
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
 
-  const { currentSongIndex, togglePlayPause, isPlaying, setIsPlaying, player } = usePlayerContext();
+  const { currentSongIndex, togglePlayPause, setIsPlaying, isStreaming } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
 
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
@@ -123,14 +122,14 @@ const Bar = ({ ParentClassName, type, value }) => {
   }
 
   useEffect(() => {
-    if (type === 'progress' && percentage === 0 && isRepeat) {
-      console.log('リピートの方発動');
+    const isTrackFinished = type === 'progress' && percentage === 0;
+
+    if (isTrackFinished && isRepeat) {
       togglePlayPause(isRepeat);
       return;
     }
 
-    if (type === 'progress' && percentage === 0 && !isRepeat) {
-      console.log('こっちが発動');
+    if (isTrackFinished && !isRepeat && !isStreaming) {
       setIsPlaying(false);
     }
   }, [percentage, isRepeat]);
