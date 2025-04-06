@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import { SearchContext } from './SearchContext';
+import { useRepeatContext } from './RepeatContext';
 
 const PlayerContext = createContext();
 
@@ -18,6 +19,7 @@ export const PlayerProvider = ({ children, token }) => {
   const [trackArtistName, setTrackArtistName] = useState('アーティスト・作者名');
   const [trackId, setTrackId] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const { isRepeat } = useRepeatContext();
 
   useEffect(() => {
     if (isToken && token) return;
@@ -56,16 +58,21 @@ export const PlayerProvider = ({ children, token }) => {
     // }, [token]);
   }, []);
 
-  const togglePlayPause = () => {
+  const togglePlayPause = (isRepeat) => {
     if (!player) {
       alert('Player is not initialized yer!');
       return;
     }
 
-    if (player) {
+    if (player && !isRepeat) {
       player.togglePlay().then(() => {
         setIsPlaying((prev) => !prev);
       });
+      return;
+    }
+
+    if (player && isRepeat && isPlaying === true) {
+      player.resume().then(() => {});
     }
   };
 
@@ -90,7 +97,8 @@ export const PlayerProvider = ({ children, token }) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    });
+    }).then((res) => res.ok && setIsPlaying(true)); // 成功時にだけ setIsPlaying(true)
+
     // // .then((response) => response.json())
     // .then((data) => console.log('再生結果:', data)) // 再生結果をログに表示
     // .catch((error) => console.error('❌ 再生エラー:', error));
@@ -132,7 +140,7 @@ export const PlayerProvider = ({ children, token }) => {
       clearInterval(interval);
       player.removeListener('player_state_changed');
     };
-  }, [player]);
+  }, [player, isRepeat]);
 
   function formatTime(time) {
     // useMemoとかで無駄な再レンダリングを回避しろ
@@ -148,6 +156,7 @@ export const PlayerProvider = ({ children, token }) => {
     <PlayerContext.Provider
       value={{
         isPlaying,
+        setIsPlaying,
         togglePlayPause,
         currentSongIndex,
         player,
