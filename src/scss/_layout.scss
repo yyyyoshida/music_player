@@ -8,6 +8,12 @@
   // outline: 1px solid red;
 }
 
+#root {
+  &::-webkit-scrollbar {
+    scrollbar-width: none;
+  }
+}
+
 body {
   font-family: 'Zen Kaku Gothic New', sans-serif;
   //   background-color: rgb(8, 0, 0);
@@ -21,6 +27,9 @@ body {
   // background-color: #00bcd4;
   // background-color: #9c27b0;
   // background-color: rgb(217, 22, 86);
+  &::-webkit-scrollbar {
+    scrollbar-width: none;
+  }
 }
 
 .container {
@@ -36,6 +45,10 @@ body {
   // background-size: cover;
   // background-position: top center;
   // background-repeat: no-repeat;
+  // overflow: scroll;
+  &::-webkit-scrollbar {
+    scrollbar-width: none;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -158,6 +171,9 @@ footer {
   opacity: 0;
   transition: opacity 0.35s ease;
   pointer-events: none;
+  // &::-webkit-scrollbar {
+  //   scrollbar-width: none;
+  // }
   &__background {
     //////////////////////////////////////////////////
     background-repeat: no-repeat;
@@ -180,6 +196,9 @@ footer {
     filter: blur(60px);
 
     clip-path: inset(0);
+    // &::-webkit-scrollbar {
+    //   scrollbar-width: none;
+    // }
   }
   &__content {
     position: absolute;
