@@ -6,6 +6,7 @@
   // font-family: 'M PLUS 1p', serif;
   // font-family: 'Zen Kaku Gothic New', sans-serif;
   // outline: 1px solid red;
+  box-sizing: border-box;
 }
 
 #root {
@@ -84,6 +85,17 @@ body {
   position: fixed;
   padding: 10px 10px;
   box-shadow: 0 0px 4px rgba(0, 0, 0, 0.4);
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+  }
+  &__user-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+  }
   &__logo {
     padding: 5px;
   }
@@ -116,7 +128,9 @@ footer {
 }
 .search-bar {
   margin-top: 20px;
+  margin-top: 10px;
   margin-bottom: 10px;
+  margin-bottom: 20px;
   position: relative;
   line-height: 1;
   background-color: #2e2e2e;
