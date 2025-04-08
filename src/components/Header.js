@@ -7,19 +7,29 @@ function Header({ token, onSearchResults }) {
       <h1 className="sidebar-header__logo">
         <a href="#">音楽プレイヤー</a>
       </h1>
+      <div className="sidebar-header__user">
+        <img src="img/favicon.jpg" alt="" className="sidebar-header__user-icon" />
+        <p className="sidebar-header__user-name">AA</p>
+      </div>
       <SearchBar token={token} onSearchResults={onSearchResults} /> {/* 検索結果を受け取る */}
       <nav className="sidebar-header__nav">
         <ul className="sidebar-header__list">
           <li className="sidebar-header__item">
-            <a className="sidebar-header__link" href="#">
+            <a className="sidebar-header__link" href="/">
               <img src="img/ホームアイコン (1).png" alt="" className="sidebar-header__item-icon" />
               ホーム
             </a>
           </li>
           <li className="sidebar-header__item">
-            <a className="sidebar-header__link" href="#">
+            <a className="sidebar-header__link" href="/playlists">
               <img src="img/ソングリストアイコン1 (1).png" alt="" className="sidebar-header__item-icon" />
               プレイリスト
+            </a>
+          </li>
+          <li className="sidebar-header__item">
+            <a className="sidebar-header__link" href="#">
+              <img src="img/upload-icon.png" alt="" className="sidebar-header__item-icon" width="16" height="16" />
+              PCから曲を読み込む
             </a>
           </li>
           <li className="sidebar-header__item">

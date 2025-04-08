@@ -5,11 +5,38 @@ import ThumbnailPreview from './ThumbnailPreview';
 import { TrackInfoProvider } from './TrackInfoContext';
 import Login from './Login';
 import { SearchContext } from './SearchContext';
-import SearchResultList from './SearchResultList';
+// import SearchResultList from './SearchResultList';
+
+import db from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
+
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import SearchResult from './SearchResult';
+import Home from '../react-router-dom/Home';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
   const { query, isToken, setIsToken } = useContext(SearchContext);
+
+  const [tracks, setTrack] = useState([]);
+
+  useEffect(() => {
+    // データー取得する
+    // const trackData = collection(db, 'test');
+    // getDocs(trackData).then((snapShot) => {
+    //   console.log(snapShot.docs.map((doc) => doc.data()));
+    // });
+    const getData = async () => {
+      // const querySnapshot = await getDocs(collection(db, 'test'));
+      const querySnapshot = await getDocs(collection(db, 'playlists'));
+      querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data()}`);
+        console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+        console.log(`${doc.id} => ${JSON.stringify(doc.data(), null, 2)}`);
+      });
+    };
+    getData();
+  }, []);
 
   useEffect(() => {
     // console.log(token);
@@ -24,6 +51,7 @@ const Main = ({ token }) => {
         if (res.status === 401) {
           console.log('アクセストークンが切れています');
           setIsToken(false);
+
           // トークンが切れている場合、新しいアクセストークンを取得する処理に移行
         } else if (res.ok) {
           console.log('おっけーおっけー');
@@ -43,30 +71,19 @@ const Main = ({ token }) => {
         <main>
           <TrackInfoProvider>
             <ThumbnailPreview />
-            <section className="search-result">
-              <div className="search-result__header">
-                <h2 className="search-result__title">{`${query}の検索結果`}</h2>
-                <div className="search-result__header-info">
-                  <div className="search-result__header-rank">#</div>
-                  <p className="search-result__header-title">タイトル</p>
-                  <img className="search-result__header-duration" src="img/clock.png"></img>
-                </div>
-              </div>
-              <SearchResultList />
-            </section>
-            {profile ? (
-              <div>
-                <h3>こんにちは、{profile.display_name} さん！</h3>
-                <p>メール: {profile.email}</p>
-                <img src={profile.images?.[0]?.url} alt="プロフィール画像" width="100" />
-              </div>
-            ) : (
-              <p>データを取得中...</p>
-            )}
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Home token={token} />} />
+                <Route path="/search-result" element={<SearchResult />} />
+              </Routes>
+            </BrowserRouter>
+
+            {/* <SearchResult /> */}
+
             <PlayerControls />
           </TrackInfoProvider>
         </main>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </>
   );
@@ -76,12 +93,20 @@ export default Main;
 
 // やることリスト
 // トラックの幅計算関数がSpotify apiのtrackTitleが変わったときに発火するように変更 ✅
+// 検索結果一覧をコンポーネントで管理追加 ✅
+// トラックの抜粋機能をトラックwrapperにoverflow hiddenではみ出した部分を隠すsimple is best
+// 初回ログインを２回やらないといけない不具合を解消
 // 全画面表示の時にSpotify apiとビートアニメーションを連携する
+// 全画面表示のとき、背景が明るいとなんか変だから若干全体を黒くする ✅
 // 検索バーの全角文字を打つときにカクつく野を改善する
 // プレイリストが作られていない状態で次へを押すとどうなるか検証
 // Spotifyや他のサービスを見て見た目を変更・改善する
 // 曲を検索して表示するときにロード画面を表示する (AmazonMusic見本)
 // 可読性をあげる
 // マジックナンバーをなくす
-// 再生中の曲にビジュアライザーを表示する
+// 再生中の曲にビジュアライザーを表示する ✅
 // 色合いが薄くてダサいから何とかする
+// サーバー起動時のターミナルの警告を解消する
+// ボリュームのバーを触ったときにツールチップで現在の値を１００分率で表示する
+// togglePlayPause関数の３つのif文を２つにする
+// リピートオフの状態で曲を切り替えるときにisPlayingが連続で切り替わるバグを修正 ✅
