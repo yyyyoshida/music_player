@@ -7,10 +7,27 @@ import { SearchProvider } from './components/SearchContext';
 import { PlayerProvider } from './components/PlayerContext';
 import { RepeatProvider } from './components/RepeatContext';
 
+import { BrowserRouter } from 'react-router-dom';
+
+// import db from './firebase';
+// import { collection, getDocs } from 'firebase/firestore';
+
 function App() {
   const [token, setToken] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   // console.log(window.localStorage.getItem('access_token'));
+  // const [tracks, setTrack] = useState([]);
+
+  // useEffect(() => {
+  //   // データー取得する
+  //   const trackData = collection(db, 'test');
+  //   getDocs(trackData).then((snapShot) => {
+  //     // console.log(snapShot.docs.map((doc) => doc.data()));
+  //     // console.log(snapShot.docs.map((doc) => ({ ...doc.data() })));
+  //     setTrack(snapShot.docChanges.map((doc) => ({ ...doc.data() })));
+  //   });
+  //   // console.log(trackData);
+  // }, []);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -52,17 +69,19 @@ function App() {
   }
 
   return (
-    <SearchProvider>
-      <RepeatProvider>
-        <PlayerProvider token={token}>
-          {/* <h1>Spotifyアプリ</h1> */}
-          {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-          <Header token={token} onSearchResults={handleSearchResults} />
-          {/* {!token && <Login />} */}
-          <Main token={token} searchResults={searchResults} />
-        </PlayerProvider>
-      </RepeatProvider>
-    </SearchProvider>
+    <BrowserRouter>
+      <SearchProvider>
+        <RepeatProvider>
+          <PlayerProvider token={token}>
+            {/* <h1>Spotifyアプリ</h1> */}
+            {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
+            <Header token={token} onSearchResults={handleSearchResults} />
+            {/* {!token && <Login />} */}
+            <Main token={token} searchResults={searchResults} />
+          </PlayerProvider>
+        </RepeatProvider>
+      </SearchProvider>
+    </BrowserRouter>
   );
 }
 
