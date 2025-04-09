@@ -1,15 +1,20 @@
 import React, { useState, useContext, useRef } from 'react';
 import { SearchContext } from './SearchContext';
+import { useNavigate } from 'react-router-dom';
 
 const SearchBar = ({ token }) => {
   const { setQuery, setSearchResults } = useContext(SearchContext);
   const queryRef = useRef('');
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleSearch = async () => {
     if (queryRef.current === '') return;
     console.log('検索する値', queryRef.current.value);
     setQuery(queryRef.current.value);
+
+    // navigate(`/search-result?query=${encodeURIComponent(query)}`);
+    navigate(`/search-result?query=${encodeURIComponent(queryRef.current)}`);
 
     console.log(token);
     if (!token) {

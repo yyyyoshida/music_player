@@ -71,12 +71,12 @@ const Main = ({ token }) => {
         <main>
           <TrackInfoProvider>
             <ThumbnailPreview />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Home token={token} />} />
-                <Route path="/search-result" element={<SearchResult />} />
-              </Routes>
-            </BrowserRouter>
+            {/* <BrowserRouter> */}
+            <Routes>
+              <Route path="/" element={<Home token={token} />} />
+              <Route path="/search-result" element={<SearchResult />} />
+            </Routes>
+            {/* </BrowserRouter> */}
 
             {/* <SearchResult /> */}
 
@@ -110,3 +110,5 @@ export default Main;
 // ボリュームのバーを触ったときにツールチップで現在の値を１００分率で表示する
 // togglePlayPause関数の３つのif文を２つにする
 // リピートオフの状態で曲を切り替えるときにisPlayingが連続で切り替わるバグを修正 ✅
+
+// 最近再生した曲一覧のエラー 同じIDだとエラーになる
