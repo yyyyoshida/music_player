@@ -2,7 +2,7 @@
 
 ### 使用技術
 
-[![My Skills](https://skillicons.dev/icons?i=nodejs,react,ts,js,html,css,sass,github,git,)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=firebase,nodejs,react,ts,js,html,css,sass,github,git,)](https://skillicons.dev)
 
 ### 開発背景
 
