@@ -24,6 +24,11 @@ export const PlayerProvider = ({ children, token }) => {
   useEffect(() => {
     if (isToken && token) return;
 
+    const script = document.createElement('script');
+    script.src = 'https://sdk.scdn.co/spotify-player.js';
+    script.async = true;
+    document.body.appendChild(script);
+
     // Spotify SDK の初期化
     window.onSpotifyWebPlaybackSDKReady = () => {
       const playerInstance = new window.Spotify.Player({
