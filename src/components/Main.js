@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import Footer from './Footer';
 import PlayerControls from './PlayerControls';
 import ThumbnailPreview from './ThumbnailPreview';
@@ -13,6 +13,8 @@ import { collection, getDocs } from 'firebase/firestore';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SearchResult from './SearchResult';
 import Home from '../react-router-dom/Home';
+
+import LOGIN_URL from '../config/spotifyConfig';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
@@ -39,6 +41,8 @@ const Main = ({ token }) => {
   }, []);
 
   useEffect(() => {
+    // useLayoutEffect(() => {
+    // setTimeout(() => {
     // console.log(token);
     if (!token) return;
 
@@ -50,11 +54,14 @@ const Main = ({ token }) => {
       .then((res) => {
         if (res.status === 401) {
           console.log('アクセストークンが切れています');
+          // setIsToken(false);
           setIsToken(false);
+          // window.location.href = LOGIN_URL;
 
           // トークンが切れている場合、新しいアクセストークンを取得する処理に移行
         } else if (res.ok) {
           console.log('おっけーおっけー');
+          // setIsToken(true);
           setIsToken(true);
           return res.json();
         } else {
@@ -62,11 +69,36 @@ const Main = ({ token }) => {
         }
       })
       .then((data) => setProfile(data));
+    // }, 300);
   }, [token]);
+
+  useEffect(() => {
+    console.log('Main.jsの中の', isToken);
+  }, [isToken]);
+
+  let isNotToken = '';
+
+  // useEffect(() => {
+  useLayoutEffect(() => {
+    // return <Login isToken={isToken}
+    if (isToken) {
+      isNotToken = true;
+    } else {
+      isNotToken = false;
+    }
+    console.log('ペンパイナッポーアッぽーぺん', isNotToken);
+  }, [isToken]);
+
+  // if (!isToken) {
+  //   return <Login isToken={isToken}
+  // }
 
   return (
     <>
-      {!isToken && <Login isToken={isToken} />}
+      {/* {!isToken && <Login isToken={isToken} />} */}
+      {/* {!isNotToken && <Login isToken={isToken} visivility={!isNotToken ? 'visible' : 'hidden'} />} */}
+      {/* {!isNotToken && <Login isToken={isToken} visivility={isNotToken} />} */}
+      <Login />
       <div className="container">
         <main>
           <TrackInfoProvider>
@@ -75,6 +107,7 @@ const Main = ({ token }) => {
             <Routes>
               <Route path="/" element={<Home token={token} />} />
               <Route path="/search-result" element={<SearchResult />} />
+              {/* {if ()} */}
             </Routes>
             {/* </BrowserRouter> */}
 
@@ -111,4 +144,10 @@ export default Main;
 // togglePlayPause関数の３つのif文を２つにする
 // リピートオフの状態で曲を切り替えるときにisPlayingが連続で切り替わるバグを修正 ✅
 
-// 最近再生した曲一覧のエラー 同じIDだとエラーになる
+// 最近再生した曲一覧のエラー 同じIDだとエラーになる ✅
+
+// ページ遷移時やリロードした時に一瞬出てくるログインページをなんとかする
+
+// ページ遷移時に音量のバーがリセットされるのを防ぐ
+
+// 検索結果からホームに遷移時の表示されるまでをローディングアニメーションを追加

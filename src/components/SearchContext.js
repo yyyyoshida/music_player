@@ -4,7 +4,8 @@ export const SearchContext = createContext();
 
 export const SearchProvider = ({ children }) => {
   const [query, setQuery] = useState('');
-  const [isToken, setIsToken] = useState(null);
+  // const [isToken, setIsToken] = useState(null);
+  const [isToken, setIsToken] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [isTrackSet, setIsTrackSet] = useState(false);
 
