@@ -1,11 +1,11 @@
-import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { SearchContext } from './SearchContext';
 import { useRepeatContext } from './RepeatContext';
 
 const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children, token }) => {
-  const { isToken } = useContext(SearchContext);
+  // const { isToken } = useContext(SearchContext);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
@@ -22,18 +22,30 @@ export const PlayerProvider = ({ children, token }) => {
   const { isRepeat } = useRepeatContext();
 
   useEffect(() => {
-    if (isToken && token) return;
+    if (!token) return;
 
     const script = document.createElement('script');
     script.src = 'https://sdk.scdn.co/spotify-player.js';
     script.async = true;
+
+    // スクリプトのエラーチェック
+    script.onerror = () => {
+      console.error('Spotify SDK の読み込みに失敗しました。');
+    };
+
     document.body.appendChild(script);
 
-    // Spotify SDK の初期化
+    // Spotify SDKの初期化
     window.onSpotifyWebPlaybackSDKReady = () => {
       const playerInstance = new window.Spotify.Player({
         name: 'MyMusicPlayer',
-        getOAuthToken: (cb) => cb(token),
+        getOAuthToken: (cb) => {
+          if (token) {
+            cb(token);
+          } else {
+            console.error('トークンが未設定です');
+          }
+        },
         volume: 0.3,
       });
 
@@ -47,10 +59,21 @@ export const PlayerProvider = ({ children, token }) => {
       });
 
       playerInstance.addListener('player_state_changed', (state) => {
-        setIsPlaying(!state.paused);
+        if (state) {
+          setIsPlaying(!state.paused);
+        } else {
+          console.error('状態が取得できませんでした');
+        }
       });
 
-      playerInstance.connect();
+      playerInstance
+        .connect()
+        .then(() => {
+          console.log('プレイヤー接続成功');
+        })
+        .catch((err) => {
+          console.error('接続エラー:', err);
+        });
 
       setPlayer(playerInstance);
     };
@@ -60,8 +83,7 @@ export const PlayerProvider = ({ children, token }) => {
         player.disconnect();
       }
     };
-    // }, [token]);
-  }, []);
+  }, [token]);
 
   const togglePlayPause = (isRepeat) => {
     if (!player) {
@@ -84,6 +106,7 @@ export const PlayerProvider = ({ children, token }) => {
   function playerTrack(trackUri) {
     if (!deviceId) {
       console.error('❌ デバイス ID が取得できてない！');
+      console.log(deviceId);
       return;
     }
     const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
@@ -136,6 +159,7 @@ export const PlayerProvider = ({ children, token }) => {
     const interval = setInterval(() => {
       player.getCurrentState().then((state) => {
         if (!state) return;
+
         setPosition((state.position / state.duration) * 100);
         setCurrentTime(state.position);
       });
