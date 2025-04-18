@@ -13,6 +13,8 @@ const TrackList = () => {
           const isCurrentTrack = trackId === track.id;
           const isTrackPlaying = isCurrentTrack && isStreaming;
           const isClicked = isCurrentTrack;
+          // console.log(track);
+          // console.log(track.uri);
 
           return (
             <li
@@ -32,7 +34,7 @@ const TrackList = () => {
                   <div className="bar"></div>
                 </div>
               </div>
-              <img className="search-result__cover-art" src={track.album.images[0]?.url} alt={track.name} width="50" />
+              <img className="search-result__cover-art" src={track.album.images[2]?.url} alt={track.name} width="50" />
               <div className="search-result__track-info">
                 <p className="search-result__name">{track.name}</p>
                 <p className="search-result__artist">{track.artists[0]?.name}</p>
