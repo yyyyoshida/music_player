@@ -21,7 +21,7 @@ function Header({ token, onSearchResults }) {
             </a>
           </li>
           <li className="sidebar-header__item">
-            <a className="sidebar-header__link" href="/playlists">
+            <a className="sidebar-header__link" href="/playlist">
               <img src="img/ソングリストアイコン1 (1).png" alt="" className="sidebar-header__item-icon" />
               プレイリスト
             </a>

@@ -1,11 +1,33 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { usePlayerContext } from '../components/PlayerContext';
 import { SearchContext } from '../components/SearchContext';
+import { PlaylistSelectionContext } from '../components/PlaylistSelectionContext';
+import { PlaylistContext } from '../components/PlaylistContext';
 
 const Home = ({ token }) => {
   const [tracks, setTracks] = useState([]);
   const { playerTrack, isStreaming, trackId } = usePlayerContext();
   const { setIsTrackSet } = useContext(SearchContext);
+  const changeCountRef = useRef(0);
+  const { toggleSelectVisible } = useContext(PlaylistSelectionContext);
+  const { toggleCreateVisible } = useContext(PlaylistContext);
+
+  useEffect(() => {
+    // const hash = window.location.hash;
+    // const token = new URLSearchParams(hash.replace('#', '?')).get('access_token');
+    changeCountRef.current += 1;
+    if (changeCountRef.current === 2) {
+      console.log('ホームの中の', token);
+
+      if (token) {
+        localStorage.setItem('access_token', token); // アクセストークンをlocalStorageに保存
+        // window.location.href = '/home'; // メインページに遷移
+      } else {
+        console.error('アクセストークンの取得に失敗しました');
+      }
+    }
+    // }, []);
+  }, [token]);
 
   const fetchRecentlyPlayedTracks = async (token) => {
     let url = 'https://api.spotify.com/v1/me/player/recently-played?limit=30';
@@ -51,7 +73,7 @@ const Home = ({ token }) => {
     }
   }, [token]);
 
-  console.log(trackId);
+  // console.log(trackId);
 
   return (
     <div className="home">
@@ -87,7 +109,13 @@ const Home = ({ token }) => {
                   <button className="home__track-play-button" style={{ visibility: isTrackPlaying ? 'hidden' : 'visible' }}>
                     <img src="img/play.png" className="home__track-play-button-icon" />
                   </button>
-                  <button className="home__track-add-button">
+                  <button
+                    className="home__track-add-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSelectVisible();
+                    }}
+                  >
                     <img src="img/plus.png" className="home__track-add-button-icon" />
                   </button>
                   <div className={`equalizer ${isTrackPlaying ? '' : 'hidden'}`}>

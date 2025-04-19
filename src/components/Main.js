@@ -16,29 +16,35 @@ import Home from '../react-router-dom/Home';
 
 import LOGIN_URL from '../config/spotifyConfig';
 
+import Playlist from './Playlist';
+import CreatePlaylist from './CreatePlaylist';
+import { PlaylistProvider } from './PlaylistContext';
+import { PlaylistSelectionProvider } from './PlaylistSelectionContext';
+import PlaylistSelection from './PlaylistSelection';
+
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
   const { query, isToken, setIsToken } = useContext(SearchContext);
 
   const [tracks, setTrack] = useState([]);
 
-  useEffect(() => {
-    // データー取得する
-    // const trackData = collection(db, 'test');
-    // getDocs(trackData).then((snapShot) => {
-    //   console.log(snapShot.docs.map((doc) => doc.data()));
-    // });
-    const getData = async () => {
-      // const querySnapshot = await getDocs(collection(db, 'test'));
-      const querySnapshot = await getDocs(collection(db, 'playlists'));
-      querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
-        console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-        console.log(`${doc.id} => ${JSON.stringify(doc.data(), null, 2)}`);
-      });
-    };
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   // データー取得する
+  //   // const trackData = collection(db, 'test');
+  //   // getDocs(trackData).then((snapShot) => {
+  //   //   console.log(snapShot.docs.map((doc) => doc.data()));
+  //   // });
+  //   const getData = async () => {
+  //     // const querySnapshot = await getDocs(collection(db, 'test'));
+  //     const querySnapshot = await getDocs(collection(db, 'playlists'));
+  //     querySnapshot.forEach((doc) => {
+  //       // console.log(`${doc.id} => ${doc.data()}`);
+  //       console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+  //       console.log(`${doc.id} => ${JSON.stringify(doc.data(), null, 2)}`);
+  //     });
+  //   };
+  //   getData();
+  // }, []);
 
   useEffect(() => {
     // useLayoutEffect(() => {
@@ -60,7 +66,7 @@ const Main = ({ token }) => {
 
           // トークンが切れている場合、新しいアクセストークンを取得する処理に移行
         } else if (res.ok) {
-          console.log('おっけーおっけー');
+          // console.log('おっけーおっけー');
           // setIsToken(true);
           setIsToken(true);
           return res.json();
@@ -72,9 +78,9 @@ const Main = ({ token }) => {
     // }, 300);
   }, [token]);
 
-  useEffect(() => {
-    console.log('Main.jsの中の', isToken);
-  }, [isToken]);
+  // useEffect(() => {
+  //   console.log('Main.jsの中の', isToken);
+  // }, [isToken]);
 
   let isNotToken = '';
 
@@ -86,7 +92,7 @@ const Main = ({ token }) => {
     } else {
       isNotToken = false;
     }
-    console.log('ペンパイナッポーアッぽーぺん', isNotToken);
+    // console.log('ペンパイナッポーアッぽーぺん', isNotToken);
   }, [isToken]);
 
   // if (!isToken) {
@@ -99,19 +105,23 @@ const Main = ({ token }) => {
       {/* {!isNotToken && <Login isToken={isToken} visivility={!isNotToken ? 'visible' : 'hidden'} />} */}
       {/* {!isNotToken && <Login isToken={isToken} visivility={isNotToken} />} */}
       <Login />
+      {/* <CreatePlaylist /> */}
       <div className="container">
         <main>
           <TrackInfoProvider>
             <ThumbnailPreview />
-            {/* <BrowserRouter> */}
-            <Routes>
-              <Route path="/" element={<Home token={token} />} />
-              <Route path="/search-result" element={<SearchResult />} />
-              {/* {if ()} */}
-            </Routes>
-            {/* </BrowserRouter> */}
+            <PlaylistProvider>
+              <PlaylistSelectionProvider>
+                <PlaylistSelection />
+                <CreatePlaylist />
 
-            {/* <SearchResult /> */}
+                <Routes>
+                  <Route path="/" element={<Home token={token} />} />
+                  <Route path="/search-result" element={<SearchResult />} />
+                  <Route path="/playlist" element={<Playlist />} />
+                </Routes>
+              </PlaylistSelectionProvider>
+            </PlaylistProvider>
 
             <PlayerControls />
           </TrackInfoProvider>
@@ -151,3 +161,7 @@ export default Main;
 // ページ遷移時に音量のバーがリセットされるのを防ぐ
 
 // 検索結果からホームに遷移時の表示されるまでをローディングアニメーションを追加
+
+// 再生中なのに色が変わらない問題
+
+// ボタンは_button.scssファイルにちゃんと書く
