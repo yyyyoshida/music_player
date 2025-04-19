@@ -1,13 +1,11 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useContext } from 'react';
 import { PlaylistSelectionContext } from './PlaylistSelectionContext';
 import { PlaylistContext } from '../components/PlaylistContext';
-import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
 
 const PlaylistSelection = () => {
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
 
-  const { toggleCreateVisible, playlists, setPlaylists } = useContext(PlaylistContext);
+  const { toggleCreateVisible, playlists } = useContext(PlaylistContext);
 
   return (
     <div className="playlist-selection" style={{ visibility: isSelectVisible ? 'visible' : 'hidden' }}>
@@ -35,7 +33,11 @@ const PlaylistSelection = () => {
                   addTrackToPlaylist(playlist.id);
                 }}
               >
-                <img src="img/テストサムネ１.jpg" className="playlist-selection__item-cover-art"></img>
+                <div className="playlist-selection__item-cover-grid">
+                  {playlist.albumImages.map((src, i) => (
+                    <img key={i} src={src} className="playlist-selection__item-cover-img" />
+                  ))}
+                </div>
                 <p className="playlist-selection__item-name">{playlist.name}</p>
               </li>
             ))}

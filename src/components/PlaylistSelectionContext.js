@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useRef, useEffect } from 'react';
-import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, getDocs, increment, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { PlaylistContext } from '../components/PlaylistContext';
 
@@ -19,30 +19,25 @@ export const PlaylistSelectionProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    console.log('はろはろ');
-    const fetchPlaylists = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'playlists'));
-        // const fetchedPlaylists = querySnapshot.docs.map((doc) => ({
-
-        //   id: doc.id,
-        //   ...doc.data(),
-        // }));
-        // console.log(db);
-        console.log(querySnapshot);
-        const fetchedPlaylists = querySnapshot.docs.map((doc) => {
-          console.log('🎵 doc data:', doc.data()); // ←追加
+    const fetchPlaylistsWithTrackCount = async () => {
+      const querySnapshot = await getDocs(collection(db, 'playlists'));
+      const playlists = await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const playlistId = doc.id;
+          const tracksSnapshot = await getDocs(collection(db, 'playlists', playlistId, 'tracks'));
+          const tracks = tracksSnapshot.docs.map((doc) => doc.data());
           return {
-            id: doc.id,
+            id: playlistId,
             ...doc.data(),
+            trackCount: tracksSnapshot.size || 0, // ← 念のため保険かけとく
+            albumImages: tracks.slice(0, 4).map((track) => track.albumImage),
           };
-        });
-        setPlaylists(fetchedPlaylists);
-      } catch (error) {
-        console.error('プレイリストの取得失敗', error);
-      }
+        })
+      );
+      setPlaylists(playlists);
     };
-    fetchPlaylists();
+
+    fetchPlaylistsWithTrackCount();
   }, []);
 
   const addTrackToPlaylist = async (playlistId) => {
@@ -54,7 +49,11 @@ export const PlaylistSelectionProvider = ({ children }) => {
         addedAt: serverTimestamp(),
       });
       console.log('✅ 曲追加成功');
-      // setSelectedTrack(null);
+
+      await updateDoc(doc(db, 'playlists', playlistId), {
+        totalDuration: increment(selectedTrack.duration),
+      });
+
       toggleSelectVisible();
     } catch (error) {
       console.error('💥 曲追加失敗', error);
@@ -65,9 +64,10 @@ export const PlaylistSelectionProvider = ({ children }) => {
     setSelectedTrack({
       trackId: track.id,
       trackUri: track.uri,
-      albumImage: track.album.images[2]?.url,
+      albumImage: track.album.images[1]?.url,
       title: track.name,
       artist: track.artists[0]?.name,
+      duration: track.duration_ms,
     });
     toggleSelectVisible();
   }
