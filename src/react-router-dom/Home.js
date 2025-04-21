@@ -106,8 +106,8 @@ const Home = ({ token }) => {
                     // style={{ filter: isTrackPlaying ? 'brightness(50%)' : '' }}
                     style={{ filter: isClicked ? 'brightness(50%)' : '' }}
                   />
-                  <button className="home__track-play-button" style={{ visibility: isTrackPlaying ? 'hidden' : 'visible' }}>
-                    <img src="img/play.png" className="home__track-play-button-icon" />
+                  <button className="home__track-play-button play-button" style={{ visibility: isTrackPlaying ? 'hidden' : 'visible' }}>
+                    <img src="img/play.png" className="home__track-play-button-icon play-button-icon" />
                   </button>
                   <button
                     className="home__track-add-button"
