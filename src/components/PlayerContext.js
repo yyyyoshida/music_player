@@ -103,12 +103,18 @@ export const PlayerProvider = ({ children, token }) => {
     }
   };
 
-  function playerTrack(trackUri) {
+  function playerTrack(trackUri, isClickedTrack) {
     if (!deviceId) {
       console.error('❌ デバイス ID が取得できてない！');
       console.log(deviceId);
       return;
     }
+
+    if (isClickedTrack) {
+      togglePlayPause();
+      return;
+    }
+
     const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
     const data = {
       uris: [trackUri],

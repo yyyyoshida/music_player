@@ -23,11 +23,14 @@ const TrackList = () => {
                 key={track.id}
                 className={`search-result__item ${isTrackPlaying ? 'playing' : ''} ${isClicked ? 'clicked' : ''}`}
                 onClick={() => {
-                  playerTrack(track.uri);
+                  playerTrack(track.uri, isClicked);
                   setIsTrackSet(true);
                 }}
               >
                 <div className="search-result__left">
+                  <button className="search-result__left-play-pause-button">
+                    <img src={`img/${isTrackPlaying ? 'pause' : 'play'}.png`} className="search-result__left-play-pause-icon"></img>
+                  </button>
                   <div className={`equalizer ${isTrackPlaying ? '' : 'hidden'}`}>
                     <div className="bar"></div>
                     <div className="bar"></div>
@@ -42,13 +45,13 @@ const TrackList = () => {
                 </div>
                 <div className="search-result__right">
                   <button
-                    className="search-result__button--add"
+                    className="search-result__add-button track-add-button"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleTrackSelect(track);
                     }}
                   >
-                    <img className="search-result__icon--add" src="img/plus.png" />
+                    <img className="search-result__add-icon track-add-icon" src="img/plus.png" />
                   </button>
                   <div className="search-result__track-duration">{formatTime(track.duration_ms)}</div>
                 </div>
