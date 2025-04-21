@@ -16,10 +16,10 @@ const CreatePlaylist = () => {
             <input className="playlist-page__create-playlist-modal-input" id="title" ref={playlistNameRef} />
           </div>
           <div className="playlist-page__create-playlist-modal-actions">
-            <button className="playlist-page__create-playlist-modal-cancel playlist-button" onClick={toggleCreateVisible}>
+            <button className="playlist-page__create-playlist-modal-cancel playlist-cancel-create-button" onClick={toggleCreateVisible}>
               キャンセル
             </button>
-            <button className="playlist-page__create-playlist-modal-create playlist-button" onClick={handleCreatePlaylist}>
+            <button className="playlist-page__create-playlist-modal-create playlist-cancel-create-button" onClick={handleCreatePlaylist}>
               作成
             </button>
           </div>
