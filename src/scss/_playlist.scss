@@ -9,11 +9,6 @@
     font-size: 18px;
   }
 
-  &__create-button {
-    margin-top: 40px;
-    font-size: 14px;
-  }
-
   &__list {
     margin-top: 40px;
     display: flex;
@@ -154,25 +149,6 @@
     display: flex;
     gap: 6px;
   }
-
-  &-cancel:hover {
-    background-color: #5f5f5f;
-  }
-  &-create:hover {
-    background-color: rgb(217, 22, 86);
-  }
-}
-.playlist-button {
-  padding: 10px 16px;
-  transition: background-color 0.1s ease;
-  border-radius: 5px;
-  transition:
-    transform ease 0.1s,
-    background-color ease 0.1s;
-  // &:active {
-  //   transform: scale(0.96);
-  //   // transform: scale(0.9);
-  // }
 }
 
 .img-0 {

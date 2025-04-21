@@ -62,7 +62,7 @@ const SearchBar = ({ token }) => {
   return (
     <>
       <div className="search-bar">
-        <img className="search-bar__icon--search" src="img/検索用の虫眼鏡アイコン 7.png" alt="" />
+        <img className="search-bar__search-icon" src="img/検索用の虫眼鏡アイコン 7.png" alt="" />
         <input
           className="search-bar__input"
           type="text"
@@ -70,8 +70,8 @@ const SearchBar = ({ token }) => {
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           placeholder="検索"
         />
-        <button className="search-bar__button--clear" onClick={clearSearchText}>
-          <img className="search-bar__icon--clear" src="img/x.png"></img>
+        <button className="search-bar__clear-button" onClick={clearSearchText}>
+          <img className="search-bar__clear-icon" src="img/x.png"></img>
         </button>
       </div>
       {error && <p className="error-message">{error}</p>}
