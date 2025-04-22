@@ -1,4 +1,4 @@
-import React, {useState, useEffect}  from'react';
+import React, { useState, useEffect } from 'react';
 import Bar from './Bar';
 import { music, songs, playSong } from './PlayMusic';
 import Tooltip from './Tooltip';
@@ -10,16 +10,12 @@ const PlayerOptions = () => {
 
   function toggleOpen() {
     setIsOpenMenu((prev) => !prev);
-
-
   }
 
   function clickMenu() {
-    toggleOpen()
+    toggleOpen();
   }
 
-
-  
   return (
     <>
       <div className="player-controls__options">
@@ -32,20 +28,34 @@ const PlayerOptions = () => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <img src="img/三点リーダーアイコン1.png" alt="" className="player-controls__button--more-icon" />
+          <img src="/img/三点リーダーアイコン1.png" alt="" className="player-controls__button--more-icon" />
           <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-other'} isOpenMenu={isOpenMenu}>
             その他のオプション
           </Tooltip>
         </button>
-        <div className={`player-controls__options-menu ${isOpenMenu ? 'is-option': ''}`}>
+        <div className={`player-controls__options-menu ${isOpenMenu ? 'is-option' : ''}`}>
           <ul className="player-controls__options-list">
-            <li className="player-controls__options-item" onClick={clickMenu}>お気に入りに追加</li>
-            <li className="player-controls__options-item" onClick={clickMenu}>スマホ版UIに変更</li>
-            <li className="player-controls__options-item" onClick={clickMenu}>プレイリストから削除する</li>
-            <li className="player-controls__options-item" onClick={clickMenu}>そろそろ飽きた</li>
-            <li className="player-controls__options-item" onClick={clickMenu}>ビートアニメーションを無効化</li>
-            <li className="player-controls__options-item" onClick={clickMenu}>波形エフェクトを非表示</li>
-            <li className="player-controls__options-item" onClick={clickMenu}>楽曲の速度を変更する</li>
+            <li className="player-controls__options-item" onClick={clickMenu}>
+              お気に入りに追加
+            </li>
+            <li className="player-controls__options-item" onClick={clickMenu}>
+              スマホ版UIに変更
+            </li>
+            <li className="player-controls__options-item" onClick={clickMenu}>
+              プレイリストから削除する
+            </li>
+            <li className="player-controls__options-item" onClick={clickMenu}>
+              そろそろ飽きた
+            </li>
+            <li className="player-controls__options-item" onClick={clickMenu}>
+              ビートアニメーションを無効化
+            </li>
+            <li className="player-controls__options-item" onClick={clickMenu}>
+              波形エフェクトを非表示
+            </li>
+            <li className="player-controls__options-item" onClick={clickMenu}>
+              楽曲の速度を変更する
+            </li>
           </ul>
         </div>
       </div>
