@@ -683,7 +683,7 @@ footer {
 
 .thumbnail-expanded {
   .player-controls__track-info:hover {
-    background-color: rgba(75, 75, 75, 0.3);
+    background-color: rgba(75, 75, 75, 0.4);
   }
   .player-controls__track-thumbnail-wrapper {
     position: absolute;
@@ -707,6 +707,19 @@ footer {
     justify-content: center;
     line-height: 1;
     z-index: 1000;
+  }
+
+  .player-controls__button:hover {
+    background-color: rgba(100, 100, 100, 0.4);
+  }
+
+  .player-controls__play-pause-button {
+    background-color: rgba(66, 66, 66, 0.6);
+  }
+
+  .player-controls__progress-bar,
+  .player-controls__volume-bar {
+    background: rgba(238, 238, 238, 0.2);
   }
 }
 
