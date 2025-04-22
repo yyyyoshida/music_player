@@ -92,7 +92,7 @@ const Home = ({ token }) => {
                 key={`${track.track.id}-${track.played_at}`}
                 className="home__track-item"
                 onClick={() => {
-                  playerTrack(track.track.uri);
+                  playerTrack(track.track.uri, isClicked);
                   setIsTrackSet(true);
                 }}
               >
@@ -106,8 +106,14 @@ const Home = ({ token }) => {
                     // style={{ filter: isTrackPlaying ? 'brightness(50%)' : '' }}
                     style={{ filter: isClicked ? 'brightness(50%)' : '' }}
                   />
-                  <button className="home__track-play-button play-button" style={{ visibility: isTrackPlaying ? 'hidden' : 'visible' }}>
-                    <img src={playIcon} className="home__track-play-button-icon play-button-icon" />
+                  <button
+                    className="home__track-play-pause-button play-pause-button"
+                    style={{ visibility: isTrackPlaying ? 'visible' : 'visible' }}
+                  >
+                    <img
+                      src={isTrackPlaying ? pauseIcon : playIcon}
+                      className={`home__track-play-pause-button-icon play-pause-button-icon ${isTrackPlaying ? 'pause-button-icon' : 'play-button-icon'}`}
+                    />
                   </button>
                   <button
                     className="home__track-add-button"
