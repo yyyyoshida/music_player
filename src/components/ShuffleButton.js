@@ -23,7 +23,7 @@ const ShuffleButton = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* <img src="img/シャッフル.png" alt=""></img> */}
-      <img src={isShuffle ? 'img/シャッフルオン.png' : 'img/シャッフル.png'} alt="Shuffle Icon" />
+      <img src={isShuffle ? '/img/シャッフルオン.png' : '/img/シャッフル.png'} alt="Shuffle Icon" />
       {/* まだ、クリックしたら非表示の機能はない */}
       <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-shuffle'}>
         {`シャッフル：${tooltipText}`}

@@ -55,8 +55,8 @@ const PrevNextButton = ({ type }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {type === 'next' && <img src="img/next-icon.png" alt="Next" />}
-      {type === 'prev' && <img src="img/prev-icon.png" alt="Previous" />}
+      {type === 'next' && <img src="/img/next-icon.png" alt="Next" />}
+      {type === 'prev' && <img src="/img/prev-icon.png" alt="Previous" />}
 
       <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={type === 'next' ? 'tooltip-next' : 'tooltip-prev'}>
         {type === 'next' ? '次へ' : '前へ'}
