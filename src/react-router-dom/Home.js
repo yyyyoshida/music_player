@@ -3,7 +3,7 @@ import { usePlayerContext } from '../components/PlayerContext';
 import { SearchContext } from '../components/SearchContext';
 import { PlaylistSelectionContext } from '../components/PlaylistSelectionContext';
 import { PlaylistContext } from '../components/PlaylistContext';
-
+import { playIcon, pauseIcon } from '../assets/icons';
 const Home = ({ token }) => {
   const [tracks, setTracks] = useState([]);
   const { playerTrack, isStreaming, trackId } = usePlayerContext();
@@ -107,7 +107,7 @@ const Home = ({ token }) => {
                     style={{ filter: isClicked ? 'brightness(50%)' : '' }}
                   />
                   <button className="home__track-play-button play-button" style={{ visibility: isTrackPlaying ? 'hidden' : 'visible' }}>
-                    <img src="img/play.png" className="home__track-play-button-icon play-button-icon" />
+                    <img src={playIcon} className="home__track-play-button-icon play-button-icon" />
                   </button>
                   <button
                     className="home__track-add-button"

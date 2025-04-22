@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { usePlayerContext } from './PlayerContext';
 import { SearchContext } from './SearchContext';
 import { PlaylistSelectionContext } from './PlaylistSelectionContext';
+import { playIcon, pauseIcon } from '../assets/icons';
 
 const TrackList = () => {
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
@@ -29,7 +30,7 @@ const TrackList = () => {
               >
                 <div className="search-result__left">
                   <button className="search-result__left-play-pause-button">
-                    <img src={`img/${isTrackPlaying ? 'pause' : 'play'}.png`} className="search-result__left-play-pause-icon"></img>
+                    <img src={isTrackPlaying ? pauseIcon : playIcon} className="search-result__left-play-pause-icon"></img>
                   </button>
                   <div className={`equalizer ${isTrackPlaying ? '' : 'hidden'}`}>
                     <div className="bar"></div>
