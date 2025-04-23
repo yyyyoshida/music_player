@@ -19,7 +19,6 @@ const Playlist = () => {
       </button>
       <ul className="playlists-page__list">
         {playlists.map((playlist) => (
-          // <li key={playlist.id} className="playlists-page__item" >
           <li
             key={playlist.id}
             className="playlists-page__item"
@@ -28,9 +27,10 @@ const Playlist = () => {
             }}
           >
             <div className="playlists-page__item-cover-img-wrapper">
-              {playlist.albumImages.map((src, i) => (
+              {[...playlist.albumImages].slice().map((src, i) => (
                 <img key={i} src={src} className={`playlists-page__item-cover-img img-${i}`} />
               ))}
+
               <img
                 src="img/playlist-icon1.png"
                 className="playlists-page__item-initial-cover-img playlist-initial-cover-img"
