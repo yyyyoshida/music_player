@@ -56,9 +56,13 @@ const PlaylistDetail = () => {
     <div className="playlist-detail">
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
-          {tracks.slice(0, 4).map((track, i) => (
-            <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
-          ))}
+          {/* {tracks.slice(0, 4).map((track, i) => ( */}
+          {[...tracks]
+            .reverse()
+            .slice(0, 4)
+            .map((track, i) => (
+              <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
+            ))}
           <img
             src="/img/playlist-icon1.png"
             className="playlists-detail__header-initial-cover-img playlist-initial-cover-img"

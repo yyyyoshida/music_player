@@ -30,7 +30,11 @@ export const PlaylistSelectionProvider = ({ children }) => {
             id: playlistId,
             ...doc.data(),
             trackCount: tracksSnapshot.size || 0, // ← 念のため保険かけとく
-            albumImages: tracks.slice(0, 4).map((track) => track.albumImage),
+            albumImages: tracks
+              .slice()
+              .reverse()
+              .slice(0, 4)
+              .map((track) => track.albumImage),
           };
         })
       );
