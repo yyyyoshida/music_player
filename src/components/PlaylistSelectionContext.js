@@ -60,7 +60,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
     }
   };
 
-  function handleTrackSelect(track) {
+  // function handleTrackSelect(track) {
+  function handleSpotifyTrackSelect(track) {
     setSelectedTrack({
       trackId: track.id,
       trackUri: track.uri,
@@ -68,6 +69,18 @@ export const PlaylistSelectionProvider = ({ children }) => {
       title: track.name,
       artist: track.artists[0]?.name,
       duration: track.duration_ms,
+    });
+    toggleSelectVisible();
+  }
+
+  function handleFirebaseTrackSelect(track) {
+    setSelectedTrack({
+      trackId: track.trackId,
+      trackUri: track.trackUri,
+      albumImage: track.albumImage,
+      title: track.title,
+      artist: track.artist,
+      duration: track.duration,
     });
     toggleSelectVisible();
   }
@@ -81,7 +94,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
         playlistNameRef,
         addTrackToPlaylist,
         setSelectedTrack,
-        handleTrackSelect,
+        // handleTrackSelect,
+        handleSpotifyTrackSelect,
+        handleFirebaseTrackSelect,
       }}
     >
       {children}

@@ -21,6 +21,8 @@ import CreatePlaylist from './CreatePlaylist';
 import { PlaylistProvider } from './PlaylistContext';
 import { PlaylistSelectionProvider } from './PlaylistSelectionContext';
 import PlaylistSelection from './PlaylistSelection';
+import PlaylistDetail from './PlaylistDetail';
+import { PlaylistDetailProvider } from '../context/PlaylistDetailContext';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
@@ -112,14 +114,18 @@ const Main = ({ token }) => {
             <ThumbnailPreview />
             <PlaylistProvider>
               <PlaylistSelectionProvider>
-                <PlaylistSelection />
-                <CreatePlaylist />
+                <PlaylistDetailProvider>
+                  <PlaylistSelection />
+                  <CreatePlaylist />
 
-                <Routes>
-                  <Route path="/" element={<Home token={token} />} />
-                  <Route path="/search-result" element={<SearchResult />} />
-                  <Route path="/playlist" element={<Playlist />} />
-                </Routes>
+                  <Routes>
+                    <Route path="/" element={<Home token={token} />} />
+                    <Route path="/search-result" element={<SearchResult />} />
+                    <Route path="/playlist" element={<Playlist />} />
+                    {/* <Route path="/playlist-detail" element={<PlaylistDetail />} /> */}
+                    <Route path="/playlist-detail/:id" element={<PlaylistDetail />} />
+                  </Routes>
+                </PlaylistDetailProvider>
               </PlaylistSelectionProvider>
             </PlaylistProvider>
 
@@ -164,4 +170,12 @@ export default Main;
 
 // 再生中なのに色が変わらない問題
 
-// ボタンは_button.scssファイルにちゃんと書く
+// ボタンは_button.scssファイルにちゃんと書く ✅
+
+// しばらく放置してトークンが切れたときの対処を考える
+
+// いい加減ターミナルの警告文がうるさいからなんとかする
+
+// useContextファイルはcontextフォルダーに入れる【ファイルの整理】
+
+// プレイリスト作成時にWindow内臓のメディアプレイヤーのプレイリストの名前を変更時のモーダルの表示のあの感じを参考にする

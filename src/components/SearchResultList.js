@@ -8,7 +8,7 @@ const TrackList = () => {
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
 
   const { searchResults, setIsTrackSet } = useContext(SearchContext);
-  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+  const { handleSpotifyTrackSelect } = useContext(PlaylistSelectionContext);
 
   return (
     <>
@@ -49,10 +49,10 @@ const TrackList = () => {
                     className="search-result__add-button track-add-button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleTrackSelect(track);
+                      handleSpotifyTrackSelect(track);
                     }}
                   >
-                    <img className="search-result__add-icon track-add-icon" src="img/plus.png" />
+                    <img className="search-result__add-icon track-add-icon" src="/img/plus.png" />
                   </button>
                   <div className="search-result__track-duration">{formatTime(track.duration_ms)}</div>
                 </div>
