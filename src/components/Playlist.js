@@ -1,8 +1,14 @@
 import React, { useContext } from 'react';
 import { PlaylistContext } from './PlaylistContext';
+import { useNavigate } from 'react-router-dom';
 
 const Playlist = () => {
   const { toggleCreateVisible, playlists, formatTimeHours } = useContext(PlaylistContext);
+  const navigate = useNavigate();
+
+  function handlePlaylistClick(playlistId) {
+    navigate(`/playlist-detail/${playlistId}`);
+  }
 
   return (
     <div className="playlists-page">
@@ -13,7 +19,14 @@ const Playlist = () => {
       </button>
       <ul className="playlists-page__list">
         {playlists.map((playlist) => (
-          <li key={playlist.id} className="playlists-page__item">
+          // <li key={playlist.id} className="playlists-page__item" >
+          <li
+            key={playlist.id}
+            className="playlists-page__item"
+            onClick={() => {
+              handlePlaylistClick(playlist.id);
+            }}
+          >
             <div className="playlists-page__item-cover-img-wrapper">
               {playlist.albumImages.map((src, i) => (
                 <img key={i} src={src} className={`playlists-page__item-cover-img img-${i}`} />

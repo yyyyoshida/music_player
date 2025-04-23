@@ -12,7 +12,7 @@ const PlaylistSelection = () => {
       <div className="playlist-selection__smoke">
         <div className="playlist-selection__content">
           <button className="playlist-selection__close-button" onClick={toggleSelectVisible}>
-            <img src="img/x.png" className="playlist-selection__close-icon button"></img>
+            <img src="/img/x.png" className="playlist-selection__close-icon button"></img>
           </button>
           <h2 className="playlist-selection__title">プレイリスト選択</h2>
           <button
