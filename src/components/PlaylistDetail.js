@@ -7,14 +7,14 @@ import TrackListHead from './TrackListHead';
 import { usePlayerContext } from './PlayerContext';
 import { SearchContext } from './SearchContext';
 import { PlaylistSelectionContext } from './PlaylistSelectionContext';
+import TrackItem from './TrackItem';
 
 const PlaylistDetail = () => {
   const { id } = useParams();
   const [tracks, setTracks] = useState([]);
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
   const { searchResults, setIsTrackSet } = useContext(SearchContext);
-  const { handleFirebaseTrackSelect } = useContext(PlaylistSelectionContext);
-  // const trackOfId = trackId;
+  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
 
   useEffect(() => {
     const fetchTracks = async () => {
@@ -33,7 +33,6 @@ const PlaylistDetail = () => {
 
   return (
     <div className="playlist-detail">
-      {/*  */}
       <div className="playlist-detail__header">
         <img className="playlist-detail__header-cover-img" src="/img/テストサムネ２.jpg" />
         <div className="playlist-detail__header-info">
@@ -59,55 +58,24 @@ const PlaylistDetail = () => {
 
       <TrackListHead />
 
-      {/* <div className="playlist-detail__list-head">
-        <div className="playlist-detail__list-head-index">#</div>
-        <p className="playlist-detail__list-head-title">タイトル</p>
-        <img className="playlist-detail__list-head-time-icon" src="img/clock.png"></img>
-      </div> */}
-
       <ul className="playlist-detail__list">
         {tracks.map((track, index) => {
           const isCurrentTrack = trackId === track.trackId;
           const isTrackPlaying = isCurrentTrack && isStreaming;
           const isClicked = isCurrentTrack;
+
           return (
-            <li
-              key={index}
-              className={`search-result__item ${isTrackPlaying ? 'playing' : ''} ${isClicked ? 'clicked' : ''}`}
-              onClick={() => {
-                playerTrack(track.trackUri, isClicked);
-                setIsTrackSet(true);
-              }}
-            >
-              <div className="search-result__left">
-                <button className="search-result__left-play-pause-button">
-                  <img src={isTrackPlaying ? pauseIcon : playIcon} className="search-result__left-play-pause-icon"></img>
-                </button>
-                <div className={`equalizer ${isTrackPlaying ? '' : 'hidden'}`}>
-                  <div className="bar"></div>
-                  <div className="bar"></div>
-                  <div className="bar"></div>
-                  <div className="bar"></div>
-                </div>
-              </div>
-              <img src={track.albumImage} alt={track.title} className="search-result__cover-art" width="50" />
-              <div className="search-result__track-info">
-                <p className="search-result__title">{track.title}</p>
-                <p className="search-result__artist">{track.artist}</p>
-              </div>
-              <div className="search-result__right">
-                <button
-                  className="search-result__add-button track-add-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleFirebaseTrackSelect(track);
-                  }}
-                >
-                  <img className="search-result__add-icon track-add-icon" src="/img/plus.png" />
-                </button>
-                <div className="search-result__track-duration">{formatTime(track.duration)}</div>
-              </div>
-            </li>
+            <TrackItem
+              track={track}
+              index={index}
+              isCurrentTrack={isCurrentTrack}
+              isTrackPlaying={isTrackPlaying}
+              isClicked={isClicked}
+              setIsTrackSet={setIsTrackSet}
+              playerTrack={playerTrack}
+              formatTime={formatTime}
+              handleTrackSelect={() => handleTrackSelect(track, 'firebase')}
+            />
           );
         })}
       </ul>
