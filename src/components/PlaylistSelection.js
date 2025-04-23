@@ -37,6 +37,11 @@ const PlaylistSelection = () => {
                   {playlist.albumImages.map((src, i) => (
                     <img key={i} src={src} className="playlist-selection__item-cover-img" />
                   ))}
+                  <img
+                    src="/img/playlist-icon1.png"
+                    className="playlist-selection__item-initial-cover-img playlist-initial-cover-img"
+                    style={{ display: playlist.albumImages.length === 0 ? 'block' : 'none' }}
+                  ></img>
                 </div>
                 <p className="playlist-selection__item-name">{playlist.name}</p>
               </li>

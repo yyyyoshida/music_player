@@ -33,7 +33,7 @@ const Playlist = () => {
               ))}
               <img
                 src="img/playlist-icon1.png"
-                className="playlists-page__item-initial-cover-img"
+                className="playlists-page__item-initial-cover-img playlist-initial-cover-img"
                 style={{ visibility: playlist.trackCount === 0 ? 'visible' : 'hidden' }}
               ></img>
             </div>
