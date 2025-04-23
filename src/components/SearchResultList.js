@@ -29,7 +29,7 @@ const TrackList = () => {
                 setIsTrackSet={setIsTrackSet}
                 playerTrack={playerTrack}
                 formatTime={formatTime}
-                handleTrackSelect={() => handleTrackSelect(track, 'spotify')}
+                handleTrackSelect={() => handleTrackSelect(track, 'searchResults')}
               />
             );
           })

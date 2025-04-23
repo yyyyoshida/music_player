@@ -1,20 +1,41 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
-import { playIcon, pauseIcon } from '../assets/icons';
+import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { playIcon } from '../assets/icons';
 import TrackListHead from './TrackListHead';
 import { usePlayerContext } from './PlayerContext';
 import { SearchContext } from './SearchContext';
 import { PlaylistSelectionContext } from './PlaylistSelectionContext';
 import TrackItem from './TrackItem';
+import { PlaylistContext } from './PlaylistContext';
 
 const PlaylistDetail = () => {
   const { id } = useParams();
   const [tracks, setTracks] = useState([]);
+  const [playlistInfo, setPlaylistInfo] = useState({ title: '', duration: 0 });
+
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
-  const { searchResults, setIsTrackSet } = useContext(SearchContext);
+  const { setIsTrackSet } = useContext(SearchContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+  const { formatTimeHours } = useContext(PlaylistContext);
+
+  useEffect(() => {
+    const fetchPlaylistInfo = async () => {
+      try {
+        const docRef = doc(db, 'playlists', id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setPlaylistInfo(docSnap.data());
+        }
+      } catch (error) {
+        console.error('プレイリスト情報の取得に失敗', error);
+      }
+    };
+
+    fetchPlaylistInfo();
+  }, [id]);
 
   useEffect(() => {
     const fetchTracks = async () => {
@@ -24,7 +45,7 @@ const PlaylistDetail = () => {
         const trackList = trackSnapshot.docs.map((doc) => doc.data());
         setTracks(trackList);
       } catch (error) {
-        console.error('曲の取得に失敗したよ〜😭', error);
+        console.error('曲の取得に失敗した', error);
       }
     };
 
@@ -34,10 +55,19 @@ const PlaylistDetail = () => {
   return (
     <div className="playlist-detail">
       <div className="playlist-detail__header">
-        <img className="playlist-detail__header-cover-img" src="/img/テストサムネ２.jpg" />
+        <div className="playlist-detail__header-cover-img-wrapper">
+          {tracks.slice(0, 4).map((track, i) => (
+            <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
+          ))}
+          <img
+            src="/img/playlist-icon1.png"
+            className="playlists-detail__header-initial-cover-img playlist-initial-cover-img"
+            style={{ visibility: tracks.length === 0 ? 'visible' : 'hidden' }}
+          ></img>
+        </div>
         <div className="playlist-detail__header-info">
-          <h2 className="playlist-detail__header-title">作業用BGM</h2>
-          <p className="playlist-detail__header-status">557曲、34時間24分</p>
+          <h2 className="playlist-detail__header-title">{playlistInfo.name}</h2>
+          <p className="playlist-detail__header-status"> {`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration)}`}</p>
         </div>
 
         <div className="playlist-detail__header-actions-buttons">
