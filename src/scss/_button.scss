@@ -133,6 +133,37 @@
   background-color: rgb(217, 22, 86);
 }
 
+.playlist-detail__header-button {
+  padding: 10px 16px;
+  border-radius: 5px;
+  // box-shadow: 0 0px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.4);
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  background-color: #555555;
+
+  &:hover {
+    background-color: #666666;
+  }
+
+  &-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+  }
+}
+
+.playlist-detail__header-play-button {
+  background-color: rgb(217, 22, 86);
+  &:hover {
+    background-color: rgb(224, 59, 114);
+  }
+}
+
+.playlist-detail__header-rename-button-icon {
+  transform: scale(1.2);
+}
+
 // ホームjsのボタンのスタイル再生と停止のスタイルを共通化しろかす↓↓
 .play-pause-button {
   width: 50px;

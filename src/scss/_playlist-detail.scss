@@ -1,0 +1,118 @@
+.playlist-detail {
+  &__header {
+    background-color: rgb(71, 71, 71);
+    height: 240px;
+    display: flex;
+    padding: 20px;
+    border-radius: 10px;
+    gap: 30px;
+    position: relative;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  &__header-cover-img {
+    // width: 180px;
+    // height: 180px;
+    height: 100%;
+    // width: 100%;
+    width: auto;
+    aspect-ratio: 1 / 1;
+    // background-color: black;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  &__header-info {
+    position: relative;
+
+    text-wrap: nowrap;
+  }
+
+  &__header-title {
+    font-size: 56px;
+    font-size: 62px;
+    font-weight: 700;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &__header-status {
+    position: absolute;
+    bottom: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+  }
+
+  &__header-actions-buttons {
+    position: absolute;
+    display: flex;
+    gap: 20px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  &__list {
+    margin-top: 100px;
+    margin-top: 20px;
+    counter-reset: my-counter;
+    position: relative;
+    user-select: none;
+  }
+
+  &__item {
+    position: relative;
+    padding: 7px;
+    display: flex;
+    transition: background-color 0.2s ease;
+    border-radius: 5px;
+  }
+
+  &__item:hover {
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    background-color: #444444;
+  }
+
+  &__artist {
+    color: #d8d8d8;
+    color: #b3b3b3;
+    font-size: 14px;
+  }
+  &__cover-art {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border: #9292923b solid 1px;
+  }
+  &__left {
+    width: 40px;
+    height: 50px;
+    margin-right: 7px;
+    position: relative;
+  }
+  &__left::before {
+    content: counter(my-counter);
+    counter-increment: my-counter;
+    display: block;
+    float: left;
+    line-height: 50px;
+    font-size: 17px;
+    text-align: center;
+    width: 40px;
+    height: 50px;
+  }
+  &__right {
+    // color: #fff;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    // width: 120px;
+    // height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+}
