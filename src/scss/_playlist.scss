@@ -53,17 +53,6 @@
     object-fit: cover;
   }
 
-  &__item-initial-cover-img {
-    position: absolute;
-    top: 50%;
-    left: 46.5%;
-    width: 70px;
-    height: 70px;
-    z-index: 1000;
-    object-fit: cover;
-    transform: translate(-50%, -50%);
-  }
-
   &__item-info {
     padding-top: 10px;
   }
@@ -169,4 +158,22 @@
 .img-1 {
   grid-column: 2;
   grid-row: 2;
+}
+
+// プレイリストの初期値のカバー画像
+.playlist-initial-cover-img {
+  position: absolute;
+  top: 50%;
+  left: 46.5%;
+  width: 70px;
+  height: 70px;
+  z-index: 1000;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+}
+
+.playlist-selection__item-initial-cover-img {
+  left: 47%;
+  width: 24px;
+  height: 24px;
 }

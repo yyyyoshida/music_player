@@ -34,6 +34,9 @@ export const PlaylistProvider = ({ children }) => {
   };
 
   function formatTimeHours(time) {
+    if (!time) {
+      return '0分';
+    }
     const MS_HOUR = 3600000;
     const MS_MINUTE = 60000;
 
