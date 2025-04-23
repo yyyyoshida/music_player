@@ -15,14 +15,16 @@ const TrackList = () => {
     <>
       <ul className="search-result__list">
         {searchResults.length > 0 ? (
-          searchResults.map((track) => {
+          searchResults.map((track, index) => {
             const isCurrentTrack = trackId === track.id;
             const isTrackPlaying = isCurrentTrack && isStreaming;
             const isClicked = isCurrentTrack;
 
             return (
               <TrackItem
+                key={track.id}
                 track={track}
+                index={index}
                 isCurrentTrack={isCurrentTrack}
                 isTrackPlaying={isTrackPlaying}
                 isClicked={isClicked}

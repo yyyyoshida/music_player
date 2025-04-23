@@ -4,8 +4,9 @@ import { playIcon, pauseIcon } from '../assets/icons';
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, handleTrackSelect, formatTime }) => {
   return (
     <li
-      key={index || track.id}
-      className={`track-item ${isTrackPlaying ? 'playing' : ''} ${isClicked ? 'clicked' : ''}`}
+      // key={index || track.id}
+      key={index}
+      className={`track-item ${isTrackPlaying ? 'playing' : ''} ${isClicked ? 'clicked' : ''} ${track.id}`}
       onClick={() => {
         playerTrack(track.trackUri || track.uri, isClicked);
         setIsTrackSet(true);

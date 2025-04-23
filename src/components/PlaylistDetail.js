@@ -100,6 +100,7 @@ const PlaylistDetail = () => {
 
           return (
             <TrackItem
+              key={track.trackId}
               track={track}
               index={index}
               isCurrentTrack={isCurrentTrack}
