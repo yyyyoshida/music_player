@@ -61,7 +61,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
   };
 
   function handleTrackSelect(track, type) {
-    if (type === 'spotify') {
+    if (type === 'searchResults') {
       setSelectedTrack({
         trackId: track.id,
         trackUri: track.uri,
@@ -70,7 +70,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         artist: track.artists[0]?.name,
         duration: track.duration_ms,
       });
-    } else {
+    } else if (type === 'firebase') {
       setSelectedTrack({
         trackId: track.trackId,
         trackUri: track.trackUri,
@@ -78,6 +78,16 @@ export const PlaylistSelectionProvider = ({ children }) => {
         title: track.title,
         artist: track.artist,
         duration: track.duration,
+      });
+      // } else if (type === 'recentTrack') {
+    } else {
+      setSelectedTrack({
+        trackId: track.track.id,
+        trackUri: track.track.uri,
+        albumImage: track.track.album.images[1].url,
+        title: track.track.name,
+        artist: track.track.artists[0].name,
+        duration: track.track.duration_ms,
       });
     }
 

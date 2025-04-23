@@ -4,13 +4,14 @@ import { SearchContext } from '../components/SearchContext';
 import { PlaylistSelectionContext } from '../components/PlaylistSelectionContext';
 import { PlaylistContext } from '../components/PlaylistContext';
 import { playIcon, pauseIcon } from '../assets/icons';
+
 const Home = ({ token }) => {
   const [tracks, setTracks] = useState([]);
   const { playerTrack, isStreaming, trackId } = usePlayerContext();
   const { setIsTrackSet } = useContext(SearchContext);
   const changeCountRef = useRef(0);
-  const { toggleSelectVisible } = useContext(PlaylistSelectionContext);
-  const { toggleCreateVisible } = useContext(PlaylistContext);
+  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+  // const { toggleCreateVisible } = useContext(PlaylistContext);
 
   useEffect(() => {
     // const hash = window.location.hash;
@@ -119,7 +120,7 @@ const Home = ({ token }) => {
                     className="home__track-add-button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleSelectVisible();
+                      handleTrackSelect(track, 'recentTrack');
                     }}
                   >
                     <img src="img/plus.png" className="home__track-add-button-icon" />
