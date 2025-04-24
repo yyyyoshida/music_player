@@ -9,6 +9,7 @@ import { SearchContext } from './SearchContext';
 import { PlaylistSelectionContext } from './PlaylistSelectionContext';
 import TrackItem from './TrackItem';
 import { PlaylistContext } from './PlaylistContext';
+import { PlaybackContext } from '../contexts/PlaybackContext';
 
 const PlaylistDetail = () => {
   const { id } = useParams();
@@ -19,6 +20,8 @@ const PlaylistDetail = () => {
   const { setIsTrackSet } = useContext(SearchContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { formatTimeHours } = useContext(PlaylistContext);
+
+  const { setQueue } = useContext(PlaybackContext);
 
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
@@ -51,6 +54,10 @@ const PlaylistDetail = () => {
 
     fetchTracks();
   }, [id]);
+
+  useEffect(() => {
+    setQueue(tracks);
+  }, [tracks]);
 
   return (
     <div className="playlist-detail">

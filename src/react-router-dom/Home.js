@@ -4,6 +4,7 @@ import { SearchContext } from '../components/SearchContext';
 import { PlaylistSelectionContext } from '../components/PlaylistSelectionContext';
 import { PlaylistContext } from '../components/PlaylistContext';
 import { playIcon, pauseIcon } from '../assets/icons';
+import { PlaybackContext } from '../contexts/PlaybackContext';
 
 const Home = ({ token }) => {
   const [tracks, setTracks] = useState([]);
@@ -11,7 +12,7 @@ const Home = ({ token }) => {
   const { setIsTrackSet } = useContext(SearchContext);
   const changeCountRef = useRef(0);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  // const { toggleCreateVisible } = useContext(PlaylistContext);
+  const { setQueue } = useContext(PlaybackContext);
 
   useEffect(() => {
     // const hash = window.location.hash;
@@ -74,7 +75,9 @@ const Home = ({ token }) => {
     }
   }, [token]);
 
-  // console.log(trackId);
+  useEffect(() => {
+    setQueue(tracks);
+  }, [tracks]);
 
   return (
     <div className="home">

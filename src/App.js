@@ -74,19 +74,19 @@ function App() {
 
   return (
     <BrowserRouter>
-      <PlaybackProvider>
-        <SearchProvider>
-          <RepeatProvider>
-            <PlayerProvider token={token}>
+      <RepeatProvider>
+        <PlayerProvider token={token}>
+          <PlaybackProvider>
+            <SearchProvider>
               {/* <h1>Spotifyアプリ</h1> */}
               {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
               <Header token={token} onSearchResults={handleSearchResults} />
               {/* {!token && <Login />} */}
               <Main token={token} searchResults={searchResults} />
-            </PlayerProvider>
-          </RepeatProvider>
-        </SearchProvider>
-      </PlaybackProvider>
+            </SearchProvider>
+          </PlaybackProvider>
+        </PlayerProvider>
+      </RepeatProvider>
     </BrowserRouter>
   );
 }
