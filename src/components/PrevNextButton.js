@@ -1,51 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { usePlayerContext } from './PlayerContext';
-import { songs, playSong, loadSong } from './PlayMusic';
 import Tooltip from './Tooltip';
 import useButtonTooltip from '../hooks/useButtonTooltip';
+import { PlaybackContext } from '../contexts/PlaybackContext';
 
 const PrevNextButton = ({ type }) => {
-  const { isPlaying, setCurrentSongIndex } = usePlayerContext();
+  const { goToPreviousTrack, goToNextTrack } = useContext(PlaybackContext);
+  const { isPlaying } = usePlayerContext();
   const [isClickable, setIsClickable] = useState(true);
+
   const clickDelay = 350;
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
 
-  function playLoadSong(index) {
-    // console.log(index);
-    if (isPlaying) {
-      playSong(index);
-    } else {
-      loadSong(index);
-    }
-  }
-
   function handlePrevNextClick() {
     if (!isClickable) return;
+
     handleButtonPress();
     setIsClickable(false);
+
     if (type === 'prev') {
-      prevSong();
+      goToPreviousTrack();
     } else {
-      nextSong();
+      goToNextTrack();
     }
+
     setTimeout(() => {
       setIsClickable(true);
     }, clickDelay);
-  }
-
-  function prevSong() {
-    setCurrentSongIndex((prevIndex) => {
-      const newIndex = (prevIndex - 1 + songs.length) % songs.length;
-      playLoadSong(newIndex);
-      return newIndex;
-    });
-  }
-  function nextSong() {
-    setCurrentSongIndex((prevIndex) => {
-      const newIndex = (prevIndex + 1) % songs.length;
-      playLoadSong(newIndex);
-      return newIndex;
-    });
   }
 
   return (

@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import { playIcon, pauseIcon } from '../assets/icons';
+import { PlaybackContext } from '../contexts/PlaybackContext';
 
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, handleTrackSelect, formatTime }) => {
+  const { setQueue, queue, playTrackAt } = useContext(PlaybackContext);
+
+  // useEffect(() => {
+  //   console.log(queue);
+  // }, [queue]);
+
   return (
     <li
       // key={index || track.id}
       key={index}
-      className={`track-item ${isTrackPlaying ? 'playing' : ''} ${isClicked ? 'clicked' : ''} ${track.id}`}
+      className={`track-item ${isTrackPlaying ? 'playing' : ''} ${isClicked ? 'clicked' : ''}`}
       onClick={() => {
         playerTrack(track.trackUri || track.uri, isClicked);
         setIsTrackSet(true);
+        playTrackAt(index);
       }}
     >
       <div className="track-item__left">

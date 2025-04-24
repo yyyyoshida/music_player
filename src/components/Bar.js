@@ -6,6 +6,7 @@ import useButtonTooltip from '../hooks/useButtonTooltip';
 import { useRepeatContext } from './RepeatContext';
 import useDelayedText from '../hooks/useDelayText';
 import VolumeIcon from './VolumeIcon';
+import { PlaybackContext } from '../contexts/PlaybackContext';
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
@@ -16,13 +17,14 @@ const Bar = ({ ParentClassName, type, value }) => {
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
 
-  const { currentSongIndex, togglePlayPause, setIsPlaying, isStreaming } = usePlayerContext();
+  const { currentSongIndex, togglePlayPause, setIsPlaying, isStreaming, player } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
 
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText('ミュート解除', 'ミュート', isMuted, isMuted);
 
   const { updateVolume, seekTo, duration, position } = usePlayerContext();
+  const { goToNextTrack, resumePlayback } = useContext(PlaybackContext);
 
   useEffect(() => {
     volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
@@ -130,7 +132,8 @@ const Bar = ({ ParentClassName, type, value }) => {
     }
 
     if (isTrackFinished && !isRepeat && !isStreaming) {
-      setIsPlaying(false);
+      // resumePlayback();
+      goToNextTrack();
     }
   }, [percentage, isRepeat]);
 
