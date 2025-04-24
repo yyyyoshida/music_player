@@ -1,20 +1,16 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import Footer from './Footer';
+// import Footer from './Footer';
 import PlayerControls from './PlayerControls';
 import ThumbnailPreview from './ThumbnailPreview';
 import { TrackInfoProvider } from './TrackInfoContext';
 import Login from './Login';
-import { SearchContext } from './SearchContext';
-// import SearchResultList from './SearchResultList';
+import { TokenContext } from '../contexts/isTokenContext';
 
-import db from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
-
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import SearchResult from './SearchResult';
 import Home from '../react-router-dom/Home';
 
-import LOGIN_URL from '../config/spotifyConfig';
+// import LOGIN_URL from '../config/spotifyConfig';
 
 import Playlist from './Playlist';
 import CreatePlaylist from './CreatePlaylist';
@@ -22,31 +18,10 @@ import { PlaylistProvider } from './PlaylistContext';
 import { PlaylistSelectionProvider } from './PlaylistSelectionContext';
 import PlaylistSelection from './PlaylistSelection';
 import PlaylistDetail from './PlaylistDetail';
-import { PlaylistDetailProvider } from '../context/PlaylistDetailContext';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
-  const { query, isToken, setIsToken } = useContext(SearchContext);
-
-  const [tracks, setTrack] = useState([]);
-
-  // useEffect(() => {
-  //   // データー取得する
-  //   // const trackData = collection(db, 'test');
-  //   // getDocs(trackData).then((snapShot) => {
-  //   //   console.log(snapShot.docs.map((doc) => doc.data()));
-  //   // });
-  //   const getData = async () => {
-  //     // const querySnapshot = await getDocs(collection(db, 'test'));
-  //     const querySnapshot = await getDocs(collection(db, 'playlists'));
-  //     querySnapshot.forEach((doc) => {
-  //       // console.log(`${doc.id} => ${doc.data()}`);
-  //       console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-  //       console.log(`${doc.id} => ${JSON.stringify(doc.data(), null, 2)}`);
-  //     });
-  //   };
-  //   getData();
-  // }, []);
+  const { isToken, setIsToken } = useContext(TokenContext);
 
   useEffect(() => {
     // useLayoutEffect(() => {
@@ -114,18 +89,17 @@ const Main = ({ token }) => {
             <ThumbnailPreview />
             <PlaylistProvider>
               <PlaylistSelectionProvider>
-                <PlaylistDetailProvider>
-                  <PlaylistSelection />
-                  <CreatePlaylist />
-
-                  <Routes>
-                    <Route path="/" element={<Home token={token} />} />
-                    <Route path="/search-result" element={<SearchResult />} />
-                    <Route path="/playlist" element={<Playlist />} />
-                    {/* <Route path="/playlist-detail" element={<PlaylistDetail />} /> */}
-                    <Route path="/playlist-detail/:id" element={<PlaylistDetail />} />
-                  </Routes>
-                </PlaylistDetailProvider>
+                <PlaylistSelection />
+                <CreatePlaylist />
+                {/* <PlaybackProvider> */}
+                <Routes>
+                  <Route path="/" element={<Home token={token} />} />
+                  <Route path="/search-result" element={<SearchResult />} />
+                  <Route path="/playlist" element={<Playlist />} />
+                  {/* <Route path="/playlist-detail" element={<PlaylistDetail />} /> */}
+                  <Route path="/playlist-detail/:id" element={<PlaylistDetail />} />
+                </Routes>
+                {/* </PlaybackProvider> */}
               </PlaylistSelectionProvider>
             </PlaylistProvider>
 
@@ -179,3 +153,20 @@ export default Main;
 // useContextファイルはcontextフォルダーに入れる【ファイルの整理】
 
 // プレイリスト作成時にWindow内臓のメディアプレイヤーのプレイリストの名前を変更時のモーダルの表示のあの感じを参考にする
+
+// プレイリストの曲数だったり、合計時間の表示 ✅
+
+// 順に再生ボタンが機能するようにする
+
+// プレイリストの画像をちゃんと適応させる ✅
+
+// プレイリストの画像は追加した順から最初の４つの画像を取得する ✅
+
+// プレイリストでシャッフル再生と次へ前へボタンの作成
+
+// プレイリスト一覧でホバーすると再生ボタンがでる
+// 再生ボタンを押すとそのまま順番に曲の再生
+// 再生ボタン以外を押すとページに遷移する
+
+// 曲の配列をuseStateとuseContextで保持
+// currentIndexのuseStateを作ってどーのこーの

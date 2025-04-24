@@ -3,12 +3,15 @@ import Header from './components/Header';
 import Main from './components/Main';
 import Login from './components/Login';
 import { getNewAccessToken } from './utils/spotifyAuth'; // getNewAccessTokenをインポート
-// import { SearchProvider, SearchContext } from './components/SearchContext';
-import { SearchContext } from './components/SearchContext';
+import { SearchProvider } from './components/SearchContext';
+// import { SearchContext } from './components/SearchContext';
+import { TokenContext } from './contexts/isTokenContext';
 import { PlayerProvider } from './components/PlayerContext';
 import { RepeatProvider } from './components/RepeatContext';
 
 import { BrowserRouter } from 'react-router-dom';
+
+import { PlaybackProvider } from './contexts/PlaybackContext';
 
 // import db from './firebase';
 // import { collection, getDocs } from 'firebase/firestore';
@@ -17,7 +20,7 @@ function App() {
   const [token, setToken] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
 
-  const { isToken, setIsToken } = useContext(SearchContext);
+  const { isToken, setIsToken } = useContext(TokenContext);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -71,17 +74,19 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* <SearchProvider> */}
-      <RepeatProvider>
-        <PlayerProvider token={token}>
-          {/* <h1>Spotifyアプリ</h1> */}
-          {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-          <Header token={token} onSearchResults={handleSearchResults} />
-          {/* {!token && <Login />} */}
-          <Main token={token} searchResults={searchResults} />
-        </PlayerProvider>
-      </RepeatProvider>
-      {/* </SearchProvider> */}
+      <PlaybackProvider>
+        <SearchProvider>
+          <RepeatProvider>
+            <PlayerProvider token={token}>
+              {/* <h1>Spotifyアプリ</h1> */}
+              {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
+              <Header token={token} onSearchResults={handleSearchResults} />
+              {/* {!token && <Login />} */}
+              <Main token={token} searchResults={searchResults} />
+            </PlayerProvider>
+          </RepeatProvider>
+        </SearchProvider>
+      </PlaybackProvider>
     </BrowserRouter>
   );
 }
