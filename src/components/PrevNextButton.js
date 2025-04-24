@@ -5,7 +5,7 @@ import useButtonTooltip from '../hooks/useButtonTooltip';
 import { PlaybackContext } from '../contexts/PlaybackContext';
 
 const PrevNextButton = ({ type }) => {
-  const { goToPreviousTrack, goToNextTrack } = useContext(PlaybackContext);
+  const { goToPreviousTrack, goToNextTrack, isPrevDisabled, isNextDisabled } = useContext(PlaybackContext);
   const { isPlaying } = usePlayerContext();
   const [isClickable, setIsClickable] = useState(true);
 
@@ -31,7 +31,10 @@ const PrevNextButton = ({ type }) => {
 
   return (
     <button
-      className={`player-controls__button ${type === 'next' ? 'next-button' : 'prev-button'}`}
+      className={`player-controls__button
+         ${type === 'next' ? 'next-button' : 'prev-button'} 
+         ${type === 'next' && isNextDisabled ? 'disabled' : ''} 
+         ${type === 'prev' && isPrevDisabled ? 'disabled' : ''}`}
       onClick={handlePrevNextClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
