@@ -10,7 +10,9 @@
     user-select: none;
   }
   // transition: background-color 0.05s;
-  transition: background-color 0.2s;
+  transition:
+    background-color 0.2s,
+    opacity ease 0.2s;
   &:hover {
     // opacity: 0.8;
     background-color: #3a3a3a;

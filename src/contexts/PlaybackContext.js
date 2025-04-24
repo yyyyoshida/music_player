@@ -6,8 +6,8 @@ export const PlaybackContext = createContext();
 export const PlaybackProvider = ({ children }) => {
   const [queue, setQueue] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const [isPrevDisabled, setIsPrevDisabled] = useState(true);
-  // const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const [isPrevDisabled, setIsPrevDisabled] = useState(true);
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
 
   const currentIndexRef = useRef(0);
 
@@ -19,10 +19,12 @@ export const PlaybackProvider = ({ children }) => {
     console.log('一覧のトラック数', queue[0]);
   }, [queue]);
 
-  // useEffect(() => {
-  //   setIsPrevDisabled(currentIndexRef.current <= 0);
-  //   setIsNextDisabled(currentIndexRef.current >= queue.length - 1);
-  // }, [queue, currentIndex]);
+  // console.log(queue.length === 0);
+
+  useEffect(() => {
+    setIsPrevDisabled(currentIndexRef.current <= 0);
+    setIsNextDisabled(currentIndexRef.current >= queue.length - 1);
+  }, [queue, currentIndex]);
 
   // クリックしたトラックのインデックスをセット
   const playTrackAt = (index) => {
@@ -33,7 +35,7 @@ export const PlaybackProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log(currentIndexRef.current, 'これが曲のインデックス');
+    console.log(currentIndexRef.current, 'これが現在の曲のインデックス');
   }, [currentIndex]);
 
   function goToNextTrack() {
@@ -73,8 +75,8 @@ export const PlaybackProvider = ({ children }) => {
         goToNextTrack,
         goToPreviousTrack,
         resumePlayback,
-        // isPrevDisabled,
-        // isNextDisabled,
+        isPrevDisabled,
+        isNextDisabled,
       }}
     >
       {children}
