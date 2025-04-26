@@ -1,15 +1,25 @@
 import React, { useContext } from 'react';
 import { PlaylistSelectionContext } from './PlaylistSelectionContext';
 import { PlaylistContext } from '../components/PlaylistContext';
+import usePlaylists from '../hooks/useFetchPlaylists';
 
 const PlaylistSelection = () => {
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
 
-  const { toggleCreateVisible, playlists, loading } = useContext(PlaylistContext);
+  const { toggleCreateVisible } = useContext(PlaylistContext);
 
-  // if (loading) {
-  //   return <div>読み込み中やで〜🎶</div>;
-  // }
+  const { playlists, loading } = usePlaylists();
+
+  if (loading) {
+    return (
+      <div className="loading mini-loading">
+        <div className="loading__content mini-loading-content">
+          <p className="loading__text mini-loading-text">読み込み中</p>
+          <div className="loading__spinner mini-loading-loading-spinner loader"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? 'visible' : 'hidden' }}>

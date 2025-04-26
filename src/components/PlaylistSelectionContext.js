@@ -1,7 +1,6 @@
-import React, { createContext, useState, useContext, useRef, useEffect } from 'react';
+import React, { createContext, useState, useRef } from 'react';
 import { addDoc, collection, getDocs, increment, serverTimestamp, updateDoc, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
-import { PlaylistContext } from '../components/PlaylistContext';
 
 export const PlaylistSelectionContext = createContext();
 
@@ -11,43 +10,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
   const playlistNameRef = useRef('');
 
-  const { setPlaylists, loading, setLoading } = useContext(PlaylistContext);
-
   function toggleSelectVisible() {
     setIsSelectVisible((prev) => !prev);
   }
-
-  useEffect(() => {
-    const playlistsRef = collection(db, 'playlists');
-
-    // `onSnapshot` を使ってリアルタイムでデータの更新を監視
-    const unsubscribe = onSnapshot(playlistsRef, async (snapshot) => {
-      setLoading(true); // ローディング開始
-
-      const playlistsData = await Promise.all(
-        snapshot.docs.map(async (doc) => {
-          const playlistId = doc.id;
-          const tracksSnapshot = await getDocs(collection(db, 'playlists', playlistId, 'tracks'));
-          const tracks = tracksSnapshot.docs.map((doc) => doc.data());
-          return {
-            id: playlistId,
-            ...doc.data(),
-            trackCount: tracksSnapshot.size || 0, // トラック数
-            albumImages: tracks
-              .slice()
-              .reverse()
-              .slice(0, 4)
-              .map((track) => track.albumImage), // 最後の4枚のアルバム画像
-          };
-        })
-      );
-
-      setPlaylists(playlistsData);
-      setLoading(false); // ローディング終了
-    });
-
-    return () => unsubscribe(); // コンポーネントがアンマウントされた時にリスナーを解除
-  }, []);
 
   const addTrackToPlaylist = async (playlistId) => {
     if (!selectedTrack) return;
@@ -112,7 +77,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
         addTrackToPlaylist,
         setSelectedTrack,
         handleTrackSelect,
-        loading,
       }}
     >
       {children}
