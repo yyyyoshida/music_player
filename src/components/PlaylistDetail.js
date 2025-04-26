@@ -10,18 +10,21 @@ import { PlaylistSelectionContext } from './PlaylistSelectionContext';
 import TrackItem from './TrackItem';
 import { PlaylistContext } from './PlaylistContext';
 import { PlaybackContext } from '../contexts/PlaybackContext';
+import RenamePlaylist from './RenamePlaylist';
 
 const PlaylistDetail = () => {
   const { id } = useParams();
+
   const [tracks, setTracks] = useState([]);
+  const [isRenameVisible, setIsRenameVisible] = useState(false);
   const [playlistInfo, setPlaylistInfo] = useState({ title: '', duration: 0 });
 
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
+
   const { setIsTrackSet } = useContext(SearchContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  const { formatTimeHours } = useContext(PlaylistContext);
-
-  const { setQueue } = useContext(PlaybackContext);
+  const { formatTimeHours, playlistName, setPlaylistName } = useContext(PlaylistContext);
+  const { setQueue, queue, playTrackAt } = useContext(PlaybackContext);
 
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
@@ -57,13 +60,17 @@ const PlaylistDetail = () => {
 
   useEffect(() => {
     setQueue(tracks);
+    setIsTrackSet(true);
   }, [tracks]);
+
+  function toggleRenameVisible() {
+    setIsRenameVisible((prev) => !prev);
+  }
 
   return (
     <div className="playlist-detail">
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
-          {/* {tracks.slice(0, 4).map((track, i) => ( */}
           {[...tracks]
             .reverse()
             .slice(0, 4)
@@ -77,16 +84,23 @@ const PlaylistDetail = () => {
           ></img>
         </div>
         <div className="playlist-detail__header-info">
-          <h2 className="playlist-detail__header-title">{playlistInfo.name}</h2>
+          <h2 className="playlist-detail__header-title">{playlistName}</h2>
+
           <p className="playlist-detail__header-status"> {`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration)}`}</p>
         </div>
 
         <div className="playlist-detail__header-actions-buttons">
-          <button className="playlist-detail__header-play-button playlist-detail__header-button">
+          <button
+            className="playlist-detail__header-play-button playlist-detail__header-button"
+            onClick={() => {
+              playerTrack(queue[0].trackUri);
+              playTrackAt(0);
+            }}
+          >
             <img src={playIcon} className="playlist-detail__header-play-button-icon playlist-detail__header-button-icon" />
             順に再生
           </button>
-          <button className="playlist-detail__header-rename-button playlist-detail__header-button">
+          <button className="playlist-detail__header-rename-button playlist-detail__header-button" onClick={toggleRenameVisible}>
             <img src="/img/rename.png" className="playlist-detail__header-rename-button-icon playlist-detail__header-button-icon" />
             名前を変更
           </button>
@@ -121,6 +135,8 @@ const PlaylistDetail = () => {
           );
         })}
       </ul>
+
+      <RenamePlaylist isRenameVisible={isRenameVisible} toggleRenameVisible={toggleRenameVisible} tracks={tracks} />
     </div>
   );
 };
