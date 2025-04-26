@@ -51,15 +51,24 @@ const RenamePlaylist = ({ isRenameVisible, toggleRenameVisible, tracks }) => {
   return (
     <div className="rename-playlist-modal modal" style={{ visibility: isRenameVisible ? 'visible' : 'hidden' }}>
       <div className="rename-playlist-modal__smoke modal-smoke">
-        <div className="rename-playlist-modal__card modal-card">
+        <div className="rename-playlist-modal__content modal-content">
           <h2 className="rename-playlist-modal__title modal-title">プレイリストの名を変更</h2>
-          <div className="rename-playlist-modal__cover-img-wrapper">
-            {[...tracks]
-              .reverse()
-              .slice(0, 4)
-              .map((track, i) => (
-                <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
-              ))}
+          <div className="rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper">
+            {tracks.length > 0 ? (
+              [...tracks]
+                .reverse()
+                .slice(0, 4)
+                .map((track, i) => (
+                  <img
+                    key={i}
+                    src={track.albumImage}
+                    alt={`track-${i}`}
+                    className={`playlist-detail__header-cover-img img-${i} modal-cover-img`}
+                  />
+                ))
+            ) : (
+              <img src="/img/playlist-icon1.png" alt="初期カバー" className="rename-playlist-modal__initial-cover-img" />
+            )}
           </div>
           <div className="rename-playlist-modal__field modal-field">
             <label className="rename-playlist-modal__label modal-label" htmlFor="title">
@@ -68,14 +77,11 @@ const RenamePlaylist = ({ isRenameVisible, toggleRenameVisible, tracks }) => {
             <input className="rename-playlist-modal__input modal-input" id="title" ref={RenameRef} />
           </div>
           <div className="rename-playlist-modal__actions modal-actions">
-            <button
-              className="rename-playlist-modal__cancel playlist-cancel-create-button modal-cancel-submit-button modal-cancel-button"
-              onClick={toggleRenameVisible}
-            >
+            <button className="rename-playlist-modal__cancel modal-cancel-submit-button modal-cancel-button" onClick={toggleRenameVisible}>
               キャンセル
             </button>
             <button
-              className="rename-playlist-modal__create playlist-cancel-create-button modal-cancel-submit-button modal-submit-button"
+              className="rename-playlist-modal__create modal-cancel-submit-button modal-submit-button"
               onClick={() => {
                 handleSaveRename();
               }}
