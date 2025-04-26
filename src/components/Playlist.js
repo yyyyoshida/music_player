@@ -3,11 +3,14 @@ import { PlaylistContext } from './PlaylistContext';
 import { useNavigate } from 'react-router-dom';
 
 const Playlist = () => {
-  const { toggleCreateVisible, playlists, formatTimeHours } = useContext(PlaylistContext);
+  const { toggleCreateVisible, playlists, formatTimeHours, loading } = useContext(PlaylistContext);
   const navigate = useNavigate();
 
   function handlePlaylistClick(playlistId) {
     navigate(`/playlist-detail/${playlistId}`);
+  }
+  if (loading) {
+    return <div>読み込み中やで〜🎶</div>;
   }
 
   return (

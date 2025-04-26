@@ -5,7 +5,11 @@ import { PlaylistContext } from '../components/PlaylistContext';
 const PlaylistSelection = () => {
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
 
-  const { toggleCreateVisible, playlists } = useContext(PlaylistContext);
+  const { toggleCreateVisible, playlists, loading } = useContext(PlaylistContext);
+
+  // if (loading) {
+  //   return <div>読み込み中やで〜🎶</div>;
+  // }
 
   return (
     <div className="playlist-selection" style={{ visibility: isSelectVisible ? 'visible' : 'hidden' }}>

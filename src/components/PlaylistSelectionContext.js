@@ -1,47 +1,52 @@
 import React, { createContext, useState, useContext, useRef, useEffect } from 'react';
-import { addDoc, collection, getDocs, increment, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
+import { addDoc, collection, getDocs, increment, serverTimestamp, updateDoc, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { PlaylistContext } from '../components/PlaylistContext';
 
 export const PlaylistSelectionContext = createContext();
 
 export const PlaylistSelectionProvider = ({ children }) => {
-  // const [isSelectVisible, setIsSelectVisible] = useState(true);
   const [isSelectVisible, setIsSelectVisible] = useState(false);
+  const [selectedTrack, setSelectedTrack] = useState(null);
+
   const playlistNameRef = useRef('');
 
-  const { toggleCreateVisible, playlists, setPlaylists } = useContext(PlaylistContext);
-
-  const [selectedTrack, setSelectedTrack] = useState(null);
+  const { setPlaylists, loading, setLoading } = useContext(PlaylistContext);
 
   function toggleSelectVisible() {
     setIsSelectVisible((prev) => !prev);
   }
 
   useEffect(() => {
-    const fetchPlaylistsWithTrackCount = async () => {
-      const querySnapshot = await getDocs(collection(db, 'playlists'));
-      const playlists = await Promise.all(
-        querySnapshot.docs.map(async (doc) => {
+    const playlistsRef = collection(db, 'playlists');
+
+    // `onSnapshot` を使ってリアルタイムでデータの更新を監視
+    const unsubscribe = onSnapshot(playlistsRef, async (snapshot) => {
+      setLoading(true); // ローディング開始
+
+      const playlistsData = await Promise.all(
+        snapshot.docs.map(async (doc) => {
           const playlistId = doc.id;
           const tracksSnapshot = await getDocs(collection(db, 'playlists', playlistId, 'tracks'));
           const tracks = tracksSnapshot.docs.map((doc) => doc.data());
           return {
             id: playlistId,
             ...doc.data(),
-            trackCount: tracksSnapshot.size || 0, // ← 念のため保険かけとく
+            trackCount: tracksSnapshot.size || 0, // トラック数
             albumImages: tracks
               .slice()
               .reverse()
               .slice(0, 4)
-              .map((track) => track.albumImage),
+              .map((track) => track.albumImage), // 最後の4枚のアルバム画像
           };
         })
       );
-      setPlaylists(playlists);
-    };
 
-    fetchPlaylistsWithTrackCount();
+      setPlaylists(playlistsData);
+      setLoading(false); // ローディング終了
+    });
+
+    return () => unsubscribe(); // コンポーネントがアンマウントされた時にリスナーを解除
   }, []);
 
   const addTrackToPlaylist = async (playlistId) => {
@@ -83,7 +88,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
         artist: track.artist,
         duration: track.duration,
       });
-      // } else if (type === 'recentTrack') {
     } else {
       setSelectedTrack({
         trackId: track.track.id,
@@ -108,6 +112,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         addTrackToPlaylist,
         setSelectedTrack,
         handleTrackSelect,
+        loading,
       }}
     >
       {children}
