@@ -12,13 +12,13 @@ const PlaylistSelection = () => {
   // }
 
   return (
-    <div className="playlist-selection" style={{ visibility: isSelectVisible ? 'visible' : 'hidden' }}>
-      <div className="playlist-selection__smoke">
-        <div className="playlist-selection__content">
+    <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? 'visible' : 'hidden' }}>
+      <div className="playlist-selection__smoke modal-smoke">
+        <div className="playlist-selection__content modal-content">
           <button className="playlist-selection__close-button" onClick={toggleSelectVisible}>
             <img src="/img/x.png" className="playlist-selection__close-icon button"></img>
           </button>
-          <h2 className="playlist-selection__title">プレイリスト選択</h2>
+          <h2 className="playlist-selection__title modal-title">プレイリスト選択</h2>
           <button
             className="playlist-selection__create-button playlist-create-button"
             onClick={() => {

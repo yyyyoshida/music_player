@@ -5,21 +5,30 @@ const CreatePlaylist = () => {
   const { toggleCreateVisible, handleCreatePlaylist, isCreateVisible, playlistNameRef } = useContext(PlaylistContext);
 
   return (
-    <div className="playlist-page__create-playlist-modal" style={{ visibility: isCreateVisible ? 'visible' : 'hidden' }}>
-      <div className="playlist-page__create-playlist-modal-smoke">
-        <div className="playlist-page__create-playlist-modal-card">
-          <h2 className="playlist-page__create-playlist-modal-title">新しいプレイリスト</h2>
-          <div className="playlist-page__create-playlist-modal-field">
-            <label className="playlist-page__create-playlist-modal-label" htmlFor="title">
+    <div className="playlist-page__create-playlist-modal modal" style={{ visibility: isCreateVisible ? 'visible' : 'hidden' }}>
+      <div className="playlist-page__create-playlist-modal-smoke modal-smoke">
+        <div className="playlist-page__create-playlist-modal-content modal-content">
+          <h2 className="playlist-page__create-playlist-modal-title modal-title">新しいプレイリスト</h2>
+          <div className="playlist-page__create-playlist-modal-cover-img-wrapper modal-cover-img-wrapper">
+            <img className="playlist-page__create-playlist-modal-initial-cover-img" src="/img/playlist-icon1.png"></img>
+          </div>
+          <div className="playlist-page__create-playlist-modal-field modal-field">
+            <label className="playlist-page__create-playlist-modal-label modal-label" htmlFor="title">
               タイトル
             </label>
-            <input className="playlist-page__create-playlist-modal-input" id="title" ref={playlistNameRef} />
+            <input className="playlist-page__create-playlist-modal-input modal-input" id="title" ref={playlistNameRef} />
           </div>
-          <div className="playlist-page__create-playlist-modal-actions">
-            <button className="playlist-page__create-playlist-modal-cancel playlist-cancel-create-button" onClick={toggleCreateVisible}>
+          <div className="playlist-page__create-playlist-modal-actions modal-actions">
+            <button
+              className="playlist-page__create-playlist-modal-cancel modal-cancel-submit-button modal-cancel-button"
+              onClick={toggleCreateVisible}
+            >
               キャンセル
             </button>
-            <button className="playlist-page__create-playlist-modal-create playlist-cancel-create-button" onClick={handleCreatePlaylist}>
+            <button
+              className="playlist-page__create-playlist-modal-create modal-cancel-submit-button modal-submit-button"
+              onClick={handleCreatePlaylist}
+            >
               作成
             </button>
           </div>

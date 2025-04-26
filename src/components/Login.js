@@ -24,10 +24,10 @@ const Login = () => {
 
   return (
     <>
-      <div className="login" style={{ visibility: newIsToken ? 'hidden' : 'visible' }}>
-        <div className="login__smoke"></div>
-        <div className="login__card">
-          <h2 className="login__title">Spotifyを使った独自の音楽プレイヤー</h2>
+      <div className="login modal" style={{ visibility: newIsToken ? 'hidden' : 'visible' }}>
+        <div className="login__smoke modal-smoke"></div>
+        <div className="login__content modal-content">
+          <h2 className="login__title modal-title">Spotifyを使った独自の音楽プレイヤー</h2>
           <p className="login__text">
             Spotifyアカウントでログインして、お気に入りの音楽を楽しもう！<br></br>
             自分だけのプレイリストを作ったり、好きな曲を自由に再生できるよ♪<br></br>
