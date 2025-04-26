@@ -1,16 +1,27 @@
-import React, { useContext } from 'react';
-import { PlaylistContext } from './PlaylistContext';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PlaylistContext } from './PlaylistContext';
+import usePlaylists from '../hooks/useFetchPlaylists';
 
 const Playlist = () => {
-  const { toggleCreateVisible, playlists, formatTimeHours, loading } = useContext(PlaylistContext);
+  const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
+  const { playlists, loading } = usePlaylists();
+
   const navigate = useNavigate();
 
   function handlePlaylistClick(playlistId) {
     navigate(`/playlist-detail/${playlistId}`);
   }
+
   if (loading) {
-    return <div>読み込み中やで〜🎶</div>;
+    return (
+      <div className="loading">
+        <div className="loading__content">
+          <p className="loading__text">読み込み中</p>
+          <div className="loading__spinner loader"></div>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -7,12 +7,10 @@ import { db } from '../firebase';
 export const PlaylistContext = createContext();
 
 export const PlaylistProvider = ({ children }) => {
-  const [playlists, setPlaylists] = useState([]);
   const [isCreateVisible, setIsCreateVisible] = useState(false);
   const playlistNameRef = useRef('');
   const [playlistInfo, setPlaylistInfo] = useState({ title: '', duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
-  const [loading, setLoading] = useState(true);
 
   function toggleCreateVisible() {
     setIsCreateVisible((prev) => !prev);
@@ -63,14 +61,10 @@ export const PlaylistProvider = ({ children }) => {
         isCreateVisible,
         setIsCreateVisible,
         playlistNameRef,
-        playlists,
-        setPlaylists,
         formatTimeHours,
         playlistName,
         setPlaylistName,
         playlistInfo,
-        loading,
-        setLoading,
       }}
     >
       {children}

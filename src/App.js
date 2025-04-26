@@ -13,6 +13,9 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { PlaybackProvider } from './contexts/PlaybackContext';
 
+import { PlaylistProvider } from './components/PlaylistContext';
+import { PlaylistSelectionProvider } from './components/PlaylistSelectionContext';
+
 // import db from './firebase';
 // import { collection, getDocs } from 'firebase/firestore';
 
@@ -21,6 +24,8 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
 
   const { isToken, setIsToken } = useContext(TokenContext);
+
+  // const {toggle}
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -78,11 +83,15 @@ function App() {
         <PlayerProvider token={token}>
           <PlaybackProvider>
             <SearchProvider>
-              {/* <h1>Spotifyアプリ</h1> */}
-              {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-              <Header token={token} onSearchResults={handleSearchResults} />
-              {/* {!token && <Login />} */}
-              <Main token={token} searchResults={searchResults} />
+              <PlaylistProvider>
+                <PlaylistSelectionProvider>
+                  {/* <h1>Spotifyアプリ</h1> */}
+                  {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
+                  <Header token={token} onSearchResults={handleSearchResults} />
+                  {/* {!token && <Login />} */}
+                  <Main token={token} searchResults={searchResults} />
+                </PlaylistSelectionProvider>
+              </PlaylistProvider>
             </SearchProvider>
           </PlaybackProvider>
         </PlayerProvider>

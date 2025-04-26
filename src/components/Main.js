@@ -14,14 +14,15 @@ import Home from '../react-router-dom/Home';
 
 import Playlist from './Playlist';
 import CreatePlaylist from './CreatePlaylist';
-import { PlaylistProvider } from './PlaylistContext';
-import { PlaylistSelectionProvider } from './PlaylistSelectionContext';
+// import { PlaylistProvider } from './PlaylistContext';
+import { PlaylistSelectionContext } from './PlaylistSelectionContext';
 import PlaylistSelection from './PlaylistSelection';
 import PlaylistDetail from './PlaylistDetail';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
   const { isToken, setIsToken } = useContext(TokenContext);
+  const { isSelectVisible } = useContext(PlaylistSelectionContext);
 
   useEffect(() => {
     // useLayoutEffect(() => {
@@ -85,26 +86,27 @@ const Main = ({ token }) => {
       {/* <CreatePlaylist /> */}
       <div className="container">
         <main>
+          {/* <PlaylistProvider>
+            <PlaylistSelectionProvider> */}
           <TrackInfoProvider>
             <ThumbnailPreview />
-            <PlaylistProvider>
-              <PlaylistSelectionProvider>
-                <PlaylistSelection />
-                <CreatePlaylist />
-                {/* <PlaybackProvider> */}
-                <Routes>
-                  <Route path="/" element={<Home token={token} />} />
-                  <Route path="/search-result" element={<SearchResult />} />
-                  <Route path="/playlist" element={<Playlist />} />
-                  {/* <Route path="/playlist-detail" element={<PlaylistDetail />} /> */}
-                  <Route path="/playlist-detail/:id" element={<PlaylistDetail />} />
-                </Routes>
-                {/* </PlaybackProvider> */}
-              </PlaylistSelectionProvider>
-            </PlaylistProvider>
+            {/* <PlaylistSelection /> */}
+            {isSelectVisible && <PlaylistSelection />}
+            <CreatePlaylist />
+            {/* <PlaybackProvider> */}
+            <Routes>
+              <Route path="/" element={<Home token={token} />} />
+              <Route path="/search-result" element={<SearchResult />} />
+              <Route path="/playlist" element={<Playlist />} />
+              {/* <Route path="/playlist-detail" element={<PlaylistDetail />} /> */}
+              <Route path="/playlist-detail/:id" element={<PlaylistDetail />} />
+            </Routes>
+            {/* </PlaybackProvider> */}
 
             <PlayerControls />
           </TrackInfoProvider>
+          {/* </PlaylistSelectionProvider>
+          </PlaylistProvider> */}
         </main>
         {/* <Footer /> */}
       </div>
@@ -162,11 +164,25 @@ export default Main;
 
 // プレイリストの画像は追加した順から最初の４つの画像を取得する ✅
 
-// プレイリストでシャッフル再生と次へ前へボタンの作成
+// プレイリストでシャッフル再生と次へ前へボタンの作成 ✅
 
-// プレイリスト一覧でホバーすると再生ボタンがでる
-// 再生ボタンを押すとそのまま順番に曲の再生
+// プレイリスト一覧でホバーすると再生ボタンがでる ✅
+// 再生ボタンを押すとそのまま順番に曲の再生 ✅
 // 再生ボタン以外を押すとページに遷移する
 
-// 曲の配列をuseStateとuseContextで保持
-// currentIndexのuseStateを作ってどーのこーの
+// 曲の配列をuseStateとuseContextで保持 ✅
+// currentIndexのuseStateを作ってどーのこーの ✅
+
+// モーダルが表示する時にふわっと現れるようにする
+
+// ホームの次へボタンと前へボタンの挙動が若干おかしい
+
+// 曲がセットされてないときはプログレスバーのボタンがDisabled状態になって半透明で押せなくなる
+
+// プレイリストに行ってトラックをクリックせずに次へボタンを押した状態で再生ボタンを押すとバグる
+
+// プレイリストに同じ曲があるとkeyなんとかでログにエラー
+
+// 一部の再生中のトラックでも背景が黒にならない
+
+// ２～３コンポーネントでしか使ってないuseContextをカスタムフック化する
