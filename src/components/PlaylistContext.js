@@ -1,8 +1,7 @@
 import React, { createContext, useState, useContext, useRef, useEffect } from 'react';
-
 import { addDoc, collection } from 'firebase/firestore';
-
 import { db } from '../firebase';
+import { PlaylistSuccessMessageContext } from '../contexts/PlaylistSuccessMessageContext';
 
 export const PlaylistContext = createContext();
 
@@ -11,6 +10,7 @@ export const PlaylistProvider = ({ children }) => {
   const playlistNameRef = useRef('');
   const [playlistInfo, setPlaylistInfo] = useState({ title: '', duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
+  const { toggleisSongAdded } = useContext(PlaylistSuccessMessageContext);
 
   function toggleCreateVisible() {
     setIsCreateVisible((prev) => !prev);
@@ -26,8 +26,8 @@ export const PlaylistProvider = ({ children }) => {
       await addDoc(collection(db, 'playlists'), {
         name: playlistNameRef.current.value,
       });
-
-      console.log('プレイリスト作成成功');
+      // console.log('プレイリスト作成成功');
+      toggleisSongAdded('newPlaylist');
       playlistNameRef.current.value = '';
 
       toggleCreateVisible();
