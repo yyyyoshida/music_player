@@ -10,19 +10,20 @@ const PlaylistSelection = () => {
 
   const { playlists, loading } = usePlaylists();
 
-  if (loading) {
-    return (
-      <div className="loading mini-loading">
-        <div className="loading__content mini-loading-content">
-          <p className="loading__text mini-loading-text">読み込み中</p>
-          <div className="loading__spinner mini-loading-loading-spinner loader"></div>
-        </div>
-      </div>
-    );
-  }
+  // if (!loading) {
+  //   return (
+  //     <div className="loading mini-loading">
+  //       <div className="loading__content mini-loading-content">
+  //         <p className="loading__text mini-loading-text">読み込み中</p>
+  //         <div className="loading__spinner mini-loading-loading-spinner loader"></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? 'visible' : 'hidden' }}>
+    // <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? 'visible' : 'hidden' }}>
+    <div className="playlist-selection modal">
       <div className="playlist-selection__smoke modal-smoke">
         <div className="playlist-selection__content modal-content">
           <button className="playlist-selection__close-button" onClick={toggleSelectVisible}>
@@ -38,6 +39,15 @@ const PlaylistSelection = () => {
           >
             ＋ 新しいプレイリスト作成
           </button>
+
+          {loading && (
+            <div className="loading mini-loading">
+              <div className="loading__content mini-loading-content">
+                <p className="loading__text mini-loading-text">読み込み中</p>
+                <div className="loading__spinner mini-loading-loading-spinner loader"></div>
+              </div>
+            </div>
+          )}
           <ul className="playlist-selection__list">
             {playlists.map((playlist) => (
               <li
