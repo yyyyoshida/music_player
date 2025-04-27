@@ -28,7 +28,7 @@ const SearchBar = ({ token }) => {
 
     try {
       const encodedQuery = encodeURIComponent(queryRef.current.value); // クエリをURLエンコード
-      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track`, {
+      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`, // トークンをヘッダーに含める

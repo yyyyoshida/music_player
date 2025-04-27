@@ -7,7 +7,7 @@ const Callback = () => {
 
     if (token) {
       localStorage.setItem('access_token', token); // アクセストークンをlocalStorageに保存
-      window.location.href = '/'; // メインページに遷移
+      // window.location.href = '/home'; // メインページに遷移
     } else {
       console.error('アクセストークンの取得に失敗しました');
     }

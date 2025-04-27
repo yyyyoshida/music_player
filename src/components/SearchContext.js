@@ -14,10 +14,6 @@ export const SearchProvider = ({ children }) => {
     setQueue(searchResults);
   }, [searchResults]);
 
-  useEffect(() => {
-    console.log(queue);
-  }, [queue]);
-
   return (
     <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults, isTrackSet, setIsTrackSet }}>
       {children}

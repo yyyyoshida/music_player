@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import { usePlayerContext } from '../components/PlayerContext';
+import { TokenContext } from '../contexts/isTokenContext';
 
 export const PlaybackContext = createContext();
 
@@ -8,26 +9,30 @@ export const PlaybackProvider = ({ children }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const { isToken, setIsToken } = useContext(TokenContext);
 
   const currentIndexRef = useRef(0);
 
-  const currentTrack = queue[currentIndex] || null;
+  // const currentTrack = queue[currentIndex] || null;
 
   const { playerTrack, player } = usePlayerContext();
 
   useEffect(() => {
-    console.log('一覧のトラック数', queue[0]);
+    console.log('一覧のトラック数', queue);
   }, [queue]);
 
   // console.log(queue.length === 0);
 
   useEffect(() => {
+    if (!isToken) return;
     setIsPrevDisabled(currentIndexRef.current <= 0);
     setIsNextDisabled(currentIndexRef.current >= queue.length - 1);
   }, [queue, currentIndex]);
+  // こいつ原因です
 
   // クリックしたトラックのインデックスをセット
   const playTrackAt = (index) => {
+    console.log('発火');
     if (index >= 0 && index < queue.length) {
       setCurrentIndex(index);
       currentIndexRef.current = index;
@@ -70,7 +75,7 @@ export const PlaybackProvider = ({ children }) => {
         queue,
         setQueue,
         currentIndex,
-        currentTrack,
+        // currentTrack,
         playTrackAt,
         goToNextTrack,
         goToPreviousTrack,

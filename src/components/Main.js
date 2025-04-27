@@ -185,6 +185,10 @@ export default Main;
 
 // ホームの次へボタンと前へボタンの挙動が若干おかしい
 
+//〇〇〇 GitHubにバックアップしたコードの.gitignoreをGitHubから削除する
+
+// スクラッチでネコsigmaをLinux版にする
+
 // PlaylistSelectionにもローディングが必要かもしれない
 
 // 曲がセットされてないときはプログレスバーのボタンがDisabled状態になって半透明で押せなくなる

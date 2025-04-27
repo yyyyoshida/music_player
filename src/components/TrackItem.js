@@ -3,11 +3,7 @@ import { playIcon, pauseIcon } from '../assets/icons';
 import { PlaybackContext } from '../contexts/PlaybackContext';
 
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, handleTrackSelect, formatTime }) => {
-  const { setQueue, queue, playTrackAt } = useContext(PlaybackContext);
-
-  // useEffect(() => {
-  //   console.log(queue);
-  // }, [queue]);
+  const { playTrackAt } = useContext(PlaybackContext);
 
   return (
     <li
