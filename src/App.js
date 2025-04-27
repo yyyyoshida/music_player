@@ -15,6 +15,8 @@ import { PlaybackProvider } from './contexts/PlaybackContext';
 
 import { PlaylistProvider } from './components/PlaylistContext';
 import { PlaylistSelectionProvider } from './components/PlaylistSelectionContext';
+import { LoadingProvider } from './contexts/LoadingContext';
+import { PlaylistSuccessMessageProvider } from './contexts/PlaylistSuccessMessageContext';
 
 // import db from './firebase';
 // import { collection, getDocs } from 'firebase/firestore';
@@ -79,23 +81,27 @@ function App() {
 
   return (
     <BrowserRouter>
-      <RepeatProvider>
-        <PlayerProvider token={token}>
-          <PlaybackProvider>
-            <SearchProvider>
-              <PlaylistProvider>
-                <PlaylistSelectionProvider>
-                  {/* <h1>Spotifyアプリ</h1> */}
-                  {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-                  <Header token={token} onSearchResults={handleSearchResults} />
-                  {/* {!token && <Login />} */}
-                  <Main token={token} searchResults={searchResults} />
-                </PlaylistSelectionProvider>
-              </PlaylistProvider>
-            </SearchProvider>
-          </PlaybackProvider>
-        </PlayerProvider>
-      </RepeatProvider>
+      <PlaylistSuccessMessageProvider>
+        <RepeatProvider>
+          <LoadingProvider>
+            <PlayerProvider token={token}>
+              <PlaybackProvider>
+                <SearchProvider>
+                  <PlaylistProvider>
+                    <PlaylistSelectionProvider>
+                      {/* <h1>Spotifyアプリ</h1> */}
+                      {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
+                      <Header token={token} onSearchResults={handleSearchResults} />
+                      {/* {!token && <Login />} */}
+                      <Main token={token} searchResults={searchResults} />
+                    </PlaylistSelectionProvider>
+                  </PlaylistProvider>
+                </SearchProvider>
+              </PlaybackProvider>
+            </PlayerProvider>
+          </LoadingProvider>
+        </RepeatProvider>
+      </PlaylistSuccessMessageProvider>
     </BrowserRouter>
   );
 }

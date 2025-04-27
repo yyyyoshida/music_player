@@ -1,12 +1,15 @@
-import React, { createContext, useState, useRef } from 'react';
+import React, { createContext, useState, useRef, useContext } from 'react';
 import { addDoc, collection, getDocs, increment, serverTimestamp, updateDoc, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
+import { PlaylistSuccessMessageContext } from '../contexts/PlaylistSuccessMessageContext';
 
 export const PlaylistSelectionContext = createContext();
 
 export const PlaylistSelectionProvider = ({ children }) => {
   const [isSelectVisible, setIsSelectVisible] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
+
+  const { toggleisSongAdded } = useContext(PlaylistSuccessMessageContext);
 
   const playlistNameRef = useRef('');
 
@@ -22,7 +25,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
         ...selectedTrack,
         addedAt: serverTimestamp(),
       });
-      console.log('✅ 曲追加成功');
+      // console.log('✅ 曲追加成功');
+      toggleisSongAdded('add');
 
       await updateDoc(doc(db, 'playlists', playlistId), {
         totalDuration: increment(selectedTrack.duration),
@@ -77,6 +81,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
         addTrackToPlaylist,
         setSelectedTrack,
         handleTrackSelect,
+        // isSongAdded,
+        // toggleisSongAdded,
+        // actionType,
       }}
     >
       {children}

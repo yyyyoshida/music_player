@@ -18,6 +18,7 @@ import CreatePlaylist from './CreatePlaylist';
 import { PlaylistSelectionContext } from './PlaylistSelectionContext';
 import PlaylistSelection from './PlaylistSelection';
 import PlaylistDetail from './PlaylistDetail';
+import PlaylistSuccessMessage from './PlaylistSuccessMessage';
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
@@ -104,6 +105,7 @@ const Main = ({ token }) => {
             {/* </PlaybackProvider> */}
 
             <PlayerControls />
+            <PlaylistSuccessMessage />
           </TrackInfoProvider>
           {/* </PlaylistSelectionProvider>
           </PlaylistProvider> */}
@@ -169,17 +171,26 @@ export default Main;
 // プレイリスト一覧でホバーすると再生ボタンがでる ✅
 // 再生ボタンを押すとそのまま順番に曲の再生 ✅
 // 再生ボタン以外を押すとページに遷移する
+// プレイリストを削除できる機能を追加
 
 // 曲の配列をuseStateとuseContextで保持 ✅
 // currentIndexのuseStateを作ってどーのこーの ✅
 
 // モーダルが表示する時にふわっと現れるようにする
 
+// プレイリストの曲を削除できるようにする（専用のモーダルを作る）
+
+// 可能なら同じ曲があったら最初以外を非表示
+// 無理だったら同じ曲が再生中にならないようにする
+
 // ホームの次へボタンと前へボタンの挙動が若干おかしい
+
+// PlaylistSelectionにもローディングが必要かもしれない
 
 // 曲がセットされてないときはプログレスバーのボタンがDisabled状態になって半透明で押せなくなる
 
-// プレイリストに行ってトラックをクリックせずに次へボタンを押した状態で再生ボタンを押すとバグる
+// プレイリストに行ってトラックをクリックせずに次へボタンを押した状態で再生ボタンを押すとバグる ✅
+// プレイリストに追加した曲は一番上にする(今と順番を逆にする)
 
 // プレイリストに同じ曲があるとkeyなんとかでログにエラー
 

@@ -3,11 +3,13 @@ import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useParams } from 'react-router-dom';
 import { PlaylistContext } from './PlaylistContext';
+import { PlaylistSuccessMessageContext } from '../contexts/PlaylistSuccessMessageContext';
 
 const RenamePlaylist = ({ isRenameVisible, toggleRenameVisible, tracks }) => {
   const RenameRef = useRef('');
   const { id } = useParams();
   const { playlistName, setPlaylistName } = useContext(PlaylistContext);
+  const { toggleisSongAdded } = useContext(PlaylistSuccessMessageContext);
 
   useEffect(() => {
     const playlistRef = doc(db, 'playlists', id);
@@ -30,7 +32,8 @@ const RenamePlaylist = ({ isRenameVisible, toggleRenameVisible, tracks }) => {
 
     updateDoc(playlistRef, { name: newName })
       .then(() => {
-        console.log('プレイリスト名を更新したよ');
+        // console.log('プレイリスト名を更新したよ');
+        toggleisSongAdded('rename');
         setPlaylistName(newName);
         toggleRenameVisible();
       })
