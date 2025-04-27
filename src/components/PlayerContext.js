@@ -1,12 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { SearchContext } from './SearchContext';
+
 import { useRepeatContext } from './RepeatContext';
 
 const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children, token }) => {
-  // const { isToken } = useContext(SearchContext);
-
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [player, setPlayer] = useState(null);
