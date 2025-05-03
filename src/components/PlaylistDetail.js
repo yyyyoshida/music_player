@@ -17,6 +17,10 @@ const PlaylistDetail = () => {
 
   const [tracks, setTracks] = useState([]);
   const [isRenameVisible, setIsRenameVisible] = useState(false);
+  
+
+
+  
   const [playlistInfo, setPlaylistInfo] = useState({ title: '', duration: 0 });
 
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();

@@ -1,3 +1,15 @@
 {
-  "liveServer.settings.port": 5503
+  "liveServer.settings.port": 5503,
+  "liveSassCompile.settings.formats": [
+    {
+      "format": "expanded",
+      "extensionName": ".css",
+      "savePath": "/public"
+    }
+  ]
+  // "liveSassCompile.settings.autoprefix": [
+  //   "format": "expanded",
+  //   "extensionName": ".css",
+  //   "savePath": "/css" // ← ここが出力先のフォルダ！
+  // ]
 }

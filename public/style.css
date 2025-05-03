@@ -9,7 +9,9 @@
 .player-controls__button img {
   width: 20px;
   width: 18px;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 .player-controls__button:hover {
   background-color: #3a3a3a;
@@ -56,7 +58,8 @@
   transform: translate(-50%, -50%);
   width: 22px;
   height: 22px;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 .player-controls__play-pause-button .player-controls__play-icon {
   left: 54%;
@@ -195,7 +198,8 @@
   width: 30px;
   height: 30px;
   background-color: rgba(39, 39, 39, 0.37);
-  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+          backdrop-filter: blur(3px);
   border-radius: 50%;
   position: absolute;
   right: 10px;
@@ -282,6 +286,7 @@ body::-webkit-scrollbar {
   width: 9px;
   background: #444444;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
+  -webkit-transition: all 0.2s ease;
   transition: all 0.2s ease;
 }
 
@@ -404,7 +409,8 @@ footer {
   filter: blur(30px);
   filter: blur(100px);
   filter: blur(60px);
-  clip-path: inset(0);
+  -webkit-clip-path: inset(0);
+          clip-path: inset(0);
 }
 .thumbnail-preview__content {
   position: absolute;
@@ -440,7 +446,8 @@ footer {
   width: 100%;
   height: 100%;
   border-radius: 10px;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   border: rgba(49, 49, 49, 0.3137254902) solid 1px;
   border: rgba(153, 153, 153, 0.2117647059) solid 1px;
   border: rgba(177, 177, 177, 0.2117647059) solid 1px;
@@ -516,7 +523,9 @@ footer {
   width: 75px;
   height: 75px;
   position: relative;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   border-radius: 5px;
   transition: opacity 0.3s ease;
 }
@@ -547,7 +556,8 @@ footer {
 .player-controls__track-thumbnail {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   border-radius: 5px;
   border: rgba(146, 146, 146, 0.231372549) solid 1px;
 }
@@ -557,7 +567,9 @@ footer {
   left: 95px;
   text-wrap: nowrap;
   height: calc(100% - 10px);
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   transition: left 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -608,7 +620,9 @@ footer {
 .player-controls__current-time, .player-controls__duration {
   max-width: 24px;
   min-width: 24px;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   font-size: 14px;
   margin: 0 10px 0 10px;
 }
@@ -625,7 +639,8 @@ footer {
   height: 3px;
   border-radius: 5px;
   -webkit-appearance: none;
-  appearance: none;
+  -moz-appearance: none;
+       appearance: none;
   box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
   transition: height 0.1s;
   position: relative;
@@ -673,8 +688,11 @@ footer {
   border: 1px solid #3a3a3a;
   opacity: 0;
   pointer-events: none;
-  backdrop-filter: blur(5px);
-  user-select: none;
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   transition: opacity 0.3s ease;
 }
 .player-controls__options-item {
@@ -716,7 +734,8 @@ footer {
   height: 3px;
   border-radius: 5px;
   -webkit-appearance: none;
-  appearance: none;
+  -moz-appearance: none;
+       appearance: none;
   box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
   transition: height 0.1s;
   position: relative;
@@ -762,7 +781,9 @@ footer {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
   position: absolute;
   text-wrap: nowrap;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   transition: right 1s, opacity 0.2s ease-in;
   z-index: 3000;
   cursor: auto;
@@ -811,7 +832,9 @@ footer {
   left: 14px;
   text-wrap: nowrap;
   height: calc(100% - 10px);
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   transition: left 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -868,7 +891,9 @@ footer {
   margin-top: 20px;
   counter-reset: my-counter;
   position: relative;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 .equalizer {
@@ -1067,7 +1092,9 @@ footer {
   padding: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   overflow: hidden;
 }
 .home__track-item:hover {
@@ -1097,7 +1124,8 @@ footer {
   background-color: #242424;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 .home__track-info {
   padding-top: 10px;
@@ -1174,7 +1202,8 @@ footer {
 .playlists-page__item-cover-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 .playlists-page__item-info {
   padding-top: 10px;
@@ -1218,7 +1247,8 @@ footer {
   width: 70px;
   height: 70px;
   z-index: 1000;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   transform: translate(-50%, -50%);
 }
 
@@ -1256,7 +1286,8 @@ footer {
 .playlist-detail__header-cover-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 .playlist-detail__header-info {
   position: relative;
@@ -1288,7 +1319,9 @@ footer {
   margin-top: 20px;
   counter-reset: my-counter;
   position: relative;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 .playlist-detail__item {
   position: relative;
@@ -1355,7 +1388,8 @@ footer {
   height: 100vh;
   bottom: 0;
   z-index: 0;
-  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
 }
 .modal-content {
   background-color: #272727;
@@ -1506,7 +1540,9 @@ footer {
   padding: 10px 0;
   border-radius: 5px;
   transition: background-color 0.2s ease;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   cursor: pointer;
 }
 .playlist-selection__item:hover {
@@ -1529,13 +1565,15 @@ footer {
 .playlist-selection__item-cover-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 .playlist-selection__item-cover-art {
   border-radius: 5px;
   width: 64px;
   height: 64px;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 .playlist-page__create-playlist-modal-content {
