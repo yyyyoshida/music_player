@@ -1,7 +1,16 @@
-import React, { createContext, useState, useRef, useContext } from 'react';
-import { addDoc, collection, getDocs, increment, serverTimestamp, updateDoc, doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../firebase';
-import { PlaylistSuccessMessageContext } from '../contexts/PlaylistSuccessMessageContext';
+import React, { createContext, useState, useRef, useContext } from "react";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  increment,
+  serverTimestamp,
+  updateDoc,
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "../firebase";
+import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -9,9 +18,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const [isSelectVisible, setIsSelectVisible] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
 
-  const { toggleisSongAdded } = useContext(PlaylistSuccessMessageContext);
+  const { showMessage } = useContext(ActionSuccessMessageContext);
 
-  const playlistNameRef = useRef('');
+  const playlistNameRef = useRef("");
 
   function toggleSelectVisible() {
     setIsSelectVisible((prev) => !prev);
@@ -21,25 +30,25 @@ export const PlaylistSelectionProvider = ({ children }) => {
     if (!selectedTrack) return;
 
     try {
-      await addDoc(collection(db, 'playlists', playlistId, 'tracks'), {
+      await addDoc(collection(db, "playlists", playlistId, "tracks"), {
         ...selectedTrack,
         addedAt: serverTimestamp(),
       });
       // console.log('✅ 曲追加成功');
-      toggleisSongAdded('add');
+      showMessage("add");
 
-      await updateDoc(doc(db, 'playlists', playlistId), {
+      await updateDoc(doc(db, "playlists", playlistId), {
         totalDuration: increment(selectedTrack.duration),
       });
 
       toggleSelectVisible();
     } catch (error) {
-      console.error('💥 曲追加失敗', error);
+      console.error("💥 曲追加失敗", error);
     }
   };
 
   function handleTrackSelect(track, type) {
-    if (type === 'searchResults') {
+    if (type === "searchResults") {
       setSelectedTrack({
         trackId: track.id,
         trackUri: track.uri,
@@ -48,7 +57,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         artist: track.artists[0]?.name,
         duration: track.duration_ms,
       });
-    } else if (type === 'firebase') {
+    } else if (type === "firebase") {
       setSelectedTrack({
         trackId: track.trackId,
         trackUri: track.trackUri,
@@ -81,8 +90,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
         addTrackToPlaylist,
         setSelectedTrack,
         handleTrackSelect,
-        // isSongAdded,
-        // toggleisSongAdded,
+        // isMessageVisible,
+        // showMessage,
         // actionType,
       }}
     >

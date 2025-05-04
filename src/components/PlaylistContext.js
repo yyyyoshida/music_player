@@ -1,16 +1,22 @@
-import React, { createContext, useState, useContext, useRef, useEffect } from 'react';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../firebase';
-import { PlaylistSuccessMessageContext } from '../contexts/PlaylistSuccessMessageContext';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useRef,
+  useEffect,
+} from "react";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebase";
+import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 export const PlaylistContext = createContext();
 
 export const PlaylistProvider = ({ children }) => {
   const [isCreateVisible, setIsCreateVisible] = useState(false);
-  const playlistNameRef = useRef('');
-  const [playlistInfo, setPlaylistInfo] = useState({ title: '', duration: 0 });
+  const playlistNameRef = useRef("");
+  const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
-  const { toggleisSongAdded } = useContext(PlaylistSuccessMessageContext);
+  const { showMessage } = useContext(ActionSuccessMessageContext);
 
   function toggleCreateVisible() {
     setIsCreateVisible((prev) => !prev);
@@ -18,27 +24,27 @@ export const PlaylistProvider = ({ children }) => {
 
   const handleCreatePlaylist = async () => {
     if (!playlistNameRef.current.value.trim()) {
-      alert('値を入れろゴラァあ！！');
+      alert("値を入れろゴラァあ！！");
       return;
     }
 
     try {
-      await addDoc(collection(db, 'playlists'), {
+      await addDoc(collection(db, "playlists"), {
         name: playlistNameRef.current.value,
       });
       // console.log('プレイリスト作成成功');
-      toggleisSongAdded('newPlaylist');
-      playlistNameRef.current.value = '';
+      showMessage("newPlaylist");
+      playlistNameRef.current.value = "";
 
       toggleCreateVisible();
     } catch (error) {
-      console.error('作成失敗', error);
+      console.error("作成失敗", error);
     }
   };
 
   function formatTimeHours(time) {
     if (!time) {
-      return '0分';
+      return "0分";
     }
     const MS_HOUR = 3600000;
     const MS_MINUTE = 60000;

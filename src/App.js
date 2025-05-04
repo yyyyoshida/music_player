@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import Header from './components/Header';
-import Main from './components/Main';
-import Login from './components/Login';
-import { getNewAccessToken } from './utils/spotifyAuth'; // getNewAccessTokenをインポート
-import { SearchProvider } from './components/SearchContext';
+import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
+import Header from "./components/Header";
+import Main from "./components/Main";
+import Login from "./components/Login";
+import { getNewAccessToken } from "./utils/spotifyAuth"; // getNewAccessTokenをインポート
+import { SearchProvider } from "./components/SearchContext";
 // import { SearchContext } from './components/SearchContext';
-import { TokenContext } from './contexts/isTokenContext';
-import { PlayerProvider } from './components/PlayerContext';
-import { RepeatProvider } from './components/RepeatContext';
+import { TokenContext } from "./contexts/isTokenContext";
+import { PlayerProvider } from "./components/PlayerContext";
+import { RepeatProvider } from "./components/RepeatContext";
 
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from "react-router-dom";
 
-import { PlaybackProvider } from './contexts/PlaybackContext';
+import { PlaybackProvider } from "./contexts/PlaybackContext";
 
-import { PlaylistProvider } from './components/PlaylistContext';
-import { PlaylistSelectionProvider } from './components/PlaylistSelectionContext';
-import { LoadingProvider } from './contexts/LoadingContext';
-import { PlaylistSuccessMessageProvider } from './contexts/PlaylistSuccessMessageContext';
+import { PlaylistProvider } from "./components/PlaylistContext";
+import { PlaylistSelectionProvider } from "./components/PlaylistSelectionContext";
+import { LoadingProvider } from "./contexts/LoadingContext";
+import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageContext";
 
 // import db from './firebase';
 // import { collection, getDocs } from 'firebase/firestore';
@@ -31,21 +31,21 @@ function App() {
 
   useEffect(() => {
     const hash = window.location.hash;
-    const accessToken = window.localStorage.getItem('access_token');
-    const refreshToken = window.localStorage.getItem('refresh_token');
+    const accessToken = window.localStorage.getItem("access_token");
+    const refreshToken = window.localStorage.getItem("refresh_token");
 
     // ① ハッシュがあれば最優先で処理
     if (hash) {
       const parsedToken = hash
         .substring(1)
-        .split('&')
-        .find((elem) => elem.startsWith('access_token'))
-        ?.split('=')[1];
+        .split("&")
+        .find((elem) => elem.startsWith("access_token"))
+        ?.split("=")[1];
 
       if (parsedToken) {
-        window.localStorage.setItem('access_token', parsedToken);
+        window.localStorage.setItem("access_token", parsedToken);
         setToken(parsedToken);
-        window.location.hash = ''; // ハッシュ消す
+        window.location.hash = ""; // ハッシュ消す
         return;
       }
     }
@@ -56,11 +56,11 @@ function App() {
         .then((newToken) => {
           if (newToken) {
             setToken(newToken);
-            window.localStorage.setItem('access_token', newToken);
+            window.localStorage.setItem("access_token", newToken);
           }
         })
         .catch((err) => {
-          console.error(' トークンの更新失敗:', err);
+          console.error(" トークンの更新失敗:", err);
           // setToken(null);
         });
     }
@@ -81,7 +81,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <PlaylistSuccessMessageProvider>
+      <ActionSuccessMessageProvider>
         <RepeatProvider>
           <LoadingProvider>
             <PlayerProvider token={token}>
@@ -91,7 +91,10 @@ function App() {
                     <PlaylistSelectionProvider>
                       {/* <h1>Spotifyアプリ</h1> */}
                       {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-                      <Header token={token} onSearchResults={handleSearchResults} />
+                      <Header
+                        token={token}
+                        onSearchResults={handleSearchResults}
+                      />
                       {/* {!token && <Login />} */}
                       <Main token={token} searchResults={searchResults} />
                     </PlaylistSelectionProvider>
@@ -101,7 +104,7 @@ function App() {
             </PlayerProvider>
           </LoadingProvider>
         </RepeatProvider>
-      </PlaylistSuccessMessageProvider>
+      </ActionSuccessMessageProvider>
     </BrowserRouter>
   );
 }

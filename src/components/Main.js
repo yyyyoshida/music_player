@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
 // import Footer from './Footer';
-import PlayerControls from './PlayerControls';
-import ThumbnailPreview from './ThumbnailPreview';
-import { TrackInfoProvider } from './TrackInfoContext';
-import Login from './Login';
-import { TokenContext } from '../contexts/isTokenContext';
+import PlayerControls from "./PlayerControls";
+import ThumbnailPreview from "./ThumbnailPreview";
+import { TrackInfoProvider } from "./TrackInfoContext";
+import Login from "./Login";
+import { TokenContext } from "../contexts/isTokenContext";
 
-import { Routes, Route } from 'react-router-dom';
-import SearchResult from './SearchResult';
-import Home from '../react-router-dom/Home';
+import { Routes, Route } from "react-router-dom";
+import SearchResult from "./SearchResult";
+import Home from "../react-router-dom/Home";
 
 // import LOGIN_URL from '../config/spotifyConfig';
 
-import Playlist from './Playlist';
-import CreatePlaylist from './CreatePlaylist';
+import Playlist from "./Playlist";
+import CreatePlaylist from "./CreatePlaylist";
 // import { PlaylistProvider } from './PlaylistContext';
-import { PlaylistSelectionContext } from './PlaylistSelectionContext';
-import PlaylistSelection from './PlaylistSelection';
-import PlaylistDetail from './PlaylistDetail';
-import PlaylistSuccessMessage from './PlaylistSuccessMessage';
+import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
+import PlaylistSelection from "./PlaylistSelection";
+import PlaylistDetail from "./PlaylistDetail";
+import ActionSuccessMessage from "./ActionSuccessMessage";
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
@@ -31,14 +31,14 @@ const Main = ({ token }) => {
     // console.log(token);
     if (!token) return;
 
-    fetch('https://api.spotify.com/v1/me', {
+    fetch("https://api.spotify.com/v1/me", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
         if (res.status === 401) {
-          console.log('アクセストークンが切れています');
+          console.log("アクセストークンが切れています");
           // setIsToken(false);
           setIsToken(false);
           // window.location.href = LOGIN_URL;
@@ -50,7 +50,7 @@ const Main = ({ token }) => {
           setIsToken(true);
           return res.json();
         } else {
-          throw new Error('予期しないエラー');
+          throw new Error("予期しないエラー");
         }
       })
       .then((data) => setProfile(data));
@@ -61,7 +61,7 @@ const Main = ({ token }) => {
   //   console.log('Main.jsの中の', isToken);
   // }, [isToken]);
 
-  let isNotToken = '';
+  let isNotToken = "";
 
   // useEffect(() => {
   useLayoutEffect(() => {
@@ -105,7 +105,7 @@ const Main = ({ token }) => {
             {/* </PlaybackProvider> */}
 
             <PlayerControls />
-            <PlaylistSuccessMessage />
+            <ActionSuccessMessage />
           </TrackInfoProvider>
           {/* </PlaylistSelectionProvider>
           </PlaylistProvider> */}

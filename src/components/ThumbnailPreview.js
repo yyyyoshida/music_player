@@ -1,27 +1,35 @@
-import React, { useContext, useRef, useState, useEffect } from 'react';
-import { TrackInfoContext } from './TrackInfoContext';
-import { usePlayerContext } from './PlayerContext';
-import { SearchContext } from './SearchContext';
+import React, { useContext, useRef, useState, useEffect } from "react";
+import { TrackInfoContext } from "./TrackInfoContext";
+import { usePlayerContext } from "./PlayerContext";
+import { SearchContext } from "./SearchContext";
+import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 export const ThumbnailPreview = () => {
-  const { trackImage, trackTitle, trackArtistName, isPlaying, togglePlayPause } = usePlayerContext();
+  const {
+    trackImage,
+    trackTitle,
+    trackArtistName,
+    isPlaying,
+    togglePlayPause,
+  } = usePlayerContext();
   const { isVisible, setIsVisible } = useContext(TrackInfoContext);
   const { isTrackSet } = useContext(SearchContext);
 
-  const [delayedVisibility, setDelayedVisibility] = useState('hidden');
+  const [delayedVisibility, setDelayedVisibility] = useState("hidden");
   const [scale, setScale] = useState(1);
 
   const coverArtRef = useRef(null);
   const transitionRef = useRef(null);
+  const { showMessage } = useContext(ActionSuccessMessageContext);
 
   function showThumbnail() {
-    setDelayedVisibility('visible');
+    setDelayedVisibility("visible");
   }
 
   function hideThumbnailDelay() {
     const hideDelay = 300;
     const timer = setTimeout(() => {
-      setDelayedVisibility('hidden');
+      setDelayedVisibility("hidden");
     }, hideDelay);
     return () => clearTimeout(timer);
   }
@@ -30,15 +38,15 @@ export const ThumbnailPreview = () => {
     // const transitionDelay = 500; // たまにtransitionのアニメーションが途切れる
     const transitionDelay = 50;
     const transitionElement = transitionRef.current;
-    transitionElement.style.visibility = 'visible';
+    transitionElement.style.visibility = "visible";
     transitionElement.style.opacity = 1;
     function handleTransitionEnd() {
-      transitionElement.style.visibility = 'hidden';
+      transitionElement.style.visibility = "hidden";
       transitionElement.style.opacity = 1;
     }
     setTimeout(() => {
       transitionElement.style.opacity = 0;
-      transitionElement.addEventListener('transitionend', handleTransitionEnd);
+      transitionElement.addEventListener("transitionend", handleTransitionEnd);
     }, transitionDelay);
   }
 
@@ -54,14 +62,14 @@ export const ThumbnailPreview = () => {
     fadeTransition();
   }, [trackTitle]);
 
-  const FADE_DURATION = 1000;
+  const FADE_DURATION = 2500;
 
   useEffect(() => {
     if (!isTrackSet && isPlaying) {
-      setIsVisible(true);
-
+      showMessage("unselected");
+      // setIsVisible(true);
       setTimeout(() => {
-        setIsVisible(false);
+        // setIsVisible(false);
         togglePlayPause();
       }, FADE_DURATION);
     }
@@ -70,18 +78,39 @@ export const ThumbnailPreview = () => {
   return (
     <>
       <div
-        className={`thumbnail-preview ${isVisible ? 'is-visible' : ''}`}
-        style={{ opacity: isVisible ? 1 : 0, visibility: isTrackSet ? delayedVisibility : 'visible' }}
+        className={`thumbnail-preview ${isVisible ? "is-visible" : ""}`}
+        style={{
+          opacity: isVisible ? 1 : 0,
+          visibility: isTrackSet ? delayedVisibility : "visible",
+        }}
       >
-        <div className="thumbnail-preview__background" style={{ backgroundImage: `url(${isTrackSet ? trackImage : ''})` }}></div>
+        <div
+          className="thumbnail-preview__background"
+          style={{ backgroundImage: `url(${isTrackSet ? trackImage : ""})` }}
+        ></div>
         <figure className="thumbnail-preview__content">
-          <div className="thumbnail-preview__image-warpper" style={{ transform: `scale(${scale})` }}>
-            <img ref={coverArtRef} className="thumbnail-preview__image" src={trackImage} alt="" />
-            <div ref={transitionRef} className="thumbnail-preview__image-transition"></div>
+          <div
+            className="thumbnail-preview__image-warpper"
+            style={{ transform: `scale(${scale})` }}
+          >
+            <img
+              ref={coverArtRef}
+              className="thumbnail-preview__image"
+              src={trackImage}
+              alt=""
+            />
+            <div
+              ref={transitionRef}
+              className="thumbnail-preview__image-transition"
+            ></div>
           </div>
           <figcaption className="thumbnail-preview__info">
-            <p className="thumbnail-preview__title">{isTrackSet ? trackTitle : '曲がセットされていません'}</p>
-            <p className="thumbnail-preview__artist">{isTrackSet ? trackArtistName : ''}</p>
+            <p className="thumbnail-preview__title">
+              {isTrackSet ? trackTitle : "曲がセットされていません"}
+            </p>
+            <p className="thumbnail-preview__artist">
+              {isTrackSet ? trackArtistName : ""}
+            </p>
           </figcaption>
         </figure>
       </div>
