@@ -19,6 +19,8 @@ import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 import PlaylistSelection from "./PlaylistSelection";
 import PlaylistDetail from "./PlaylistDetail";
 import ActionSuccessMessage from "./ActionSuccessMessage";
+import TrackMoreMenu from "./TrackMoreMenu";
+import { TrackMoreMenuProvider } from "../contexts/TrackMoreMenuContext";
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
@@ -90,22 +92,26 @@ const Main = ({ token }) => {
           {/* <PlaylistProvider>
             <PlaylistSelectionProvider> */}
           <TrackInfoProvider>
-            <ThumbnailPreview />
-            {/* <PlaylistSelection /> */}
-            {isSelectVisible && <PlaylistSelection />}
-            <CreatePlaylist />
-            {/* <PlaybackProvider> */}
-            <Routes>
-              <Route path="/" element={<Home token={token} />} />
-              <Route path="/search-result" element={<SearchResult />} />
-              <Route path="/playlist" element={<Playlist />} />
-              {/* <Route path="/playlist-detail" element={<PlaylistDetail />} /> */}
-              <Route path="/playlist-detail/:id" element={<PlaylistDetail />} />
-            </Routes>
-            {/* </PlaybackProvider> */}
+            <TrackMoreMenuProvider>
+              <ThumbnailPreview />
 
-            <PlayerControls />
-            <ActionSuccessMessage />
+              {/* <PlaylistSelection /> */}
+              <TrackMoreMenu />
+              {isSelectVisible && <PlaylistSelection />}
+              <CreatePlaylist />
+              {/* <PlaybackProvider> */}
+              <Routes>
+                <Route path="/" element={<Home token={token} />} />
+                <Route path="/search-result" element={<SearchResult />} />
+                <Route path="/playlist" element={<Playlist />} />
+                {/* <Route path="/playlist-detail" element={<PlaylistDetail />} /> */}
+                <Route path="/playlist-detail/:id" element={<PlaylistDetail />} />
+              </Routes>
+              {/* </PlaybackProvider> */}
+
+              <PlayerControls />
+              <ActionSuccessMessage />
+            </TrackMoreMenuProvider>
           </TrackInfoProvider>
           {/* </PlaylistSelectionProvider>
           </PlaylistProvider> */}

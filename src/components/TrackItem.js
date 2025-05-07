@@ -1,15 +1,35 @@
-import React, { useEffect, useContext } from 'react';
-import { playIcon, pauseIcon } from '../assets/icons';
-import { PlaybackContext } from '../contexts/PlaybackContext';
+import React, { useEffect, useContext, useRef, useState } from "react";
+import { playIcon, pauseIcon } from "../assets/icons";
+import { PlaybackContext } from "../contexts/PlaybackContext";
+import { TrackMoreMenuContext } from "../contexts/TrackMoreMenuContext";
+import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 
-const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, handleTrackSelect, formatTime }) => {
+// const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, handleTrackSelect, formatTime }) => {
+const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, formatTime }) => {
   const { playTrackAt } = useContext(PlaybackContext);
+  const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId } = useContext(TrackMoreMenuContext);
+  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+
+  const buttonRef = useRef(null);
+
+  const positionOffsetY = -60;
+
+  function setButtonPosition() {
+    const rect = buttonRef.current.getBoundingClientRect();
+    const newPositionTop = rect.top + positionOffsetY;
+
+    if (newPositionTop >= 10) {
+      setMenuPositionTop(newPositionTop);
+    } else {
+      setMenuPositionTop(10);
+    }
+  }
 
   return (
     <li
       // key={index || track.id}
       key={index}
-      className={`track-item ${isTrackPlaying ? 'playing' : ''} ${isClicked ? 'clicked' : ''}`}
+      className={`track-item ${isTrackPlaying ? "playing" : ""} ${isClicked ? "clicked" : ""}`}
       onClick={() => {
         playerTrack(track.trackUri || track.uri, isClicked);
         setIsTrackSet(true);
@@ -20,7 +40,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
         <button className="track-item__left-play-pause-button">
           <img src={isTrackPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
         </button>
-        <div className={`equalizer ${isTrackPlaying ? '' : 'hidden'}`}>
+        <div className={`equalizer ${isTrackPlaying ? "" : "hidden"}`}>
           <div className="bar"></div>
           <div className="bar"></div>
           <div className="bar"></div>
@@ -34,13 +54,19 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
       </div>
       <div className="track-item__right">
         <button
-          className="track-item__add-button track-add-button"
+          className="track-item__more-button track-menu-button"
+          ref={buttonRef}
+          onMouseEnter={() => setIsButtonHovered(true)}
+          onMouseLeave={() => setIsButtonHovered(false)}
           onClick={(e) => {
             e.stopPropagation();
-            handleTrackSelect();
+            setButtonPosition();
+            handleTrackSelect(track, "searchResults", false);
+            toggleMenu(index);
+            setTrackId(index);
           }}
         >
-          <img className="track-item__add-icon track-add-icon" src="/img/plus.png" alt="追加" />
+          <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
         </button>
         <div className="track-item__track-duration">{formatTime(track.duration || track.duration_ms)}</div>
       </div>

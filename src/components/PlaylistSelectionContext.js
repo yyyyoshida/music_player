@@ -1,14 +1,5 @@
 import React, { createContext, useState, useRef, useContext } from "react";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  increment,
-  serverTimestamp,
-  updateDoc,
-  doc,
-  onSnapshot,
-} from "firebase/firestore";
+import { addDoc, collection, deleteDoc, increment, serverTimestamp, updateDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
@@ -47,7 +38,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
     }
   };
 
-  function handleTrackSelect(track, type) {
+  function handleTrackSelect(track, type, shouldToggle = true) {
+    console.log(shouldToggle);
     if (type === "searchResults") {
       setSelectedTrack({
         trackId: track.id,
@@ -77,7 +69,16 @@ export const PlaylistSelectionProvider = ({ children }) => {
       });
     }
 
-    toggleSelectVisible();
+    if (shouldToggle) toggleSelectVisible();
+  }
+
+  async function deleteTrack(playlistId, trackId) {
+    try {
+      await deleteDoc(doc(db, "playlists", playlistId, "tracks", trackId));
+      console.log("削除成功");
+    } catch (err) {
+      console.error("削除失敗", err);
+    }
   }
 
   return (
@@ -93,6 +94,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         // isMessageVisible,
         // showMessage,
         // actionType,
+        deleteTrack,
       }}
     >
       {children}
