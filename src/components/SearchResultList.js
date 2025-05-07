@@ -1,14 +1,14 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { usePlayerContext } from './PlayerContext';
-import { SearchContext } from './SearchContext';
-import { PlaylistSelectionContext } from './PlaylistSelectionContext';
-import TrackItem from './TrackItem';
-import { LoadingContext } from '../contexts/LoadingContext';
+import React, { useContext, useState, useEffect } from "react";
+import { usePlayerContext } from "./PlayerContext";
+import { SearchContext } from "./SearchContext";
+import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
+import TrackItem from "./TrackItem";
+import { LoadingContext } from "../contexts/LoadingContext";
 
 const TrackList = () => {
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
   const { searchResults, setIsTrackSet } = useContext(SearchContext);
-  const { handleTrackSelect, isSelectVisible } = useContext(PlaylistSelectionContext);
+  const { isSelectVisible } = useContext(PlaylistSelectionContext);
   const { isLoading } = useContext(LoadingContext);
 
   return (
@@ -40,7 +40,7 @@ const TrackList = () => {
                     setIsTrackSet={setIsTrackSet}
                     playerTrack={playerTrack}
                     formatTime={formatTime}
-                    handleTrackSelect={() => handleTrackSelect(track, 'searchResults')}
+                    type={"searchResults"}
                   />
                 );
               })

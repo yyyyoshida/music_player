@@ -4,8 +4,7 @@ import { PlaybackContext } from "../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 
-// const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, handleTrackSelect, formatTime }) => {
-const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, formatTime }) => {
+const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, formatTime, type }) => {
   const { playTrackAt } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
@@ -61,7 +60,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
           onClick={(e) => {
             e.stopPropagation();
             setButtonPosition();
-            handleTrackSelect(track, "searchResults", false);
+            handleTrackSelect(track, type, false);
             toggleMenu(index);
             setTrackId(index);
           }}
