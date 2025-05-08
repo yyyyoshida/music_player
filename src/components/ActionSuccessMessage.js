@@ -3,16 +3,14 @@ import React, { useContext } from "react";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 const ActionSuccessMessage = () => {
-  const { isMessageVisible, actionType } = useContext(
-    ActionSuccessMessageContext
-  );
+  const { isMessageVisible, actionType } = useContext(ActionSuccessMessageContext);
 
   function getMessage() {
     if (actionType === "add") {
       return "楽曲をプレイリストに追加しました";
     }
 
-    if (actionType === "remove") {
+    if (actionType === "delete") {
       return "楽曲をプレイリストから削除しました";
     }
 
@@ -30,10 +28,7 @@ const ActionSuccessMessage = () => {
   }
 
   return (
-    <div
-      className={`success-message ${isMessageVisible ? "playlist-update-success" : ""}`}
-      style={{ visibility: isMessageVisible ? "visible" : "hidden" }}
-    >
+    <div className={`success-message ${isMessageVisible ? "playlist-update-success" : ""}`} style={{ visibility: isMessageVisible ? "visible" : "hidden" }}>
       {getMessage()}
     </div>
   );

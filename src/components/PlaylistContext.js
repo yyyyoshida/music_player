@@ -1,11 +1,5 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useRef,
-  useEffect,
-} from "react";
-import { addDoc, collection } from "firebase/firestore";
+import React, { createContext, useState, useContext, useRef, useEffect } from "react";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
@@ -17,6 +11,8 @@ export const PlaylistProvider = ({ children }) => {
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
   const { showMessage } = useContext(ActionSuccessMessageContext);
+  const [playlistId, setPlaylistId] = useState(null);
+  const [tracks, setTracks] = useState([]);
 
   function toggleCreateVisible() {
     setIsCreateVisible((prev) => !prev);
@@ -59,6 +55,28 @@ export const PlaylistProvider = ({ children }) => {
     }
   }
 
+  async function deleteTrack(playlistId, trackId) {
+    console.log(playlistId, trackId);
+    console.log(`/playlists/${playlistId}/tracks/${trackId}`);
+
+    try {
+      await deleteDoc(doc(db, "playlists", playlistId, "tracks", trackId));
+      // setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
+      setTracks((prevTracks) =>
+        // prevTracks: 以前のtracksの状態
+        prevTracks.filter(
+          (track) =>
+            // track.id !== trackId: 削除したいtrackIdを持つトラックを除外
+            track.id !== trackId // trackIdと一致しないトラックだけを新しい配列に残す
+        )
+      );
+      showMessage("delete");
+      console.log("削除成功");
+    } catch (err) {
+      console.error("削除失敗", err);
+    }
+  }
+
   return (
     <PlaylistContext.Provider
       value={{
@@ -71,6 +89,13 @@ export const PlaylistProvider = ({ children }) => {
         playlistName,
         setPlaylistName,
         playlistInfo,
+        deleteTrack,
+
+        playlistId,
+        setPlaylistId,
+
+        tracks,
+        setTracks,
       }}
     >
       {children}

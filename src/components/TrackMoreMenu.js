@@ -1,13 +1,16 @@
 import React, { useContext, useRef, useEffect } from "react";
 import { TrackMoreMenuContext } from "../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
-import { hover } from "@testing-library/user-event/dist/hover";
+
+import { PlaylistContext } from "./PlaylistContext";
 
 const TrackMoreMenu = () => {
-  const { isButtonHovered, menuPositionTop, isMenuVisible, setIsMenuVisible, openMenu, closeMenu } = useContext(TrackMoreMenuContext);
+  const { trackId, isButtonHovered, menuPositionTop, isMenuVisible, setIsMenuVisible, openMenu, closeMenu } = useContext(TrackMoreMenuContext);
   const { toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const menuRef = useRef(null);
   const isButtonHoveredRef = useRef(null);
+
+  const { deleteTrack, playlistId } = useContext(PlaylistContext);
 
   useEffect(() => {
     isButtonHoveredRef.current = isButtonHovered;
@@ -49,7 +52,13 @@ const TrackMoreMenu = () => {
           <img src="/img/plus.png" className="track-more-menu__item-icon-add" />
           プレイリストに追加
         </li>
-        <li className="track-more-menu__item">
+        <li
+          className="track-more-menu__item"
+          onClick={() => {
+            deleteTrack(playlistId, trackId);
+            closeMenu();
+          }}
+        >
           <img src="/img/delete.png" className="track-more-menu__ite-icon-delete" />
           プレイリストから削除
         </li>

@@ -6,7 +6,7 @@ import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, formatTime, type }) => {
   const { playTrackAt } = useContext(PlaybackContext);
-  const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId } = useContext(TrackMoreMenuContext);
+  const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
 
   const buttonRef = useRef(null);
@@ -24,6 +24,8 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
     }
   }
 
+  // console.log(track.trackId);
+
   return (
     <li
       // key={index || track.id}
@@ -36,6 +38,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
       }}
     >
       <div className="track-item__left">
+        <div className={`${track.trackId}`}></div>
         <button className="track-item__left-play-pause-button">
           <img src={isTrackPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
         </button>
@@ -62,7 +65,9 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
             setButtonPosition();
             handleTrackSelect(track, type, false);
             toggleMenu(index);
-            setTrackId(index);
+
+            setTrackIndex(index);
+            setTrackId(track.id);
           }}
         >
           <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
