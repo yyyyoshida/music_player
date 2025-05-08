@@ -5,11 +5,11 @@ export const TrackMoreMenuContext = createContext();
 export const TrackMoreMenuProvider = ({ children }) => {
   const [menuPositionTop, setMenuPositionTop] = useState(0);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [trackIndex, setTrackIndex] = useState(0);
   const [trackId, setTrackId] = useState(null);
-  const trackIdRef = useRef(null);
 
+  const trackIdRef = useRef(null);
   const isMenuVisibleRef = useRef(null);
 
   useEffect(() => {
@@ -42,6 +42,9 @@ export const TrackMoreMenuProvider = ({ children }) => {
         setIsMenuVisible,
         toggleMenu,
         closeMenu,
+
+        trackIndex,
+        setTrackIndex,
 
         trackId,
         setTrackId,

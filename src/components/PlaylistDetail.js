@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, getDocs, getDoc, doc } from "firebase/firestore";
@@ -14,15 +14,13 @@ import RenamePlaylist from "./RenamePlaylist";
 const PlaylistDetail = () => {
   const { id } = useParams();
 
-  const [tracks, setTracks] = useState([]);
   const [isRenameVisible, setIsRenameVisible] = useState(false);
-
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
 
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
 
   const { setIsTrackSet } = useContext(SearchContext);
-  const { formatTimeHours, playlistName, setPlaylistName } = useContext(PlaylistContext);
+  const { tracks, setTracks, formatTimeHours, playlistName, setPlaylistId } = useContext(PlaylistContext);
   const { setQueue, queue, playTrackAt } = useContext(PlaybackContext);
 
   useEffect(() => {
@@ -39,6 +37,8 @@ const PlaylistDetail = () => {
       }
     };
 
+    setPlaylistId(id);
+
     fetchPlaylistInfo();
   }, [id]);
 
@@ -47,7 +47,10 @@ const PlaylistDetail = () => {
       try {
         const tracksRef = collection(db, "playlists", id, "tracks");
         const trackSnapshot = await getDocs(tracksRef);
-        const trackList = trackSnapshot.docs.map((doc) => doc.data());
+        const trackList = trackSnapshot.docs.map((doc) => ({
+          id: doc.id, // ← ここでFirestoreのドキュメントIDもゲット
+          ...doc.data(), // ← トラックの中身
+        }));
         setTracks(trackList);
       } catch (error) {
         console.error("曲の取得に失敗した", error);
@@ -76,7 +79,11 @@ const PlaylistDetail = () => {
             .map((track, i) => (
               <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
             ))}
-          <img src="/img/playlist-icon1.png" className="playlists-detail__header-initial-cover-img playlist-initial-cover-img" style={{ visibility: tracks.length === 0 ? "visible" : "hidden" }}></img>
+          <img
+            src="/img/playlist-icon1.png"
+            className="playlists-detail__header-initial-cover-img playlist-initial-cover-img"
+            style={{ visibility: tracks.length === 0 ? "visible" : "hidden" }}
+          ></img>
         </div>
         <div className="playlist-detail__header-info">
           <h2 className="playlist-detail__header-title">{playlistName}</h2>
@@ -126,6 +133,7 @@ const PlaylistDetail = () => {
               playerTrack={playerTrack}
               formatTime={formatTime}
               type={"firebase"}
+              // playlistId={id}
             />
           );
         })}
