@@ -123,7 +123,8 @@ const PlaylistDetail = () => {
 
           return (
             <TrackItem
-              key={track.trackId}
+              // key={track.trackId}
+              key={track.addedAt?.seconds}
               track={track}
               index={index}
               isCurrentTrack={isCurrentTrack}

@@ -28,8 +28,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
 
   return (
     <li
-      // key={index || track.id}
-      key={index}
+      // key={`${track.addedAt?.seconds || track.id}`}
       className={`track-item ${isTrackPlaying ? "playing" : ""} ${isClicked ? "clicked" : ""}`}
       onClick={() => {
         playerTrack(track.trackUri || track.uri, isClicked);
@@ -37,6 +36,8 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
         playTrackAt(index);
       }}
     >
+      {/* {`${track.addedAt?.seconds}`} */}
+      {/* {track.id} */}
       <div className="track-item__left">
         <div className={`${track.trackId}`}></div>
         <button className="track-item__left-play-pause-button">
