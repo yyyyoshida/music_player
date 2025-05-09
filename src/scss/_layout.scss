@@ -1,6 +1,6 @@
-@use 'variables' as *;
-@use 'mixin' as *;
-@use 'button' as *;
+@use "variables" as *;
+@use "mixin" as *;
+@use "button" as *;
 
 * {
   // font-family: 'M PLUS 1p', serif;
@@ -16,12 +16,13 @@
 }
 
 body {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: "Zen Kaku Gothic New", sans-serif;
   //   background-color: rgb(8, 0, 0);
   color: rgb(107, 171, 255);
   color: rgb(215, 250, 231);
   color: #fff;
   font-size: 1rem;
+  font-weight: 500;
   background-color: #2e2e2e;
   // display: flex;
 
@@ -258,7 +259,7 @@ footer {
     border-radius: 10px;
     visibility: hidden;
     &::after {
-      content: '';
+      content: "";
       background-image: url(/img/music-128.png);
       background-size: contain;
       position: absolute;
@@ -366,7 +367,7 @@ footer {
     border: #9292923b solid 1px;
     border: #afafaf46 solid 1px;
     &::after {
-      content: '';
+      content: "";
       // background-image: url(/img/8分音符アイコン\ 3.png);
       // background-image: url(/img/music-24.png);
       background-image: url(/img/music-64.png);
@@ -388,20 +389,22 @@ footer {
     border: #9292923b solid 1px;
   }
   &__track-meta {
-    position: absolute; //横幅計算するやつコメント解除して
+    position: absolute;
     // top: 10px;
     top: 5px;
-    left: 95px;
+
     text-wrap: nowrap;
     height: calc(100% - 10px);
     user-select: none;
-    transition: left 0.3s ease;
     display: flex;
     flex-direction: column;
     gap: 12px;
     justify-content: center;
     line-height: 1;
     z-index: 1000;
+
+    transform: translateX(95px);
+    transition: transform 0.3s ease;
   }
   &__title {
     font-size: 18px;
@@ -697,17 +700,20 @@ footer {
     min-height: 65px;
     position: absolute;
     top: 5px;
-    left: 14px;
+
     text-wrap: nowrap;
     height: calc(100% - 10px);
     user-select: none;
-    transition: left 0.3s ease;
     display: flex;
     flex-direction: column;
     gap: 12px;
     justify-content: center;
     line-height: 1;
     z-index: 1000;
+
+    transform: translateX(14px);
+    transition: transform 0.3s ease;
+    will-change: transform;
   }
 
   .player-controls__button:hover {
@@ -869,14 +875,14 @@ footer {
     background-color: #444444;
 
     .track-item__left::before {
-      content: '';
+      content: "";
     }
 
     .track-item__left-play-pause-button {
       visibility: visible;
     }
 
-    .track-add-button {
+    .track-menu-button {
       opacity: 1;
     }
   }
@@ -902,7 +908,7 @@ footer {
 
   &.playing {
     .track-item__left::before {
-      content: '';
+      content: "";
     }
   }
 
@@ -953,7 +959,7 @@ footer {
     transform: translateY(-50%);
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 12px;
   }
 
   .equalizer {
