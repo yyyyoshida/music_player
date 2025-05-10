@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
-import { collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, query, orderBy } from "firebase/firestore";
 import { playIcon } from "../assets/icons";
 import TrackListHead from "./TrackListHead";
 import { usePlayerContext } from "./PlayerContext";
@@ -22,6 +22,10 @@ const PlaylistDetail = () => {
   const { setIsTrackSet } = useContext(SearchContext);
   const { tracks, setTracks, formatTimeHours, playlistName, setPlaylistId } = useContext(PlaylistContext);
   const { setQueue, queue, playTrackAt } = useContext(PlaybackContext);
+
+  const isFirstRender = useRef([]);
+
+  const initialCoverRef = useRef();
 
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
@@ -46,7 +50,8 @@ const PlaylistDetail = () => {
     const fetchTracks = async () => {
       try {
         const tracksRef = collection(db, "playlists", id, "tracks");
-        const trackSnapshot = await getDocs(tracksRef);
+        const q = query(tracksRef, orderBy("addedAt"));
+        const trackSnapshot = await getDocs(q);
         const trackList = trackSnapshot.docs.map((doc) => ({
           id: doc.id, // ← ここでFirestoreのドキュメントIDもゲット
           ...doc.data(), // ← トラックの中身
@@ -69,21 +74,40 @@ const PlaylistDetail = () => {
     setIsRenameVisible((prev) => !prev);
   }
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (tracks.length === 0) return;
+
+    const transitionElement = initialCoverRef.current;
+
+    transitionElement.style.opacity = 1;
+    function handleTransitionEnd() {
+      transitionElement.style.opacity = 0;
+    }
+
+    setTimeout(() => {
+      transitionElement.style.opacity = 0;
+      transitionElement.addEventListener("transitionend", handleTransitionEnd);
+    }, 200);
+  }, [tracks]);
+
   return (
     <div className="playlist-detail">
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
           {[...tracks]
-            .reverse()
+            // .reverse()
             .slice(0, 4)
             .map((track, i) => (
               <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
             ))}
-          <img
-            src="/img/playlist-icon1.png"
-            className="playlists-detail__header-initial-cover-img playlist-initial-cover-img"
-            style={{ visibility: tracks.length === 0 ? "visible" : "hidden" }}
-          ></img>
+          <div className="playlist-detail__header-initial-cover-img-bg" ref={initialCoverRef}>
+            <img src="/img/playlist-icon1.png" className="playlists-detail__header-initial-cover-img playlist-initial-cover-img" />
+          </div>
         </div>
         <div className="playlist-detail__header-info">
           <h2 className="playlist-detail__header-title">{playlistName}</h2>
