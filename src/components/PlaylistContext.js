@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useRef, useEffect } from "react";
-import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
@@ -13,6 +13,7 @@ export const PlaylistProvider = ({ children }) => {
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [playlistId, setPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
+  // const [totalDuration, setTotalDuration] = useState({});
 
   function toggleCreateVisible() {
     setIsCreateVisible((prev) => !prev);
@@ -56,20 +57,26 @@ export const PlaylistProvider = ({ children }) => {
   }
 
   async function deleteTrack(playlistId, trackId) {
-    console.log(playlistId, trackId);
-    console.log(`/playlists/${playlistId}/tracks/${trackId}`);
-
     try {
-      await deleteDoc(doc(db, "playlists", playlistId, "tracks", trackId));
-      // setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
-      setTracks((prevTracks) =>
-        // prevTracks: 以前のtracksの状態
-        prevTracks.filter(
-          (track) =>
-            // track.id !== trackId: 削除したいtrackIdを持つトラックを除外
-            track.id !== trackId // trackIdと一致しないトラックだけを新しい配列に残す
-        )
-      );
+      const trackRef = doc(db, "playlists", playlistId, "tracks", trackId);
+      const trackSnap = await getDoc(trackRef);
+
+      if (!trackSnap.exists()) {
+        console.warn("削除対象のトラックが存在しない"); //今後これの警告トースト通知をつくる
+        return;
+      }
+
+      const deletedTrack = trackSnap.data();
+
+      await deleteDoc(trackRef);
+
+      await updateDoc(doc(db, "playlists", playlistId), {
+        totalDuration: increment(-deletedTrack.duration),
+      });
+      // setTotalDuration((prev) => prev - deletedTrack.duration);
+
+      setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
+
       showMessage("delete");
       console.log("削除成功");
     } catch (err) {
@@ -96,6 +103,9 @@ export const PlaylistProvider = ({ children }) => {
 
         tracks,
         setTracks,
+
+        // totalDuration,
+        // setTotalDuration,
       }}
     >
       {children}
