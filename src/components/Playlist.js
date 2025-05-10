@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { PlaylistContext } from './PlaylistContext';
-import useFetchPlaylists from '../hooks/useFetchPlaylists';
-import { LoadingContext } from '../contexts/LoadingContext';
-import { PlaylistSelectionContext } from './PlaylistSelectionContext';
+import React, { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { PlaylistContext } from "./PlaylistContext";
+import useFetchPlaylists from "../hooks/useFetchPlaylists";
+import { LoadingContext } from "../contexts/LoadingContext";
+import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 
 const Playlist = () => {
   const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
@@ -45,10 +45,11 @@ const Playlist = () => {
                 {[...playlist.albumImages].slice().map((src, i) => (
                   <img key={i} src={src} className={`playlists-page__item-cover-img img-${i}`} />
                 ))}
+
                 <img
                   src="img/playlist-icon1.png"
                   className="playlists-page__item-initial-cover-img playlist-initial-cover-img"
-                  style={{ visibility: playlist.trackCount === 0 ? 'visible' : 'hidden' }}
+                  style={{ visibility: playlist.trackCount === 0 ? "visible" : "hidden" }}
                 />
               </div>
               <div className="playlists-page__item-info">
