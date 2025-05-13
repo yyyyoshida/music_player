@@ -37,7 +37,10 @@ const useFetchPlaylists = () => {
         })
       );
 
-      setPlaylists(playlistsData);
+      // setPlaylists(playlistsData);
+      if (JSON.stringify(playlistsData) !== JSON.stringify(playlists)) {
+        setPlaylists(playlistsData);
+      }
       stopLoading();
     });
 
