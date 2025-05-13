@@ -54,8 +54,7 @@ const Playlist = () => {
               </div>
               <div className="playlists-page__item-info">
                 <p className="playlists-page__item-name">{playlist.name}</p>
-                <span className="playlists-page__item-count">{`${playlist.trackCount}曲`}</span>
-                <span className="playlists-page__item-hours">{`再生時間：${formatTimeHours(playlist.totalDuration)}`}</span>
+                <span className="playlists-page__item-meta">{`${playlist.trackCount}曲, ${formatTimeHours(playlist.totalDuration)}`}</span>
               </div>
             </li>
           ))}
