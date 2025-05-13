@@ -17,13 +17,51 @@ export const PlaylistProvider = ({ children }) => {
   const [totalDuration, setTotalDuration] = useState({});
   const navigate = useNavigate();
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const MAX_NAME_LENGTH = 10;
+  const [isShaking, setIsShaking] = useState(false);
+
   function toggleCreateVisible() {
+    setErrorMessage("");
     setIsCreateVisible((prev) => !prev);
   }
 
+  function countNameLength(string) {
+    let nameLength = 0;
+    for (let i = 0; i < string.length; i++) {
+      const code = string.charCodeAt(i);
+      nameLength += code <= 0x007f ? 0.5 : 1;
+    }
+    return nameLength;
+  }
+
+  function triggerError(message) {
+    setErrorMessage(message);
+    setIsShaking(true);
+
+    setTimeout(() => {
+      setIsShaking(false);
+    }, 600);
+  }
+
+  useEffect(() => {
+    if (isCreateVisible && playlistNameRef.current) {
+      playlistNameRef.current.focus(); // ← これでEnterの発火対象がinputになる
+    }
+  }, [isCreateVisible]);
+
   const handleCreatePlaylist = async () => {
-    if (!playlistNameRef.current.value.trim()) {
-      alert("値を入れろゴラァあ！！");
+    const newName = playlistNameRef.current.value;
+
+    const nameLength = countNameLength(newName.trim());
+
+    if (!newName.trim()) {
+      triggerError("名前を入力してください");
+      return;
+    }
+
+    if (nameLength > MAX_NAME_LENGTH) {
+      triggerError(`文字数オーバーです`);
       return;
     }
 
@@ -32,7 +70,7 @@ export const PlaylistProvider = ({ children }) => {
         name: playlistNameRef.current.value,
         createdAt: serverTimestamp(),
       });
-      // console.log('プレイリスト作成成功');
+
       showMessage("newPlaylist");
       playlistNameRef.current.value = "";
 
@@ -121,6 +159,13 @@ export const PlaylistProvider = ({ children }) => {
 
         totalDuration,
         setTotalDuration,
+
+        errorMessage,
+        setErrorMessage,
+        MAX_NAME_LENGTH,
+        countNameLength,
+        isShaking,
+        triggerError,
       }}
     >
       {children}

@@ -72,10 +72,6 @@ const PlaylistDetail = () => {
     setIsTrackSet(true);
   }, [tracks]);
 
-  function toggleRenameVisible() {
-    setIsRenameVisible((prev) => !prev);
-  }
-
   function toggleDeleteVisible() {
     setIsDeleteVisible((prev) => !prev);
   }
@@ -132,7 +128,12 @@ const PlaylistDetail = () => {
             <img src={playIcon} className="playlist-detail__header-play-button-icon playlist-detail__header-button-icon" />
             順に再生
           </button>
-          <button className="playlist-detail__header-rename-button playlist-detail__header-button" onClick={toggleRenameVisible}>
+          <button
+            className="playlist-detail__header-rename-button playlist-detail__header-button"
+            onClick={() => {
+              setIsRenameVisible((prev) => !prev);
+            }}
+          >
             <img src="/img/rename.png" className="playlist-detail__header-rename-button-icon playlist-detail__header-button-icon" />
             名前を変更
           </button>
@@ -176,7 +177,7 @@ const PlaylistDetail = () => {
         deletePlaylist={deletePlaylist}
         id={id}
       />
-      <RenamePlaylist isRenameVisible={isRenameVisible} toggleRenameVisible={toggleRenameVisible} tracks={tracks} />
+      <RenamePlaylist isRenameVisible={isRenameVisible} setIsRenameVisible={setIsRenameVisible} tracks={tracks} />
     </div>
   );
 };
