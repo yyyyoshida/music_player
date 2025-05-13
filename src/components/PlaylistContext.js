@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useRef, useEffect } from "react";
-import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +30,7 @@ export const PlaylistProvider = ({ children }) => {
     try {
       await addDoc(collection(db, "playlists"), {
         name: playlistNameRef.current.value,
+        createdAt: serverTimestamp(),
       });
       // console.log('プレイリスト作成成功');
       showMessage("newPlaylist");
