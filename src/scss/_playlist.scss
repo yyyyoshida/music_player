@@ -52,6 +52,18 @@
     background-color: #181818;
   }
 
+  &__item-cover-img-wrapper.single {
+    grid-template-columns: none;
+  }
+
+  .single {
+    .img-0 {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+
   &__item-cover-img {
     width: 100%;
     height: 100%;
