@@ -4,6 +4,7 @@ import { PlaylistContext } from "./PlaylistContext";
 import useFetchPlaylists from "../hooks/useFetchPlaylists";
 import { LoadingContext } from "../contexts/LoadingContext";
 import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
+import { playIcon, pauseIcon } from "../assets/icons";
 
 const Playlist = () => {
   const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
@@ -51,6 +52,10 @@ const Playlist = () => {
                   className="playlists-page__item-initial-cover-img playlist-initial-cover-img"
                   style={{ visibility: playlist.trackCount === 0 ? "visible" : "hidden" }}
                 />
+
+                <button className="playlists-page__item-play-pause-button play-pause-button" style={{ visibility: "visible" }}>
+                  <img src={playIcon} className={`playlists-page__item-play-pause-button-icon play-pause-button-icon play-button-icon`} />
+                </button>
               </div>
               <div className="playlists-page__item-info">
                 <p className="playlists-page__item-name">{playlist.name}</p>
