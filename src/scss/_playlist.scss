@@ -28,6 +28,11 @@
   &__item:hover {
     background-color: #444444;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+    .playlists-page__item-play-pause-button {
+      visibility: visible;
+      transform: translateY(0px);
+      opacity: 1;
+    }
   }
 
   &__item-cover-img-wrapper {
