@@ -125,23 +125,25 @@
 //////////////////////////////////////////////////////////////
 .modal-cancel-submit-button {
   padding: 10px 16px;
+  padding: 9px 16px;
   border-radius: 5px;
-  transition: background-color ease 0.1s;
+
+  transition: background-color ease 0.2s;
 }
-.modal-cancel-button:hover {
-  background-color: #5f5f5f;
+
+.modal-cancel-button {
+  background-color: #555;
+  &:hover {
+    background-color: #686868;
+  }
 }
-.modal-submit-button:hover {
+.modal-submit-button {
   background-color: rgb(217, 22, 86);
+  &:hover {
+    background-color: rgb(224, 59, 114);
+  }
 }
 ////////////////////////////////////////////////////////////////
-
-.playlist-page__create-playlist-modal-cancel:hover {
-  background-color: #5f5f5f;
-}
-.playlist-page__create-playlist-modal-create:hover {
-  background-color: rgb(217, 22, 86);
-}
 
 .playlist-detail__header-button {
   padding: 10px 16px;
