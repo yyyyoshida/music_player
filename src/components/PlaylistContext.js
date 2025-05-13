@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useRef, useEffect } from "r
 import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
+import { useNavigate } from "react-router-dom";
 
 export const PlaylistContext = createContext();
 
@@ -13,7 +14,8 @@ export const PlaylistProvider = ({ children }) => {
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [playlistId, setPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
-  // const [totalDuration, setTotalDuration] = useState({});
+  const [totalDuration, setTotalDuration] = useState({});
+  const navigate = useNavigate();
 
   function toggleCreateVisible() {
     setIsCreateVisible((prev) => !prev);
@@ -73,14 +75,25 @@ export const PlaylistProvider = ({ children }) => {
       await updateDoc(doc(db, "playlists", playlistId), {
         totalDuration: increment(-deletedTrack.duration),
       });
-      // setTotalDuration((prev) => prev - deletedTrack.duration);
+      setTotalDuration((prev) => prev - deletedTrack.duration);
 
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
 
-      showMessage("delete");
+      showMessage("deleteTrack");
       console.log("削除成功");
     } catch (err) {
       console.error("削除失敗", err);
+    }
+  }
+
+  async function deletePlaylist(playlistId) {
+    try {
+      await deleteDoc(doc(db, "playlists", playlistId));
+      console.log("プレイリスト削除成功");
+      navigate("/playlist");
+      showMessage("deletePlaylist");
+    } catch (err) {
+      console.error("プレイリスト削除失敗", err);
     }
   }
 
@@ -97,6 +110,7 @@ export const PlaylistProvider = ({ children }) => {
         setPlaylistName,
         playlistInfo,
         deleteTrack,
+        deletePlaylist,
 
         playlistId,
         setPlaylistId,
@@ -104,8 +118,8 @@ export const PlaylistProvider = ({ children }) => {
         tracks,
         setTracks,
 
-        // totalDuration,
-        // setTotalDuration,
+        totalDuration,
+        setTotalDuration,
       }}
     >
       {children}

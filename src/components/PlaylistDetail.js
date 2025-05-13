@@ -10,17 +10,19 @@ import TrackItem from "./TrackItem";
 import { PlaylistContext } from "./PlaylistContext";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 import RenamePlaylist from "./RenamePlaylist";
+import DeletePlaylistModal from "./DeletePlaylistModal";
 
 const PlaylistDetail = () => {
   const { id } = useParams();
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
 
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
 
   const { setIsTrackSet } = useContext(SearchContext);
-  const { tracks, setTracks, formatTimeHours, playlistName, setPlaylistId } = useContext(PlaylistContext);
+  const { deletePlaylist, tracks, setTracks, formatTimeHours, playlistName, setPlaylistId } = useContext(PlaylistContext);
   const { setQueue, queue, playTrackAt } = useContext(PlaybackContext);
 
   const isFirstRender = useRef([]);
@@ -72,6 +74,10 @@ const PlaylistDetail = () => {
 
   function toggleRenameVisible() {
     setIsRenameVisible((prev) => !prev);
+  }
+
+  function toggleDeleteVisible() {
+    setIsDeleteVisible((prev) => !prev);
   }
 
   useEffect(() => {
@@ -130,7 +136,7 @@ const PlaylistDetail = () => {
             <img src="/img/rename.png" className="playlist-detail__header-rename-button-icon playlist-detail__header-button-icon" />
             名前を変更
           </button>
-          <button className="playlist-detail__header-delete-button playlist-detail__header-button">
+          <button className="playlist-detail__header-delete-button playlist-detail__header-button" onClick={toggleDeleteVisible}>
             <img src="/img/delete.png" className="playlist-detail__header-delete-button-icon playlist-detail__header-button-icon" />
             削除
           </button>
@@ -163,7 +169,13 @@ const PlaylistDetail = () => {
           );
         })}
       </ul>
-
+      <DeletePlaylistModal
+        isDeleteVisible={isDeleteVisible}
+        toggleDeleteVisible={toggleDeleteVisible}
+        tracks={tracks}
+        deletePlaylist={deletePlaylist}
+        id={id}
+      />
       <RenamePlaylist isRenameVisible={isRenameVisible} toggleRenameVisible={toggleRenameVisible} tracks={tracks} />
     </div>
   );
