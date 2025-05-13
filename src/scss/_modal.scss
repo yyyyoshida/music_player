@@ -124,6 +124,51 @@
   }
 }
 
+.error-text {
+  padding-top: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fc2a2a;
+  display: flex;
+  align-content: center;
+  img {
+    margin-right: 6px;
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  12.5% {
+    transform: translateX(-4px);
+  }
+  25% {
+    transform: translateX(4px);
+  }
+  37.5% {
+    transform: translateX(-2px);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+  62.5% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(1px);
+  }
+  87.5% {
+    transform: translateX(-1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.shake {
+  animation: shake 0.6s ease-in-out;
+}
+
 .playlist-selection {
   &__content {
     position: relative;
