@@ -10,8 +10,12 @@ const ActionSuccessMessage = () => {
       return "楽曲をプレイリストに追加しました";
     }
 
-    if (actionType === "delete") {
+    if (actionType === "deleteTrack") {
       return "楽曲をプレイリストから削除しました";
+    }
+
+    if (actionType === "deletePlaylist") {
+      return "プレイリストを削除しました";
     }
 
     if (actionType === "newPlaylist") {
