@@ -28,6 +28,10 @@
     background-color: #181818;
   }
 
+  &__header-cover-img-wrapper.single {
+    grid-template-columns: none;
+  }
+
   &__header-initial-cover-img-bg {
     position: absolute;
     width: 200px;
