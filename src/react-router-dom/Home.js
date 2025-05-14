@@ -1,15 +1,13 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
-import { usePlayerContext } from '../components/PlayerContext';
-import { SearchContext } from '../components/SearchContext';
-import { PlaylistSelectionContext } from '../components/PlaylistSelectionContext';
-import { playIcon, pauseIcon } from '../assets/icons';
-import { PlaybackContext } from '../contexts/PlaybackContext';
-import { LoadingContext } from '../contexts/LoadingContext';
+import React, { useEffect, useState, useContext, useRef } from "react";
+import { usePlayerContext } from "../components/PlayerContext";
+import { PlaylistSelectionContext } from "../components/PlaylistSelectionContext";
+import { playIcon, pauseIcon } from "../assets/icons";
+import { PlaybackContext } from "../contexts/PlaybackContext";
+import { LoadingContext } from "../contexts/LoadingContext";
 
 const Home = ({ token }) => {
   const [tracks, setTracks] = useState([]);
-  const { playerTrack, isStreaming, trackId } = usePlayerContext();
-  const { setIsTrackSet } = useContext(SearchContext);
+  const { playerTrack, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
   const changeCountRef = useRef(0);
   const { handleTrackSelect, isSelectVisible } = useContext(PlaylistSelectionContext);
   const { setQueue } = useContext(PlaybackContext);
@@ -20,24 +18,24 @@ const Home = ({ token }) => {
     // const token = new URLSearchParams(hash.replace('#', '?')).get('access_token');
     changeCountRef.current += 1;
     if (changeCountRef.current === 2) {
-      console.log('ホームの中の', token);
+      console.log("ホームの中の", token);
 
       if (token) {
-        localStorage.setItem('access_token', token); // アクセストークンをlocalStorageに保存
+        localStorage.setItem("access_token", token); // アクセストークンをlocalStorageに保存
         // window.location.href = '/home'; // メインページに遷移
       } else {
-        console.error('アクセストークンの取得に失敗しました');
+        console.error("アクセストークンの取得に失敗しました");
       }
     }
     // }, []);
   }, [token]);
 
   const fetchRecentlyPlayedTracks = async (token) => {
-    let url = 'https://api.spotify.com/v1/me/player/recently-played?limit=30';
+    let url = "https://api.spotify.com/v1/me/player/recently-played?limit=50";
     // const afterTimestamp = 1484811043508;
     // url += `&after=${afterTimestamp}`;
     if (!token) {
-      console.error('アクセストークンがありません');
+      console.error("アクセストークンがありません");
       return;
     }
 
@@ -66,7 +64,7 @@ const Home = ({ token }) => {
       // } else {
       // }
     } catch (err) {
-      console.error('再生履歴取れなかった', err);
+      console.error("再生履歴取れなかった", err);
     } finally {
       stopLoading();
     }
@@ -120,28 +118,25 @@ const Home = ({ token }) => {
                       alt={track.track.name}
                       width="188"
                       className="home__track-cover-art"
-                      style={{ filter: isClicked ? 'brightness(50%)' : '' }}
+                      style={{ filter: isClicked ? "brightness(50%)" : "" }}
                     />
-                    <button
-                      className="home__track-play-pause-button play-pause-button"
-                      style={{ visibility: isTrackPlaying ? 'visible' : 'visible' }}
-                    >
+                    <button className="home__track-play-pause-button play-pause-button" style={{ visibility: isTrackPlaying ? "visible" : "visible" }}>
                       <img
                         src={isTrackPlaying ? pauseIcon : playIcon}
-                        className={`home__track-play-pause-button-icon play-pause-button-icon ${isTrackPlaying ? 'pause-button-icon' : 'play-button-icon'}`}
+                        className={`home__track-play-pause-button-icon play-pause-button-icon ${isTrackPlaying ? "pause-button-icon" : "play-button-icon"}`}
                       />
                     </button>
                     <button
                       className="home__track-add-button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleTrackSelect(track, 'recentTrack');
+                        handleTrackSelect(track, "recentTrack");
                       }}
                     >
                       <img src="img/plus.png" className="home__track-add-button-icon" />
                     </button>
 
-                    <div className={`equalizer ${isTrackPlaying ? '' : 'hidden'}`}>
+                    <div className={`equalizer ${isTrackPlaying ? "" : "hidden"}`}>
                       <div className="bar"></div>
                       <div className="bar"></div>
                       <div className="bar"></div>

@@ -3,11 +3,13 @@ import { playIcon, pauseIcon } from "../assets/icons";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
+import { usePlayerContext } from "./PlayerContext";
 
-const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, playerTrack, formatTime, type }) => {
+const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type }) => {
   const { playTrackAt } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+  const { isTrackSet, setIsTrackSet } = usePlayerContext();
 
   const buttonRef = useRef(null);
 
@@ -25,6 +27,9 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, setIsTrackSet, pla
   }
 
   // console.log(track.trackId);
+  useEffect(() => {
+    console.log("isTrackSet", isTrackSet);
+  }, [isTrackSet]);
 
   return (
     <li

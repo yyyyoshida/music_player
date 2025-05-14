@@ -24,9 +24,10 @@ import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageCon
 function App() {
   const [token, setToken] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
+  // const [totalDuration, setTotalDuration] = useState(0);
 
   const { isToken, setIsToken } = useContext(TokenContext);
-
+  const [isTrackSet, setIsTrackSet] = useState(false);
   // const {toggle}
 
   useEffect(() => {
@@ -84,17 +85,14 @@ function App() {
       <ActionSuccessMessageProvider>
         <RepeatProvider>
           <LoadingProvider>
-            <PlayerProvider token={token}>
-              <PlaybackProvider>
+            <PlayerProvider token={token} isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+              <PlaybackProvider isTrackSet={isTrackSet}>
                 <SearchProvider>
                   <PlaylistProvider>
                     <PlaylistSelectionProvider>
                       {/* <h1>Spotifyアプリ</h1> */}
                       {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-                      <Header
-                        token={token}
-                        onSearchResults={handleSearchResults}
-                      />
+                      <Header token={token} onSearchResults={handleSearchResults} />
                       {/* {!token && <Login />} */}
                       <Main token={token} searchResults={searchResults} />
                     </PlaylistSelectionProvider>
