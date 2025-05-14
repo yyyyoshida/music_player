@@ -19,6 +19,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
   const [isStreaming, setIsStreaming] = useState(false);
   const { isRepeat } = useRepeatContext();
   const { showMessage } = useContext(ActionSuccessMessageContext);
+  const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -84,20 +85,29 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     };
   }, [token]);
 
-  const FADE_DURATION = 2500;
+  const FADE_DURATION = 3000;
 
   useEffect(() => {
+    let timeoutId;
+
     if (!isTrackSet && isPlaying) {
       showMessage("unselected");
-      // setIsVisible(true);
-      setTimeout(() => {
-        // setIsVisible(false);
+      setIsPlayPauseCooldown(true);
+
+      timeoutId = setTimeout(() => {
+        setIsPlayPauseCooldown(false);
         togglePlayPause();
       }, FADE_DURATION);
     }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [isPlaying, trackTitle]);
 
   const togglePlayPause = (isRepeat) => {
+    if (isPlayPauseCooldown) return;
+
     if (!player) {
       alert("Player is not initialized yer!");
       return;
@@ -106,6 +116,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     if (player && !isRepeat) {
       player.togglePlay().then(() => {
         setIsPlaying((prev) => !prev);
+        // startCooldown();
       });
       return;
     }
@@ -225,11 +236,11 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
 
         isTrackSet,
         setIsTrackSet,
+        isPlayPauseCooldown,
       }}
     >
       {children}
     </PlayerContext.Provider>
   );
 };
-
 export const usePlayerContext = () => useContext(PlayerContext);

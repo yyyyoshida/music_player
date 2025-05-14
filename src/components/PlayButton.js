@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { usePlayerContext } from './PlayerContext';
-import Tooltip from './Tooltip';
-import useButtonTooltip from '../hooks/useButtonTooltip';
-import useDelayedText from '../hooks/useDelayText';
-import { playIcon, pauseIcon } from '../assets/icons';
+import React, { useEffect, useState } from "react";
+import { usePlayerContext } from "./PlayerContext";
+import Tooltip from "./Tooltip";
+import useButtonTooltip from "../hooks/useButtonTooltip";
+import useDelayedText from "../hooks/useDelayText";
+import { playIcon, pauseIcon } from "../assets/icons";
 
 const PlayButton = () => {
-  const { isPlaying, togglePlayPause, currentSongIndex, isClassName, setIsClassName } = usePlayerContext();
+  const { isPlayPauseCooldown, isPlaying, togglePlayPause, currentSongIndex, isClassName, setIsClassName } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
-  const tooltipText = useDelayedText('一時停止', '再生', isPlaying, isPlaying);
+  const tooltipText = useDelayedText("一時停止", "再生", isPlaying, isPlaying, 0);
 
   function handlePlayPause() {
+    if (isPlayPauseCooldown) return;
     togglePlayPause();
     handleButtonPress();
   }
@@ -24,9 +25,9 @@ const PlayButton = () => {
     >
       <img
         src={isPlaying ? pauseIcon : playIcon}
-        className={`player-controls__play-pause-button-icon player-controls__${isPlaying ? 'pause' : 'play'}-icon`}
+        className={`player-controls__play-pause-button-icon player-controls__${isPlaying ? "pause" : "play"}-icon`}
       ></img>
-      <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={isPlaying ? 'tooltip-pause' : 'tooltip-play'}>
+      <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={isPlaying ? "tooltip-pause" : "tooltip-play"}>
         {tooltipText}
       </Tooltip>
     </button>
