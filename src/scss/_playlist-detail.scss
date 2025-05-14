@@ -22,13 +22,22 @@
     border: rgba(175, 175, 175, 0.2745098039) solid 1px;
     position: relative;
     overflow: hidden;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
     background-color: #181818;
   }
 
-  &__header-cover-img-wrapper.single {
+  &__header-cover-imgs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    transition: opacity 0.6s ease;
+    opacity: 0;
+  }
+
+  &__header-cover-imgs.single {
     grid-template-columns: none;
   }
 
@@ -38,7 +47,7 @@
     height: 200px;
     background-color: #181818;
 
-    // opacity: 0;
+    opacity: 1;
     transition: opacity 0.6s ease;
     // z-index: 9000;
   }
