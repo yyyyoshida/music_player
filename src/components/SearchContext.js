@@ -1,12 +1,12 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { PlaybackContext } from '../contexts/PlaybackContext';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { PlaybackContext } from "../contexts/PlaybackContext";
 
 export const SearchContext = createContext();
 
 export const SearchProvider = ({ children }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [isTrackSet, setIsTrackSet] = useState(false);
+  // const [isTrackSet, setIsTrackSet] = useState(false);
 
   const { setQueue, queue } = useContext(PlaybackContext);
 
@@ -15,9 +15,8 @@ export const SearchProvider = ({ children }) => {
   }, [searchResults]);
 
   return (
-    <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults, isTrackSet, setIsTrackSet }}>
-      {children}
-    </SearchContext.Provider>
+    // <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults, isTrackSet, setIsTrackSet }}>
+    <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults }}>{children}</SearchContext.Provider>
   );
 };
 

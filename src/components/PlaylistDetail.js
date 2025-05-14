@@ -5,12 +5,12 @@ import { collection, getDocs, getDoc, doc, query, orderBy } from "firebase/fires
 import { playIcon } from "../assets/icons";
 import TrackListHead from "./TrackListHead";
 import { usePlayerContext } from "./PlayerContext";
-import { SearchContext } from "./SearchContext";
 import TrackItem from "./TrackItem";
 import { PlaylistContext } from "./PlaylistContext";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 import RenamePlaylist from "./RenamePlaylist";
 import DeletePlaylistModal from "./DeletePlaylistModal";
+import ActionSuccessMessageContext from "../contexts/ActionSuccessMessageContext";
 
 const PlaylistDetail = () => {
   const { id } = useParams();
@@ -19,11 +19,12 @@ const PlaylistDetail = () => {
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
 
-  const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
+  const { playerTrack, formatTime, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
 
-  const { setIsTrackSet } = useContext(SearchContext);
   const { deletePlaylist, tracks, setTracks, formatTimeHours, playlistName, setPlaylistId } = useContext(PlaylistContext);
   const { setQueue, queue, playTrackAt } = useContext(PlaybackContext);
+
+  const { showMessage } = useContext(ActionSuccessMessageContext);
 
   const isFirstRender = useRef([]);
 
@@ -69,8 +70,12 @@ const PlaylistDetail = () => {
 
   useEffect(() => {
     setQueue(tracks);
-    setIsTrackSet(true);
+    // setIsTrackSet(true);
   }, [tracks]);
+
+  useEffect(() => {
+    console.log(queue);
+  }, [queue]);
 
   function toggleDeleteVisible() {
     setIsDeleteVisible((prev) => !prev);
@@ -118,8 +123,13 @@ const PlaylistDetail = () => {
           <button
             className="playlist-detail__header-play-button playlist-detail__header-button"
             onClick={() => {
-              playerTrack(queue[0].trackUri);
+              if (!queue?.[0]?.trackUri) {
+                showMessage("unselected");
+                return;
+              }
+              setIsTrackSet(true);
               playTrackAt(0);
+              playerTrack(queue[0].trackUri);
             }}
           >
             <img src={playIcon} className="playlist-detail__header-play-button-icon playlist-detail__header-button-icon" />
@@ -158,7 +168,7 @@ const PlaylistDetail = () => {
               isCurrentTrack={isCurrentTrack}
               isTrackPlaying={isTrackPlaying}
               isClicked={isClicked}
-              setIsTrackSet={setIsTrackSet}
+              // setIsTrackSet={setIsTrackSet}
               playerTrack={playerTrack}
               formatTime={formatTime}
               type={"firebase"}
