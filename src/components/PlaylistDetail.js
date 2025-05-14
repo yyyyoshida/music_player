@@ -11,13 +11,15 @@ import { PlaybackContext } from "../contexts/PlaybackContext";
 import RenamePlaylist from "./RenamePlaylist";
 import DeletePlaylistModal from "./DeletePlaylistModal";
 import ActionSuccessMessageContext from "../contexts/ActionSuccessMessageContext";
+import TrackListSkeleton from "./TrackListSkeleton";
 
 const PlaylistDetail = () => {
   const { id } = useParams();
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
-  const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
+  const [playlistInfo, setPlaylistInfo] = useState({ name: "", duration: 0 });
+  const [isLoading, setIsLoading] = useState(true);
 
   const { playerTrack, formatTime, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
 
@@ -27,6 +29,14 @@ const PlaylistDetail = () => {
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
   const coverImagesRef = useRef();
+
+  function startLoading() {
+    setIsLoading(true);
+  }
+
+  function stopLoading() {
+    setIsLoading(false);
+  }
 
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
@@ -49,6 +59,7 @@ const PlaylistDetail = () => {
 
   useEffect(() => {
     const fetchTracks = async () => {
+      startLoading();
       try {
         const tracksRef = collection(db, "playlists", id, "tracks");
         const q = query(tracksRef, orderBy("addedAt"));
@@ -58,9 +69,16 @@ const PlaylistDetail = () => {
           ...doc.data(), // ← トラックの中身
         }));
         setTracks(trackList);
+
+        setTimeout(() => {
+          stopLoading();
+        }, 400);
       } catch (error) {
         console.error("曲の取得に失敗した", error);
       }
+      // } finally {
+      //   stopLoading();
+      // }
     };
 
     fetchTracks();
@@ -80,8 +98,9 @@ const PlaylistDetail = () => {
   }
 
   useEffect(() => {
+    // if (!coverImagesRef) return;
     const transitionElement = coverImagesRef.current;
-
+    if (!transitionElement) return;
     transitionElement.style.opacity = 0;
     function handleTransitionEnd() {
       transitionElement.style.opacity = 1;
@@ -90,31 +109,35 @@ const PlaylistDetail = () => {
     const timeoutId = setTimeout(() => {
       transitionElement.style.opacity = 1;
       transitionElement.addEventListener("transitionend", handleTransitionEnd);
-    }, 200);
+    }, 0);
 
     return () => {
       clearTimeout(timeoutId);
       transitionElement.removeEventListener("transitionend", handleTransitionEnd);
     };
-  }, [tracks]);
+  }, [tracks, isLoading]);
 
   return (
     <div className="playlist-detail">
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
-          <div className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""}`} ref={coverImagesRef}>
-            {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => (
-              <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
-            ))}
-          </div>
+          {!isLoading && (
+            <div className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""}`} ref={coverImagesRef}>
+              {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => (
+                <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
+              ))}
+            </div>
+          )}
           <div className="playlist-detail__header-initial-cover-img-bg">
             <img src="/img/playlist-icon1.png" className="playlists-detail__header-initial-cover-img playlist-initial-cover-img" />
           </div>
         </div>
         <div className="playlist-detail__header-info">
-          <h2 className="playlist-detail__header-title">{playlistName}</h2>
+          <h2 className={`playlist-detail__header-title fade-on-loaded ${isLoading ? "" : "fade-in"}`}>{playlistInfo.name}</h2>
 
-          <p className="playlist-detail__header-status"> {`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration)}`}</p>
+          <p
+            className={`playlist-detail__header-status fade-on-loaded ${isLoading ? "" : "fade-in"}`}
+          >{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration)}`}</p>
         </div>
 
         <div className="playlist-detail__header-actions-buttons">
@@ -151,7 +174,8 @@ const PlaylistDetail = () => {
 
       <TrackListHead />
 
-      <ul className="playlist-detail__list">
+      {isLoading && <TrackListSkeleton count={8} />}
+      <ul className={`playlist-detail__list fade-on-loaded ${isLoading ? "" : "fade-in"}`}>
         {tracks.map((track, index) => {
           const isCurrentTrack = trackId === track.trackId;
           const isTrackPlaying = isCurrentTrack && isStreaming;
@@ -175,6 +199,7 @@ const PlaylistDetail = () => {
           );
         })}
       </ul>
+
       <DeletePlaylistModal
         isDeleteVisible={isDeleteVisible}
         toggleDeleteVisible={toggleDeleteVisible}
