@@ -1,0 +1,133 @@
+.skeleton-track-list {
+  // height: 1000px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  // background-color: rgb(107, 107, 107);
+
+  &__item {
+    position: relative;
+    padding: 7px;
+    display: flex;
+    transition: background-color 0.2s ease;
+    border-radius: 5px;
+    height: 64px;
+  }
+
+  &__item-left {
+    width: 40px;
+    height: 50px;
+
+    margin-right: 7px;
+    position: absolute;
+  }
+
+  &__item-left-count {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &__item-cover {
+    position: absolute;
+    left: 60px;
+    left: 54px;
+    width: 50px;
+    height: 50px;
+    background-color: #555555;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+  }
+
+  &__item-info {
+    position: absolute;
+    left: 122px;
+    left: 125px;
+    // height: 100%;
+    height: 50px;
+    width: 300px;
+    // margin-left: 20px;
+    // padding: 5px 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  &__item-right {
+    position: absolute;
+    right: 20px;
+    top: 54%;
+    transform: translateY(-50%);
+  }
+
+  &__item-title {
+    top: 5px;
+    top: 6px;
+  }
+  &__item-artist {
+    bottom: 5px;
+    bottom: 8px;
+  }
+
+  .skeleton {
+    position: absolute;
+    background-color: #555555;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150px;
+    // left: -300px;
+    // left: -400px;
+
+    height: 100%;
+    width: 150px;
+    // width: 300px;
+    // width: 400px;
+
+    // background: linear-gradient(to right, transparent 0%, #2e2e2e 50%, transparent 100%);
+    background: linear-gradient(to right, transparent 0%, #727272 50%, transparent 100%);
+    background: linear-gradient(to right, transparent 0%, #686868 50%, transparent 100%);
+
+    animation: shimmer 1.5s infinite;
+
+    animation: shimmer 1.2s infinite;
+  }
+
+  .skeleton--text {
+    width: 160px;
+    height: 14px;
+    height: 13px;
+  }
+
+  .short {
+    width: 120px;
+  }
+
+  .very-short {
+    width: 26px;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -150px;
+      // left: -300px;
+      left: -300px;
+      left: -200px;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+}

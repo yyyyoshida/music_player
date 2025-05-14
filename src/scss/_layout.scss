@@ -25,6 +25,7 @@ body {
   font-weight: 500;
   background-color: #2e2e2e;
   // display: flex;
+  overflow: hidden;
 
   // background-color: #00bcd4;
   // background-color: #00bcd4;
@@ -38,11 +39,13 @@ body {
 .container {
   width: 100%;
   width: calc(100% - 300px);
+
   height: 100vh;
   height: 85vh;
   background-color: #2e2e2e;
   margin-left: 300px;
-  // overflow: hidden;
+
+  scrollbar-gutter: stable;
   overflow-y: auto;
   // background-image: url(/img/テストサムネ１.jpg);
   // background-size: cover;
@@ -58,12 +61,14 @@ body {
   width: 9px;
   background: #444444;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+
   transition: all 0.2s ease;
 }
 ::-webkit-scrollbar-thumb {
   border-radius: 4px;
   background-color: #757575;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 }
 ::-webkit-scrollbar-thumb:hover {
   background-color: #8f8f8f;
@@ -124,6 +129,7 @@ body {
 main {
   // height: 100%;
   padding: 40px 60px;
+  max-height: 85vh;
 }
 footer {
   padding: 0 60px;
