@@ -1,14 +1,14 @@
-import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
-import { usePlayerContext } from '../components/PlayerContext';
-import { TokenContext } from '../contexts/isTokenContext';
+import React, { createContext, useState, useContext, useEffect, useRef } from "react";
+import { usePlayerContext } from "../components/PlayerContext";
+import { TokenContext } from "../contexts/isTokenContext";
 
 export const PlaybackContext = createContext();
 
-export const PlaybackProvider = ({ children }) => {
+export const PlaybackProvider = ({ children, isTrackSet }) => {
   const [queue, setQueue] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
-  const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const [isNextDisabled, setIsNextDisabled] = useState(true);
   const { isToken, setIsToken } = useContext(TokenContext);
 
   const currentIndexRef = useRef(0);
@@ -18,21 +18,31 @@ export const PlaybackProvider = ({ children }) => {
   const { playerTrack, player } = usePlayerContext();
 
   useEffect(() => {
-    console.log('一覧のトラック数', queue);
+    console.log("一覧のトラック数", queue);
   }, [queue]);
 
   // console.log(queue.length === 0);
 
   useEffect(() => {
     if (!isToken) return;
+    console.log(!isTrackSet);
+
+    if (!isTrackSet) {
+      setIsPrevDisabled(!isTrackSet);
+      setIsNextDisabled(!isTrackSet);
+      return;
+    }
+
+    console.log(!isTrackSet);
     setIsPrevDisabled(currentIndexRef.current <= 0);
     setIsNextDisabled(currentIndexRef.current >= queue.length - 1);
-  }, [queue, currentIndex]);
+  }, [queue, currentIndex, isTrackSet]);
+
   // こいつ原因です
 
   // クリックしたトラックのインデックスをセット
   const playTrackAt = (index) => {
-    console.log('発火');
+    console.log("発火");
     if (index >= 0 && index < queue.length) {
       setCurrentIndex(index);
       currentIndexRef.current = index;
@@ -40,7 +50,7 @@ export const PlaybackProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log(currentIndexRef.current, 'これが現在の曲のインデックス');
+    console.log(currentIndexRef.current, "これが現在の曲のインデックス");
   }, [currentIndex]);
 
   function goToNextTrack() {

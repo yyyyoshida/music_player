@@ -9,7 +9,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
   const { playTrackAt } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  const { isTrackSet, setIsTrackSet } = usePlayerContext();
+  const { setIsTrackSet } = usePlayerContext();
 
   const buttonRef = useRef(null);
 
@@ -25,11 +25,6 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
       setMenuPositionTop(10);
     }
   }
-
-  // console.log(track.trackId);
-  useEffect(() => {
-    console.log("isTrackSet", isTrackSet);
-  }, [isTrackSet]);
 
   return (
     <li
