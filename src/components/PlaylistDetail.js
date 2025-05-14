@@ -26,9 +26,7 @@ const PlaylistDetail = () => {
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
-  const isFirstRender = useRef([]);
-
-  const initialCoverRef = useRef();
+  const coverImagesRef = useRef();
 
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
@@ -82,34 +80,34 @@ const PlaylistDetail = () => {
   }
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    const transitionElement = coverImagesRef.current;
 
-    if (tracks.length === 0) return;
-
-    const transitionElement = initialCoverRef.current;
-
-    transitionElement.style.opacity = 1;
+    transitionElement.style.opacity = 0;
     function handleTransitionEnd() {
-      transitionElement.style.opacity = 0;
+      transitionElement.style.opacity = 1;
     }
 
-    setTimeout(() => {
-      transitionElement.style.opacity = 0;
+    const timeoutId = setTimeout(() => {
+      transitionElement.style.opacity = 1;
       transitionElement.addEventListener("transitionend", handleTransitionEnd);
     }, 200);
+
+    return () => {
+      clearTimeout(timeoutId);
+      transitionElement.removeEventListener("transitionend", handleTransitionEnd);
+    };
   }, [tracks]);
 
   return (
     <div className="playlist-detail">
       <div className="playlist-detail__header">
-        <div className={`playlist-detail__header-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}>
-          {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => (
-            <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
-          ))}
-          <div className="playlist-detail__header-initial-cover-img-bg" ref={initialCoverRef}>
+        <div className="playlist-detail__header-cover-img-wrapper">
+          <div className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""}`} ref={coverImagesRef}>
+            {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => (
+              <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
+            ))}
+          </div>
+          <div className="playlist-detail__header-initial-cover-img-bg">
             <img src="/img/playlist-icon1.png" className="playlists-detail__header-initial-cover-img playlist-initial-cover-img" />
           </div>
         </div>
