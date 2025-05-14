@@ -50,7 +50,13 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
           <div className="bar"></div>
         </div>
       </div>
-      <img src={track.albumImage || track.album.images[2]?.url} alt={track.title} className="track-item__cover-art" width="50" />
+      <img
+        src={track.albumImage || track.album.images[2]?.url}
+        alt={track.title}
+        className="track-item__cover-art"
+        width="50"
+        loading={index >= 10 ? "lazy" : "eager"}
+      />
       <div className="track-item__track-info">
         <p className="track-item__title">{track.title || track.name}</p>
         <p className="track-item__artist">{track.artist || track.artists[0]?.name}</p>
