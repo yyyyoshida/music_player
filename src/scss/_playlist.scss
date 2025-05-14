@@ -121,3 +121,39 @@
   width: 24px;
   height: 24px;
 }
+
+.playlist-selection {
+  &__item-cover-img-wrapper {
+    width: 64px;
+    height: 64px;
+
+    border-radius: 10px;
+    box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
+
+    position: relative;
+    border: rgba(175, 175, 175, 0.2745098039) solid 1px;
+    position: relative;
+    overflow: hidden;
+    background-color: #181818;
+  }
+
+  &__item-cover-imgs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    transition: opacity 0.6s ease;
+    opacity: 0;
+  }
+
+  &__item-cover-imgs.single {
+    grid-template-columns: none;
+  }
+
+  &__item-initial-cover-img-bg {
+    opacity: 1;
+  }
+}
