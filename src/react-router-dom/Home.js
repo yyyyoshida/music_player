@@ -4,6 +4,7 @@ import { PlaylistSelectionContext } from "../components/PlaylistSelectionContext
 import { playIcon, pauseIcon } from "../assets/icons";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 import { LoadingContext } from "../contexts/LoadingContext";
+import CardListSkeleton from "../components/CardListSkeleton";
 
 const Home = ({ token }) => {
   const [tracks, setTracks] = useState([]);
@@ -86,77 +87,69 @@ const Home = ({ token }) => {
     <div className="home">
       <h1 className="home__title">ホーム</h1>
       <p className="home__text">最近再生した曲一覧</p>
-      {isLoading && !isSelectVisible ? (
-        <div className="loading">
-          <div className="loading__content">
-            <p className="loading__text">読み込み中</p>
-            <div className="loading__spinner loader"></div>
-          </div>
-        </div>
-      ) : (
-        // ローディングが終わったら表示するトラックリスト
-        <ul className="home__track-list">
-          {Array.isArray(tracks) && tracks.length > 0 ? (
-            tracks.map((track) => {
-              const isCurrentTrack = trackId === track.track.id;
-              const isTrackPlaying = isCurrentTrack && isStreaming;
-              const isClicked = isCurrentTrack;
+      {isLoading && !isSelectVisible && <CardListSkeleton />}
+      <ul className={`home__track-list fade-on-loaded ${isLoading ? "" : "fade-in"}`}>
+        {Array.isArray(tracks) && tracks.length > 0 ? (
+          tracks.map((track) => {
+            const isCurrentTrack = trackId === track.track.id;
+            const isTrackPlaying = isCurrentTrack && isStreaming;
+            const isClicked = isCurrentTrack;
 
-              return (
-                <li
-                  key={`${track.track.id}-${track.played_at}`}
-                  className="home__track-item"
-                  onClick={() => {
-                    playerTrack(track.track.uri, isClicked);
-                    setIsTrackSet(true);
-                  }}
-                >
-                  {/* トラックのカバーアート */}
-                  <div className="home__track-cover-art-wrapper">
+            return (
+              <li
+                key={`${track.track.id}-${track.played_at}`}
+                className="home__track-item"
+                onClick={() => {
+                  playerTrack(track.track.uri, isClicked);
+                  setIsTrackSet(true);
+                }}
+              >
+                {/* トラックのカバーアート */}
+                <div className="home__track-cover-art-wrapper">
+                  <img
+                    src={track.track.album.images[1].url}
+                    alt={track.track.name}
+                    width="188"
+                    className="home__track-cover-art"
+                    style={{ filter: isClicked ? "brightness(50%)" : "" }}
+                  />
+                  <button className="home__track-play-pause-button play-pause-button" style={{ visibility: isTrackPlaying ? "visible" : "visible" }}>
                     <img
-                      src={track.track.album.images[1].url}
-                      alt={track.track.name}
-                      width="188"
-                      className="home__track-cover-art"
-                      style={{ filter: isClicked ? "brightness(50%)" : "" }}
+                      src={isTrackPlaying ? pauseIcon : playIcon}
+                      className={`home__track-play-pause-button-icon play-pause-button-icon ${isTrackPlaying ? "pause-button-icon" : "play-button-icon"}`}
                     />
-                    <button className="home__track-play-pause-button play-pause-button" style={{ visibility: isTrackPlaying ? "visible" : "visible" }}>
-                      <img
-                        src={isTrackPlaying ? pauseIcon : playIcon}
-                        className={`home__track-play-pause-button-icon play-pause-button-icon ${isTrackPlaying ? "pause-button-icon" : "play-button-icon"}`}
-                      />
-                    </button>
-                    <button
-                      className="home__track-add-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleTrackSelect(track, "recentTrack");
-                      }}
-                    >
-                      <img src="img/plus.png" className="home__track-add-button-icon" />
-                    </button>
+                  </button>
+                  <button
+                    className="home__track-add-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTrackSelect(track, "recentTrack");
+                    }}
+                  >
+                    <img src="img/plus.png" className="home__track-add-button-icon" />
+                  </button>
 
-                    <div className={`equalizer ${isTrackPlaying ? "" : "hidden"}`}>
-                      <div className="bar"></div>
-                      <div className="bar"></div>
-                      <div className="bar"></div>
-                      <div className="bar"></div>
-                    </div>
+                  <div className={`equalizer ${isTrackPlaying ? "" : "hidden"}`}>
+                    <div className="bar"></div>
+                    <div className="bar"></div>
+                    <div className="bar"></div>
+                    <div className="bar"></div>
                   </div>
+                </div>
 
-                  <div className="home__track-info">
-                    <div className="home__track-name">{track.track.name}</div>
-                    <div className="home__track-artist">{track.track.artists[0].name}</div>
-                  </div>
-                </li>
-              );
-            })
-          ) : (
-            // トラックが無い場合の表示
-            <p>最近の再生履歴はありません。</p>
-          )}
-        </ul>
-      )}
+                <div className="home__track-info">
+                  <div className="home__track-name">{track.track.name}</div>
+                  <div className="home__track-artist">{track.track.artists[0].name}</div>
+                </div>
+              </li>
+            );
+          })
+        ) : (
+          // トラックが無い場合の表示
+          <p>最近の再生履歴はありません。</p>
+        )}
+      </ul>
+      {/* // )} */}
     </div>
   );
 };
