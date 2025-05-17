@@ -175,7 +175,7 @@ const PlaylistDetail = () => {
       <TrackListHead />
 
       {isLoading && <TrackListSkeleton count={8} />}
-      <ul className={`playlist-detail__list fade-on-loaded ${isLoading ? "" : "fade-in"}`}>
+      <ul className={`playlist-detail__list fade-on-loaded ${isLoading ? "" : "fade-in-up"} `}>
         {tracks.map((track, index) => {
           const isCurrentTrack = trackId === track.trackId;
           const isTrackPlaying = isCurrentTrack && isStreaming;

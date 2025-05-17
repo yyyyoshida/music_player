@@ -88,7 +88,7 @@ const Home = ({ token }) => {
       <h1 className="home__title">ホーム</h1>
       <p className="home__text">最近再生した曲一覧</p>
       {isLoading && !isSelectVisible && <CardListSkeleton />}
-      <ul className={`home__track-list fade-on-loaded ${isLoading ? "" : "fade-in"}`}>
+      <ul className={`home__track-list fade-on-loaded ${isLoading ? "" : "fade-in-up"}`}>
         {Array.isArray(tracks) && tracks.length > 0 ? (
           tracks.map((track) => {
             const isCurrentTrack = trackId === track.track.id;
