@@ -37,7 +37,8 @@ const TrackList = () => {
       {showSkeleton && !isSelectVisible && <TrackListSkeleton />}
 
       <div>
-        <ul className={`search-result__list fade-on-loaded ${shouldFadeIn ? "fade-in" : ""}`}>
+        <ul className={`search-result__list fade-on-loaded ${shouldFadeIn ? "fade-in-up" : ""}`}>
+          {/* <ul className={`search-result__list fade-on-loaded ${shouldFadeIn ? "fade-reveal" : ""}`}> */}
           {searchResults.length > 0 ? (
             searchResults.map((track, index) => {
               const isCurrentTrack = trackId === track.id;

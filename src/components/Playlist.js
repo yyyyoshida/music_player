@@ -26,7 +26,7 @@ const Playlist = () => {
       </button>
       {isLoading && !isSelectVisible && <CardListSkeleton />}
 
-      <ul className={`playlists-page__list fade-on-loaded ${isLoading ? "" : "fade-in"}`}>
+      <ul className={`playlists-page__list fade-on-loaded ${isLoading ? "" : "fade-in-up"}`}>
         {playlists.map((playlist) => {
           const isSingleImage = playlist.albumImages.length <= 3;
           const albumImagesToDisplay = [...playlist.albumImages].slice(0, 4);
