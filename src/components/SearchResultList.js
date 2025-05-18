@@ -11,7 +11,7 @@ const TrackList = () => {
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
   const { searchResults } = useContext(SearchContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
-  const { isLoading } = useContext(LoadingContext);
+  const { isSearchLoading } = useContext(LoadingContext);
   const [shouldFadeIn, setShouldFadeIn] = useState(false);
   const [showSkeleton, setShowSkeleton] = useState(true);
   // const { totalDuration } = useContext(PlaylistContext);
@@ -19,7 +19,7 @@ const TrackList = () => {
   // console.log(totalDuration);
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isSearchLoading) {
       const timeoutId = setTimeout(() => {
         setShouldFadeIn(true);
         setShowSkeleton(false);
@@ -30,7 +30,7 @@ const TrackList = () => {
       setShouldFadeIn(false);
       setShowSkeleton(true);
     }
-  }, [isLoading]);
+  }, [isSearchLoading]);
 
   return (
     <>

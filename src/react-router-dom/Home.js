@@ -12,7 +12,7 @@ const Home = ({ token }) => {
   const changeCountRef = useRef(0);
   const { handleTrackSelect, isSelectVisible } = useContext(PlaylistSelectionContext);
   const { setQueue } = useContext(PlaybackContext);
-  const { isLoading, startLoading, stopLoading } = useContext(LoadingContext);
+  const { isHomeLoading, setIsHomeLoading } = useContext(LoadingContext);
 
   useEffect(() => {
     // const hash = window.location.hash;
@@ -40,7 +40,7 @@ const Home = ({ token }) => {
       return;
     }
 
-    startLoading();
+    setIsHomeLoading(true);
 
     try {
       // const response = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=10', {
@@ -67,7 +67,7 @@ const Home = ({ token }) => {
     } catch (err) {
       console.error("再生履歴取れなかった", err);
     } finally {
-      stopLoading();
+      setIsHomeLoading(false);
     }
   };
 
@@ -87,8 +87,8 @@ const Home = ({ token }) => {
     <div className="home">
       <h1 className="home__title">ホーム</h1>
       <p className="home__text">最近再生した曲一覧</p>
-      {isLoading && !isSelectVisible && <CardListSkeleton />}
-      <ul className={`home__track-list fade-on-loaded ${isLoading ? "" : "fade-in-up"}`}>
+      {isHomeLoading && !isSelectVisible && <CardListSkeleton />}
+      <ul className={`home__track-list fade-on-loaded ${isHomeLoading ? "" : "fade-in-up"}`}>
         {Array.isArray(tracks) && tracks.length > 0 ? (
           tracks.map((track) => {
             const isCurrentTrack = trackId === track.track.id;

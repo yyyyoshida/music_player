@@ -10,7 +10,7 @@ import CardListSkeleton from "./CardListSkeleton";
 const Playlist = () => {
   const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
-  const { isLoading } = useContext(LoadingContext);
+  const { isPlaylistsLoading } = useContext(LoadingContext);
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
 
@@ -24,9 +24,9 @@ const Playlist = () => {
       <button className="playlists-page__create-button playlist-create-button" onClick={toggleCreateVisible}>
         ＋ 新規プレイリスト作成
       </button>
-      {isLoading && !isSelectVisible && <CardListSkeleton />}
+      {isPlaylistsLoading && !isSelectVisible && <CardListSkeleton />}
 
-      <ul className={`playlists-page__list fade-on-loaded ${isLoading ? "" : "fade-in-up"}`}>
+      <ul className={`playlists-page__list fade-on-loaded ${isPlaylistsLoading ? "" : "fade-in-up"}`}>
         {playlists.map((playlist) => {
           const isSingleImage = playlist.albumImages.length <= 3;
           const albumImagesToDisplay = [...playlist.albumImages].slice(0, 4);
