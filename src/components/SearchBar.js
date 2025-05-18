@@ -1,18 +1,18 @@
-import React, { useState, useContext, useRef } from 'react';
-import { SearchContext } from './SearchContext';
-import { useNavigate } from 'react-router-dom';
-import { LoadingContext } from '../contexts/LoadingContext';
+import React, { useState, useContext, useRef } from "react";
+import { SearchContext } from "./SearchContext";
+import { useNavigate } from "react-router-dom";
+import { LoadingContext } from "../contexts/LoadingContext";
 
 const SearchBar = ({ token }) => {
   const { setQuery, setSearchResults } = useContext(SearchContext);
-  const queryRef = useRef('');
+  const queryRef = useRef("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { startLoading, stopLoading } = useContext(LoadingContext);
+  const { setIsSearchLoading } = useContext(LoadingContext);
 
   const handleSearch = async () => {
-    if (queryRef.current === '') return;
-    console.log('検索する値', queryRef.current.value);
+    if (queryRef.current === "") return;
+    console.log("検索する値", queryRef.current.value);
     setQuery(queryRef.current.value);
 
     // navigate(`/search-result?query=${encodeURIComponent(query)}`);
@@ -20,16 +20,16 @@ const SearchBar = ({ token }) => {
 
     console.log(token);
     if (!token) {
-      setError('アクセストークンが無効です。再度ログインしてください。');
+      setError("アクセストークンが無効です。再度ログインしてください。");
       return;
     }
 
-    startLoading();
+    setIsSearchLoading(true);
 
     try {
       const encodedQuery = encodeURIComponent(queryRef.current.value); // クエリをURLエンコード
       const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`, // トークンをヘッダーに含める
         },
@@ -37,8 +37,8 @@ const SearchBar = ({ token }) => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('APIからのエラー:', errorText);
-        throw new Error('Spotify APIからの応答がありません');
+        console.error("APIからのエラー:", errorText);
+        throw new Error("Spotify APIからの応答がありません");
       }
 
       const data = await response.json();
@@ -48,20 +48,20 @@ const SearchBar = ({ token }) => {
         setError(null); // エラー状態をクリア
       } else {
         setSearchResults([]);
-        setError('検索結果が見つかりませんでした。');
+        setError("検索結果が見つかりませんでした。");
       }
       // setQuery(''); // 検索完了後に入力をクリア
     } catch (err) {
-      console.error('検索に失敗しました:', err);
-      setError('検索に失敗しました。もう一度お試しください。');
+      console.error("検索に失敗しました:", err);
+      setError("検索に失敗しました。もう一度お試しください。");
       setSearchResults([]);
     } finally {
-      stopLoading();
+      setIsSearchLoading(false);
     }
   };
 
   function clearSearchText() {
-    queryRef.current.value = '';
+    queryRef.current.value = "";
     queryRef.current?.focus();
   }
 
@@ -69,13 +69,7 @@ const SearchBar = ({ token }) => {
     <>
       <div className="search-bar">
         <img className="search-bar__search-icon" src="/img/検索用の虫眼鏡アイコン 7.png" alt="" />
-        <input
-          className="search-bar__input"
-          type="text"
-          ref={queryRef}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          placeholder="検索"
-        />
+        <input className="search-bar__input" type="text" ref={queryRef} onKeyDown={(e) => e.key === "Enter" && handleSearch()} placeholder="検索" />
         <button className="search-bar__clear-button" onClick={clearSearchText}>
           <img className="search-bar__clear-icon" src="/img/x.png"></img>
         </button>
