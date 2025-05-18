@@ -20,6 +20,7 @@ export const PlaylistProvider = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const MAX_NAME_LENGTH = 10;
   const [isShaking, setIsShaking] = useState(false);
+  const [preselectedTrack, setPreselectedTrack] = useState(null);
 
   function toggleCreateVisible() {
     setErrorMessage("");
@@ -66,14 +67,22 @@ export const PlaylistProvider = ({ children }) => {
     }
 
     try {
-      await addDoc(collection(db, "playlists"), {
-        name: playlistNameRef.current.value,
+      const playlistRef = await addDoc(collection(db, "playlists"), {
+        name: newName,
         createdAt: serverTimestamp(),
+        ...(preselectedTrack ? { totalDuration: preselectedTrack.duration } : {}),
       });
+
+      if (preselectedTrack) {
+        await addDoc(collection(db, "playlists", playlistRef.id, "tracks"), {
+          ...preselectedTrack,
+          addedAt: serverTimestamp(),
+        });
+      }
 
       showMessage("newPlaylist");
       playlistNameRef.current.value = "";
-
+      setPreselectedTrack(null);
       toggleCreateVisible();
     } catch (error) {
       console.error("作成失敗", error);
@@ -136,6 +145,10 @@ export const PlaylistProvider = ({ children }) => {
     }
   }
 
+  useEffect(() => {
+    console.log(preselectedTrack);
+  }, [preselectedTrack]);
+
   return (
     <PlaylistContext.Provider
       value={{
@@ -166,6 +179,9 @@ export const PlaylistProvider = ({ children }) => {
         countNameLength,
         isShaking,
         triggerError,
+
+        preselectedTrack,
+        setPreselectedTrack,
       }}
     >
       {children}
