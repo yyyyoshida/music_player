@@ -1,7 +1,8 @@
-import React, { createContext, useState, useRef, useContext } from "react";
+import React, { createContext, useState, useRef, useContext, useEffect } from "react";
 import { addDoc, collection, increment, serverTimestamp, updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
+import { PlaylistContext } from "./PlaylistContext";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -10,6 +11,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const [selectedTrack, setSelectedTrack] = useState(null);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
+  // const { totalDuration, updateTotalDuration } = useContext(PlaylistContext);
+  const { setPreselectedTrack } = useContext(PlaylistContext);
 
   const playlistNameRef = useRef("");
 
@@ -32,14 +35,17 @@ export const PlaylistSelectionProvider = ({ children }) => {
         totalDuration: increment(selectedTrack.duration),
       });
 
+      // updateTotalDuration(playlistId, selectedTrack.duration);
+
       toggleSelectVisible();
     } catch (error) {
-      console.error("💥 曲追加失敗", error);
+      console.error(" 曲追加失敗", error);
     }
   };
 
   function handleTrackSelect(track, type, shouldToggle = true) {
-    console.log(shouldToggle);
+    // console.log(shouldToggle);
+    // console.log(track);
     if (type === "searchResults") {
       setSelectedTrack({
         trackId: track.id,
@@ -71,6 +77,10 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
     if (shouldToggle) toggleSelectVisible();
   }
+
+  useEffect(() => {
+    setPreselectedTrack(selectedTrack);
+  }, [selectedTrack]);
 
   return (
     <PlaylistSelectionContext.Provider
