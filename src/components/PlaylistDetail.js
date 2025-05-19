@@ -13,7 +13,7 @@ import DeletePlaylistModal from "./DeletePlaylistModal";
 import ActionSuccessMessageContext from "../contexts/ActionSuccessMessageContext";
 import TrackListSkeleton from "./TrackListSkeleton";
 
-const PlaylistDetail = () => {
+const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
@@ -29,6 +29,10 @@ const PlaylistDetail = () => {
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
   const coverImagesRef = useRef();
+
+  useEffect(() => {
+    containerRef.current.scrollTo(0, 0);
+  }, []);
 
   function startLoading() {
     setIsLoading(true);

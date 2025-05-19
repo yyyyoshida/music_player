@@ -7,7 +7,7 @@ import TrackItem from "./TrackItem";
 import { LoadingContext } from "../contexts/LoadingContext";
 import TrackListSkeleton from "./TrackListSkeleton";
 
-const TrackList = () => {
+const TrackList = ({ containerRef }) => {
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
   const { searchResults } = useContext(SearchContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
@@ -31,6 +31,10 @@ const TrackList = () => {
       setShowSkeleton(true);
     }
   }, [isSearchLoading]);
+
+  useEffect(() => {
+    containerRef.current.scrollTo(0, 0);
+  }, [showSkeleton]);
 
   return (
     <>
