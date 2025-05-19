@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
+import React, { useState, useEffect, useContext, useLayoutEffect, useRef } from "react";
 // import Footer from './Footer';
 import PlayerControls from "./PlayerControls";
 import ThumbnailPreview from "./ThumbnailPreview";
@@ -26,6 +26,8 @@ const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
   const { isToken, setIsToken } = useContext(TokenContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
+
+  const containerRef = useRef(null);
 
   useEffect(() => {
     // useLayoutEffect(() => {
@@ -87,7 +89,7 @@ const Main = ({ token }) => {
       {/* {!isNotToken && <Login isToken={isToken} visivility={isNotToken} />} */}
       <Login />
       {/* <CreatePlaylist /> */}
-      <div className="container">
+      <div className="container" ref={containerRef}>
         <main>
           {/* <PlaylistProvider>
             <PlaylistSelectionProvider> */}
@@ -102,10 +104,10 @@ const Main = ({ token }) => {
               {/* <PlaybackProvider> */}
               <Routes>
                 <Route path="/" element={<Home token={token} />} />
-                <Route path="/search-result" element={<SearchResult />} />
+                <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
                 <Route path="/playlist" element={<Playlist />} />
                 {/* <Route path="/playlist-detail" element={<PlaylistDetail />} /> */}
-                <Route path="/playlist-detail/:id" element={<PlaylistDetail />} />
+                <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
               </Routes>
               {/* </PlaybackProvider> */}
 
@@ -137,14 +139,9 @@ export default Main;
 // 曲を検索して表示するときにロード画面を表示する (AmazonMusic見本)
 // 可読性をあげる
 // マジックナンバーをなくす
-// 再生中の曲にビジュアライザーを表示する ✅
+
 // 色合いが薄くてダサいから何とかする
 // サーバー起動時のターミナルの警告を解消する
-// ボリュームのバーを触ったときにツールチップで現在の値を１００分率で表示する
-// togglePlayPause関数の３つのif文を２つにする
-// リピートオフの状態で曲を切り替えるときにisPlayingが連続で切り替わるバグを修正 ✅
-
-// 最近再生した曲一覧のエラー 同じIDだとエラーになる ✅
 
 // ページ遷移時やリロードした時に一瞬出てくるログインページをなんとかする
 
@@ -154,8 +151,6 @@ export default Main;
 
 // 再生中なのに色が変わらない問題
 
-// ボタンは_button.scssファイルにちゃんと書く ✅
-
 // しばらく放置してトークンが切れたときの対処を考える
 
 // いい加減ターミナルの警告文がうるさいからなんとかする
@@ -164,27 +159,7 @@ export default Main;
 
 // プレイリスト作成時にWindow内臓のメディアプレイヤーのプレイリストの名前を変更時のモーダルの表示のあの感じを参考にする
 
-// プレイリストの曲数だったり、合計時間の表示 ✅
-
-// 順に再生ボタンが機能するようにする
-
-// プレイリストの画像をちゃんと適応させる ✅
-
-// プレイリストの画像は追加した順から最初の４つの画像を取得する ✅
-
-// プレイリストでシャッフル再生と次へ前へボタンの作成 ✅
-
-// プレイリスト一覧でホバーすると再生ボタンがでる ✅
-// 再生ボタンを押すとそのまま順番に曲の再生 ✅
-// 再生ボタン以外を押すとページに遷移する
-// プレイリストを削除できる機能を追加
-
-// 曲の配列をuseStateとuseContextで保持 ✅
-// currentIndexのuseStateを作ってどーのこーの ✅
-
 // モーダルが表示する時にふわっと現れるようにする
-
-// プレイリストの曲を削除できるようにする（専用のモーダルを作る）
 
 // 可能なら同じ曲があったら最初以外を非表示
 // 無理だったら同じ曲が再生中にならないようにする
@@ -197,12 +172,23 @@ export default Main;
 
 // PlaylistSelectionにもローディングが必要かもしれない
 
-// 曲がセットされてないときはプログレスバーのボタンがDisabled状態になって半透明で押せなくなる
+// READMEを作り込む
 
-// プレイリストに行ってトラックをクリックせずに次へボタンを押した状態で再生ボタンを押すとバグる ✅
-// プレイリストに追加した曲は一番上にする(今と順番を逆にする)
+// 検索結果でプレイリストに追加するときにロードが発動しちゃう ✅
+// 曲を選択して新規プレイリスト作成時に曲が追加されていない問題 ✅
+//プレイリスト一覧でちょっと下にスクロールした状態で開くとロードも下にある状態で始まる
+// プレイリストで曲を再生すると同じ曲も再生されちゃう
+// プレイリスト一覧とかホームとか検索結果一覧とかで１０番目移行の要素には画像読み込みの遅延をかける
+// プレイリスト一覧の４つのカバー画像が若干荒い
+// プレイリスト一覧の画像の比率を1/1にする
+// プレイリスト詳細ページの４つのカバーたまにフェードした後に読み込み遅延
+// プレイリスト選択ページでまだ四分割になる
+// プルリクエストをやる
 
-// プレイリストに同じ曲があるとkeyなんとかでログにエラー
+// 後でsetTimeoutのマジックナンバーを洗い出す
+
+// プレイリスト作成時の遷移時とかに出てくるログインのモーダルを何とかする
+// useFetchPlaylistみたいにfirebase関連の関数をファイルにまとめる？
 
 // 一部の再生中のトラックでも背景が黒にならない
 
