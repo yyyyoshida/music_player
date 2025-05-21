@@ -83,6 +83,14 @@ const Home = ({ token }) => {
     setQueue(tracks);
   }, [tracks]);
 
+  const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
+
+  // const onTrackClick = (track) => {
+  //   playerTrack(track.track.uri, isClicked);
+  //   setIsTrackSet(true);
+  //   setCurrentPlayedAt(track.played_at); // ここで再生日時もセット
+  // };
+
   return (
     <div className="home">
       <h1 className="home__title">ホーム</h1>
@@ -91,7 +99,8 @@ const Home = ({ token }) => {
       <ul className={`home__track-list fade-on-loaded ${isHomeLoading ? "" : "fade-in-up"}`}>
         {Array.isArray(tracks) && tracks.length > 0 ? (
           tracks.map((track) => {
-            const isCurrentTrack = trackId === track.track.id;
+            const isCurrentTrack = trackId === track.track.id && currentPlayedAt === track.played_at;
+
             const isTrackPlaying = isCurrentTrack && isStreaming;
             const isClicked = isCurrentTrack;
 
@@ -102,6 +111,7 @@ const Home = ({ token }) => {
                 onClick={() => {
                   playerTrack(track.track.uri, isClicked);
                   setIsTrackSet(true);
+                  setCurrentPlayedAt(track.played_at);
                 }}
               >
                 {/* トラックのカバーアート */}

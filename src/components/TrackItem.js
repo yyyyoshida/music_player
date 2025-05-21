@@ -5,15 +5,36 @@ import { TrackMoreMenuContext } from "../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 import { usePlayerContext } from "./PlayerContext";
 
-const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type }) => {
-  const { playTrackAt } = useContext(PlaybackContext);
+const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date }) => {
+  const { playTrackAt, setCurrentPlayedAt } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet } = usePlayerContext();
 
   const buttonRef = useRef(null);
 
+  const delayedIsClicked = useDelayedValue(isClicked);
+  const delayedIsTrackPlaying = useDelayedValue(isTrackPlaying);
+
+  const resolvedIsPlaying = type === "firebase" ? delayedIsTrackPlaying : isTrackPlaying;
+  const resolvedIsClicked = type === "firebase" ? delayedIsClicked : isClicked;
+
   const positionOffsetY = -60;
+
+  function useDelayedValue(value, delay = 200) {
+    const [delayedValue, setDelayedValue] = useState(value);
+
+    useEffect(() => {
+      if (type === "searchResults") return;
+      const timeout = setTimeout(() => {
+        setDelayedValue(value);
+      }, delay);
+
+      return () => clearTimeout(timeout);
+    }, [value]);
+
+    return delayedValue;
+  }
 
   function setButtonPosition() {
     const rect = buttonRef.current.getBoundingClientRect();
@@ -28,22 +49,22 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
 
   return (
     <li
-      // key={`${track.addedAt?.seconds || track.id}`}
-      className={`track-item ${isTrackPlaying ? "playing" : ""} ${isClicked ? "clicked" : ""}`}
+      className={`track-item ${resolvedIsPlaying ? "playing" : ""} ${resolvedIsClicked ? "clicked" : ""}`}
       onClick={() => {
         playerTrack(track.trackUri || track.uri, isClicked);
         setIsTrackSet(true);
         playTrackAt(index);
+
+        setCurrentPlayedAt(date);
       }}
     >
-      {/* {`${track.addedAt?.seconds}`} */}
-      {/* {track.id} */}
       <div className="track-item__left">
         <div className={`${track.trackId}`}></div>
         <button className="track-item__left-play-pause-button">
-          <img src={isTrackPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
+          <img src={resolvedIsPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
         </button>
-        <div className={`equalizer ${isTrackPlaying ? "" : "hidden"}`}>
+
+        <div className={`equalizer ${resolvedIsPlaying ? "" : "hidden"}`}>
           <div className="bar"></div>
           <div className="bar"></div>
           <div className="bar"></div>
