@@ -2,47 +2,63 @@ import React, { useContext, useState, useEffect } from "react";
 import { usePlayerContext } from "./PlayerContext";
 import { SearchContext } from "./SearchContext";
 import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
-import { PlaylistContext } from "./PlaylistContext";
 import TrackItem from "./TrackItem";
 import { LoadingContext } from "../contexts/LoadingContext";
 import TrackListSkeleton from "./TrackListSkeleton";
 
 const TrackList = ({ containerRef }) => {
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
-  const { searchResults } = useContext(SearchContext);
+  const { searchResults, query } = useContext(SearchContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
   const { isSearchLoading } = useContext(LoadingContext);
-  const [shouldFadeIn, setShouldFadeIn] = useState(false);
-  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  const [initialLoaded, setInitialLoaded] = useState(false);
+  const INITIAL_RENDER_COUNT = 10;
+
   // const { totalDuration } = useContext(PlaylistContext);
 
   // console.log(totalDuration);
 
   useEffect(() => {
-    if (!isSearchLoading) {
-      const timeoutId = setTimeout(() => {
-        setShouldFadeIn(true);
-        setShowSkeleton(false);
-      }, 100);
+    containerRef.current.scrollTo(0, 0);
+    setInitialLoaded(false);
+  }, [query]);
 
-      return () => clearTimeout(timeoutId);
-    } else {
-      setShouldFadeIn(false);
-      setShowSkeleton(true);
-    }
-  }, [isSearchLoading]);
+  const waitForAllImagesToLoad = (imageUrls) => {
+    return Promise.all(
+      imageUrls.map((url) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          img.src = url;
+        });
+      })
+    );
+  };
 
   useEffect(() => {
-    containerRef.current.scrollTo(0, 0);
-  }, [showSkeleton]);
+    if (!searchResults.length) return;
+
+    setInitialLoaded(false);
+
+    const first10Urls = searchResults
+      .slice(0, INITIAL_RENDER_COUNT)
+      .map((track) => track.album.images[0]?.url)
+      .filter(Boolean);
+
+    waitForAllImagesToLoad(first10Urls).then(() => {
+      console.log("✅ すべての画像読み込み完了！");
+      setInitialLoaded(true);
+    });
+  }, [searchResults]);
 
   return (
     <>
-      {showSkeleton && !isSelectVisible && <TrackListSkeleton />}
+      {!initialLoaded && !isSelectVisible && <TrackListSkeleton />}
 
       <div>
-        <ul className={`search-result__list fade-on-loaded ${shouldFadeIn ? "fade-in-up" : ""}`}>
-          {/* <ul className={`search-result__list fade-on-loaded ${shouldFadeIn ? "fade-reveal" : ""}`}> */}
+        <ul className={`search-result__list fade-on-loaded ${initialLoaded ? "fade-in-up" : ""}`}>
           {searchResults.length > 0 ? (
             searchResults.map((track, index) => {
               const isCurrentTrack = trackId === track.id;
@@ -51,7 +67,7 @@ const TrackList = ({ containerRef }) => {
 
               return (
                 <TrackItem
-                  key={track.id}
+                  key={track.id + "-" + query}
                   track={track}
                   index={index}
                   isCurrentTrack={isCurrentTrack}
@@ -61,6 +77,7 @@ const TrackList = ({ containerRef }) => {
                   playerTrack={playerTrack}
                   formatTime={formatTime}
                   type={"searchResults"}
+                  query={query}
                 />
               );
             })
