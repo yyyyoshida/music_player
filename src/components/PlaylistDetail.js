@@ -24,7 +24,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const { playerTrack, formatTime, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
 
   const { deletePlaylist, tracks, setTracks, formatTimeHours, playlistName, setPlaylistId } = useContext(PlaylistContext);
-  const { setQueue, queue, playTrackAt } = useContext(PlaybackContext);
+  const { setQueue, queue, playTrackAt, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } = useContext(PlaybackContext);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
@@ -121,6 +121,21 @@ const PlaylistDetail = ({ containerRef }) => {
     };
   }, [tracks, isLoading]);
 
+  // const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
+
+  useEffect(() => {
+    const track = queue[currentIndex];
+    console.log("hakkkaaaaaaaaaaaaa");
+    // 順に再生ボタンが機能しない問題
+    if (!track) return;
+
+    console.log(track);
+
+    const timestamp = track.addedAt;
+    const date = timestamp.toDate();
+    setCurrentPlayedAt(date.toLocaleString());
+  }, [currentIndex]);
+
   return (
     <div className="playlist-detail">
       <div className="playlist-detail__header">
@@ -155,6 +170,7 @@ const PlaylistDetail = ({ containerRef }) => {
               setIsTrackSet(true);
               playTrackAt(0);
               playerTrack(queue[0].trackUri);
+              setCurrentIndex(0);
             }}
           >
             <img src={playIcon} className="playlist-detail__header-play-button-icon playlist-detail__header-button-icon" />
@@ -181,14 +197,26 @@ const PlaylistDetail = ({ containerRef }) => {
       {isLoading && <TrackListSkeleton count={8} />}
       <ul className={`playlist-detail__list fade-on-loaded ${isLoading ? "" : "fade-in-up"} `}>
         {tracks.map((track, index) => {
-          const isCurrentTrack = trackId === track.trackId;
+          // const isCurrentTrack = trackId === track.trackId;
+          const timestamp = track.addedAt;
+          const date = timestamp.toDate();
+
+          // const isCurrentTrack = trackId === track.trackId && currentPlayedAt === date.toLocaleString();
+          const isCurrentTrack = currentPlayedAt === date.toLocaleString();
+
+          // const isCurrentTrack = trackId === track.trackId;
+
           const isTrackPlaying = isCurrentTrack && isStreaming;
           const isClicked = isCurrentTrack;
+          // console.log(track.addedAt, currentPlayedAt);
+          // console.log(track.addedAt);
+          // console.log(date.toLocaleString());
 
           return (
             <TrackItem
               // key={track.trackId}
-              key={track.addedAt?.seconds}
+              // key={track.addedAt?.seconds}
+              key={track?.addedAt?.seconds || index}
               track={track}
               index={index}
               isCurrentTrack={isCurrentTrack}
@@ -199,6 +227,11 @@ const PlaylistDetail = ({ containerRef }) => {
               formatTime={formatTime}
               type={"firebase"}
               // playlistId={id}
+
+              addedAt={track.addedAt}
+              date={date.toLocaleString()}
+              currentPlayedAt={currentPlayedAt}
+              setCurrentPlayedAt={setCurrentPlayedAt}
             />
           );
         })}

@@ -9,6 +9,8 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
+  const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
+
   const { isToken, setIsToken } = useContext(TokenContext);
 
   const currentIndexRef = useRef(0);
@@ -45,6 +47,7 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
     console.log("発火");
     if (index >= 0 && index < queue.length) {
       setCurrentIndex(index);
+
       currentIndexRef.current = index;
     }
   };
@@ -79,12 +82,17 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
     player.resume().then(() => {});
   }
 
+  useEffect(() => {
+    console.log(currentPlayedAt);
+  }, [currentPlayedAt]);
+
   return (
     <PlaybackContext.Provider
       value={{
         queue,
         setQueue,
         currentIndex,
+        setCurrentIndex,
         // currentTrack,
         playTrackAt,
         goToNextTrack,
@@ -92,6 +100,9 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
         resumePlayback,
         isPrevDisabled,
         isNextDisabled,
+
+        currentPlayedAt,
+        setCurrentPlayedAt,
       }}
     >
       {children}

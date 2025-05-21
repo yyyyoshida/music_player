@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
-import SearchResultList from './SearchResultList';
-import { SearchContext } from './SearchContext';
-import TrackListHead from './TrackListHead';
+import React, { useContext } from "react";
+import SearchResultList from "./SearchResultList";
+import { SearchContext } from "./SearchContext";
+import TrackListHead from "./TrackListHead";
 
-const SearchResult = () => {
+const SearchResult = ({ containerRef }) => {
   const { query } = useContext(SearchContext);
   return (
     <section className="search-result">
@@ -13,7 +13,7 @@ const SearchResult = () => {
         <TrackListHead />
       </div>
 
-      <SearchResultList />
+      <SearchResultList containerRef={containerRef} />
     </section>
   );
 };
