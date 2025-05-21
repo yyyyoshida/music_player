@@ -5,7 +5,7 @@ import { TrackMoreMenuContext } from "../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 import { usePlayerContext } from "./PlayerContext";
 
-const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date }) => {
+const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date, query }) => {
   const { playTrackAt, setCurrentPlayedAt } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
@@ -49,7 +49,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
 
   return (
     <li
-      className={`track-item ${resolvedIsPlaying ? "playing" : ""} ${resolvedIsClicked ? "clicked" : ""}`}
+      className={`track-item ${resolvedIsPlaying ? "playing" : ""} ${resolvedIsClicked ? "clicked" : ""} `}
       onClick={() => {
         playerTrack(track.trackUri || track.uri, isClicked);
         setIsTrackSet(true);
@@ -76,6 +76,8 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
         alt={track.title}
         className="track-item__cover-art"
         width="50"
+        height="50"
+        key={track.id + "-" + query}
         loading={index >= 10 ? "lazy" : "eager"}
       />
       <div className="track-item__track-info">
