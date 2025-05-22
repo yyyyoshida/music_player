@@ -12,6 +12,7 @@ import RenamePlaylist from "./RenamePlaylist";
 import DeletePlaylistModal from "./DeletePlaylistModal";
 import ActionSuccessMessageContext from "../contexts/ActionSuccessMessageContext";
 import TrackListSkeleton from "./TrackListSkeleton";
+import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();
@@ -29,10 +30,9 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const coverImagesRef = useRef();
 
-  const [hasStartedLoading, setHasStartedLoading] = useState(false);
-
   const [initialLoaded, setInitialLoaded] = useState(false);
-  const INITIAL_RENDER_COUNT = 10;
+
+  const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], 100);
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
@@ -101,44 +101,16 @@ const PlaylistDetail = ({ containerRef }) => {
     setCurrentPlayedAt(date.toLocaleString());
   }, [currentIndex]);
 
-  const waitForAllImagesToLoad = (imageUrls) => {
-    return Promise.all(
-      imageUrls.map((url) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-          img.src = url;
-        });
-      })
-    );
-  };
-
   useEffect(() => {
     setQueue(tracks);
     // setIsTrackSet(true);
-    if (!tracks.length || hasStartedLoading) return;
-
-    setHasStartedLoading(true);
-    setInitialLoaded(false);
-
-    const first10Urls = tracks
-      .slice(0, INITIAL_RENDER_COUNT)
-      .map((track) => track.albumImage)
-      .filter(Boolean);
-
-    waitForAllImagesToLoad(first10Urls).then(() => {
-      console.log("✅ 最初の10個の画像読み込み完了！");
-
-      const timeoutId = setTimeout(() => {
-        setInitialLoaded(true);
-      }, 100);
-
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    });
   }, [tracks]);
+
+  useEffect(() => {
+    if (imagesLoaded) {
+      setInitialLoaded(true);
+    }
+  }, [imagesLoaded]);
 
   return (
     <div className="playlist-detail">
