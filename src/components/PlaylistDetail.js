@@ -19,7 +19,6 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isRenameVisible, setIsRenameVisible] = useState(false);
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [playlistInfo, setPlaylistInfo] = useState({ name: "", duration: 0 });
-  const [isLoading, setIsLoading] = useState(true);
 
   const { playerTrack, formatTime, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
 
@@ -30,17 +29,18 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const coverImagesRef = useRef();
 
+  const [hasStartedLoading, setHasStartedLoading] = useState(false);
+
+  const [initialLoaded, setInitialLoaded] = useState(false);
+  const INITIAL_RENDER_COUNT = 10;
+
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
   }, []);
 
-  function startLoading() {
-    setIsLoading(true);
-  }
-
-  function stopLoading() {
-    setIsLoading(false);
-  }
+  useEffect(() => {
+    console.log("initialLoaded", initialLoaded);
+  }, [initialLoaded]);
 
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
@@ -63,7 +63,6 @@ const PlaylistDetail = ({ containerRef }) => {
 
   useEffect(() => {
     const fetchTracks = async () => {
-      startLoading();
       try {
         const tracksRef = collection(db, "playlists", id, "tracks");
         const q = query(tracksRef, orderBy("addedAt"));
@@ -73,55 +72,21 @@ const PlaylistDetail = ({ containerRef }) => {
           ...doc.data(), // ← トラックの中身
         }));
         setTracks(trackList);
-
-        setTimeout(() => {
-          stopLoading();
-        }, 400);
       } catch (error) {
         console.error("曲の取得に失敗した", error);
       }
-      // } finally {
-      //   stopLoading();
-      // }
     };
 
     fetchTracks();
   }, [id]);
 
   useEffect(() => {
-    setQueue(tracks);
-    // setIsTrackSet(true);
-  }, [tracks]);
-
-  useEffect(() => {
-    console.log(queue);
+    console.log("queuequeuequeue", queue);
   }, [queue]);
 
   function toggleDeleteVisible() {
     setIsDeleteVisible((prev) => !prev);
   }
-
-  useEffect(() => {
-    // if (!coverImagesRef) return;
-    const transitionElement = coverImagesRef.current;
-    if (!transitionElement) return;
-    transitionElement.style.opacity = 0;
-    function handleTransitionEnd() {
-      transitionElement.style.opacity = 1;
-    }
-
-    const timeoutId = setTimeout(() => {
-      transitionElement.style.opacity = 1;
-      transitionElement.addEventListener("transitionend", handleTransitionEnd);
-    }, 0);
-
-    return () => {
-      clearTimeout(timeoutId);
-      transitionElement.removeEventListener("transitionend", handleTransitionEnd);
-    };
-  }, [tracks, isLoading]);
-
-  // const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
 
   useEffect(() => {
     const track = queue[currentIndex];
@@ -136,26 +101,64 @@ const PlaylistDetail = ({ containerRef }) => {
     setCurrentPlayedAt(date.toLocaleString());
   }, [currentIndex]);
 
+  const waitForAllImagesToLoad = (imageUrls) => {
+    return Promise.all(
+      imageUrls.map((url) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          img.src = url;
+        });
+      })
+    );
+  };
+
+  useEffect(() => {
+    setQueue(tracks);
+    // setIsTrackSet(true);
+    if (!tracks.length || hasStartedLoading) return;
+
+    setHasStartedLoading(true);
+    setInitialLoaded(false);
+
+    const first10Urls = tracks
+      .slice(0, INITIAL_RENDER_COUNT)
+      .map((track) => track.albumImage)
+      .filter(Boolean);
+
+    waitForAllImagesToLoad(first10Urls).then(() => {
+      console.log("✅ 最初の10個の画像読み込み完了！");
+
+      const timeoutId = setTimeout(() => {
+        setInitialLoaded(true);
+      }, 100);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    });
+  }, [tracks]);
+
   return (
     <div className="playlist-detail">
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
-          {!isLoading && (
-            <div className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""}`} ref={coverImagesRef}>
-              {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => (
-                <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} />
-              ))}
-            </div>
-          )}
+          <div className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""} ${!initialLoaded ? "" : "fade-in"}`} ref={coverImagesRef}>
+            {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => (
+              <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} width="99" height="99" />
+            ))}
+          </div>
+
           <div className="playlist-detail__header-initial-cover-img-bg">
             <img src="/img/playlist-icon1.png" className="playlists-detail__header-initial-cover-img playlist-initial-cover-img" />
           </div>
         </div>
         <div className="playlist-detail__header-info">
-          <h2 className={`playlist-detail__header-title fade-on-loaded ${isLoading ? "" : "fade-in"}`}>{playlistInfo.name}</h2>
+          <h2 className={`playlist-detail__header-title fade-on-loaded ${!initialLoaded ? "" : "fade-in"}`}>{playlistInfo.name}</h2>
 
           <p
-            className={`playlist-detail__header-status fade-on-loaded ${isLoading ? "" : "fade-in"}`}
+            className={`playlist-detail__header-status fade-on-loaded ${!initialLoaded ? "" : "fade-in"}`}
           >{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration)}`}</p>
         </div>
 
@@ -194,40 +197,29 @@ const PlaylistDetail = ({ containerRef }) => {
 
       <TrackListHead />
 
-      {isLoading && <TrackListSkeleton count={8} />}
-      <ul className={`playlist-detail__list fade-on-loaded ${isLoading ? "" : "fade-in-up"} `}>
+      {!initialLoaded && <TrackListSkeleton count={8} />}
+
+      <ul className={`playlist-detail__list fade-on-loaded ${!initialLoaded ? "" : "fade-in-up"} `}>
         {tracks.map((track, index) => {
-          // const isCurrentTrack = trackId === track.trackId;
           const timestamp = track.addedAt;
           const date = timestamp.toDate();
 
-          // const isCurrentTrack = trackId === track.trackId && currentPlayedAt === date.toLocaleString();
           const isCurrentTrack = currentPlayedAt === date.toLocaleString();
-
-          // const isCurrentTrack = trackId === track.trackId;
 
           const isTrackPlaying = isCurrentTrack && isStreaming;
           const isClicked = isCurrentTrack;
-          // console.log(track.addedAt, currentPlayedAt);
-          // console.log(track.addedAt);
-          // console.log(date.toLocaleString());
 
           return (
             <TrackItem
-              // key={track.trackId}
-              // key={track.addedAt?.seconds}
               key={track?.addedAt?.seconds || index}
               track={track}
               index={index}
               isCurrentTrack={isCurrentTrack}
               isTrackPlaying={isTrackPlaying}
               isClicked={isClicked}
-              // setIsTrackSet={setIsTrackSet}
               playerTrack={playerTrack}
               formatTime={formatTime}
               type={"firebase"}
-              // playlistId={id}
-
               addedAt={track.addedAt}
               date={date.toLocaleString()}
               currentPlayedAt={currentPlayedAt}
