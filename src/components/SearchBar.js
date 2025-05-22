@@ -1,14 +1,12 @@
 import React, { useState, useContext, useRef } from "react";
 import { SearchContext } from "./SearchContext";
 import { useNavigate } from "react-router-dom";
-import { LoadingContext } from "../contexts/LoadingContext";
 
 const SearchBar = ({ token }) => {
   const { setQuery, setSearchResults } = useContext(SearchContext);
   const queryRef = useRef("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { setIsSearchLoading } = useContext(LoadingContext);
 
   const handleSearch = async () => {
     if (queryRef.current === "") return;
@@ -23,8 +21,6 @@ const SearchBar = ({ token }) => {
       setError("アクセストークンが無効です。再度ログインしてください。");
       return;
     }
-
-    setIsSearchLoading(true);
 
     try {
       const encodedQuery = encodeURIComponent(queryRef.current.value); // クエリをURLエンコード
@@ -56,7 +52,6 @@ const SearchBar = ({ token }) => {
       setError("検索に失敗しました。もう一度お試しください。");
       setSearchResults([]);
     } finally {
-      setIsSearchLoading(false);
     }
   };
 

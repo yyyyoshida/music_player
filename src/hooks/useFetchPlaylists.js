@@ -1,12 +1,10 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { collection, onSnapshot, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase";
-import { LoadingContext } from "../contexts/LoadingContext";
 
 const useFetchPlaylists = () => {
   const [playlists, setPlaylists] = useState([]);
   const [loading] = useState(true);
-  const { setIsPlaylistsLoading } = useContext(LoadingContext);
 
   useEffect(() => {
     console.log("playlistsカスタムフック発火");
@@ -14,8 +12,6 @@ const useFetchPlaylists = () => {
     const playlistsQuery = query(collection(db, "playlists"), orderBy("createdAt", "asc"));
 
     const unsubscribe = onSnapshot(playlistsQuery, async (snapshot) => {
-      setIsPlaylistsLoading(true);
-
       const playlistsData = await Promise.all(
         snapshot.docs.map(async (doc) => {
           const playlistId = doc.id;
@@ -41,7 +37,6 @@ const useFetchPlaylists = () => {
       if (JSON.stringify(playlistsData) !== JSON.stringify(playlists)) {
         setPlaylists(playlistsData);
       }
-      setIsPlaylistsLoading(false);
     });
 
     return () => unsubscribe(); // コンポーネントがアンマウントされた時にリスナーを解除
