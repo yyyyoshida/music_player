@@ -5,15 +5,16 @@ import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 import TrackItem from "./TrackItem";
 import { LoadingContext } from "../contexts/LoadingContext";
 import TrackListSkeleton from "./TrackListSkeleton";
+import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const TrackList = ({ containerRef }) => {
   const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
   const { searchResults, query } = useContext(SearchContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
-  const { isSearchLoading } = useContext(LoadingContext);
 
   const [initialLoaded, setInitialLoaded] = useState(false);
-  const INITIAL_RENDER_COUNT = 10;
+
+  const imagesLoaded = useWaitForImagesLoad("trackList", searchResults, [searchResults]);
 
   // const { totalDuration } = useContext(PlaylistContext);
 
@@ -24,34 +25,11 @@ const TrackList = ({ containerRef }) => {
     setInitialLoaded(false);
   }, [query]);
 
-  const waitForAllImagesToLoad = (imageUrls) => {
-    return Promise.all(
-      imageUrls.map((url) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-          img.src = url;
-        });
-      })
-    );
-  };
-
   useEffect(() => {
-    if (!searchResults.length) return;
-
-    setInitialLoaded(false);
-
-    const first10Urls = searchResults
-      .slice(0, INITIAL_RENDER_COUNT)
-      .map((track) => track.album.images[0]?.url)
-      .filter(Boolean);
-
-    waitForAllImagesToLoad(first10Urls).then(() => {
-      console.log("✅ すべての画像読み込み完了！");
+    if (imagesLoaded) {
       setInitialLoaded(true);
-    });
-  }, [searchResults]);
+    }
+  }, [imagesLoaded]);
 
   return (
     <>

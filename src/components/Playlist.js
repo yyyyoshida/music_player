@@ -6,53 +6,19 @@ import { LoadingContext } from "../contexts/LoadingContext";
 import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
 import { playIcon, pauseIcon } from "../assets/icons";
 import CardListSkeleton from "./CardListSkeleton";
+import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const Playlist = () => {
   const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
-  // const { isSelectVisible } = useContext(PlaylistSelectionContext);
-  const { isPlaylistsLoading } = useContext(LoadingContext);
+
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
+
+  const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists]);
 
   function handlePlaylistClick(playlistId) {
     navigate(`/playlist-detail/${playlistId}`);
   }
-
-  const [imagesLoaded, setImagesLoaded] = useState(false);
-
-  const waitForAllImagesToLoad = (urls) => {
-    return Promise.all(
-      urls.map((src) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve();
-          img.onerror = () => resolve(); // エラーでも resolve しとく
-          img.src = src;
-        });
-      })
-    );
-  };
-
-  useEffect(() => {
-    if (isPlaylistsLoading || playlists.length === 0) return;
-
-    const imageUrls = playlists.flatMap((playlist) => playlist.albumImages.slice(0, 4)).filter(Boolean);
-
-    setImagesLoaded(false);
-
-    let timeoutId;
-
-    waitForAllImagesToLoad(imageUrls).then(() => {
-      console.log("✅ Playlistsのロード完了");
-      timeoutId = setTimeout(() => {
-        setImagesLoaded(true);
-      }, 100);
-    });
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [playlists]);
 
   return (
     <div className="playlists-page">
