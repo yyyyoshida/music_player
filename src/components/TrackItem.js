@@ -1,9 +1,9 @@
-import React, { useEffect, useContext, useRef, useState } from "react";
+import { useEffect, useContext, useRef, useState } from "react";
 import { playIcon, pauseIcon } from "../assets/icons";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../contexts/TrackMoreMenuContext";
-import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
-import { usePlayerContext } from "./PlayerContext";
+import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
+import { usePlayerContext } from "../contexts/PlayerContext";
 
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date, query }) => {
   const { playTrackAt, setCurrentPlayedAt } = useContext(PlaybackContext);

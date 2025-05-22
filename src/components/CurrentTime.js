@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-import { usePlayerContext } from './PlayerContext';
+import { usePlayerContext } from "../contexts/PlayerContext";
 
 const CurrentTime = () => {
-  const [songCurrentTime, setSongCurrentTime] = useState('0:00');
+  const [songCurrentTime, setSongCurrentTime] = useState("0:00");
   const { currentTime, formatTime } = usePlayerContext();
 
   useEffect(() => {

@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, getDocs, getDoc, doc, query, orderBy } from "firebase/firestore";
 import { playIcon } from "../assets/icons";
 import TrackListHead from "./TrackListHead";
-import { usePlayerContext } from "./PlayerContext";
+import { usePlayerContext } from "../contexts/PlayerContext";
 import TrackItem from "./TrackItem";
-import { PlaylistContext } from "./PlaylistContext";
+import { PlaylistContext } from "../contexts/PlaylistContext";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 import RenamePlaylist from "./RenamePlaylist";
 import DeletePlaylistModal from "./DeletePlaylistModal";

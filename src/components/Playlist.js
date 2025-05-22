@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlaylistContext } from "./PlaylistContext";
+import { PlaylistContext } from "../contexts/PlaylistContext";
 import useFetchPlaylists from "../hooks/useFetchPlaylists";
 
 import { playIcon, pauseIcon } from "../assets/icons";
