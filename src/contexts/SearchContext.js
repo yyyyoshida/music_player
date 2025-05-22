@@ -7,6 +7,7 @@ export const SearchContext = createContext();
 export const SearchProvider = ({ children }) => {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [hasSearchError, setHasSearchError] = useState(false);
 
   const { setQueue, queue } = useContext(PlaybackContext);
   const location = useLocation();
@@ -19,7 +20,9 @@ export const SearchProvider = ({ children }) => {
     setQueue(searchResults);
   }, [searchResults, location.pathname]);
 
-  return <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults }}>{children}</SearchContext.Provider>;
+  return (
+    <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults, hasSearchError, setHasSearchError }}>{children}</SearchContext.Provider>
+  );
 };
 
 export default SearchContext;
