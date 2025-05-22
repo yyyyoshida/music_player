@@ -772,6 +772,8 @@ footer {
   &__title {
     font-size: 32px;
     font-weight: 700;
+    font-size: 22px;
+    font-size: 400;
     padding-bottom: 20px;
   }
 
@@ -780,6 +782,16 @@ footer {
     counter-reset: my-counter;
     position: relative;
     user-select: none;
+  }
+
+  &-highlight {
+    color: rgb(217, 22, 86);
+    color: rgb(248, 27, 101);
+
+    // color: #ddd;
+    font-weight: 700;
+    font-size: 28px;
+    padding-right: 4px;
   }
 }
 
