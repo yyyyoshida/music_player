@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import SearchResultList from "./SearchResultList";
-import { SearchContext } from "./SearchContext";
+import { SearchContext } from "../contexts/SearchContext";
 import TrackListHead from "./TrackListHead";
 
 const SearchResult = ({ containerRef }) => {

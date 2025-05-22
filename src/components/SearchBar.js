@@ -1,5 +1,5 @@
-import React, { useState, useContext, useRef } from "react";
-import { SearchContext } from "./SearchContext";
+import { useState, useContext, useRef } from "react";
+import { SearchContext } from "../contexts/SearchContext";
 import { useNavigate } from "react-router-dom";
 
 const SearchBar = ({ token }) => {

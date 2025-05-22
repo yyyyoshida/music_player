@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { usePlayerContext } from "./PlayerContext";
+import { usePlayerContext } from "../contexts/PlayerContext";
 import Tooltip from "./Tooltip";
 import useButtonTooltip from "../hooks/useButtonTooltip";
 import useDelayedText from "../hooks/useDelayText";

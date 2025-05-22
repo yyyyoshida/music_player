@@ -1,10 +1,10 @@
-import React, { useState, useRef, useContext } from 'react';
-import ProgressBar from './ProgressBar';
-import TrackInfo from './TrackInfo';
-import PlayerActions from './PlayerActions';
-import PlayerOptions from './PlayerOptions';
+import { useRef, useContext } from "react";
+import ProgressBar from "./ProgressBar";
+import TrackInfo from "./TrackInfo";
+import PlayerActions from "./PlayerActions";
+import PlayerOptions from "./PlayerOptions";
 // import { RepeatProvider } from './RepeatContext';
-import { TrackInfoContext } from './TrackInfoContext';
+import { TrackInfoContext } from "../contexts/TrackInfoContext";
 
 const PlayerControls = () => {
   const actionsRef = useRef(null);
@@ -12,7 +12,7 @@ const PlayerControls = () => {
 
   return (
     // <div className="player-controls">
-    <div className={`player-controls ${isVisible ? 'thumbnail-expanded has-overlay' : ''}`}>
+    <div className={`player-controls ${isVisible ? "thumbnail-expanded has-overlay" : ""}`}>
       {/* isPlayingを使いまわすため */}
       {/* <PlayerProvider> */}
       {/* <RepeatProvider> */}

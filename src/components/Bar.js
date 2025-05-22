@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { music } from './PlayMusic';
-import { usePlayerContext } from './PlayerContext';
-import Tooltip from './Tooltip';
-import useButtonTooltip from '../hooks/useButtonTooltip';
-import { useRepeatContext } from './RepeatContext';
-import useDelayedText from '../hooks/useDelayText';
-import VolumeIcon from './VolumeIcon';
-import { PlaybackContext } from '../contexts/PlaybackContext';
+import { useState, useEffect, useRef, useContext } from "react";
+import { music } from "./PlayMusic";
+import { usePlayerContext } from "../contexts/PlayerContext";
+import Tooltip from "./Tooltip";
+import useButtonTooltip from "../hooks/useButtonTooltip";
+import { useRepeatContext } from "../contexts/RepeatContext";
+import useDelayedText from "../hooks/useDelayText";
+import VolumeIcon from "./VolumeIcon";
+import { PlaybackContext } from "../contexts/PlaybackContext";
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);
@@ -21,7 +21,7 @@ const Bar = ({ ParentClassName, type, value }) => {
   const { isRepeat } = useRepeatContext();
 
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
-  const tooltipText = useDelayedText('ミュート解除', 'ミュート', isMuted, isMuted);
+  const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
 
   const { updateVolume, seekTo, duration, position } = usePlayerContext();
   const { goToNextTrack, resumePlayback } = useContext(PlaybackContext);
@@ -32,7 +32,7 @@ const Bar = ({ ParentClassName, type, value }) => {
   }, []);
 
   useEffect(() => {
-    if (type === 'volume') return;
+    if (type === "volume") return;
 
     if (duration !== 0 && duration !== null && !isNaN(duration)) {
       const newTime = toFixedNumber(position);
@@ -43,7 +43,7 @@ const Bar = ({ ParentClassName, type, value }) => {
   useEffect(() => {
     if (!isDragging) return;
 
-    if (type === 'volume' && duration) return;
+    if (type === "volume" && duration) return;
     const seekTime = Math.trunc((percentage / 100) * duration);
     seekTo(seekTime);
   }, [duration, percentage, isDragging]);
@@ -53,12 +53,12 @@ const Bar = ({ ParentClassName, type, value }) => {
     const clickX = e.clientX - barRect.left;
     const newPercentage = toFixedNumber((clickX / barRect.width) * 100);
 
-    if (type === 'progress') {
+    if (type === "progress") {
       setPercentage(newPercentage);
       return;
     }
 
-    if (type === 'volume') {
+    if (type === "volume") {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
       updateVolume(volumeValueRef.current / 100);
@@ -78,12 +78,12 @@ const Bar = ({ ParentClassName, type, value }) => {
     const moveX = e.clientX - barRect.left;
     const newPercentage = toFixedNumber(Math.min(Math.max((moveX / barRect.width) * 100, 0), 100));
 
-    if (type === 'progress') {
+    if (type === "progress") {
       setPercentage(newPercentage);
       return;
     }
 
-    if (type === 'volume') {
+    if (type === "volume") {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
       updateVolume(volumeValueRef.current / 100);
@@ -97,13 +97,13 @@ const Bar = ({ ParentClassName, type, value }) => {
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleDrag);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener("mousemove", handleDrag);
+      document.addEventListener("mouseup", handleMouseUp);
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleDrag);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleDrag);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging]);
 
@@ -124,7 +124,7 @@ const Bar = ({ ParentClassName, type, value }) => {
   }
 
   useEffect(() => {
-    const isTrackFinished = type === 'progress' && percentage === 0;
+    const isTrackFinished = type === "progress" && percentage === 0;
 
     if (isTrackFinished && isRepeat) {
       togglePlayPause(isRepeat);
@@ -139,7 +139,7 @@ const Bar = ({ ParentClassName, type, value }) => {
 
   return (
     <>
-      {type === 'volume' && (
+      {type === "volume" && (
         <button
           className="player-controls__button player-controls__button--volume"
           onClick={toggleMute}
@@ -148,7 +148,7 @@ const Bar = ({ ParentClassName, type, value }) => {
         >
           <VolumeIcon volume={percentage} isMuted={isMuted} />
 
-          <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-volume'}>
+          <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={"tooltip-volume"}>
             {tooltipText}
           </Tooltip>
         </button>

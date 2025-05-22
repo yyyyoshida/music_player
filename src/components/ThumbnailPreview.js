@@ -1,7 +1,7 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
-import { TrackInfoContext } from "./TrackInfoContext";
-import { usePlayerContext } from "./PlayerContext";
-import { SearchContext } from "./SearchContext";
+import { useContext, useRef, useState, useEffect } from "react";
+import { TrackInfoContext } from "../contexts/TrackInfoContext";
+import { usePlayerContext } from "../contexts/PlayerContext";
+// import { SearchContext } from "../contexts/SearchContext";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 export const ThumbnailPreview = () => {

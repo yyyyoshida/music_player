@@ -350,28 +350,28 @@
 
 // export default TrackInfo;
 ///////////////////////////////////////
-import React, { useState, useEffect, useLayoutEffect, useRef, useContext } from 'react';
-import { music, songs, playSong } from './PlayMusic';
-import { usePlayerContext } from './PlayerContext';
+import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
+import { music, songs, playSong } from "./PlayMusic";
+import { usePlayerContext } from "../contexts/PlayerContext";
 // import { debounce } from 'lodash';
-import { throttle } from 'lodash';
-import { TrackInfoContext } from './TrackInfoContext';
-import Tooltip from './Tooltip';
-import useButtonTooltip from '../hooks/useButtonTooltip';
-import useDelayedText from '../hooks/useDelayText';
+import { throttle } from "lodash";
+import { TrackInfoContext } from "../contexts/TrackInfoContext";
+import Tooltip from "./Tooltip";
+import useButtonTooltip from "../hooks/useButtonTooltip";
+import useDelayedText from "../hooks/useDelayText";
 
 const TrackInfo = ({ actionsRef }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   // const [title, setTitle] = useState('曲のタイトル');
   // const [title, setTitle] = useState('123456789123456789123456789123456789123456789123456789123456789');
-  const [title, setTitle] = useState('123456789123456789123456789123456789123456789123456789');
-  const [artist, setArtist] = useState('アーティスト・作者');
+  const [title, setTitle] = useState("123456789123456789123456789123456789123456789123456789");
+  const [artist, setArtist] = useState("アーティスト・作者");
   const imgRef = useRef(null);
   const [isHidden, setIsHidden] = useState(false);
   const { isPlaying, currentSongIndex, trackImage, trackTitle, trackArtistName } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip(600);
 
-  const tooltipText = useDelayedText('全画面表示：オフ', '全画面表示', isFullScreen, isFullScreen, 0);
+  const tooltipText = useDelayedText("全画面表示：オフ", "全画面表示", isFullScreen, isFullScreen, 0);
   const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
   const prevSongIndex = useRef(null);
@@ -432,10 +432,10 @@ const TrackInfo = ({ actionsRef }) => {
   }, 200); // 200msの遅延でイベントをまとめて処理
 
   useEffect(() => {
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [currentSongIndex]);
 
@@ -488,7 +488,7 @@ const TrackInfo = ({ actionsRef }) => {
       // let text = titleTextArray.slice(0, titleTextArray.length - removedCount);
       let text = titleTextArray.slice(0, titleTextArray.length);
       // let isEllipsisAdded = text[text.length - 1] === '〃';
-      let isEllipsisAdded = text[text.length - 1] === '…';
+      let isEllipsisAdded = text[text.length - 1] === "…";
 
       // `isCollision` の最新の値を取得
       setIsCollision((prev) => {
@@ -496,7 +496,7 @@ const TrackInfo = ({ actionsRef }) => {
         // if (prev || trackInfoRef.current.clientWidth >= 231) {
         if (prev) {
           if (!isEllipsisAdded) {
-            text.push('…');
+            text.push("…");
             isEllipsisAdded = true;
           } else {
             // text.splice(-2, 1);
@@ -504,8 +504,8 @@ const TrackInfo = ({ actionsRef }) => {
             setRemovedCount((prev) => prev + 1);
             // console.log(removedCount);
           }
-          setTitle(text.join(''));
-          setTrimmedTitle(text.join(''));
+          setTitle(text.join(""));
+          setTrimmedTitle(text.join(""));
 
           setTimeout(processTrimming, 0);
         }
@@ -590,7 +590,7 @@ const TrackInfo = ({ actionsRef }) => {
       let index = currentTrimmedTitle.length - 1;
       result = titleTextArray.slice(index, index + 1)[0];
       currentTrimmedTitle.splice(index, index + 1, result);
-      setTitle(titleTextArray.join(''));
+      setTitle(titleTextArray.join(""));
       // }
 
       // setIsCollision((prev) => {
@@ -655,15 +655,15 @@ const TrackInfo = ({ actionsRef }) => {
 
   function fadeTransition() {
     const transitionElement = transitionRef.current;
-    transitionElement.style.visibility = 'visible';
+    transitionElement.style.visibility = "visible";
     transitionElement.style.opacity = 1;
     function handleTransitionEnd() {
-      transitionElement.style.visibility = 'hidden';
+      transitionElement.style.visibility = "hidden";
       transitionElement.style.opacity = 1;
     }
     setTimeout(() => {
       transitionElement.style.opacity = 0;
-      transitionElement.addEventListener('transitionend', handleTransitionEnd);
+      transitionElement.addEventListener("transitionend", handleTransitionEnd);
     }, 50);
     // }, 100);
   }
@@ -718,18 +718,14 @@ const TrackInfo = ({ actionsRef }) => {
           <div id="js-track-thumbnail-wrapper" className="player-controls__track-thumbnail-wrapper">
             {/* <img ref={imgRef} src={trackImage} alt="サムネイル" className="player-controls__track-thumbnail" /> */}
             <img ref={imgRef} src={trackImage} alt="thumbnail" className="player-controls__track-thumbnail" />
-            <div
-              ref={transitionRef}
-              className="player-controls__track-thumbnail-transition"
-              style={{ visibility: isHidden ? 'hidden' : 'visible' }}
-            ></div>
+            <div ref={transitionRef} className="player-controls__track-thumbnail-transition" style={{ visibility: isHidden ? "hidden" : "visible" }}></div>
           </div>
           <figcaption ref={trackMetaRef} className="player-controls__track-meta">
             <p className="player-controls__title">{trackTitle}</p>
             <p className="player-controls__artist">{trackArtistName}</p>
           </figcaption>
         </figure>
-        <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-track-info'}>
+        <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={"tooltip-track-info"}>
           {tooltipText}
         </Tooltip>
       </div>

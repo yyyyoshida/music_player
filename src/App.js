@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
+import { useState, useEffect, useContext, useLayoutEffect } from "react";
 import Header from "./components/Header";
 import Main from "./components/Main";
 import Login from "./components/Login";
 import { getNewAccessToken } from "./utils/spotifyAuth"; // getNewAccessTokenをインポート
-import { SearchProvider } from "./components/SearchContext";
+import { SearchProvider } from "./contexts/SearchContext";
 // import { SearchContext } from './components/SearchContext';
 import { TokenContext } from "./contexts/isTokenContext";
-import { PlayerProvider } from "./components/PlayerContext";
-import { RepeatProvider } from "./components/RepeatContext";
+import { PlayerProvider } from "./contexts/PlayerContext";
+import { RepeatProvider } from "./contexts/RepeatContext";
 
 import { BrowserRouter } from "react-router-dom";
 
 import { PlaybackProvider } from "./contexts/PlaybackContext";
 
-import { PlaylistProvider } from "./components/PlaylistContext";
-import { PlaylistSelectionProvider } from "./components/PlaylistSelectionContext";
+import { PlaylistProvider } from "./contexts/PlaylistContext";
+import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
 import { LoadingProvider } from "./contexts/LoadingContext";
 import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageContext";
 

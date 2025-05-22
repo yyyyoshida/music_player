@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import { useEffect, useRef, useContext } from "react";
 import { doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { useParams } from "react-router-dom";
-import { PlaylistContext } from "./PlaylistContext";
+import { PlaylistContext } from "../contexts/PlaylistContext";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { warningIcon } from "../assets/icons";
 

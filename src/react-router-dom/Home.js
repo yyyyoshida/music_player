@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
-import { usePlayerContext } from "../components/PlayerContext";
-import { PlaylistSelectionContext } from "../components/PlaylistSelectionContext";
+import { useEffect, useState, useContext, useRef } from "react";
+import { usePlayerContext } from "../contexts/PlayerContext";
+import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { playIcon, pauseIcon } from "../assets/icons";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 import { LoadingContext } from "../contexts/LoadingContext";
@@ -80,6 +80,7 @@ const Home = ({ token }) => {
   }, [token]);
 
   useEffect(() => {
+    console.log("homeのsetQueueが発火");
     setQueue(tracks);
   }, [tracks]);
 

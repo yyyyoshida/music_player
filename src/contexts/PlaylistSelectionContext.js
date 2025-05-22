@@ -1,8 +1,8 @@
-import React, { createContext, useState, useRef, useContext, useEffect } from "react";
+import { createContext, useState, useRef, useContext, useEffect } from "react";
 import { addDoc, collection, increment, serverTimestamp, updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
-import { PlaylistContext } from "./PlaylistContext";
+import { PlaylistContext } from "../contexts/PlaylistContext";
 
 export const PlaylistSelectionContext = createContext();
 

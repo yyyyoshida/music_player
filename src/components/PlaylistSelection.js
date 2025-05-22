@@ -1,6 +1,6 @@
-import React, { useContext, useRef, useEffect } from "react";
-import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
-import { PlaylistContext } from "../components/PlaylistContext";
+import { useContext, useRef, useEffect } from "react";
+import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
+import { PlaylistContext } from "../contexts/PlaylistContext";
 import useFetchPlaylists from "../hooks/useFetchPlaylists";
 import { LoadingContext } from "../contexts/LoadingContext";
 

@@ -1,5 +1,5 @@
-import React, { useContext, useRef } from "react";
-import { PlaylistContext } from "./PlaylistContext";
+import { useContext, useRef } from "react";
+import { PlaylistContext } from "../contexts/PlaylistContext";
 import { warningIcon } from "../assets/icons";
 
 const CreatePlaylist = () => {

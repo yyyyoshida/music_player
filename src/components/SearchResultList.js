@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
-import { usePlayerContext } from "./PlayerContext";
-import { SearchContext } from "./SearchContext";
-import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
+import { useContext, useState, useEffect } from "react";
+import { usePlayerContext } from "../contexts/PlayerContext";
+import { SearchContext } from "../contexts/SearchContext";
+import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import TrackItem from "./TrackItem";
-import { LoadingContext } from "../contexts/LoadingContext";
 import TrackListSkeleton from "./TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
