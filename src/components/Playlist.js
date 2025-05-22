@@ -2,8 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PlaylistContext } from "./PlaylistContext";
 import useFetchPlaylists from "../hooks/useFetchPlaylists";
-import { LoadingContext } from "../contexts/LoadingContext";
-import { PlaylistSelectionContext } from "./PlaylistSelectionContext";
+
 import { playIcon, pauseIcon } from "../assets/icons";
 import CardListSkeleton from "./CardListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
