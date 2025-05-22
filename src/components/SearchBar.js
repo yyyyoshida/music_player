@@ -1,24 +1,34 @@
-import { useState, useContext, useRef } from "react";
+import { useContext, useRef, useEffect } from "react";
 import { SearchContext } from "../contexts/SearchContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SearchBar = ({ token }) => {
-  const { setQuery, setSearchResults } = useContext(SearchContext);
+  const { setQuery, setSearchResults, setHasSearchError, query } = useContext(SearchContext);
   const queryRef = useRef("");
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSearch = async () => {
-    if (queryRef.current === "") return;
-    console.log("検索する値", queryRef.current.value);
+  useEffect(() => {
+    if (!token || location.pathname !== "/search-result") return;
+
+    const savedQuery = localStorage.getItem("searchQuery") || "";
+
+    queryRef.current.value = savedQuery;
+
+    handleSearch();
+  }, [token]);
+
+  async function handleSearch() {
+    if (!queryRef.current.value || queryRef.current.value === query) return;
+
     setQuery(queryRef.current.value);
-
-    // navigate(`/search-result?query=${encodeURIComponent(query)}`);
-    navigate(`/search-result?query=${encodeURIComponent(queryRef.current)}`);
+    localStorage.setItem("searchQuery", queryRef.current.value);
+    navigate(`/search-result?query=${encodeURIComponent(queryRef.current.value)}`);
 
     console.log(token);
     if (!token) {
-      setError("アクセストークンが無効です。再度ログインしてください。");
+      console.error("アクセストークンが無効です。再度ログインしてください。");
+
       return;
     }
 
@@ -41,19 +51,17 @@ const SearchBar = ({ token }) => {
 
       if (data.tracks?.items?.length) {
         setSearchResults(data.tracks.items);
-        setError(null); // エラー状態をクリア
+        setHasSearchError(false);
       } else {
         setSearchResults([]);
-        setError("検索結果が見つかりませんでした。");
+        setHasSearchError(true);
       }
-      // setQuery(''); // 検索完了後に入力をクリア
+      // setQuery('');
     } catch (err) {
-      console.error("検索に失敗しました:", err);
-      setError("検索に失敗しました。もう一度お試しください。");
+      setHasSearchError(true);
       setSearchResults([]);
-    } finally {
     }
-  };
+  }
 
   function clearSearchText() {
     queryRef.current.value = "";
@@ -69,7 +77,6 @@ const SearchBar = ({ token }) => {
           <img className="search-bar__clear-icon" src="/img/x.png"></img>
         </button>
       </div>
-      {error && <p className="error-message">{error}</p>}
     </>
   );
 };
