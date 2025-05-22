@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PlaylistContext } from "./PlaylistContext";
 import useFetchPlaylists from "../hooks/useFetchPlaylists";
@@ -9,7 +9,7 @@ import CardListSkeleton from "./CardListSkeleton";
 
 const Playlist = () => {
   const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
-  const { isSelectVisible } = useContext(PlaylistSelectionContext);
+  // const { isSelectVisible } = useContext(PlaylistSelectionContext);
   const { isPlaylistsLoading } = useContext(LoadingContext);
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
@@ -18,19 +18,56 @@ const Playlist = () => {
     navigate(`/playlist-detail/${playlistId}`);
   }
 
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
+  const waitForAllImagesToLoad = (urls) => {
+    return Promise.all(
+      urls.map((src) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve(); // エラーでも resolve しとく
+          img.src = src;
+        });
+      })
+    );
+  };
+
+  useEffect(() => {
+    if (isPlaylistsLoading || playlists.length === 0) return;
+
+    const imageUrls = playlists.flatMap((playlist) => playlist.albumImages.slice(0, 4)).filter(Boolean);
+
+    setImagesLoaded(false);
+
+    let timeoutId;
+
+    waitForAllImagesToLoad(imageUrls).then(() => {
+      console.log("✅ Playlistsのロード完了");
+      timeoutId = setTimeout(() => {
+        setImagesLoaded(true);
+      }, 100);
+    });
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [playlists]);
+
   return (
     <div className="playlists-page">
       <h2 className="playlists-page__title">プレイリスト</h2>
       <button className="playlists-page__create-button playlist-create-button" onClick={toggleCreateVisible}>
         ＋ 新規プレイリスト作成
       </button>
-      {isPlaylistsLoading && !isSelectVisible && <CardListSkeleton />}
 
-      <ul className={`playlists-page__list fade-on-loaded ${isPlaylistsLoading ? "" : "fade-in-up"}`}>
+      {!imagesLoaded && <CardListSkeleton />}
+
+      <ul className={`playlists-page__list fade-on-loaded ${imagesLoaded ? "fade-in-up" : ""}`}>
         {playlists.map((playlist) => {
           const isSingleImage = playlist.albumImages.length <= 3;
           const albumImagesToDisplay = [...playlist.albumImages].slice(0, 4);
-          console.log("isSingleImage", isSingleImage, playlist.name, albumImagesToDisplay.length);
+          // console.log("isSingleImage", isSingleImage, playlist.name, albumImagesToDisplay.length);
           return (
             <li key={playlist.id} className="playlists-page__item" onClick={() => handlePlaylistClick(playlist.id)}>
               <div className={`playlists-page__item-cover-img-wrapper ${isSingleImage ? "single" : ""}`}>
