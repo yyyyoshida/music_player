@@ -3,20 +3,23 @@ import { usePlayerContext } from "../contexts/PlayerContext";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { playIcon, pauseIcon } from "../assets/icons";
 import { PlaybackContext } from "../contexts/PlaybackContext";
-import { LoadingContext } from "../contexts/LoadingContext";
+
 import CardListSkeleton from "../components/CardListSkeleton";
+import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const Home = ({ token }) => {
   const [tracks, setTracks] = useState([]);
+  const [initialLoaded, setInitialLoaded] = useState(false);
+
   const { playerTrack, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
-  const changeCountRef = useRef(0);
-  const { handleTrackSelect, isSelectVisible } = useContext(PlaylistSelectionContext);
+  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setQueue } = useContext(PlaybackContext);
-  const { isHomeLoading, setIsHomeLoading } = useContext(LoadingContext);
+
+  const changeCountRef = useRef(0);
+
+  const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], 21);
 
   useEffect(() => {
-    // const hash = window.location.hash;
-    // const token = new URLSearchParams(hash.replace('#', '?')).get('access_token');
     changeCountRef.current += 1;
     if (changeCountRef.current === 2) {
       console.log("ホームの中の", token);
@@ -33,17 +36,13 @@ const Home = ({ token }) => {
 
   const fetchRecentlyPlayedTracks = async (token) => {
     let url = "https://api.spotify.com/v1/me/player/recently-played?limit=50";
-    // const afterTimestamp = 1484811043508;
-    // url += `&after=${afterTimestamp}`;
+
     if (!token) {
       console.error("アクセストークンがありません");
       return;
     }
 
-    setIsHomeLoading(true);
-
     try {
-      // const response = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=10', {
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -52,22 +51,9 @@ const Home = ({ token }) => {
 
       const data = await response.json();
 
-      // レスポンスの確認
-      // console.log(data.items[0].track.name);
-      // console.log('HHHHHHHHHH', data.items[0].track.album);
-      // console.log('HHHHHHHHHH', data.items[0].track.album.images[0].url);
-      // console.log('HHHHHHHHHH', data.items[0].track.album.images);
-      // console.log('HHHHHHH00000HHH', data);
-      // console.log('HHHHHHHHHH', data.items[3].track.artists[0].name);
-
       setTracks(data.items);
-      // if (data.items?.track?.length) {
-      // } else {
-      // }
     } catch (err) {
       console.error("再生履歴取れなかった", err);
-    } finally {
-      setIsHomeLoading(false);
     }
   };
 
@@ -86,18 +72,21 @@ const Home = ({ token }) => {
 
   const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
 
-  // const onTrackClick = (track) => {
-  //   playerTrack(track.track.uri, isClicked);
-  //   setIsTrackSet(true);
-  //   setCurrentPlayedAt(track.played_at); // ここで再生日時もセット
-  // };
+  useEffect(() => {
+    if (imagesLoaded) {
+      setInitialLoaded(true);
+    }
+  }, [imagesLoaded]);
+  console.log(tracks[0]);
 
   return (
     <div className="home">
       <h1 className="home__title">ホーム</h1>
       <p className="home__text">最近再生した曲一覧</p>
-      {isHomeLoading && !isSelectVisible && <CardListSkeleton />}
-      <ul className={`home__track-list fade-on-loaded ${isHomeLoading ? "" : "fade-in-up"}`}>
+      {/* {isHomeLoading && !isSelectVisible && <CardListSkeleton />} */}
+      {!initialLoaded && <CardListSkeleton />}
+
+      <ul className={`home__track-list fade-on-loaded ${!initialLoaded ? "" : "fade-in-up"}`}>
         {Array.isArray(tracks) && tracks.length > 0 ? (
           tracks.map((track) => {
             const isCurrentTrack = trackId === track.track.id && currentPlayedAt === track.played_at;
