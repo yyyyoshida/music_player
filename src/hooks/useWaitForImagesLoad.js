@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-const useWaitForImagesLoad = (type, tracks, deps = [], delay = 0) => {
+const useWaitForImagesLoad = (type, tracks, deps = [], delay = 0, imagesLoadCount = 10) => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
   useEffect(() => {
-    const imageUrls = getImageUrls(type, tracks);
+    const imageUrls = getImageUrls(type, tracks, imagesLoadCount);
 
     if (imageUrls.length === 0) return;
 
@@ -37,13 +37,13 @@ function waitForAllImagesToLoad(imageUrls) {
   );
 }
 
-function getImageUrls(type, tracks) {
+function getImageUrls(type, tracks, imagesLoadCount) {
   if (!tracks || tracks.length === 0) return [];
 
   if (type === "trackList") {
     return tracks
-      .slice(0, 10)
-      .map((track) => track.album?.images[0]?.url || track.albumImage)
+      .slice(0, imagesLoadCount)
+      .map((track) => track.album?.images[0]?.url || track.albumImage || track.track.album.images[1].url)
       .filter(Boolean);
   } else {
     return tracks.flatMap((track) => track.albumImages?.slice(0, 4) || []).filter(Boolean);
