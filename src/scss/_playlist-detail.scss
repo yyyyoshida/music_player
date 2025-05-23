@@ -39,7 +39,7 @@
   }
 
   &__header-cover-imgs.single {
-    grid-template-columns: none;
+    display: block;
   }
 
   &__header-initial-cover-img-bg {

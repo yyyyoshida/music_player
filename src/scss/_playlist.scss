@@ -53,9 +53,9 @@
     background-color: #181818;
   }
 
-  &__item-cover-img-wrapper.single {
-    grid-template-columns: none;
-  }
+  // &__item-cover-img-wrapper.single {
+  //   // grid-template-columns: none;
+  // }
 
   .single {
     .img-0 {
@@ -151,7 +151,7 @@
   }
 
   &__item-cover-imgs.single {
-    grid-template-columns: none;
+    display: block;
   }
 
   &__item-initial-cover-img-bg {
