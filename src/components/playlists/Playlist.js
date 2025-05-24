@@ -4,7 +4,7 @@ import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 
 import { playIcon, pauseIcon } from "../../assets/icons";
-import CardListSkeleton from "../skeletons/CardListSkeleton";
+import CardListSkeleton from "../Skeletons/CardListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 
 const Playlist = () => {
