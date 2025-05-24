@@ -15,7 +15,7 @@ import { PlaybackProvider } from "./contexts/PlaybackContext";
 
 import { PlaylistProvider } from "./contexts/PlaylistContext";
 import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
-import { LoadingProvider } from "./contexts/LoadingContext";
+
 import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageContext";
 
 // import db from './firebase';
@@ -84,23 +84,21 @@ function App() {
     <BrowserRouter>
       <ActionSuccessMessageProvider>
         <RepeatProvider>
-          <LoadingProvider>
-            <PlayerProvider token={token} isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
-              <PlaybackProvider isTrackSet={isTrackSet}>
-                <SearchProvider>
-                  <PlaylistProvider>
-                    <PlaylistSelectionProvider>
-                      {/* <h1>Spotifyアプリ</h1> */}
-                      {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-                      <Header token={token} onSearchResults={handleSearchResults} />
-                      {/* {!token && <Login />} */}
-                      <Main token={token} searchResults={searchResults} />
-                    </PlaylistSelectionProvider>
-                  </PlaylistProvider>
-                </SearchProvider>
-              </PlaybackProvider>
-            </PlayerProvider>
-          </LoadingProvider>
+          <PlayerProvider token={token} isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+            <PlaybackProvider isTrackSet={isTrackSet}>
+              <SearchProvider>
+                <PlaylistProvider>
+                  <PlaylistSelectionProvider>
+                    {/* <h1>Spotifyアプリ</h1> */}
+                    {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
+                    <Header token={token} onSearchResults={handleSearchResults} />
+                    {/* {!token && <Login />} */}
+                    <Main token={token} searchResults={searchResults} />
+                  </PlaylistSelectionProvider>
+                </PlaylistProvider>
+              </SearchProvider>
+            </PlaybackProvider>
+          </PlayerProvider>
         </RepeatProvider>
       </ActionSuccessMessageProvider>
     </BrowserRouter>

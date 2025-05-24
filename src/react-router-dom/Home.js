@@ -83,7 +83,7 @@ const Home = ({ token }) => {
     <div className="home">
       <h1 className="home__title">ホーム</h1>
       <p className="home__text">最近再生した曲一覧</p>
-      {/* {isHomeLoading && !isSelectVisible && <CardListSkeleton />} */}
+
       {!initialLoaded && <CardListSkeleton />}
 
       <ul className={`home__track-list fade-on-loaded ${!initialLoaded ? "" : "fade-in-up"}`}>
@@ -149,7 +149,6 @@ const Home = ({ token }) => {
           <p>最近の再生履歴はありません。</p>
         )}
       </ul>
-      {/* // )} */}
     </div>
   );
 };
