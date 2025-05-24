@@ -1,10 +1,10 @@
 import { useEffect, useRef, useContext } from "react";
 import { doc, updateDoc, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { useParams } from "react-router-dom";
-import { PlaylistContext } from "../contexts/PlaylistContext";
-import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
-import { warningIcon } from "../assets/icons";
+import { PlaylistContext } from "../../contexts/PlaylistContext";
+import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
+import { warningIcon } from "../../assets/icons";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");

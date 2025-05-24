@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlaylistContext } from "../contexts/PlaylistContext";
-import useFetchPlaylists from "../hooks/useFetchPlaylists";
+import { PlaylistContext } from "../../contexts/PlaylistContext";
+import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 
-import { playIcon, pauseIcon } from "../assets/icons";
-import CardListSkeleton from "./CardListSkeleton";
-import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
+import { playIcon, pauseIcon } from "../../assets/icons";
+import CardListSkeleton from "../skeletons/CardListSkeleton";
+import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 
 const Playlist = () => {
   const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);

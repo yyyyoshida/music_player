@@ -351,14 +351,14 @@
 // export default TrackInfo;
 ///////////////////////////////////////
 import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
-import { music, songs, playSong } from "./PlayMusic";
-import { usePlayerContext } from "../contexts/PlayerContext";
+import { music, songs, playSong } from "../player/PlayMusic";
+import { usePlayerContext } from "../../contexts/PlayerContext";
 // import { debounce } from 'lodash';
 import { throttle } from "lodash";
-import { TrackInfoContext } from "../contexts/TrackInfoContext";
-import Tooltip from "./Tooltip";
-import useButtonTooltip from "../hooks/useButtonTooltip";
-import useDelayedText from "../hooks/useDelayText";
+import { TrackInfoContext } from "../../contexts/TrackInfoContext";
+import Tooltip from "../Tooltip";
+import useButtonTooltip from "../../hooks/useButtonTooltip";
+import useDelayedText from "../../hooks/useDelayText";
 
 const TrackInfo = ({ actionsRef }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);

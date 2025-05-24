@@ -1,5 +1,3 @@
-import React from "react";
-
 const CardListSkeleton = () => {
   return (
     <ul className="card-list-skeleton">

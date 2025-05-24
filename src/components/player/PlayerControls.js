@@ -1,10 +1,10 @@
 import { useRef, useContext } from "react";
 import ProgressBar from "./ProgressBar";
-import TrackInfo from "./TrackInfo";
+import TrackInfo from "../tracks/TrackInfo";
 import PlayerActions from "./PlayerActions";
 import PlayerOptions from "./PlayerOptions";
 // import { RepeatProvider } from './RepeatContext';
-import { TrackInfoContext } from "../contexts/TrackInfoContext";
+import { TrackInfoContext } from "../../contexts/TrackInfoContext";
 
 const PlayerControls = () => {
   const actionsRef = useRef(null);

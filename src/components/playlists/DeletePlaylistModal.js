@@ -1,5 +1,3 @@
-import React from "react";
-
 const DeletePlaylistModal = ({ isDeleteVisible, toggleDeleteVisible, tracks, deletePlaylist, id }) => {
   return (
     <div className="delete-playlist-modal modal" style={{ visibility: isDeleteVisible ? "visible" : "hidden" }}>

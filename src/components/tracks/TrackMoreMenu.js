@@ -1,8 +1,8 @@
 import { useContext, useRef, useEffect } from "react";
-import { TrackMoreMenuContext } from "../contexts/TrackMoreMenuContext";
-import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
+import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
+import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 
-import { PlaylistContext } from "../contexts/PlaylistContext";
+import { PlaylistContext } from "../../contexts/PlaylistContext";
 
 const TrackMoreMenu = () => {
   const { trackId, isButtonHovered, menuPositionTop, isMenuVisible, setIsMenuVisible, openMenu, closeMenu } = useContext(TrackMoreMenuContext);

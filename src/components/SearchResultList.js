@@ -2,8 +2,8 @@ import { useContext, useState, useEffect } from "react";
 import { usePlayerContext } from "../contexts/PlayerContext";
 import { SearchContext } from "../contexts/SearchContext";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
-import TrackItem from "./TrackItem";
-import TrackListSkeleton from "./TrackListSkeleton";
+import TrackItem from "./tracks/TrackItem";
+import TrackListSkeleton from "./skeletons/TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const TrackList = ({ containerRef }) => {

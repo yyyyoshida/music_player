@@ -1,5 +1,3 @@
-import React from "react";
-
 const TrackListSkeleton = ({ count = 11 }) => {
   return (
     <ul className="skeleton-track-list">
