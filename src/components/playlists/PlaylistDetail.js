@@ -1,18 +1,18 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { collection, getDocs, getDoc, doc, query, orderBy } from "firebase/firestore";
-import { playIcon } from "../assets/icons";
-import TrackListHead from "./TrackListHead";
-import { usePlayerContext } from "../contexts/PlayerContext";
-import TrackItem from "./TrackItem";
-import { PlaylistContext } from "../contexts/PlaylistContext";
-import { PlaybackContext } from "../contexts/PlaybackContext";
+import { playIcon } from "../../assets/icons";
+import TrackListHead from "../tracks/TrackListHead";
+import { usePlayerContext } from "../../contexts/PlayerContext";
+import TrackItem from "../tracks/TrackItem";
+import { PlaylistContext } from "../../contexts/PlaylistContext";
+import { PlaybackContext } from "../../contexts/PlaybackContext";
 import RenamePlaylist from "./RenamePlaylist";
 import DeletePlaylistModal from "./DeletePlaylistModal";
-import ActionSuccessMessageContext from "../contexts/ActionSuccessMessageContext";
-import TrackListSkeleton from "./TrackListSkeleton";
-import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
+import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
+import TrackListSkeleton from "../skeletons/TrackListSkeleton";
+import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 
 const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();

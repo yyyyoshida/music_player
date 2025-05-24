@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import SearchResultList from "./SearchResultList";
 import { SearchContext } from "../contexts/SearchContext";
-import TrackListHead from "./TrackListHead";
+import TrackListHead from "./tracks/TrackListHead";
 
 const SearchResult = ({ containerRef }) => {
   const { query, hasSearchError } = useContext(SearchContext);

@@ -1,8 +1,6 @@
-import React from "react";
 import ShuffleButton from "./ShuffleButton";
 import PlayButton from "./PlayButton";
 import PrevNextButton from "./PrevNextButton";
-import ParentComponent from "./ParentComponent";
 import RepeatButton from "./RepeatButton";
 
 const PlayerActions = ({ actionsRef }) => {

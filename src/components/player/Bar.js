@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { music } from "./PlayMusic";
-import { usePlayerContext } from "../contexts/PlayerContext";
-import Tooltip from "./Tooltip";
-import useButtonTooltip from "../hooks/useButtonTooltip";
-import { useRepeatContext } from "../contexts/RepeatContext";
-import useDelayedText from "../hooks/useDelayText";
+import { usePlayerContext } from "../../contexts/PlayerContext";
+import Tooltip from "../Tooltip";
+import useButtonTooltip from "../../hooks/useButtonTooltip";
+import { useRepeatContext } from "../../contexts/RepeatContext";
+import useDelayedText from "../../hooks/useDelayText";
 import VolumeIcon from "./VolumeIcon";
-import { PlaybackContext } from "../contexts/PlaybackContext";
+import { PlaybackContext } from "../../contexts/PlaybackContext";
 
 const Bar = ({ ParentClassName, type, value }) => {
   const [percentage, setPercentage] = useState(value);

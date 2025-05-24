@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
-import { usePlayerContext } from "../contexts/PlayerContext";
-import Tooltip from "./Tooltip";
-import useButtonTooltip from "../hooks/useButtonTooltip";
-import { PlaybackContext } from "../contexts/PlaybackContext";
+import { usePlayerContext } from "../../contexts/PlayerContext";
+import Tooltip from "../Tooltip";
+import useButtonTooltip from "../../hooks/useButtonTooltip";
+import { PlaybackContext } from "../../contexts/PlaybackContext";
 // import { SearchContext } from "../components/SearchContext";
 
 const PrevNextButton = ({ type }) => {

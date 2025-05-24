@@ -1,5 +1,3 @@
-import React from 'react';
-
 const TrackListHead = () => {
   return (
     <div className="track__list-head">

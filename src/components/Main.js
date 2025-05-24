@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useLayoutEffect, useRef } from "react";
 // import Footer from './Footer';
-import PlayerControls from "./PlayerControls";
+import PlayerControls from "./player/PlayerControls";
 import ThumbnailPreview from "./ThumbnailPreview";
 import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 import Login from "./Login";
@@ -12,14 +12,14 @@ import Home from "../react-router-dom/Home";
 
 // import LOGIN_URL from '../config/spotifyConfig';
 
-import Playlist from "./Playlist";
-import CreatePlaylist from "./CreatePlaylist";
+import Playlist from "./playlists/Playlist";
+import CreatePlaylist from "./playlists/CreatePlaylist";
 // import { PlaylistProvider } from './PlaylistContext';
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
-import PlaylistSelection from "./PlaylistSelection";
-import PlaylistDetail from "./PlaylistDetail";
+import PlaylistSelection from "./playlists/PlaylistSelection";
+import PlaylistDetail from "./playlists/PlaylistDetail";
 import ActionSuccessMessage from "./ActionSuccessMessage";
-import TrackMoreMenu from "./TrackMoreMenu";
+import TrackMoreMenu from "./tracks/TrackMoreMenu";
 import { TrackMoreMenuProvider } from "../contexts/TrackMoreMenuContext";
 
 const Main = ({ token }) => {

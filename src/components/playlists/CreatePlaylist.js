@@ -1,6 +1,6 @@
 import { useContext, useRef } from "react";
-import { PlaylistContext } from "../contexts/PlaylistContext";
-import { warningIcon } from "../assets/icons";
+import { PlaylistContext } from "../../contexts/PlaylistContext";
+import { warningIcon } from "../../assets/icons";
 
 const CreatePlaylist = () => {
   const { isShaking, errorMessage, toggleCreateVisible, handleCreatePlaylist, isCreateVisible, playlistNameRef } = useContext(PlaylistContext);

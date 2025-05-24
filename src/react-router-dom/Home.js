@@ -4,7 +4,7 @@ import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { playIcon, pauseIcon } from "../assets/icons";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 
-import CardListSkeleton from "../components/CardListSkeleton";
+import CardListSkeleton from "../components/skeletons/CardListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const Home = ({ token }) => {

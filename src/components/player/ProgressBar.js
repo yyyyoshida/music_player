@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { music, songs, playSong } from './PlayMusic';
-import Bar from './Bar';
-import CurrentTime from './CurrentTime';
-import Duration from './Duration';
+import { music, songs, playSong } from "./PlayMusic";
+import Bar from "./Bar";
+import CurrentTime from "./CurrentTime";
+import Duration from "./Duration";
 
 const ProgressBar = ({ isRepeat, setIsRepeat }) => {
   return (

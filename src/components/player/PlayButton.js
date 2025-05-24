@@ -1,8 +1,8 @@
-import { usePlayerContext } from "../contexts/PlayerContext";
-import Tooltip from "./Tooltip";
-import useButtonTooltip from "../hooks/useButtonTooltip";
-import useDelayedText from "../hooks/useDelayText";
-import { playIcon, pauseIcon } from "../assets/icons";
+import { usePlayerContext } from "../../contexts/PlayerContext";
+import Tooltip from "../Tooltip";
+import useButtonTooltip from "../../hooks/useButtonTooltip";
+import useDelayedText from "../../hooks/useDelayText";
+import { playIcon, pauseIcon } from "../../assets/icons";
 
 const PlayButton = () => {
   const { isPlayPauseCooldown, isPlaying, togglePlayPause, currentSongIndex, isClassName, setIsClassName } = usePlayerContext();

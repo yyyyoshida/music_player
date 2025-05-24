@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import Tooltip from "./Tooltip";
-import useButtonTooltip from "../hooks/useButtonTooltip";
-import { useRepeatContext } from "../contexts/RepeatContext";
-import useDelayedText from "../hooks/useDelayText";
-import { repeatOnIcon, repeatOffIcon } from "../assets/icons";
+import Tooltip from "../Tooltip";
+import useButtonTooltip from "../../hooks/useButtonTooltip";
+import { useRepeatContext } from "../../contexts/RepeatContext";
+import useDelayedText from "../../hooks/useDelayText";
+import { repeatOnIcon, repeatOffIcon } from "../../assets/icons";
 
 const RepeatButton = () => {
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();

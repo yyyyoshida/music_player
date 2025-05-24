@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import Bar from './Bar';
-import { music, songs, playSong } from './PlayMusic';
-import Tooltip from './Tooltip';
-import useButtonTooltip from '../hooks/useButtonTooltip';
+import { useState } from "react";
+import Bar from "./Bar";
+import { music, songs, playSong } from "./PlayMusic";
+import Tooltip from "../Tooltip";
+import useButtonTooltip from "../../hooks/useButtonTooltip";
 
 const PlayerOptions = () => {
   const { isButtonPressed, isHovered, setIsHovered } = useButtonTooltip();
@@ -29,11 +29,11 @@ const PlayerOptions = () => {
           onMouseLeave={() => setIsHovered(false)}
         >
           <img src="/img/三点リーダーアイコン1.png" alt="" className="player-controls__button--more-icon" />
-          <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={'tooltip-other'} isOpenMenu={isOpenMenu}>
+          <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={"tooltip-other"} isOpenMenu={isOpenMenu}>
             その他のオプション
           </Tooltip>
         </button>
-        <div className={`player-controls__options-menu ${isOpenMenu ? 'is-option' : ''}`}>
+        <div className={`player-controls__options-menu ${isOpenMenu ? "is-option" : ""}`}>
           <ul className="player-controls__options-list">
             <li className="player-controls__options-item" onClick={clickMenu}>
               お気に入りに追加

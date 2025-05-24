@@ -1,10 +1,10 @@
 import { useContext, useRef, useEffect } from "react";
-import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
-import { PlaylistContext } from "../contexts/PlaylistContext";
-import useFetchPlaylists from "../hooks/useFetchPlaylists";
+import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
+import { PlaylistContext } from "../../contexts/PlaylistContext";
+import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 
-import PlaylistSelectSkeleton from "./PlaylistSelectSkeleton";
-import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
+import PlaylistSelectSkeleton from "../skeletons/PlaylistSelectSkeleton";
+import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 
 const PlaylistSelection = () => {
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);

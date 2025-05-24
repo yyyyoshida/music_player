@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePlayerContext } from "../contexts/PlayerContext";
+import { usePlayerContext } from "../../contexts/PlayerContext";
 
 const Duration = () => {
   const [SongDuration, setSongDuration] = useState("0:00");
