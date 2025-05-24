@@ -14,7 +14,7 @@ export const PlaylistProvider = ({ children }) => {
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [playlistId, setPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
-  const [totalDuration, setTotalDuration] = useState({});
+  const [deletedTrackDuration, setDeletedTrackDuration] = useState(0);
   const navigate = useNavigate();
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -123,7 +123,7 @@ export const PlaylistProvider = ({ children }) => {
       await updateDoc(doc(db, "playlists", playlistId), {
         totalDuration: increment(-deletedTrack.duration),
       });
-      setTotalDuration((prev) => prev - deletedTrack.duration);
+      setDeletedTrackDuration((prev) => prev + deletedTrack.duration);
 
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
 
@@ -170,8 +170,8 @@ export const PlaylistProvider = ({ children }) => {
         tracks,
         setTracks,
 
-        totalDuration,
-        setTotalDuration,
+        deletedTrackDuration,
+        setDeletedTrackDuration,
 
         errorMessage,
         setErrorMessage,
