@@ -4,7 +4,6 @@ import { db } from "../firebase";
 
 const useFetchPlaylists = () => {
   const [playlists, setPlaylists] = useState([]);
-  const [loading] = useState(true);
 
   useEffect(() => {
     console.log("playlistsカスタムフック発火");
@@ -42,7 +41,7 @@ const useFetchPlaylists = () => {
     return () => unsubscribe(); // コンポーネントがアンマウントされた時にリスナーを解除
   }, []);
 
-  return { playlists, loading };
+  return { playlists };
 };
 
 export default useFetchPlaylists;
