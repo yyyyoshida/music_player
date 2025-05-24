@@ -3,7 +3,7 @@ import { usePlayerContext } from "../contexts/PlayerContext";
 import { SearchContext } from "../contexts/SearchContext";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import TrackItem from "./tracks/TrackItem";
-import TrackListSkeleton from "./skeletons/TrackListSkeleton";
+import TrackListSkeleton from "./Skeletons/TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const TrackList = ({ containerRef }) => {

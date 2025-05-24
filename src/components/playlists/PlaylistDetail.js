@@ -11,7 +11,7 @@ import { PlaybackContext } from "../../contexts/PlaybackContext";
 import RenamePlaylist from "./RenamePlaylist";
 import DeletePlaylistModal from "./DeletePlaylistModal";
 import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
-import TrackListSkeleton from "../skeletons/TrackListSkeleton";
+import TrackListSkeleton from "../Skeletons/TrackListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 
 const PlaylistDetail = ({ containerRef }) => {
