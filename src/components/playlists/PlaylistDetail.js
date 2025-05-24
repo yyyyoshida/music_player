@@ -23,7 +23,17 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const { playerTrack, formatTime, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
 
-  const { deletePlaylist, tracks, setTracks, formatTimeHours, playlistName, setPlaylistId } = useContext(PlaylistContext);
+  const {
+    deletePlaylist,
+    tracks,
+    setTracks,
+    formatTimeHours,
+    setPlaylistId,
+
+    deletedTrackDuration,
+    setDeletedTrackDuration,
+  } = useContext(PlaylistContext);
+
   const { setQueue, queue, playTrackAt, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } = useContext(PlaybackContext);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
@@ -36,6 +46,7 @@ const PlaylistDetail = ({ containerRef }) => {
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
+    setDeletedTrackDuration(0);
   }, []);
 
   useEffect(() => {
@@ -131,7 +142,7 @@ const PlaylistDetail = ({ containerRef }) => {
 
           <p
             className={`playlist-detail__header-status fade-on-loaded ${!initialLoaded ? "" : "fade-in"}`}
-          >{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration)}`}</p>
+          >{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration - deletedTrackDuration)}`}</p>
         </div>
 
         <div className="playlist-detail__header-actions-buttons">
