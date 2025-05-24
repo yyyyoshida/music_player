@@ -3,7 +3,7 @@ import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContex
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 
-import PlaylistSelectSkeleton from "../Skeletons/PlaylistSelectSkeleton";
+import PlaylistSelectSkeleton from "../skeletonUI/PlaylistSelectSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 
 const PlaylistSelection = () => {
