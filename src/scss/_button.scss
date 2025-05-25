@@ -1,3 +1,4 @@
+@use "variables" as *;
 .player-controls__button {
   // padding: 8px 12px;
   padding: 8px;
@@ -80,7 +81,7 @@
 
 .search-bar__clear-button {
   z-index: 1000;
-  background-color: #2e2e2e;
+  background-color: $background-color;
   position: absolute;
   right: 10px;
   top: 50%;
@@ -90,7 +91,7 @@
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #444444;
+    background-color: $hover-gray;
   }
 
   .search-bar__clear-icon {
@@ -105,16 +106,16 @@
   padding: 10px;
   border-radius: 5px;
   line-height: 1;
-  background-color: rgb(217, 22, 86);
+  background-color: $primary-color;
   transition: background-color 0.2s ease;
   &:hover {
-    background-color: rgb(224, 59, 114);
+    background-color: $primary-color-hover;
   }
 }
 
 .playlists-page__create-button {
   margin-top: 40px;
-  font-size: 14px;
+  font-size: $font-size-14;
 }
 
 .playlist-selection__create-button {
@@ -138,9 +139,9 @@
   }
 }
 .modal-submit-button {
-  background-color: rgb(217, 22, 86);
+  background-color: $primary-color;
   &:hover {
-    background-color: rgb(224, 59, 114);
+    background-color: $primary-color-hover;
   }
 }
 ////////////////////////////////////////////////////////////////
@@ -151,7 +152,7 @@
   // box-shadow: 0 0px 4px rgba(0, 0, 0, 0.5);
   box-shadow: 0 0px 4px rgba(0, 0, 0, 0.4);
   transition: background-color 0.2s ease;
-  font-size: 14px;
+  font-size: $font-size-14;
   background-color: #555555;
 
   &:hover {
@@ -166,9 +167,9 @@
 }
 
 .playlist-detail__header-play-button {
-  background-color: rgb(217, 22, 86);
+  background-color: $primary-color;
   &:hover {
-    background-color: rgb(224, 59, 114);
+    background-color: $primary-color-hover;
   }
 }
 
@@ -189,14 +190,13 @@
   transform: translateY(10px);
   background-color: #444444;
   box-shadow: 0 0px 7px rgba(0, 0, 0, 0.9);
-  background-color: rgb(217, 22, 86);
+  background-color: $primary-color;
   transition:
     0.3s ease transform,
     opacity 0.2s ease;
 
   &:hover {
-    background-color: #646464;
-    background-color: rgb(224, 59, 114);
+    background-color: $primary-color-hover;
     transform: scale(1.1) !important;
   }
 

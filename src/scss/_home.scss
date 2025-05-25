@@ -1,14 +1,15 @@
+@use "variables" as *;
 .home {
   width: 100%;
   // box-sizing: border-box;
   // border: 1px solid red;
   &__title {
-    font-size: 32px;
+    font-size: $font-size-32;
     font-weight: 700;
   }
   &__text {
     padding-top: 40px;
-    font-size: 18px;
+    font-size: $font-size-18;
   }
 
   &__track-list {
@@ -29,7 +30,7 @@
     overflow: hidden;
   }
   &__track-item:hover {
-    background-color: #444444;
+    background-color: $hover-gray;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
     .home__track-play-pause-button {
       visibility: visible;
@@ -65,12 +66,12 @@
     padding-top: 10px;
   }
   &__track-name {
-    font-size: 14px;
+    font-size: $font-size-14;
     font-weight: 700;
   }
   &__track-artist {
-    color: #b3b3b3;
-    font-size: 14px;
+    color: $text-color-sub;
+    font-size: $font-size-14;
     padding-top: 10px;
   }
   .equalizer {
