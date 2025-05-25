@@ -112,6 +112,14 @@
     background-color: #181818;
   }
 
+  .single {
+    .img-0 {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+
   &__initial-cover-img {
     width: 60px;
     height: 60px;

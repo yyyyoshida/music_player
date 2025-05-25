@@ -76,11 +76,11 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       <div className="rename-playlist-modal__smoke modal-smoke">
         <div className="rename-playlist-modal__content modal-content">
           <h2 className="rename-playlist-modal__title modal-title">プレイリストの名を変更</h2>
-          <div className="rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper">
+
+          <div className={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}>
             {tracks.length > 0 ? (
               [...tracks]
-                .reverse()
-                .slice(0, 4)
+                .slice(0, tracks.length <= 3 ? 1 : 4)
                 .map((track, i) => (
                   <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i} modal-cover-img`} />
                 ))
