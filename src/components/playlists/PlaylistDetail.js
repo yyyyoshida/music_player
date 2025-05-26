@@ -36,7 +36,8 @@ const PlaylistDetail = ({ containerRef }) => {
     setDeletedTrackDuration,
   } = useContext(PlaylistContext);
 
-  const { setQueue, queue, playTrackAt, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } = useContext(PlaybackContext);
+  const { setCurrentTrackId, currentTrackId, setQueue, queue, playTrackAt, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
+    useContext(PlaybackContext);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
@@ -157,6 +158,7 @@ const PlaylistDetail = ({ containerRef }) => {
               }
               setIsTrackSet(true);
               playTrackAt(0);
+              setCurrentTrackId(queue[0].id);
               playerTrack(queue[0].trackUri);
               setCurrentIndex(0);
             }}
@@ -189,7 +191,9 @@ const PlaylistDetail = ({ containerRef }) => {
           const timestamp = track.addedAt;
           const date = timestamp.toDate();
 
-          const isCurrentTrack = currentPlayedAt === date.toLocaleString();
+          // const isCurrentTrack = currentPlayedAt === date.toLocaleString();
+          // const isCurrentTrack = currentPlayedAt === date.getTime();
+          const isCurrentTrack = currentTrackId === track.id;
 
           const isTrackPlaying = isCurrentTrack && isStreaming;
           const isClicked = isCurrentTrack;
