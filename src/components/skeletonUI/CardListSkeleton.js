@@ -1,6 +1,6 @@
-const CardListSkeleton = () => {
+const CardListSkeleton = ({ marginTop = "40px" }) => {
   return (
-    <ul className="card-list-skeleton">
+    <ul className="card-list-skeleton" style={{ marginTop }}>
       {Array(21)
         .fill()
         .map((_, i) => (
