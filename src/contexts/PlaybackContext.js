@@ -10,7 +10,7 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
   const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
-
+  const [currentTrackId, setCurrentTrackId] = useState(null);
   const { isToken, setIsToken } = useContext(TokenContext);
 
   const currentIndexRef = useRef(0);
@@ -62,6 +62,9 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
     if (nextIndex < queue.length) {
       setCurrentIndex(nextIndex);
       currentIndexRef.current = nextIndex;
+      setCurrentTrackId(queue[nextIndex].id);
+
+      // setCurrentTrackId(queue[nextIndex].id || queue[nextIndex].track.id);
       playerTrack(queue[nextIndex].uri || queue[nextIndex].trackUri || queue[nextIndex].track.uri);
     } else {
     }
@@ -74,6 +77,9 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
       console.log(prevIndex >= 0);
       setCurrentIndex(prevIndex);
       currentIndexRef.current = prevIndex;
+      setCurrentTrackId(queue[prevIndex].id);
+
+      // setCurrentTrackId(queue[prevIndex].id || queue[prevIndex].track.id);
       playerTrack(queue[prevIndex].uri || queue[prevIndex].trackUri || queue[prevIndex].track.uri);
     }
   }
@@ -85,6 +91,10 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
   useEffect(() => {
     console.log(currentPlayedAt);
   }, [currentPlayedAt]);
+
+  useEffect(() => {
+    console.log(currentIndex);
+  }, [currentIndex]);
 
   return (
     <PlaybackContext.Provider
@@ -103,6 +113,9 @@ export const PlaybackProvider = ({ children, isTrackSet }) => {
 
         currentPlayedAt,
         setCurrentPlayedAt,
+
+        currentTrackId,
+        setCurrentTrackId,
       }}
     >
       {children}

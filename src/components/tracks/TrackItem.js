@@ -6,7 +6,7 @@ import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContex
 import { usePlayerContext } from "../../contexts/PlayerContext";
 
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date, query }) => {
-  const { playTrackAt, setCurrentPlayedAt } = useContext(PlaybackContext);
+  const { playTrackAt, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet } = usePlayerContext();
@@ -21,6 +21,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
 
   const positionOffsetY = -60;
 
+  // function useDelayedValue(value, delay = 200) {
   function useDelayedValue(value, delay = 200) {
     const [delayedValue, setDelayedValue] = useState(value);
 
@@ -54,6 +55,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
         playerTrack(track.trackUri || track.uri, isClicked);
         setIsTrackSet(true);
         playTrackAt(index);
+        setCurrentTrackId(track.id);
 
         setCurrentPlayedAt(date);
       }}
