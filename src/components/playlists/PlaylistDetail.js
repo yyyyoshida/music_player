@@ -19,7 +19,7 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
-  const [playlistInfo, setPlaylistInfo] = useState({ name: "", duration: 0 });
+  const [playlistInfo, setPlaylistInfo] = useState({ duration: 0 });
 
   const { playerTrack, formatTime, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
 
@@ -29,6 +29,8 @@ const PlaylistDetail = ({ containerRef }) => {
     setTracks,
     formatTimeHours,
     setPlaylistId,
+
+    playlistName,
 
     deletedTrackDuration,
     setDeletedTrackDuration,
@@ -138,7 +140,7 @@ const PlaylistDetail = ({ containerRef }) => {
           </div>
         </div>
         <div className="playlist-detail__header-info">
-          <h2 className={`playlist-detail__header-title fade-on-loaded ${!initialLoaded ? "" : "fade-in"}`}>{playlistInfo.name}</h2>
+          <h2 className={`playlist-detail__header-title fade-on-loaded ${!initialLoaded ? "" : "fade-in"}`}>{playlistName}</h2>
 
           <p
             className={`playlist-detail__header-status fade-on-loaded ${!initialLoaded ? "" : "fade-in"}`}
