@@ -84,7 +84,7 @@ const Home = ({ token }) => {
       <h1 className="home__title">ホーム</h1>
       <p className="home__text">最近再生した曲一覧</p>
 
-      {!initialLoaded && <CardListSkeleton />}
+      {!initialLoaded && <CardListSkeleton marginTop="55px" />}
 
       <ul className={`home__track-list fade-on-loaded ${!initialLoaded ? "" : "fade-in-up"}`}>
         {Array.isArray(tracks) && tracks.length > 0 ? (
