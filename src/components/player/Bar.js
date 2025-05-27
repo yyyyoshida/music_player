@@ -9,27 +9,39 @@ import VolumeIcon from "./VolumeIcon";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 
 const Bar = ({ ParentClassName, type, value }) => {
-  const [percentage, setPercentage] = useState(value);
+  const [percentage, setPercentage] = useState(() => {
+    const saved = localStorage.getItem("player_volume");
+    return type === "volume" ? parseFloat(saved) || value : value;
+  });
   const [isDragging, setIsDragging] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => {
+    const savedMute = localStorage.getItem("isMuted");
+    return savedMute ? JSON.parse(savedMute) : false;
+  });
 
   const currentSongIndexRef = useRef(null);
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
 
-  const { currentSongIndex, togglePlayPause, setIsPlaying, isStreaming, player } = usePlayerContext();
+  const { currentSongIndex, togglePlayPause, setIsPlaying, isStreaming, playerReady } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
-
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
-
   const { updateVolume, seekTo, duration, position } = usePlayerContext();
   const { goToNextTrack, resumePlayback } = useContext(PlaybackContext);
 
   useEffect(() => {
-    volumeValueRef.current = Math.max(0, Math.min(100, volumeValueRef.current));
-    updateVolume(volumeValueRef.current / 100);
-  }, []);
+    if (type !== "volume" || !playerReady) return;
+
+    const savedVolume = localStorage.getItem("player_volume");
+    const initialVolume = savedVolume ? parseFloat(savedVolume) : 30;
+
+    volumeValueRef.current = initialVolume;
+
+    setPercentage(initialVolume);
+
+    !isMuted ? updateVolume(initialVolume / 100) : updateVolume(0);
+  }, [isMuted, playerReady]);
 
   useEffect(() => {
     if (type === "volume") return;
@@ -91,6 +103,12 @@ const Bar = ({ ParentClassName, type, value }) => {
     }
   };
 
+  useEffect(() => {
+    if (type !== "volume") return;
+
+    localStorage.setItem("player_volume", percentage);
+  }, [percentage]);
+
   const handleMouseUp = () => {
     setIsDragging(false);
   };
@@ -115,9 +133,14 @@ const Bar = ({ ParentClassName, type, value }) => {
     handleButtonPress();
 
     setIsMuted((prevMuted) => !prevMuted);
-    music.muted = !isMuted;
-    if (!isMuted) volumeValueRef.current = percentage;
+    if (!isMuted) updateVolume(0);
+    if (isMuted) updateVolume(percentage / 100);
   }
+
+  useEffect(() => {
+    localStorage.setItem("isMuted", isMuted);
+    if (isMuted) localStorage.setItem("player_volume", percentage);
+  }, [isMuted]);
 
   function toFixedNumber(value) {
     return parseFloat(value.toFixed(2));
