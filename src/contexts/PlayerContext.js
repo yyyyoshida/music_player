@@ -8,6 +8,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [player, setPlayer] = useState(null);
+  const [playerReady, setPlayerReady] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -53,6 +54,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
         if (device_id) {
           console.log("🎵 Player is ready! Device ID:", device_id);
           setDeviceId(device_id);
+          setPlayerReady(true);
         } else {
           console.error("Device ID is missing");
         }
@@ -220,6 +222,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
         togglePlayPause,
         currentSongIndex,
         player,
+        playerReady,
         playerTrack,
         updateVolume,
         seekTo,
