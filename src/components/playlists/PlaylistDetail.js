@@ -34,6 +34,8 @@ const PlaylistDetail = ({ containerRef }) => {
 
     deletedTrackDuration,
     setDeletedTrackDuration,
+
+    isCoverImageFading,
   } = useContext(PlaylistContext);
 
   const { setCurrentTrackId, currentTrackId, setQueue, queue, playTrackAt, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
@@ -130,7 +132,10 @@ const PlaylistDetail = ({ containerRef }) => {
     <div className="playlist-detail">
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
-          <div className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""} ${!initialLoaded ? "" : "fade-in"}`} ref={coverImagesRef}>
+          <div
+            className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""} ${!initialLoaded ? "" : isCoverImageFading ? "fade-out" : "fade-in"}`}
+            ref={coverImagesRef}
+          >
             {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => (
               <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} width="99" height="99" />
             ))}

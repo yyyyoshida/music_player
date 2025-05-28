@@ -21,6 +21,7 @@ export const PlaylistProvider = ({ children }) => {
   const MAX_NAME_LENGTH = 10;
   const [isShaking, setIsShaking] = useState(false);
   const [preselectedTrack, setPreselectedTrack] = useState(null);
+  const [isCoverImageFading, setIsCoverImageFading] = useState(false);
 
   function toggleCreateVisible() {
     setErrorMessage("");
@@ -107,6 +108,7 @@ export const PlaylistProvider = ({ children }) => {
   }
 
   async function deleteTrack(playlistId, trackId) {
+    fadeCoverImages();
     try {
       const trackRef = doc(db, "playlists", playlistId, "tracks", trackId);
       const trackSnap = await getDoc(trackRef);
@@ -143,6 +145,14 @@ export const PlaylistProvider = ({ children }) => {
     } catch (err) {
       console.error("プレイリスト削除失敗", err);
     }
+  }
+
+  function fadeCoverImages() {
+    setIsCoverImageFading(true);
+
+    setTimeout(() => {
+      setIsCoverImageFading(false);
+    }, 400);
   }
 
   useEffect(() => {
@@ -182,6 +192,8 @@ export const PlaylistProvider = ({ children }) => {
 
         preselectedTrack,
         setPreselectedTrack,
+
+        isCoverImageFading,
       }}
     >
       {children}
