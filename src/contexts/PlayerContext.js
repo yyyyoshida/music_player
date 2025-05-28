@@ -130,6 +130,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
 
   function playerTrack(trackUri, isClickedTrack) {
     console.log("playerTrack発動！！");
+    setIsPlayPauseCooldown(false);
 
     if (!deviceId) {
       console.error("❌ デバイス ID が取得できてない！");
