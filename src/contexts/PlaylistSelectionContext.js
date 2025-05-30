@@ -64,6 +64,13 @@ export const PlaylistSelectionProvider = ({ children }) => {
         artist: track.artist,
         duration: track.duration,
       });
+    } else if (type === "local") {
+      setSelectedTrack({
+        trackId: null,
+        trackUri: null,
+        // title: tag.tags.title,
+        // artist: tag.tags.artist,
+      });
     } else {
       setSelectedTrack({
         trackId: track.track.id,
