@@ -1,5 +1,6 @@
-import React from 'react';
-import SearchBar from './SearchBar';
+import React from "react";
+import SearchBar from "./SearchBar";
+import LocalFileImportNav from "./LocalFileImportNav";
 
 function Header({ token, onSearchResults }) {
   return (
@@ -26,12 +27,9 @@ function Header({ token, onSearchResults }) {
               プレイリスト
             </a>
           </li>
-          <li className="sidebar-header__item">
-            <a className="sidebar-header__link" href="#">
-              <img src="/img/upload-icon.png" alt="" className="sidebar-header__item-icon" width="16" height="16" />
-              PCから曲を読み込む
-            </a>
-          </li>
+
+          <LocalFileImportNav />
+
           <li className="sidebar-header__item">
             <a className="sidebar-header__link" href="#">
               <img src="/img/無料の設定歯車アイコン (1).png" alt="" className="sidebar-header__item-icon" />

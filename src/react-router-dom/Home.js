@@ -124,6 +124,7 @@ const Home = ({ token }) => {
                     onClick={(e) => {
                       e.stopPropagation();
                       handleTrackSelect(track, "recentTrack");
+                      console.log(track);
                     }}
                   >
                     <img src="img/plus.png" className="home__track-add-button-icon" />
