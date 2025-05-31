@@ -900,6 +900,10 @@ footer {
     .track-menu-button {
       opacity: 1;
     }
+
+    .track-source-icon {
+      opacity: 1;
+    }
   }
 
   &__left {
@@ -937,6 +941,9 @@ footer {
       font-weight: 700;
       color: $primary-color;
     }
+    .track-source-icon {
+      opacity: 1;
+    }
   }
 
   &.clicked:hover {
@@ -959,15 +966,29 @@ footer {
     font-size: $font-size-14;
   }
 
-  &__cover-art {
+  &__cover {
     width: 50px;
     height: 50px;
     border-radius: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    border: #9292923b solid 1px;
+    border: rgba(146, 146, 146, 0.231372549) solid 1px;
+    background-color: #181818;
+    object-fit: cover;
+  }
+
+  &__default-cover-art-wrapper {
+    position: relative;
+  }
+
+  &__default-cover-art {
+    position: absolute;
+    top: 50%;
+    left: 46.5%;
+    transform: translate(-50%, -50%);
   }
 
   &__right {
+    width: 112px;
     position: absolute;
     right: 20px;
     top: 50%;
@@ -985,6 +1006,20 @@ footer {
   .bar {
     margin: 0.05em;
   }
+}
+
+.track-source-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.track-source-icon-spotify {
+  color: #1db954;
+}
+
+.track-source-icon-local {
+  color: #aaaaaa;
+  // color: $primary-color-stronger;
 }
 
 .disabled {
