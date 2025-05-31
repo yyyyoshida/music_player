@@ -959,12 +959,25 @@ footer {
     font-size: $font-size-14;
   }
 
-  &__cover-art {
+  &__cover {
     width: 50px;
     height: 50px;
     border-radius: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    border: #9292923b solid 1px;
+    border: rgba(146, 146, 146, 0.231372549) solid 1px;
+    background-color: #181818;
+    object-fit: cover;
+  }
+
+  &__default-cover-art-wrapper {
+    position: relative;
+  }
+
+  &__default-cover-art {
+    position: absolute;
+    top: 50%;
+    left: 46.5%;
+    transform: translate(-50%, -50%);
   }
 
   &__right {
