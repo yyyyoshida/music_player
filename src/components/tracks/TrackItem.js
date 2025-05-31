@@ -4,6 +4,7 @@ import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
+import TrackSourceIcon from "../TrackSourceIcon";
 
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date, query }) => {
   const { playTrackAt, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
@@ -20,6 +21,8 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
   const resolvedIsClicked = type === "firebase" ? delayedIsClicked : isClicked;
 
   const positionOffsetY = -60;
+
+  const isDefaultImage = track.albumImage === "/img/デフォルト画像.png";
 
   // function useDelayedValue(value, delay = 200) {
   function useDelayedValue(value, delay = 200) {
@@ -73,20 +76,35 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
           <div className="bar"></div>
         </div>
       </div>
-      <img
-        src={track.albumImage || track.album.images[2]?.url}
-        alt={track.title}
-        className="track-item__cover-art"
-        width="50"
-        height="50"
-        key={track.id + "-" + query}
-        loading={index >= 10 ? "lazy" : "eager"}
-      />
+      {isDefaultImage ? (
+        <div className="track-item__default-cover-art-wrapper track-item__cover">
+          <img
+            src="/img/music-24.png"
+            alt="デフォルト画像"
+            className="track-item__default-cover-art"
+            width="16px"
+            height="16px"
+            key={track.id + "-" + query}
+            loading={index >= 10 ? "lazy" : "eager"}
+          />
+        </div>
+      ) : (
+        <img
+          src={track.albumImage || track.album.images[2]?.url}
+          alt={track.title}
+          className="track-item__cover-art track-item__cover"
+          width="50px"
+          height="50px"
+          key={track.id + "-" + query}
+          loading={index >= 10 ? "lazy" : "eager"}
+        />
+      )}
       <div className="track-item__track-info">
         <p className="track-item__title">{track.title || track.name}</p>
         <p className="track-item__artist">{track.artist || track.artists[0]?.name}</p>
       </div>
       <div className="track-item__right">
+        {track.source && <TrackSourceIcon source={track.source} />}
         <button
           className="track-item__more-button track-menu-button"
           ref={buttonRef}
