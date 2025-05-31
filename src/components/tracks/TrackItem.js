@@ -4,6 +4,7 @@ import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
+import TrackSourceIcon from "../TrackSourceIcon";
 
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date, query }) => {
   const { playTrackAt, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
@@ -103,6 +104,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
         <p className="track-item__artist">{track.artist || track.artists[0]?.name}</p>
       </div>
       <div className="track-item__right">
+        {track.source && <TrackSourceIcon source={track.source} />}
         <button
           className="track-item__more-button track-menu-button"
           ref={buttonRef}
