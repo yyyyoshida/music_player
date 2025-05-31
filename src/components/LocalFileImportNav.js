@@ -1,28 +1,26 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import jsmediatags from "jsmediatags/dist/jsmediatags.min.js";
 import LocalAudioDuration from "./LocalAudioDuration";
-import { db } from "../firebase";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 
 const LocalFileImportNav = () => {
   const fileInputRef = useRef(null);
-  const [localCoverArtUrl, setLocalCoverArtUrl] = useState(null);
+
+  const [localCoverImageUrl, setLocalCoverImageUrl] = useState(null);
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
-  const [duration, setDuration] = useState(null);
+  const [trackDuration, setTrackDuration] = useState(null);
   const [tags, setTags] = useState(null);
+
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
 
   function handleClick() {
     fileInputRef.current?.click();
   }
 
+  // タグの中にある画像を取得
   function getMediaTags(file) {
     jsmediatags.read(file, {
       onSuccess: function (tag) {
-        // console.log("タグ情報:", tag.tags);
-        // console.log("タイトル", tag.tags.title);
-        // console.log("アーティスト", tag.tags.artist);
-        // console.log(tag.tags.picture);
         setTags(tag.tags);
         const picture = tag.tags.picture;
 
@@ -31,7 +29,7 @@ const LocalFileImportNav = () => {
           const blob = new Blob([uint8Array], { type: picture.format });
           const imgSrc = URL.createObjectURL(blob);
           console.log(imgSrc);
-          setLocalCoverArtUrl(imgSrc);
+          setLocalCoverImageUrl(imgSrc);
         }
       },
       onError: function (error) {
@@ -40,6 +38,7 @@ const LocalFileImportNav = () => {
     });
   }
 
+  //
   function handleFileUpload(event) {
     const file = event.target.files[0];
     if (file) {
@@ -49,29 +48,21 @@ const LocalFileImportNav = () => {
     }
   }
 
+  // データベースに保存する情報の紐付け
   useEffect(() => {
-    if (uploadTrackFile && tags && duration !== null) {
+    if (uploadTrackFile && tags && trackDuration !== null) {
+      console.log(uploadTrackFile);
       const localTrack = {
-        track: {
-          id: null,
-          uri: null,
-          name: tags.title || uploadTrackFile.name,
-          artists: [{ name: tags.artist || "Unknown Artist" }],
-          duration_ms: duration * 1000,
-          album: {
-            images: [
-              {},
-              { url: localCoverArtUrl || "/default-cover.png" }, // デフォルトカバー画像用意しとくと安心
-              {},
-            ],
-          },
-        },
+        title: tags.title || uploadTrackFile.name,
+        artist: tags.artist || "Unknown Artist",
+        duration_ms: trackDuration,
+        image: localCoverImageUrl || "/img/music-64.png",
       };
 
-      handleTrackSelect(localTrack, "local");
+      handleTrackSelect(localTrack, "local", true, uploadTrackFile, localCoverImageUrl);
       console.log("ローカルトラック情報", localTrack);
     }
-  }, [uploadTrackFile, tags, duration, localCoverArtUrl, handleTrackSelect]);
+  }, [uploadTrackFile, tags, trackDuration, localCoverImageUrl]);
 
   return (
     <>
@@ -87,8 +78,7 @@ const LocalFileImportNav = () => {
         <LocalAudioDuration
           file={uploadTrackFile}
           onDuration={(d) => {
-            console.log("曲の長さ（秒）:", d);
-            setDuration(d);
+            setTrackDuration(Math.round(d * 1000));
           }}
         />
       )}
