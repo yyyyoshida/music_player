@@ -59,6 +59,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
           albumImage: imageURL,
           audioURL: audioURL,
           addedAt: serverTimestamp(),
+          source: "local",
         });
 
         await updateDoc(doc(db, "playlists", playlistId), {
@@ -83,6 +84,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         title: track.name,
         artist: track.artists[0]?.name,
         duration: track.duration_ms,
+        source: "spotify",
       });
     } else if (type === "firebase") {
       setSelectedTrack({
@@ -92,6 +94,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         title: track.title,
         artist: track.artist,
         duration: track.duration,
+        source: "spotify",
       });
     } else if (type === "local") {
       setSelectedTrack({
@@ -99,6 +102,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         artist: track.artist,
         duration: track.duration_ms,
         albumImage: track.image,
+        source: "local",
       });
       if (file) setUploadTrackFile(file);
       if (imageUrl) setLocalCoverImageUrl(imageUrl);
@@ -110,6 +114,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         title: track.track.name,
         artist: track.track.artists[0].name,
         duration: track.track.duration_ms,
+        source: "spotify",
       });
     }
 
