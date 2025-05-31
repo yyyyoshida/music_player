@@ -42,7 +42,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         const audioURL = await getDownloadURL(audioRef);
 
         // 画像もあればアップロード
-        let imageURL = "/img/music-64.png";
+        let imageURL = "/img/デフォルト画像.png";
         if (localCoverImageUrl && localCoverImageUrl.startsWith("blob:")) {
           const response = await fetch(localCoverImageUrl);
           const blob = await response.blob();
