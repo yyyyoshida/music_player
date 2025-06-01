@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { music } from "./PlayMusic";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import Tooltip from "../Tooltip";
 import useButtonTooltip from "../../hooks/useButtonTooltip";
@@ -23,11 +22,11 @@ const Bar = ({ ParentClassName, type, value }) => {
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
 
-  const { currentSongIndex, togglePlayPause, setIsPlaying, isStreaming, playerReady } = usePlayerContext();
+  const { currentSongIndex, playerReady } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
-  const { updateVolume, seekTo, duration, position } = usePlayerContext();
+  const { updateVolume, seekTo, duration, position, isLocalPlaying, audioRef } = usePlayerContext();
   const { goToNextTrack, resumePlayback } = useContext(PlaybackContext);
 
   useEffect(() => {
@@ -43,22 +42,44 @@ const Bar = ({ ParentClassName, type, value }) => {
     !isMuted ? updateVolume(initialVolume / 100) : updateVolume(0);
   }, [isMuted, playerReady]);
 
+  // 61~98
   useEffect(() => {
-    if (type === "volume") return;
+    if (type !== "progress") return;
 
-    if (duration !== 0 && duration !== null && !isNaN(duration)) {
+    if (!isLocalPlaying && duration && !isNaN(duration)) {
       const newTime = toFixedNumber(position);
       setPercentage(newTime);
+      return;
     }
-  }, [position]);
+
+    if (isLocalPlaying && audioRef?.current) {
+      const audio = audioRef.current;
+      const updateProgress = () => {
+        const newTime = toFixedNumber((audio.currentTime / audio.duration) * 100);
+        setPercentage(newTime || 0);
+      };
+
+      audio.addEventListener("timeupdate", updateProgress);
+      return () => {
+        audio.removeEventListener("timeupdate", updateProgress);
+      };
+    }
+  }, [position, type, isLocalPlaying]);
 
   useEffect(() => {
     if (!isDragging) return;
 
-    if (type === "volume" && duration) return;
-    const seekTime = Math.trunc((percentage / 100) * duration);
-    seekTo(seekTime);
-  }, [duration, percentage, isDragging]);
+    if (type !== "progress") return;
+
+    if (isLocalPlaying && audioRef?.current) {
+      const audio = audioRef.current;
+      const seekTime = (percentage / 100) * audio.duration;
+      audio.currentTime = seekTime;
+    } else {
+      const seekTime = Math.trunc((percentage / 100) * duration);
+      seekTo(seekTime);
+    }
+  }, [duration, percentage, isDragging, isLocalPlaying]);
 
   const handleClickBar = (e) => {
     const barRect = barRef.current.getBoundingClientRect();
@@ -147,18 +168,24 @@ const Bar = ({ ParentClassName, type, value }) => {
   }
 
   useEffect(() => {
-    const isTrackFinished = type === "progress" && percentage === 0;
+    if (type !== "progress" || !audioRef?.current) return;
 
-    if (isTrackFinished && isRepeat) {
-      togglePlayPause(isRepeat);
-      return;
-    }
+    const audio = audioRef.current;
 
-    if (isTrackFinished && !isRepeat && !isStreaming) {
-      // resumePlayback();
-      goToNextTrack();
-    }
-  }, [percentage, isRepeat]);
+    const handleEnded = () => {
+      if (isRepeat) {
+        audio.currentTime = 0;
+        audio.play();
+      } else {
+        goToNextTrack();
+      }
+    };
+
+    audio.addEventListener("ended", handleEnded);
+    return () => {
+      audio.removeEventListener("ended", handleEnded);
+    };
+  }, [type, isRepeat, isLocalPlaying]);
 
   return (
     <>
