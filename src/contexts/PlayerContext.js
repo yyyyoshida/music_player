@@ -116,21 +116,31 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
   const togglePlayPause = (isRepeat) => {
     if (isPlayPauseCooldown) return;
 
-    if (!player) {
-      alert("Player is not initialized yer!");
+    if (isSpotifyPlaying && player) {
+      if (!isRepeat) {
+        player.togglePlay().then(() => setIsPlaying((prev) => !prev));
+
+        return;
+      }
+
+      if (isPlaying === true) {
+        player.resume().then(() => {});
+      }
+
       return;
     }
 
-    if (player && !isRepeat) {
-      player.togglePlay().then(() => {
-        setIsPlaying((prev) => !prev);
-        // startCooldown();
-      });
-      return;
-    }
+    if (isLocalPlaying && audioRef.current) {
+      const audio = audioRef.current;
 
-    if (player && isRepeat && isPlaying === true) {
-      player.resume().then(() => {});
+      if (audio.paused) {
+        audio.play().then(() => setIsPlaying(true));
+      } else {
+        audio.pause();
+        setIsPlaying(false);
+      }
+
+      return;
     }
   };
 
