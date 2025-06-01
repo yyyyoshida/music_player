@@ -298,6 +298,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
         audioRef,
         currentAudioURL,
         setCurrentAudioURL,
+        isLocalPlaying,
       }}
     >
       {children}
