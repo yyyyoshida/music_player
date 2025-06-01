@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
+import Playlist from "../components/playlists/Playlist";
 
 const PlayerContext = createContext();
 
@@ -147,68 +148,65 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     audio.removeEventListener("canplay", handleCanPlay);
   }
 
+  function playSpotifyTrack(trackUri, isClickedTrack) {
+    if (!deviceId) {
+      console.error("❌ デバイスIDなし");
+      return;
+    }
+
+    if (isClickedTrack) {
+      togglePlayPause();
+      return;
+    }
+
+    if (isLocalPlaying) {
+      audioRef.current.pause();
+      setIsLocalPlaying(false);
+    }
+
+    const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
+    const data = {
+      uris: [trackUri],
+      offset: { position: 0 },
+      position_ms: 0,
+    };
+
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((res) => res.ok && setIsPlaying(true));
+
+    setIsSpotifyPlaying(true);
+  }
+
+  function playLocalTrack(trackUri) {
+    if (isSpotifyPlaying) {
+      player.pause();
+      setIsSpotifyPlaying(false);
+    }
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+    audio.src = trackUri;
+    audio.addEventListener("canplay", handleCanPlay);
+    setIsLocalPlaying(true);
+  }
+
   function playerTrack(trackUri, isClickedTrack, source = "spotify") {
     console.log("playerTrack発動！！");
     setIsPlayPauseCooldown(false);
 
     if (source === "spotify") {
-      if (isLocalPlaying) {
-        audioRef.current.pause();
-        setIsLocalPlaying(false);
-      }
-
-      if (!deviceId) {
-        console.error("❌ デバイス ID が取得できてない！");
-        console.log(deviceId);
-        return;
-      }
-
-      if (isClickedTrack) {
-        togglePlayPause();
-        return;
-      }
-
-      const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
-      const data = {
-        uris: [trackUri],
-        offset: {
-          position: 0,
-        },
-        position_ms: 0,
-      };
-
-      fetch(url, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }).then((res) => res.ok && setIsPlaying(true)); // 成功時にだけ setIsPlaying(true)
-
-      // // .then((response) => response.json())
-      // .then((data) => console.log('再生結果:', data)) // 再生結果をログに表示
-      // .catch((error) => console.error('❌ 再生エラー:', error));
-      console.log("すみません。この２種類のエラーだけは解決できませんでした。");
-
-      setIsSpotifyPlaying(true);
+      playSpotifyTrack(trackUri, isClickedTrack);
       return;
     }
 
     if (source === "local") {
-      if (isSpotifyPlaying) {
-        player.pause();
-        setIsSpotifyPlaying(false);
-      }
-
-      if (!audioRef.current) return;
-
-      const audio = audioRef.current;
-      audio.src = trackUri;
-
-      audio.addEventListener("canplay", handleCanPlay);
-      setIsLocalPlaying(true);
-      return;
+      playLocalTrack(trackUri);
     }
   }
 
