@@ -10,7 +10,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
   const { playTrackAt, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  const { setIsTrackSet } = usePlayerContext();
+  const { setIsTrackSet, setCurrentAudioURL } = usePlayerContext();
 
   const buttonRef = useRef(null);
 
@@ -55,11 +55,11 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
     <li
       className={`track-item ${resolvedIsPlaying ? "playing" : ""} ${resolvedIsClicked ? "clicked" : ""} `}
       onClick={() => {
-        playerTrack(track.trackUri || track.uri, isClicked);
+        playerTrack(track.trackUri || track.uri || track.audioURL, isClicked, track.source);
         setIsTrackSet(true);
         playTrackAt(index);
         setCurrentTrackId(track.id);
-
+        setCurrentAudioURL(track.audioURL);
         setCurrentPlayedAt(date);
       }}
     >

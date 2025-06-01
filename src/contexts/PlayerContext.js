@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 
@@ -21,6 +21,9 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
   const { isRepeat } = useRepeatContext();
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
+  const [currentAudioURL, setCurrentAudioURL] = useState(null);
+
+  const audioRef = useRef(null);
 
   useEffect(() => {
     if (!token) return;
@@ -128,8 +131,32 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     }
   };
 
-  function playerTrack(trackUri, isClickedTrack) {
+  function handleCanPlay() {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch((err) => {
+        console.error("再生失敗", err);
+      });
+
+    audio.removeEventListener("canplay", handleCanPlay);
+  }
+
+  function playerTrack(trackUri, isClickedTrack, source = "spotify") {
     console.log("playerTrack発動！！");
+    if (!audioRef.current) return;
+
+    if (source === "local") {
+      const audio = audioRef.current;
+      audio.src = trackUri;
+
+      audio.addEventListener("canplay", handleCanPlay);
+      return;
+    }
+
     setIsPlayPauseCooldown(false);
 
     if (!deviceId) {
@@ -241,6 +268,10 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
         isTrackSet,
         setIsTrackSet,
         isPlayPauseCooldown,
+
+        audioRef,
+        currentAudioURL,
+        setCurrentAudioURL,
       }}
     >
       {children}
