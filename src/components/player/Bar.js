@@ -94,7 +94,16 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (type === "volume") {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
-      updateVolume(volumeValueRef.current / 100);
+
+      if (!playerReady) return;
+
+      if (!isLocalPlaying) {
+        updateVolume(volumeValueRef.current / 100);
+        return;
+      }
+
+      audioRef.current.volume = newPercentage / 100;
+
       return;
     }
   };
@@ -119,7 +128,16 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (type === "volume") {
       volumeValueRef.current = newPercentage;
       setPercentage(newPercentage);
-      updateVolume(volumeValueRef.current / 100);
+
+      if (!playerReady) return;
+
+      if (!isLocalPlaying) {
+        updateVolume(volumeValueRef.current / 100);
+        return;
+      }
+
+      audioRef.current.volume = newPercentage / 100;
+
       return;
     }
   };
@@ -153,10 +171,19 @@ const Bar = ({ ParentClassName, type, value }) => {
   function toggleMute() {
     handleButtonPress();
 
-    setIsMuted((prevMuted) => !prevMuted);
-    if (!isMuted) updateVolume(0);
-    if (isMuted) updateVolume(percentage / 100);
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+
+    const newVolume = nextMuted ? 0 : percentage / 100;
+
+    if (isLocalPlaying && audioRef?.current) {
+      audioRef.current.volume = newVolume;
+    } else {
+      updateVolume(newVolume);
+    }
   }
+  // ちゃんとspotify側の処理が上に来てるか確認
+  // あと読みにくいから責任分担するなりリファクタリング
 
   useEffect(() => {
     localStorage.setItem("isMuted", isMuted);
