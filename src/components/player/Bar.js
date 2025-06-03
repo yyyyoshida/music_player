@@ -27,10 +27,13 @@ const Bar = ({ ParentClassName, type, value }) => {
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
   const { updateVolume, seekTo, duration, position, isLocalPlaying, audioRef } = usePlayerContext();
-  const { goToNextTrack, resumePlayback } = useContext(PlaybackContext);
+  const { goToNextTrack } = useContext(PlaybackContext);
+
+  const isVolumeType = type === "volume";
+  const isProgressType = type === "progress";
 
   useEffect(() => {
-    if (type !== "volume" || !playerReady) return;
+    if (isProgressType || !playerReady) return;
 
     const savedVolume = localStorage.getItem("player_volume");
     const initialVolume = savedVolume ? parseFloat(savedVolume) : 30;
@@ -39,15 +42,15 @@ const Bar = ({ ParentClassName, type, value }) => {
 
     setPercentage(initialVolume);
 
-    !isMuted ? updateVolume(initialVolume / 100) : updateVolume(0);
+    !isMuted ? updateVolume(initialVolume / 100) : applyVolume(0);
   }, [isMuted, playerReady]);
 
-  // 61~98
   useEffect(() => {
-    if (type !== "progress") return;
+    if (isVolumeType) return;
 
     if (!isLocalPlaying && duration && !isNaN(duration)) {
-      const newTime = toFixedNumber(position);
+      const newTime = roundToTwoDecimals(position);
+
       setPercentage(newTime);
       return;
     }
@@ -55,7 +58,7 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (isLocalPlaying && audioRef?.current) {
       const audio = audioRef.current;
       const updateProgress = () => {
-        const newTime = toFixedNumber((audio.currentTime / audio.duration) * 100);
+        const newTime = roundToTwoDecimals((audio.currentTime / audio.duration) * 100);
         setPercentage(newTime || 0);
       };
 
@@ -69,7 +72,7 @@ const Bar = ({ ParentClassName, type, value }) => {
   useEffect(() => {
     if (!isDragging) return;
 
-    if (type !== "progress") return;
+    if (isVolumeType) return;
 
     if (isLocalPlaying && audioRef?.current) {
       const audio = audioRef.current;
@@ -81,30 +84,35 @@ const Bar = ({ ParentClassName, type, value }) => {
     }
   }, [duration, percentage, isDragging, isLocalPlaying]);
 
+  function applyVolume(value) {
+    if (isLocalPlaying && audioRef?.current) {
+      audioRef.current.volume = value;
+    } else {
+      updateVolume(value);
+    }
+  }
+
+  function handleVolumeChange(newPercentage) {
+    volumeValueRef.current = newPercentage;
+    setPercentage(newPercentage);
+
+    if (!playerReady) return;
+
+    applyVolume(newPercentage / 100);
+  }
+
   const handleClickBar = (e) => {
     const barRect = barRef.current.getBoundingClientRect();
     const clickX = e.clientX - barRect.left;
-    const newPercentage = toFixedNumber((clickX / barRect.width) * 100);
+    const newPercentage = roundToTwoDecimals((clickX / barRect.width) * 100);
 
-    if (type === "progress") {
+    if (isProgressType) {
       setPercentage(newPercentage);
       return;
     }
 
-    if (type === "volume") {
-      volumeValueRef.current = newPercentage;
-      setPercentage(newPercentage);
-
-      if (!playerReady) return;
-
-      if (!isLocalPlaying) {
-        updateVolume(volumeValueRef.current / 100);
-        return;
-      }
-
-      audioRef.current.volume = newPercentage / 100;
-
-      return;
+    if (isVolumeType) {
+      handleVolumeChange(newPercentage);
     }
   };
 
@@ -118,32 +126,20 @@ const Bar = ({ ParentClassName, type, value }) => {
 
     const barRect = barRef.current.getBoundingClientRect();
     const moveX = e.clientX - barRect.left;
-    const newPercentage = toFixedNumber(Math.min(Math.max((moveX / barRect.width) * 100, 0), 100));
+    const newPercentage = roundToTwoDecimals(Math.min(Math.max((moveX / barRect.width) * 100, 0), 100));
 
-    if (type === "progress") {
+    if (isProgressType) {
       setPercentage(newPercentage);
       return;
     }
 
-    if (type === "volume") {
-      volumeValueRef.current = newPercentage;
-      setPercentage(newPercentage);
-
-      if (!playerReady) return;
-
-      if (!isLocalPlaying) {
-        updateVolume(volumeValueRef.current / 100);
-        return;
-      }
-
-      audioRef.current.volume = newPercentage / 100;
-
-      return;
+    if (isVolumeType) {
+      handleVolumeChange(newPercentage);
     }
   };
 
   useEffect(() => {
-    if (type !== "volume") return;
+    if (isProgressType) return;
 
     localStorage.setItem("player_volume", percentage);
   }, [percentage]);
@@ -176,26 +172,20 @@ const Bar = ({ ParentClassName, type, value }) => {
 
     const newVolume = nextMuted ? 0 : percentage / 100;
 
-    if (isLocalPlaying && audioRef?.current) {
-      audioRef.current.volume = newVolume;
-    } else {
-      updateVolume(newVolume);
-    }
+    applyVolume(newVolume);
   }
-  // ちゃんとspotify側の処理が上に来てるか確認
-  // あと読みにくいから責任分担するなりリファクタリング
 
   useEffect(() => {
     localStorage.setItem("isMuted", isMuted);
     if (isMuted) localStorage.setItem("player_volume", percentage);
   }, [isMuted]);
 
-  function toFixedNumber(value) {
+  function roundToTwoDecimals(value) {
     return parseFloat(value.toFixed(2));
   }
 
   useEffect(() => {
-    if (type !== "progress" || !audioRef?.current) return;
+    if (isVolumeType || !audioRef?.current) return;
 
     const audio = audioRef.current;
 
@@ -216,7 +206,7 @@ const Bar = ({ ParentClassName, type, value }) => {
 
   return (
     <>
-      {type === "volume" && (
+      {isVolumeType && (
         <button
           className="player-controls__button player-controls__button--volume"
           onClick={toggleMute}
