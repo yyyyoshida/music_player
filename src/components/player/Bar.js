@@ -22,11 +22,11 @@ const Bar = ({ ParentClassName, type, value }) => {
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
 
-  const { currentSongIndex, playerReady } = usePlayerContext();
+  const { currentSongIndex, togglePlayPause, playerReady } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
-  const { updateVolume, seekTo, duration, position, isLocalPlaying, audioRef } = usePlayerContext();
+  const { updateVolume, seekTo, duration, position, isPlaying, isLocalPlaying, audioRef } = usePlayerContext();
   const { goToNextTrack } = useContext(PlaybackContext);
 
   const isVolumeType = type === "volume";
@@ -184,6 +184,7 @@ const Bar = ({ ParentClassName, type, value }) => {
     return parseFloat(value.toFixed(2));
   }
 
+  // ローカルの曲の再生が終わった後の処理
   useEffect(() => {
     if (isVolumeType || !audioRef?.current) return;
 
@@ -203,6 +204,21 @@ const Bar = ({ ParentClassName, type, value }) => {
       audio.removeEventListener("ended", handleEnded);
     };
   }, [type, isRepeat, isLocalPlaying]);
+
+  // Spotifyの曲の再生が終わった後の処理
+  useEffect(() => {
+    if (isLocalPlaying) return;
+    const isTrackFinished = isProgressType && percentage === 0;
+
+    if (isTrackFinished && isRepeat) {
+      togglePlayPause(isRepeat);
+      return;
+    }
+
+    if (isTrackFinished && !isRepeat && !isPlaying) {
+      goToNextTrack();
+    }
+  }, [percentage, isRepeat]);
 
   return (
     <>
