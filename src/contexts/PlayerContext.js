@@ -231,7 +231,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
   }
 
   useEffect(() => {
-    if (!player) return;
+    if (!player || !isSpotifyPlaying) return;
 
     player.addListener("player_state_changed", ({ position, duration, track_window: { current_track }, paused }) => {
       setPosition((position / duration) * 100);
@@ -256,7 +256,27 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
       clearInterval(interval);
       player.removeListener("player_state_changed");
     };
-  }, [player, isRepeat]);
+  }, [player, isRepeat, isSpotifyPlaying]);
+
+  useEffect(() => {
+    if (!audioRef.current || !isLocalPlaying) return;
+
+    const audio = audioRef.current;
+
+    const handleTimeUpdate = () => {
+      if (!audio.duration || isNaN(audio.duration)) return;
+
+      setCurrentTime(audio.currentTime * 1000);
+      setPosition((audio.currentTime / audio.duration) * 100);
+      setDuration(audio.duration * 1000);
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+
+    return () => {
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+    };
+  }, [isLocalPlaying]);
 
   function formatTime(time) {
     // useMemoとかで無駄な再レンダリングを回避しろ
