@@ -22,7 +22,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
 
   const positionOffsetY = -60;
 
-  const isDefaultImage = track.albumImage === "/img/デフォルト画像.png";
+  const isDefaultImage = track.albumImage === "/img/not-found.jpg";
 
   // function useDelayedValue(value, delay = 200) {
   function useDelayedValue(value, delay = 200) {
