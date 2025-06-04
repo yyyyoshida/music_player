@@ -78,7 +78,7 @@ export const ThumbnailPreview = () => {
           visibility: isTrackSet ? delayedVisibility : "visible",
         }}
       >
-        <img className="thumbnail-preview__background-image" src={isTrackSet ? currentCoverImage : ""} />
+        {isTrackSet && <img className="thumbnail-preview__background-image" src={currentCoverImage} />}
 
         <figure className="thumbnail-preview__content">
           <div className="thumbnail-preview__image-warpper" style={{ transform: `scale(${scale})` }}>
