@@ -1,11 +1,10 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
-import Playlist from "../components/playlists/Playlist";
 
 const PlayerContext = createContext();
 
-export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) => {
+export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, queue, currentIndex }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [player, setPlayer] = useState(null);
@@ -14,9 +13,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [trackImage, setTrackImage] = useState("img/not-found.jpg");
-  const [trackTitle, setTrackTitle] = useState("曲のタイトル");
-  const [trackArtistName, setTrackArtistName] = useState("アーティスト・作者名");
   const [trackId, setTrackId] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const { isRepeat } = useRepeatContext();
@@ -25,6 +21,10 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
   const [currentAudioURL, setCurrentAudioURL] = useState(null);
   const [isLocalPlaying, setIsLocalPlaying] = useState(false);
   const [isSpotifyPlaying, setIsSpotifyPlaying] = useState(false);
+
+  const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
+  const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
+  const [currentCoverImage, setCurrentCoverImage] = useState("img/not-found.jpg");
 
   const audioRef = useRef(null);
 
@@ -111,7 +111,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [isPlaying, trackTitle]);
+  }, [isPlaying, currentTitle]);
 
   const togglePlayPause = (isRepeat) => {
     if (isPlayPauseCooldown) return;
@@ -236,9 +236,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     player.addListener("player_state_changed", ({ position, duration, track_window: { current_track }, paused }) => {
       setPosition((position / duration) * 100);
       setDuration(duration);
-      setTrackImage(current_track.album.images[0].url);
-      setTrackTitle(current_track.name);
-      setTrackArtistName(current_track.artists[0].name);
       setTrackId(current_track.id);
       setIsStreaming(!paused);
     });
@@ -288,6 +285,17 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }
 
+  useEffect(() => {
+    if (!isTrackSet) return;
+
+    if (!queue[currentIndex]) {
+    } else {
+      setCurrentArtistName(queue[currentIndex].artist || queue[currentIndex].artists[0].name);
+      setCurrentTitle(queue[currentIndex].title || queue[currentIndex].name);
+      setCurrentCoverImage(queue[currentIndex].albumImage || queue[currentIndex].album.images[0].url);
+    }
+  }, [currentIndex, queue, isTrackSet]);
+
   return (
     <PlayerContext.Provider
       value={{
@@ -304,9 +312,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
         position,
         currentTime,
         formatTime,
-        trackImage,
-        trackTitle,
-        trackArtistName,
         token,
         trackId,
         isStreaming,
@@ -319,6 +324,10 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
         currentAudioURL,
         setCurrentAudioURL,
         isLocalPlaying,
+
+        currentTitle,
+        currentArtistName,
+        currentCoverImage,
       }}
     >
       {children}

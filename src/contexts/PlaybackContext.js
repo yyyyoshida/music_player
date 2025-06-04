@@ -4,9 +4,7 @@ import { TokenContext } from "../contexts/isTokenContext";
 
 export const PlaybackContext = createContext();
 
-export const PlaybackProvider = ({ children, isTrackSet }) => {
-  const [queue, setQueue] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, currentIndex, setCurrentIndex }) => {
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
   const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
