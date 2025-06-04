@@ -1,26 +1,30 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 
 const PlayerContext = createContext();
 
-export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) => {
+export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, queue, currentIndex }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [player, setPlayer] = useState(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [trackImage, setTrackImage] = useState("img/not-found.jpg");
-  const [trackTitle, setTrackTitle] = useState("曲のタイトル");
-  const [trackArtistName, setTrackArtistName] = useState("アーティスト・作者名");
   const [trackId, setTrackId] = useState(null);
-  const [isStreaming, setIsStreaming] = useState(false);
   const { isRepeat } = useRepeatContext();
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
+  const [currentAudioURL, setCurrentAudioURL] = useState(null);
+  const [isLocalPlaying, setIsLocalPlaying] = useState(false);
+  const [isSpotifyPlaying, setIsSpotifyPlaying] = useState(false);
+
+  const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
+  const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
+  const [currentCoverImage, setCurrentCoverImage] = useState("img/not-found.jpg");
+
+  const audioRef = useRef(null);
 
   useEffect(() => {
     if (!token) return;
@@ -105,36 +109,56 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [isPlaying, trackTitle]);
+  }, [isPlaying, currentTitle]);
 
   const togglePlayPause = (isRepeat) => {
     if (isPlayPauseCooldown) return;
 
-    if (!player) {
-      alert("Player is not initialized yer!");
+    if (isSpotifyPlaying && player) {
+      if (!isRepeat) {
+        player.togglePlay().then(() => setIsPlaying((prev) => !prev));
+
+        return;
+      }
+
+      if (isPlaying === true) {
+        player.resume().then(() => {});
+      }
+
       return;
     }
 
-    if (player && !isRepeat) {
-      player.togglePlay().then(() => {
-        setIsPlaying((prev) => !prev);
-        // startCooldown();
-      });
-      return;
-    }
+    if (isLocalPlaying && audioRef.current) {
+      const audio = audioRef.current;
 
-    if (player && isRepeat && isPlaying === true) {
-      player.resume().then(() => {});
+      if (audio.paused) {
+        audio.play().then(() => setIsPlaying(true));
+      } else {
+        audio.pause();
+        setIsPlaying(false);
+      }
+
+      return;
     }
   };
 
-  function playerTrack(trackUri, isClickedTrack) {
-    console.log("playerTrack発動！！");
-    setIsPlayPauseCooldown(false);
+  function handleCanPlay() {
+    const audio = audioRef.current;
+    if (!audio) return;
 
+    audio
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch((err) => {
+        console.error("再生失敗", err);
+      });
+
+    audio.removeEventListener("canplay", handleCanPlay);
+  }
+
+  function playSpotifyTrack(trackUri, isClickedTrack) {
     if (!deviceId) {
-      console.error("❌ デバイス ID が取得できてない！");
-      console.log(deviceId);
+      console.error("❌ デバイスIDなし");
       return;
     }
 
@@ -143,12 +167,15 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
       return;
     }
 
+    if (isLocalPlaying) {
+      audioRef.current.pause();
+      setIsLocalPlaying(false);
+    }
+
     const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
     const data = {
       uris: [trackUri],
-      offset: {
-        position: 0,
-      },
+      offset: { position: 0 },
       position_ms: 0,
     };
 
@@ -159,12 +186,36 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    }).then((res) => res.ok && setIsPlaying(true)); // 成功時にだけ setIsPlaying(true)
+    }).then((res) => res.ok && setIsPlaying(true));
 
-    // // .then((response) => response.json())
-    // .then((data) => console.log('再生結果:', data)) // 再生結果をログに表示
-    // .catch((error) => console.error('❌ 再生エラー:', error));
-    console.log("すみません。この２種類のエラーだけは解決できませんでした。");
+    setIsSpotifyPlaying(true);
+  }
+
+  function playLocalTrack(trackUri) {
+    if (isSpotifyPlaying) {
+      player.pause();
+      setIsSpotifyPlaying(false);
+    }
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+    audio.src = trackUri;
+    audio.addEventListener("canplay", handleCanPlay);
+    setIsLocalPlaying(true);
+  }
+
+  function playerTrack(trackUri, isClickedTrack, source = "spotify") {
+    console.log("playerTrack発動！！");
+    setIsPlayPauseCooldown(false);
+
+    if (source === "spotify") {
+      playSpotifyTrack(trackUri, isClickedTrack);
+      return;
+    }
+
+    if (source === "local") {
+      playLocalTrack(trackUri);
+    }
   }
 
   function updateVolume(volume) {
@@ -178,16 +229,12 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
   }
 
   useEffect(() => {
-    if (!player) return;
+    if (!player || !isSpotifyPlaying) return;
 
     player.addListener("player_state_changed", ({ position, duration, track_window: { current_track }, paused }) => {
       setPosition((position / duration) * 100);
       setDuration(duration);
-      setTrackImage(current_track.album.images[0].url);
-      setTrackTitle(current_track.name);
-      setTrackArtistName(current_track.artists[0].name);
       setTrackId(current_track.id);
-      setIsStreaming(!paused);
     });
 
     const interval = setInterval(() => {
@@ -203,7 +250,27 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
       clearInterval(interval);
       player.removeListener("player_state_changed");
     };
-  }, [player, isRepeat]);
+  }, [player, isRepeat, isSpotifyPlaying]);
+
+  useEffect(() => {
+    if (!audioRef.current || !isLocalPlaying) return;
+
+    const audio = audioRef.current;
+
+    const handleTimeUpdate = () => {
+      if (!audio.duration || isNaN(audio.duration)) return;
+
+      setCurrentTime(audio.currentTime * 1000);
+      setPosition((audio.currentTime / audio.duration) * 100);
+      setDuration(audio.duration * 1000);
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+
+    return () => {
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+    };
+  }, [isLocalPlaying]);
 
   function formatTime(time) {
     // useMemoとかで無駄な再レンダリングを回避しろ
@@ -215,13 +282,23 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }
 
+  useEffect(() => {
+    if (!isTrackSet) return;
+
+    if (!queue[currentIndex]) {
+    } else {
+      setCurrentArtistName(queue[currentIndex].artist || queue[currentIndex].artists[0].name);
+      setCurrentTitle(queue[currentIndex].title || queue[currentIndex].name);
+      setCurrentCoverImage(queue[currentIndex].albumImage || queue[currentIndex].album.images[0].url);
+    }
+  }, [currentIndex, queue, isTrackSet]);
+
   return (
     <PlayerContext.Provider
       value={{
         isPlaying,
         setIsPlaying,
         togglePlayPause,
-        currentSongIndex,
         player,
         playerReady,
         playerTrack,
@@ -231,16 +308,21 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet }) =
         position,
         currentTime,
         formatTime,
-        trackImage,
-        trackTitle,
-        trackArtistName,
         token,
         trackId,
-        isStreaming,
 
         isTrackSet,
         setIsTrackSet,
         isPlayPauseCooldown,
+
+        audioRef,
+        currentAudioURL,
+        setCurrentAudioURL,
+        isLocalPlaying,
+
+        currentTitle,
+        currentArtistName,
+        currentCoverImage,
       }}
     >
       {children}

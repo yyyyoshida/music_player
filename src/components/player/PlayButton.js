@@ -5,7 +5,7 @@ import useDelayedText from "../../hooks/useDelayText";
 import { playIcon, pauseIcon } from "../../assets/icons";
 
 const PlayButton = () => {
-  const { isPlayPauseCooldown, isPlaying, togglePlayPause, currentSongIndex, isClassName, setIsClassName } = usePlayerContext();
+  const { isPlayPauseCooldown, isPlaying, togglePlayPause } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText("一時停止", "再生", isPlaying, isPlaying, 0);
 

@@ -5,7 +5,7 @@ import { usePlayerContext } from "../contexts/PlayerContext";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 export const ThumbnailPreview = () => {
-  const { trackImage, trackTitle, trackArtistName, isPlaying, togglePlayPause, isTrackSet } = usePlayerContext();
+  const { isPlaying, togglePlayPause, isTrackSet, currentTitle, currentArtistName, currentCoverImage } = usePlayerContext();
   const { isVisible, setIsVisible } = useContext(TrackInfoContext);
   // const { isTrackSet } = useContext(SearchContext);
 
@@ -54,7 +54,7 @@ export const ThumbnailPreview = () => {
 
   useEffect(() => {
     fadeTransition();
-  }, [trackTitle]);
+  }, [currentTitle]);
 
   // const FADE_DURATION = 2500;
 
@@ -69,10 +69,6 @@ export const ThumbnailPreview = () => {
   //   }
   // }, [isPlaying, trackTitle]);
 
-  useEffect(() => {
-    console.log(trackTitle);
-  }, [trackTitle]);
-
   return (
     <>
       <div
@@ -82,15 +78,16 @@ export const ThumbnailPreview = () => {
           visibility: isTrackSet ? delayedVisibility : "visible",
         }}
       >
-        <div className="thumbnail-preview__background" style={{ backgroundImage: `url(${isTrackSet ? trackImage : ""})` }}></div>
+        <img className="thumbnail-preview__background-image" src={isTrackSet ? currentCoverImage : ""} />
+
         <figure className="thumbnail-preview__content">
           <div className="thumbnail-preview__image-warpper" style={{ transform: `scale(${scale})` }}>
-            <img ref={coverArtRef} className="thumbnail-preview__image" src={trackImage} alt="" />
+            <img ref={coverArtRef} className="thumbnail-preview__image" src={isTrackSet ? currentCoverImage : "/img/not-found.jpg"} alt="" />
             <div ref={transitionRef} className="thumbnail-preview__image-transition"></div>
           </div>
           <figcaption className="thumbnail-preview__info">
-            <p className="thumbnail-preview__title">{isTrackSet ? trackTitle : "曲がセットされていません"}</p>
-            <p className="thumbnail-preview__artist">{isTrackSet ? trackArtistName : ""}</p>
+            <p className="thumbnail-preview__title">{isTrackSet ? currentTitle : "曲がセットされていません"}</p>
+            <p className="thumbnail-preview__artist">{isTrackSet ? currentArtistName : ""}</p>
           </figcaption>
         </figure>
       </div>
