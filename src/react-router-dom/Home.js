@@ -11,7 +11,7 @@ const Home = ({ token }) => {
   const [tracks, setTracks] = useState([]);
   const [initialLoaded, setInitialLoaded] = useState(false);
 
-  const { playerTrack, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
+  const { playerTrack, isPlaying, trackId, setIsTrackSet } = usePlayerContext();
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setQueue } = useContext(PlaybackContext);
 
@@ -91,7 +91,7 @@ const Home = ({ token }) => {
           tracks.map((track) => {
             const isCurrentTrack = trackId === track.track.id && currentPlayedAt === track.played_at;
 
-            const isTrackPlaying = isCurrentTrack && isStreaming;
+            const isTrackPlaying = isCurrentTrack && isPlaying;
             const isClicked = isCurrentTrack;
 
             return (

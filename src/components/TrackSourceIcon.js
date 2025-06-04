@@ -1,7 +1,7 @@
 import { FaCompactDisc, FaSpotify } from "react-icons/fa";
 
 const TrackSourceIcon = ({ source }) => {
-  console.log(source);
+  //   console.log(source);
   return source === "local" ? (
     <FaCompactDisc title="ローカル再生" className="track-source-icon track-source-icon-local" />
   ) : (

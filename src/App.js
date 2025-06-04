@@ -23,11 +23,12 @@ import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageCon
 
 function App() {
   const [token, setToken] = useState(null);
+  const [isTrackSet, setIsTrackSet] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  // const [totalDuration, setTotalDuration] = useState(0);
+  const [queue, setQueue] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const { isToken, setIsToken } = useContext(TokenContext);
-  const [isTrackSet, setIsTrackSet] = useState(false);
   // const {toggle}
 
   useEffect(() => {
@@ -84,8 +85,8 @@ function App() {
     <BrowserRouter>
       <ActionSuccessMessageProvider>
         <RepeatProvider>
-          <PlayerProvider token={token} isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
-            <PlaybackProvider isTrackSet={isTrackSet}>
+          <PlayerProvider token={token} isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet} queue={queue} currentIndex={currentIndex}>
+            <PlaybackProvider isTrackSet={isTrackSet} queue={queue} setQueue={setQueue} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
               <SearchProvider>
                 <PlaylistProvider>
                   <PlaylistSelectionProvider>
