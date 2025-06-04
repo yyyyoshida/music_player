@@ -15,7 +15,7 @@ const TrackInfo = ({ actionsRef }) => {
   const [artist, setArtist] = useState("アーティスト・作者");
   const imgRef = useRef(null);
   const [isHidden, setIsHidden] = useState(false);
-  const { isPlaying, currentSongIndex, trackImage, trackTitle, trackArtistName, isTrackSet } = usePlayerContext();
+  const { isPlaying, currentSongIndex, currentTitle, currentArtistName, currentCoverImage } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip(600);
 
   const tooltipText = useDelayedText("全画面表示：オフ", "全画面表示", isFullScreen, isFullScreen, 0);
@@ -26,14 +26,11 @@ const TrackInfo = ({ actionsRef }) => {
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
 
-  // const [width, setWidth] = useState(231);
   const [width, setWidth] = useState(85);
 
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
 
-  const { queue, currentIndex, currentTrackId } = useContext(PlaybackContext);
-
-  // let currentTrimmedTitle;
+  const { currentTrackId } = useContext(PlaybackContext);
 
   useLayoutEffect(() => {
     setTimeout(() => {
@@ -53,7 +50,7 @@ const TrackInfo = ({ actionsRef }) => {
         setWidth(newWidth);
       }
     }, 0);
-  }, [currentSongIndex, isPlaying, title, isVisible, trackTitle]);
+  }, [currentSongIndex, isPlaying, title, isVisible, currentTitle]);
 
   function fadeTransition() {
     const transitionElement = transitionRef.current;
@@ -69,24 +66,6 @@ const TrackInfo = ({ actionsRef }) => {
     }, 50);
     // }, 100);
   }
-
-  const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
-  const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
-  const [currentCoverImage, setCurrentCoverImage] = useState(null);
-  useEffect(() => {
-    if (!isTrackSet) return;
-    // setCurrentArtistName(queue[currentIndex].artist);
-    // setCurrentTitle(queue[currentIndex].title);
-    // console.log("発火currentIndexが変わったよ", queue[currentIndex].title);
-    if (!queue[currentIndex]) {
-      // setCurrentTitle("曲のタイトル");
-    } else {
-      setCurrentArtistName(queue[currentIndex].artist || queue[currentIndex].artists[0].name);
-      setCurrentTitle(queue[currentIndex].title || queue[currentIndex].name);
-      setCurrentCoverImage(queue[currentIndex].albumImage || queue[currentIndex].album.images[0].url);
-      // console.log("発火currentIndexが変わったよ", queue[currentIndex].album.images[0].url);
-    }
-  }, [currentIndex, queue, isTrackSet]);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -115,20 +94,15 @@ const TrackInfo = ({ actionsRef }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* <div ref={trackInfoRef} className="player-controls__track-info"> */}
         <figure className="player-controls__track">
           <div id="js-track-thumbnail-wrapper" className="player-controls__track-thumbnail-wrapper">
-            {/* <img ref={imgRef} src={trackImage} alt="サムネイル" className="player-controls__track-thumbnail" /> */}
-            {/* <img ref={imgRef} src={trackImage} alt="thumbnail" className="player-controls__track-thumbnail" /> */}
             <img ref={imgRef} src={currentCoverImage} alt="thumbnail" className="player-controls__track-thumbnail" />
 
             <div ref={transitionRef} className="player-controls__track-thumbnail-transition" style={{ visibility: isHidden ? "hidden" : "visible" }}></div>
           </div>
           <figcaption ref={trackMetaRef} className="player-controls__track-meta">
-            {/* <p className="player-controls__title">{trackTitle}</p> */}
             <p className="player-controls__title">{currentTitle}</p>
 
-            {/* <p className="player-controls__artist">{trackArtistName}</p> */}
             <p className="player-controls__artist">{currentArtistName}</p>
           </figcaption>
         </figure>
