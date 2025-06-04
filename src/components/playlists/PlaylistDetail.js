@@ -21,7 +21,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [playlistInfo, setPlaylistInfo] = useState({ duration: 0 });
 
-  const { playerTrack, formatTime, isStreaming, trackId, setIsTrackSet } = usePlayerContext();
+  const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet } = usePlayerContext();
 
   const {
     deletePlaylist,
@@ -200,7 +200,7 @@ const PlaylistDetail = ({ containerRef }) => {
           // const isCurrentTrack = currentPlayedAt === date.getTime();
           const isCurrentTrack = currentTrackId === track.id;
 
-          const isTrackPlaying = isCurrentTrack && isStreaming;
+          const isTrackPlaying = isCurrentTrack && isPlaying;
           const isClicked = isCurrentTrack;
 
           return (

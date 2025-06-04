@@ -13,7 +13,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [trackId, setTrackId] = useState(null);
-  const [isStreaming, setIsStreaming] = useState(false);
   const { isRepeat } = useRepeatContext();
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
@@ -236,7 +235,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
       setPosition((position / duration) * 100);
       setDuration(duration);
       setTrackId(current_track.id);
-      setIsStreaming(!paused);
     });
 
     const interval = setInterval(() => {
@@ -312,7 +310,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
         formatTime,
         token,
         trackId,
-        isStreaming,
 
         isTrackSet,
         setIsTrackSet,
