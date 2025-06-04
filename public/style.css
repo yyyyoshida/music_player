@@ -270,6 +270,13 @@ body::-webkit-scrollbar {
   scrollbar-width: none;
 }
 
+img {
+  -webkit-user-drag: none;
+  -moz-user-select: none;
+       user-select: none;
+  -webkit-user-select: none;
+}
+
 .container {
   width: 100%;
   width: calc(100% - 300px);
@@ -395,7 +402,7 @@ footer {
   transition: opacity 0.35s ease;
   pointer-events: none;
 }
-.thumbnail-preview__background {
+.thumbnail-preview__background-image {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -406,7 +413,8 @@ footer {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 100%;
+  width: calc(100vw + 9px);
+  height: 100vh;
   margin: -10px;
   height: calc(100% + 20px);
   margin-bottom: 300px;
