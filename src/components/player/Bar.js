@@ -18,11 +18,10 @@ const Bar = ({ ParentClassName, type, value }) => {
     return savedMute ? JSON.parse(savedMute) : false;
   });
 
-  const currentSongIndexRef = useRef(null);
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
 
-  const { currentSongIndex, togglePlayPause, playerReady } = usePlayerContext();
+  const { togglePlayPause, playerReady } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
@@ -159,10 +158,6 @@ const Bar = ({ ParentClassName, type, value }) => {
       document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging]);
-
-  useEffect(() => {
-    currentSongIndexRef.current = currentSongIndex;
-  }, [isRepeat, currentSongIndex]);
 
   function toggleMute() {
     handleButtonPress();
