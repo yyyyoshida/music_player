@@ -6,7 +6,6 @@ const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, queue, currentIndex }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [player, setPlayer] = useState(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
@@ -302,7 +301,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
         isPlaying,
         setIsPlaying,
         togglePlayPause,
-        currentSongIndex,
         player,
         playerReady,
         playerTrack,

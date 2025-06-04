@@ -15,7 +15,7 @@ const TrackInfo = ({ actionsRef }) => {
   const [artist, setArtist] = useState("アーティスト・作者");
   const imgRef = useRef(null);
   const [isHidden, setIsHidden] = useState(false);
-  const { isPlaying, currentSongIndex, currentTitle, currentArtistName, currentCoverImage } = usePlayerContext();
+  const { isPlaying, currentTitle, currentArtistName, currentCoverImage } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip(600);
 
   const tooltipText = useDelayedText("全画面表示：オフ", "全画面表示", isFullScreen, isFullScreen, 0);
@@ -50,7 +50,7 @@ const TrackInfo = ({ actionsRef }) => {
         setWidth(newWidth);
       }
     }, 0);
-  }, [currentSongIndex, isPlaying, title, isVisible, currentTitle]);
+  }, [isPlaying, title, isVisible, currentTitle]);
 
   function fadeTransition() {
     const transitionElement = transitionRef.current;
@@ -72,9 +72,7 @@ const TrackInfo = ({ actionsRef }) => {
       isFirstRender.current = false;
       return;
     }
-    if (prevSongIndex.current !== currentSongIndex) {
-      fadeTransition();
-    }
+    fadeTransition();
 
     setIsHidden(true);
   }, [currentTrackId]);
