@@ -7,10 +7,10 @@ import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 
 const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date, query }) => {
-  const { playTrackAt, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
+  const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  const { setIsTrackSet, setCurrentAudioURL } = usePlayerContext();
+  const { setIsClickedTrack, setIsTrackSet, setCurrentAudioURL } = usePlayerContext();
 
   const buttonRef = useRef(null);
 
@@ -57,10 +57,11 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
       onClick={() => {
         playerTrack(track.trackUri || track.uri || track.audioURL, isClicked, track.source);
         setIsTrackSet(true);
-        playTrackAt(index);
+        updateCurrentIndex(index);
         setCurrentTrackId(track.id);
         setCurrentAudioURL(track.audioURL);
         setCurrentPlayedAt(date);
+        setIsClickedTrack(isClicked);
       }}
     >
       <div className="track-item__left">
