@@ -38,7 +38,7 @@ const PlaylistDetail = ({ containerRef }) => {
     isCoverImageFading,
   } = useContext(PlaylistContext);
 
-  const { setCurrentTrackId, currentTrackId, setQueue, queue, playTrackAt, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
+  const { setCurrentTrackId, currentTrackId, setQueue, queue, updateCurrentIndex, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
     useContext(PlaybackContext);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
@@ -162,7 +162,7 @@ const PlaylistDetail = ({ containerRef }) => {
                 return;
               }
               setIsTrackSet(true);
-              playTrackAt(0);
+              updateCurrentIndex(0);
               setCurrentTrackId(queue[0].id);
               playerTrack(queue[0].trackUri);
               setCurrentIndex(0);
