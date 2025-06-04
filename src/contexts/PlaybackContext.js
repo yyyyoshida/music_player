@@ -41,7 +41,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   // こいつ原因です
 
   // クリックしたトラックのインデックスをセット
-  const playTrackAt = (index) => {
+  const updateCurrentIndex = (index) => {
     console.log("発火");
     if (index >= 0 && index < queue.length) {
       setCurrentIndex(index);
@@ -106,7 +106,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
         currentIndex,
         setCurrentIndex,
         // currentTrack,
-        playTrackAt,
+        updateCurrentIndex,
         goToNextTrack,
         goToPreviousTrack,
         resumePlayback,
