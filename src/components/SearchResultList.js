@@ -7,7 +7,7 @@ import TrackListSkeleton from "./skeletonUI/TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const TrackList = ({ containerRef }) => {
-  const { playerTrack, formatTime, isStreaming, trackId } = usePlayerContext();
+  const { playerTrack, formatTime, isPlaying, trackId } = usePlayerContext();
   const { searchResults, query } = useContext(SearchContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
 
@@ -39,7 +39,7 @@ const TrackList = ({ containerRef }) => {
           {searchResults.length > 0 ? (
             searchResults.map((track, index) => {
               const isCurrentTrack = trackId === track.id;
-              const isTrackPlaying = isCurrentTrack && isStreaming;
+              const isTrackPlaying = isCurrentTrack && isPlaying;
               const isClicked = isCurrentTrack;
 
               return (
