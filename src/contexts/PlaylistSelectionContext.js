@@ -4,6 +4,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { PlaylistContext } from "../contexts/PlaylistContext";
+import imageCompression from "browser-image-compression";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -46,8 +47,20 @@ export const PlaylistSelectionProvider = ({ children }) => {
         if (localCoverImageUrl && localCoverImageUrl.startsWith("blob:")) {
           const response = await fetch(localCoverImageUrl);
           const blob = await response.blob();
-          const imageRef = ref(storage, `covers/${selectedTrack.title}_${Date.now()}.jpg`);
-          await uploadBytes(imageRef, blob);
+
+          // 圧縮＆WebP変換
+          const compressedBlob = await imageCompression(blob, {
+            maxSizeMB: 0.1,
+            maxWidthOrHeight: 500,
+            fileType: "image/webp",
+            useWebWorker: true,
+          });
+
+          const imageRef = ref(storage, `covers/${selectedTrack.title}_${Date.now()}.webp`);
+          await uploadBytes(imageRef, compressedBlob, {
+            cacheControl: "public,max-age=86400",
+          });
+
           imageURL = await getDownloadURL(imageRef);
         }
 
