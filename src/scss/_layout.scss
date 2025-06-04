@@ -36,6 +36,12 @@ body {
   }
 }
 
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 .container {
   width: 100%;
   width: calc(100% - 300px);
@@ -179,8 +185,7 @@ footer {
   // &::-webkit-scrollbar {
   //   scrollbar-width: none;
   // }
-  &__background {
-    //////////////////////////////////////////////////
+  &__background-image {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -191,7 +196,8 @@ footer {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 100%;
+    width: calc(100vw + 9px);
+    height: 100vh;
     margin: -10px;
     height: calc(100% + 20px);
     margin-bottom: 300px;

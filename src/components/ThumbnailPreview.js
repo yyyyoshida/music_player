@@ -78,12 +78,11 @@ export const ThumbnailPreview = () => {
           visibility: isTrackSet ? delayedVisibility : "visible",
         }}
       >
-        {/* <div className="thumbnail-preview__background" style={{ backgroundImage: `url(${isTrackSet ? currentCoverImage : ""})` }}></div> */}
-        <div className="thumbnail-preview__background" style={{ backgroundImage: `url(${currentCoverImage})` }}></div>
+        <img className="thumbnail-preview__background-image" src={isTrackSet ? currentCoverImage : ""} />
 
         <figure className="thumbnail-preview__content">
           <div className="thumbnail-preview__image-warpper" style={{ transform: `scale(${scale})` }}>
-            <img ref={coverArtRef} className="thumbnail-preview__image" src={currentCoverImage} alt="" />
+            <img ref={coverArtRef} className="thumbnail-preview__image" src={isTrackSet ? currentCoverImage : "/img/not-found.jpg"} alt="" />
             <div ref={transitionRef} className="thumbnail-preview__image-transition"></div>
           </div>
           <figcaption className="thumbnail-preview__info">
