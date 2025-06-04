@@ -15,7 +15,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
 
   // const currentTrack = queue[currentIndex] || null;
 
-  const { playerTrack, player } = usePlayerContext();
+  const { playerTrack, player, isClickedTrack } = usePlayerContext();
 
   useEffect(() => {
     console.log("一覧のトラック数", queue);
@@ -41,7 +41,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   // こいつ原因です
 
   // クリックしたトラックのインデックスをセット
-  const playTrackAt = (index) => {
+  const updateCurrentIndex = (index) => {
     console.log("発火");
     if (index >= 0 && index < queue.length) {
       setCurrentIndex(index);
@@ -54,17 +54,27 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     console.log(currentIndexRef.current, "これが現在の曲のインデックス");
   }, [currentIndex]);
 
+  function playTrackAtIndex(index) {
+    const track = queue?.[index];
+
+    const searchResultTrackUri = track?.uri;
+    const spotifyTrackUri = track?.trackUri;
+    const localTrackUri = track?.audioURL;
+
+    const uriToPlay = searchResultTrackUri || spotifyTrackUri || localTrackUri;
+
+    setCurrentIndex(index);
+    currentIndexRef.current = index;
+    setCurrentTrackId(track.id);
+
+    playerTrack(uriToPlay, isClickedTrack, track.source);
+  }
+
   function goToNextTrack() {
     const nextIndex = currentIndexRef.current + 1;
 
     if (nextIndex < queue.length) {
-      setCurrentIndex(nextIndex);
-      currentIndexRef.current = nextIndex;
-      setCurrentTrackId(queue[nextIndex].id);
-
-      // setCurrentTrackId(queue[nextIndex].id || queue[nextIndex].track.id);
-      playerTrack(queue[nextIndex].uri || queue[nextIndex].trackUri || queue[nextIndex].track.uri);
-    } else {
+      playTrackAtIndex(nextIndex);
     }
   }
 
@@ -72,13 +82,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     const prevIndex = currentIndexRef.current - 1;
 
     if (prevIndex >= 0) {
-      console.log(prevIndex >= 0);
-      setCurrentIndex(prevIndex);
-      currentIndexRef.current = prevIndex;
-      setCurrentTrackId(queue[prevIndex].id);
-
-      // setCurrentTrackId(queue[prevIndex].id || queue[prevIndex].track.id);
-      playerTrack(queue[prevIndex].uri || queue[prevIndex].trackUri || queue[prevIndex].track.uri);
+      playTrackAtIndex(prevIndex);
     }
   }
 
@@ -102,7 +106,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
         currentIndex,
         setCurrentIndex,
         // currentTrack,
-        playTrackAt,
+        updateCurrentIndex,
         goToNextTrack,
         goToPreviousTrack,
         resumePlayback,

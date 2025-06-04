@@ -23,6 +23,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
   const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
   const [currentCoverImage, setCurrentCoverImage] = useState("img/not-found.jpg");
+  const [isClickedTrack, setIsClickedTrack] = useState(false);
 
   const audioRef = useRef(null);
 
@@ -323,6 +324,9 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
         currentTitle,
         currentArtistName,
         currentCoverImage,
+
+        isClickedTrack,
+        setIsClickedTrack,
       }}
     >
       {children}
