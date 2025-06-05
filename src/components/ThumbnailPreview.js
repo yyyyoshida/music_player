@@ -3,6 +3,7 @@ import { TrackInfoContext } from "../contexts/TrackInfoContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
 // import { SearchContext } from "../contexts/SearchContext";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
+import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ThumbnailPreview = () => {
   const { isPlaying, togglePlayPause, isTrackSet, currentTitle, currentArtistName, currentCoverImage } = usePlayerContext();
@@ -15,6 +16,8 @@ export const ThumbnailPreview = () => {
   const coverArtRef = useRef(null);
   const transitionRef = useRef(null);
   const { showMessage } = useContext(ActionSuccessMessageContext);
+
+  const isUsedFallbackImage = currentCoverImage === FALLBACK_COVER_IMAGE;
 
   function showThumbnail() {
     setDelayedVisibility("visible");
@@ -78,11 +81,16 @@ export const ThumbnailPreview = () => {
           visibility: isTrackSet ? delayedVisibility : "visible",
         }}
       >
-        {isTrackSet && <img className="thumbnail-preview__background-image" src={currentCoverImage} />}
+        {isTrackSet && !isUsedFallbackImage && <img className="thumbnail-preview__background-image" src={currentCoverImage} />}
 
         <figure className="thumbnail-preview__content">
           <div className="thumbnail-preview__image-warpper" style={{ transform: `scale(${scale})` }}>
-            <img ref={coverArtRef} className="thumbnail-preview__image" src={isTrackSet ? currentCoverImage : "/img/not-found.jpg"} alt="" />
+            <img
+              ref={coverArtRef}
+              className={`thumbnail-preview__image ${isUsedFallbackImage ? "thumbnail-preview__image-fallback" : ""}`}
+              src={isTrackSet ? currentCoverImage : "/img/not-found.jpg"}
+              alt=""
+            />
             <div ref={transitionRef} className="thumbnail-preview__image-transition"></div>
           </div>
           <figcaption className="thumbnail-preview__info">
