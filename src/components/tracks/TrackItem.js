@@ -1,5 +1,5 @@
 import { useEffect, useContext, useRef, useState } from "react";
-import { playIcon, pauseIcon } from "../../assets/icons";
+import { playIcon, pauseIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
@@ -22,7 +22,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
 
   const positionOffsetY = -60;
 
-  const isDefaultImage = track.albumImage === "/img/not-found.jpg";
+  const isUsedFallbackImage = track.albumImage === FALLBACK_COVER_IMAGE;
 
   // function useDelayedValue(value, delay = 200) {
   function useDelayedValue(value, delay = 200) {
@@ -77,29 +77,18 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
           <div className="bar"></div>
         </div>
       </div>
-      {isDefaultImage ? (
-        <div className="track-item__default-cover-art-wrapper track-item__cover">
-          <img
-            src="/img/music-24.png"
-            alt="デフォルト画像"
-            className="track-item__default-cover-art"
-            width="16px"
-            height="16px"
-            key={track.id + "-" + query}
-            loading={index >= 10 ? "lazy" : "eager"}
-          />
-        </div>
-      ) : (
+
+      <div className="track-item__cover-art-wrapper">
         <img
           src={track.albumImage || track.album.images[2]?.url}
           alt={track.title}
-          className="track-item__cover-art track-item__cover"
+          className={`track-item__cover-art track-item__cover ${isUsedFallbackImage ? "track-item__initial-cover" : ""}`}
           width="50px"
           height="50px"
           key={track.id + "-" + query}
           loading={index >= 10 ? "lazy" : "eager"}
         />
-      )}
+      </div>
       <div className="track-item__track-info">
         <p className="track-item__title">{track.title || track.name}</p>
         <p className="track-item__artist">{track.artist || track.artists[0]?.name}</p>

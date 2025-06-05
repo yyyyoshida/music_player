@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 
-import { playIcon, pauseIcon } from "../../assets/icons";
+import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import CardListSkeleton from "../skeletonUI/CardListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 
@@ -19,6 +19,10 @@ const Playlist = () => {
     navigate(`/playlist-detail/${playlistId}`);
   }
 
+  function isFallbackImage(playlist, index) {
+    return playlist.albumImages[index] === FALLBACK_COVER_IMAGE;
+  }
+
   return (
     <div className="playlists-page">
       <h2 className="playlists-page__title">プレイリスト</h2>
@@ -32,16 +36,27 @@ const Playlist = () => {
         {playlists.map((playlist) => {
           const isSingleImage = playlist.albumImages.length <= 3;
           const albumImagesToDisplay = [...playlist.albumImages].slice(0, 4);
-          // console.log("isSingleImage", isSingleImage, playlist.name, albumImagesToDisplay.length);
+          const firstTrackIsFallbackImage = playlist.trackCount === 0 || (isSingleImage && playlist.albumImages[0] === FALLBACK_COVER_IMAGE);
+
           return (
             <li key={playlist.id} className="playlists-page__item" onClick={() => handlePlaylistClick(playlist.id)}>
               <div className={`playlists-page__item-cover-img-wrapper ${isSingleImage ? "single" : ""}`}>
-                {albumImagesToDisplay.map((src, i) => src && <img key={i} src={src} className={`playlists-page__item-cover-img img-${i}`} />)}
+                {albumImagesToDisplay.map((src, i) => {
+                  if (isFallbackImage(playlist, i)) {
+                    return (
+                      <div key={i} className={` playlist-cover-fallback-wrapper track-${i}`} style={{ opacity: firstTrackIsFallbackImage && 0 }}>
+                        <img src={src} className={` playlist-cover-fallback img-${i}`} />
+                      </div>
+                    );
+                  } else {
+                    return <img key={i} src={src} className={`playlists-page__item-cover-img img-${i}`} />;
+                  }
+                })}
 
                 <img
-                  src="img/playlist-icon1.png"
+                  src={FALLBACK_COVER_IMAGE}
                   className="playlists-page__item-initial-cover-img playlist-initial-cover-img"
-                  style={{ visibility: playlist.trackCount === 0 ? "visible" : "hidden" }}
+                  style={{ visibility: firstTrackIsFallbackImage ? "visible" : "hidden" }}
                 />
 
                 <button className="playlists-page__item-play-pause-button play-pause-button">

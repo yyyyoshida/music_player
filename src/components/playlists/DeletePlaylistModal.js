@@ -1,3 +1,5 @@
+import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
+
 const DeletePlaylistModal = ({ isDeleteVisible, toggleDeleteVisible, tracks, deletePlaylist, id }) => {
   return (
     <div className="delete-playlist-modal modal" style={{ visibility: isDeleteVisible ? "visible" : "hidden" }}>
@@ -13,7 +15,7 @@ const DeletePlaylistModal = ({ isDeleteVisible, toggleDeleteVisible, tracks, del
                   <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i} modal-cover-img`} />
                 ))
             ) : (
-              <img src="/img/playlist-icon1.png" alt="初期カバー" className="rename-playlist-modal__initial-cover-img" />
+              <img src={FALLBACK_COVER_IMAGE} alt="初期カバー" className="rename-playlist-modal__initial-cover-img" />
             )}
           </div>
 

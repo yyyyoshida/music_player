@@ -4,7 +4,7 @@ import { db } from "../../firebase";
 import { useParams } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
-import { warningIcon } from "../../assets/icons";
+import { warningIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
@@ -13,6 +13,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
     useContext(PlaylistContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
+  const isUsedFallbackImage = tracks.length <= 3 && tracks[0]?.albumImage === FALLBACK_COVER_IMAGE;
   useEffect(() => {
     const playlistRef = doc(db, "playlists", id);
 
@@ -71,6 +72,10 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
     RenameRef.current.select();
   }, [isRenameVisible, playlistName]);
 
+  function isFallbackImage(index) {
+    return tracks[index]?.albumImage === FALLBACK_COVER_IMAGE;
+  }
+
   return (
     <div className="rename-playlist-modal modal" style={{ visibility: isRenameVisible ? "visible" : "hidden" }}>
       <div className="rename-playlist-modal__smoke modal-smoke">
@@ -78,16 +83,24 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
           <h2 className="rename-playlist-modal__title modal-title">プレイリストの名を変更</h2>
 
           <div className={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}>
-            {tracks.length > 0 ? (
-              [...tracks]
-                .slice(0, tracks.length <= 3 ? 1 : 4)
-                .map((track, i) => (
-                  <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i} modal-cover-img`} />
-                ))
+            {tracks.length > 0 && !isUsedFallbackImage ? (
+              [...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => {
+                const isFallback = isFallbackImage(i);
+                if (isFallback) {
+                  return (
+                    <div key={i} className={`playlist-cover-fallback-wrapper track-${i}`}>
+                      <img src={track.albumImage} alt={`track-${i}`} className={`playlist-cover-fallback img-${i}`} />
+                    </div>
+                  );
+                } else {
+                  return <img key={i} src={track.albumImage} alt={`track-${i}`} className={`img-${i} rename-playlist-modal__cover`} />;
+                }
+              })
             ) : (
-              <img src="/img/playlist-icon1.png" alt="初期カバー" className="rename-playlist-modal__initial-cover-img" />
+              <img src={FALLBACK_COVER_IMAGE} alt="fallback-cover" className="rename-playlist-modal__initial-cover-img" />
             )}
           </div>
+
           <div className="rename-playlist-modal__field modal-field">
             <label className="rename-playlist-modal__label modal-label" htmlFor="title">
               プレイリスト名を入力
