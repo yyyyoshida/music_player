@@ -86,24 +86,52 @@
   }
 }
 
+.track-0,
 .img-0 {
   grid-column: 1;
   grid-row: 1;
 }
 
+.track-1,
+.img-1 {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.track-2,
 .img-2 {
   grid-column: 2;
   grid-row: 1;
 }
 
+.track-3,
 .img-3 {
   grid-column: 1;
   grid-row: 2;
 }
 
-.img-1 {
-  grid-column: 2;
-  grid-row: 2;
+.track-0 {
+  border-right: rgba(146, 146, 146, 0.231372549) solid 0.1px;
+  border-bottom: rgba(146, 146, 146, 0.231372549) solid 0.1px;
+}
+
+.track-1 {
+  border-top: rgba(146, 146, 146, 0.231372549) solid 0.1px;
+  border-left: rgba(146, 146, 146, 0.231372549) solid 0.1px;
+}
+
+.playlist-cover-fallback-wrapper {
+  position: relative;
+  background-color: #181818;
+}
+
+.playlist-cover-fallback {
+  position: absolute;
+  top: 50%;
+  left: 46.5%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
 }
 
 // プレイリストの初期値のカバー画像
@@ -131,28 +159,26 @@
 
     border-radius: 10px;
     box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
-
-    position: relative;
     border: rgba(175, 175, 175, 0.2745098039) solid 1px;
+
     position: relative;
     overflow: hidden;
     background-color: #181818;
-  }
 
-  &__item-cover-imgs {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1000;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
     transition: opacity 0.6s ease;
-    // opacity: 0;
   }
 
-  &__item-cover-imgs.single {
-    display: block;
+  &__coverfallback-img {
+    width: 12px;
+    height: 12px;
+  }
+
+  .single .img-0 {
+    width: 64px;
+    height: 64px;
   }
 
   &__item-initial-cover-img-bg {
