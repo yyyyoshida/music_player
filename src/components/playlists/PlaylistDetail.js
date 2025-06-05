@@ -2,7 +2,7 @@ import { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../firebase";
 import { collection, getDocs, getDoc, doc, query, orderBy } from "firebase/firestore";
-import { playIcon } from "../../assets/icons";
+import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import TrackListHead from "../tracks/TrackListHead";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackItem from "../tracks/TrackItem";
@@ -23,31 +23,23 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet } = usePlayerContext();
 
-  const {
-    deletePlaylist,
-    tracks,
-    setTracks,
-    formatTimeHours,
-    setPlaylistId,
-
-    playlistName,
-
-    deletedTrackDuration,
-    setDeletedTrackDuration,
-
-    isCoverImageFading,
-  } = useContext(PlaylistContext);
-
+  const { deletePlaylist, tracks, setTracks, formatTimeHours, setPlaylistId, playlistName, deletedTrackDuration, setDeletedTrackDuration, isCoverImageFading } =
+    useContext(PlaylistContext);
   const { setCurrentTrackId, currentTrackId, setQueue, queue, updateCurrentIndex, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
     useContext(PlaybackContext);
-
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
+  const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], 100);
   const coverImagesRef = useRef();
 
   const [initialLoaded, setInitialLoaded] = useState(false);
 
-  const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], 100);
+  const firstTrackIsFallbackImage = tracks.length <= 3 && tracks[0]?.albumImage === FALLBACK_COVER_IMAGE;
+  console.log(firstTrackIsFallbackImage);
+
+  function isFallbackImage(index) {
+    return tracks[index]?.albumImage === FALLBACK_COVER_IMAGE;
+  }
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
@@ -136,13 +128,38 @@ const PlaylistDetail = ({ containerRef }) => {
             className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""} ${!initialLoaded ? "" : isCoverImageFading ? "fade-out" : "fade-in"}`}
             ref={coverImagesRef}
           >
-            {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => (
-              <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i}`} width="99" height="99" />
-            ))}
+            {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => {
+              const isFallback = isFallbackImage(i);
+              if (isFallback) {
+                return (
+                  <div key={i} className={`header-cover-fallback-wrapper track-${i}`}>
+                    <img
+                      src={track.albumImage}
+                      className="playlist-cover-fallback"
+                      style={{ opacity: firstTrackIsFallbackImage && 0 }}
+                      alt={`track-${i}`}
+                      width="99"
+                      height="99"
+                    />
+                  </div>
+                );
+              } else {
+                return (
+                  <img
+                    key={i}
+                    src={track.albumImage}
+                    alt={`img-${i}`}
+                    className={`playlist-detail__header-cover-img normal-img img-${i}`}
+                    width="99"
+                    height="99"
+                  />
+                );
+              }
+            })}
           </div>
 
           <div className="playlist-detail__header-initial-cover-img-bg">
-            <img src="/img/playlist-icon1.png" className="playlists-detail__header-initial-cover-img playlist-initial-cover-img" />
+            <img src={FALLBACK_COVER_IMAGE} className="playlists-detail__header-initial-cover-img playlist-initial-cover-img" />
           </div>
         </div>
         <div className="playlist-detail__header-info">

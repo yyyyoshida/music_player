@@ -5,6 +5,7 @@ import { db, storage } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { PlaylistContext } from "../contexts/PlaylistContext";
 import imageCompression from "browser-image-compression";
+import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -44,7 +45,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         const audioPath = audioRef.fullPath;
 
         // 画像もあればアップロード
-        let imageURL = "/img/not-found.jpg";
+        let imageURL = FALLBACK_COVER_IMAGE;
         let imagePath = null;
 
         if (localCoverImageUrl && localCoverImageUrl.startsWith("blob:")) {
