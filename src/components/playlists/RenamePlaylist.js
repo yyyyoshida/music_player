@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
 import { warningIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
@@ -82,24 +83,15 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
         <div className="rename-playlist-modal__content modal-content">
           <h2 className="rename-playlist-modal__title modal-title">プレイリストの名を変更</h2>
 
-          <div className={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}>
-            {tracks.length > 0 && !isUsedFallbackImage ? (
-              [...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => {
-                const isFallback = isFallbackImage(i);
-                if (isFallback) {
-                  return (
-                    <div key={i} className={`playlist-cover-fallback-wrapper track-${i}`}>
-                      <img src={track.albumImage} alt={`track-${i}`} className={`playlist-cover-fallback img-${i}`} />
-                    </div>
-                  );
-                } else {
-                  return <img key={i} src={track.albumImage} alt={`track-${i}`} className={`img-${i} rename-playlist-modal__cover`} />;
-                }
-              })
-            ) : (
-              <img src={FALLBACK_COVER_IMAGE} alt="fallback-cover" className="rename-playlist-modal__initial-cover-img" />
-            )}
-          </div>
+          <PlaylistCoverImageGrid
+            images={tracks.map((track) => track.albumImage)}
+            isFallbackImage={isFallbackImage}
+            firstTrackIsFallbackImage={isUsedFallbackImage}
+            wrapperClassName={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}
+            fallbackImgWrapperClassName="playlist-cover-fallback-wrapper"
+            fallbackImgClassName="playlist-cover-fallback "
+            imgClassName="rename-playlist-modal__cover"
+          />
 
           <div className="rename-playlist-modal__field modal-field">
             <label className="rename-playlist-modal__label modal-label" htmlFor="title">
