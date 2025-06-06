@@ -126,7 +126,7 @@ const PlaylistDetail = ({ containerRef }) => {
           />
 
           <div className="playlist-detail__header-initial-cover-img-bg">
-            <img src={FALLBACK_COVER_IMAGE} className=" playlist-initial-cover-img" />
+            <img src={FALLBACK_COVER_IMAGE} className=" playlist-initial-cover-img playlist-detail__header-initial-cover-img" />
           </div>
         </div>
         <div className="playlist-detail__header-info">

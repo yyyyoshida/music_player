@@ -47,8 +47,7 @@ const Playlist = () => {
 
                 <img
                   src={FALLBACK_COVER_IMAGE}
-                  // className="playlists-page__item-initial-cover-img playlist-initial-cover-img"
-                  className="playlist-initial-cover-img"
+                  className="playlists-page__item-initial-cover-img playlist-initial-cover-img"
                   style={{ visibility: firstTrackIsFallbackImage ? "visible" : "hidden" }}
                 />
 

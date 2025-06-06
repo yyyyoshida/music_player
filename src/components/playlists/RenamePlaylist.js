@@ -4,7 +4,7 @@ import { db } from "../../firebase";
 import { useParams } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
-import { warningIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
@@ -14,7 +14,6 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
     useContext(PlaylistContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
-  const isUsedFallbackImage = tracks.length <= 3 && tracks[0]?.albumImage === FALLBACK_COVER_IMAGE;
   useEffect(() => {
     const playlistRef = doc(db, "playlists", id);
 
@@ -73,10 +72,6 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
     RenameRef.current.select();
   }, [isRenameVisible, playlistName]);
 
-  function isFallbackImage(index) {
-    return tracks[index]?.albumImage === FALLBACK_COVER_IMAGE;
-  }
-
   return (
     <div className="rename-playlist-modal modal" style={{ visibility: isRenameVisible ? "visible" : "hidden" }}>
       <div className="rename-playlist-modal__smoke modal-smoke">
@@ -85,8 +80,6 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
 
           <PlaylistCoverImageGrid
             images={tracks.map((track) => track.albumImage)}
-            isFallbackImage={isFallbackImage}
-            firstTrackIsFallbackImage={isUsedFallbackImage}
             wrapperClassName={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}
             fallbackImgWrapperClassName="playlist-cover-fallback-wrapper"
             fallbackImgClassName="playlist-cover-fallback "
