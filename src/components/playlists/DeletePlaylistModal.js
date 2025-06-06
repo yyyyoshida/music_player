@@ -1,12 +1,6 @@
-import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 const DeletePlaylistModal = ({ isDeleteVisible, toggleDeleteVisible, tracks, deletePlaylist, id }) => {
-  const isUsedFallbackImage = tracks.length <= 3 && tracks[0]?.albumImage === FALLBACK_COVER_IMAGE;
-
-  function isFallbackImage(index) {
-    return tracks[index]?.albumImage === FALLBACK_COVER_IMAGE;
-  }
   return (
     <div className="delete-playlist-modal modal" style={{ visibility: isDeleteVisible ? "visible" : "hidden" }}>
       <div className="delete-playlist-modal__smoke modal-smoke">
@@ -15,8 +9,6 @@ const DeletePlaylistModal = ({ isDeleteVisible, toggleDeleteVisible, tracks, del
 
           <PlaylistCoverImageGrid
             images={tracks.map((track) => track.albumImage)}
-            isFallbackImage={isFallbackImage}
-            firstTrackIsFallbackImage={isUsedFallbackImage}
             wrapperClassName={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}
             fallbackImgWrapperClassName="playlist-cover-fallback-wrapper"
             fallbackImgClassName="playlist-cover-fallback "
