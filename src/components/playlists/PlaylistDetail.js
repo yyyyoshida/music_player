@@ -13,6 +13,7 @@ import DeletePlaylistModal from "./DeletePlaylistModal";
 import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 import TrackListSkeleton from "../skeletonUI/TrackListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
+import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();
@@ -33,13 +34,6 @@ const PlaylistDetail = ({ containerRef }) => {
   const coverImagesRef = useRef();
 
   const [initialLoaded, setInitialLoaded] = useState(false);
-
-  const firstTrackIsFallbackImage = tracks.length <= 3 && tracks[0]?.albumImage === FALLBACK_COVER_IMAGE;
-  console.log(firstTrackIsFallbackImage);
-
-  function isFallbackImage(index) {
-    return tracks[index]?.albumImage === FALLBACK_COVER_IMAGE;
-  }
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
@@ -124,42 +118,15 @@ const PlaylistDetail = ({ containerRef }) => {
     <div className="playlist-detail">
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
-          <div
-            className={`playlist-detail__header-cover-imgs ${tracks.length <= 3 ? "single" : ""} ${!initialLoaded ? "" : isCoverImageFading ? "fade-out" : "fade-in"}`}
-            ref={coverImagesRef}
-          >
-            {[...tracks].slice(0, tracks.length <= 3 ? 1 : 4).map((track, i) => {
-              const isFallback = isFallbackImage(i);
-              if (isFallback) {
-                return (
-                  <div key={i} className={`header-cover-fallback-wrapper track-${i}`}>
-                    <img
-                      src={track.albumImage}
-                      className="playlist-cover-fallback"
-                      style={{ opacity: firstTrackIsFallbackImage && 0 }}
-                      alt={`track-${i}`}
-                      width="99"
-                      height="99"
-                    />
-                  </div>
-                );
-              } else {
-                return (
-                  <img
-                    key={i}
-                    src={track.albumImage}
-                    alt={`img-${i}`}
-                    className={`playlist-detail__header-cover-img normal-img img-${i}`}
-                    width="99"
-                    height="99"
-                  />
-                );
-              }
-            })}
-          </div>
+          <PlaylistCoverImageGrid
+            images={tracks.map((track) => track.albumImage)}
+            wrapperClassName={`playlist-detail__header-cover-imgs ${!initialLoaded ? "" : isCoverImageFading ? "fade-out" : "fade-in"}`}
+            fallbackImgWrapperClassName="header-cover-fallback-wrapper"
+            fallbackImgClassName="playlist-cover-fallback"
+          />
 
           <div className="playlist-detail__header-initial-cover-img-bg">
-            <img src={FALLBACK_COVER_IMAGE} className="playlists-detail__header-initial-cover-img playlist-initial-cover-img" />
+            <img src={FALLBACK_COVER_IMAGE} className=" playlist-initial-cover-img" />
           </div>
         </div>
         <div className="playlist-detail__header-info">

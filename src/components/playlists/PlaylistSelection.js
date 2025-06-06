@@ -6,16 +6,13 @@ import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 import PlaylistSelectSkeleton from "../skeletonUI/PlaylistSelectSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 const PlaylistSelection = () => {
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
   const { toggleCreateVisible } = useContext(PlaylistContext);
   const { playlists } = useFetchPlaylists();
   const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists], 0);
-
-  function isFallbackImage(playlist, index) {
-    return playlist.albumImages[index] === FALLBACK_COVER_IMAGE;
-  }
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>
@@ -49,20 +46,13 @@ const PlaylistSelection = () => {
                     addTrackToPlaylist(playlist.id);
                   }}
                 >
-                  <div className={`playlist-selection__item-cover-img-wrapper ${isSingleImage && "single"}`}>
-                    {playlist.albumImages.map((src, index) => {
-                      const isFallback = isFallbackImage(playlist, index);
-
-                      if (isFallback) {
-                        return (
-                          <div key={index} className={`playlist-cover-fallback-wrapper track-${index}`} style={{ opacity: firstTrackIsFallbackImage && 0 }}>
-                            <img src={src} className={`playlist-cover-fallback playlist-selection__coverfallback-img img-${index}`} alt={`track-${index}`} />
-                          </div>
-                        );
-                      }
-
-                      return <img key={index} src={src} className={`playlist-selection__item-cover-img normal-img img-${index}`} alt={`track-${index}`} />;
-                    })}
+                  <div className={`playlist-selection__item-cover-wrapper `}>
+                    <PlaylistCoverImageGrid
+                      images={playlist.albumImages}
+                      wrapperClassName="playlist-selection__item-cover-img-wrapper"
+                      fallbackImgClassName="playlist-selection__coverfallback-img"
+                      imgClassName="playlist-selection__item-cover-img"
+                    />
 
                     <div className="playlist-selection__item-initial-cover-img-bg">
                       <img
