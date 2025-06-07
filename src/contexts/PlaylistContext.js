@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useRef, useEffect } from "react";
 import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { deleteObject, ref as storageRef } from "firebase/storage";
+import { storage } from "../firebase"; // ストレージのインスタンスね！
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 import { useNavigate } from "react-router-dom";
 
@@ -106,7 +108,8 @@ export const PlaylistProvider = ({ children }) => {
       return `${minutes}分`;
     }
   }
-
+  // 曲を削除するときにストレージにある画像と音声ファイルをしっかり
+  // 削除するｄ
   async function deleteTrack(playlistId, trackId) {
     fadeCoverImages();
     try {
@@ -119,6 +122,21 @@ export const PlaylistProvider = ({ children }) => {
       }
 
       const deletedTrack = trackSnap.data();
+
+      // ストレージの画像や音声を削除
+      if (deletedTrack.imagePath) {
+        const coverRef = storageRef(storage, deletedTrack.imagePath);
+        await deleteObject(coverRef).catch((err) => {
+          console.warn("カバー画像削除失敗", err);
+        });
+      }
+
+      if (deletedTrack.audioPath) {
+        const audioRef = storageRef(storage, deletedTrack.audioPath);
+        await deleteObject(audioRef).catch((err) => {
+          console.warn("音声ファイル削除失敗", err);
+        });
+      }
 
       await deleteDoc(trackRef);
 

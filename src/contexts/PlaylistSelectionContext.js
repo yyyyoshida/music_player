@@ -1,10 +1,11 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
 import { addDoc, collection, increment, serverTimestamp, updateDoc, doc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes, storageRef } from "firebase/storage";
 import { db, storage } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { PlaylistContext } from "../contexts/PlaylistContext";
 import imageCompression from "browser-image-compression";
+import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -41,9 +42,12 @@ export const PlaylistSelectionProvider = ({ children }) => {
         const audioRef = ref(storage, `tracks/${selectedTrack.title}_${Date.now()}.mp3`);
         await uploadBytes(audioRef, uploadTrackFile);
         const audioURL = await getDownloadURL(audioRef);
+        const audioPath = audioRef.fullPath;
 
         // 画像もあればアップロード
-        let imageURL = "/img/デフォルト画像.png";
+        let imageURL = FALLBACK_COVER_IMAGE;
+        let imagePath = null;
+
         if (localCoverImageUrl && localCoverImageUrl.startsWith("blob:")) {
           const response = await fetch(localCoverImageUrl);
           const blob = await response.blob();
@@ -57,11 +61,13 @@ export const PlaylistSelectionProvider = ({ children }) => {
           });
 
           const imageRef = ref(storage, `covers/${selectedTrack.title}_${Date.now()}.webp`);
+
           await uploadBytes(imageRef, compressedBlob, {
             cacheControl: "public,max-age=86400",
           });
 
           imageURL = await getDownloadURL(imageRef);
+          imagePath = imageRef.fullPath;
         }
 
         // Firestore に音声と画像のURL込みで保存
@@ -71,6 +77,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
           duration: selectedTrack.duration,
           albumImage: imageURL,
           audioURL: audioURL,
+          audioPath: audioPath,
+          imagePath: imagePath,
           addedAt: serverTimestamp(),
           source: "local",
         });
