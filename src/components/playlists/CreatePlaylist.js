@@ -1,4 +1,5 @@
-import { useContext, useRef } from "react";
+import { useContext } from "react";
+import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import { warningIcon } from "../../assets/icons";
 
@@ -11,7 +12,7 @@ const CreatePlaylist = () => {
         <div className="playlist-page__create-playlist-modal-content modal-content">
           <h2 className="playlist-page__create-playlist-modal-title modal-title">新しいプレイリスト</h2>
           <div className="playlist-page__create-playlist-modal-cover-img-wrapper modal-cover-img-wrapper">
-            <img className="playlist-page__create-playlist-modal-initial-cover-img" src="/img/playlist-icon1.png"></img>
+            <img className="playlist-page__create-playlist-modal-initial-cover-img" src={FALLBACK_COVER_IMAGE}></img>
           </div>
           <div className="playlist-page__create-playlist-modal-field modal-field">
             <label className="playlist-page__create-playlist-modal-label modal-label" htmlFor="title">

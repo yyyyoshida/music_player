@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
 import { warningIcon } from "../../assets/icons";
+import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
@@ -77,17 +78,14 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
         <div className="rename-playlist-modal__content modal-content">
           <h2 className="rename-playlist-modal__title modal-title">プレイリストの名を変更</h2>
 
-          <div className={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}>
-            {tracks.length > 0 ? (
-              [...tracks]
-                .slice(0, tracks.length <= 3 ? 1 : 4)
-                .map((track, i) => (
-                  <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i} modal-cover-img`} />
-                ))
-            ) : (
-              <img src="/img/playlist-icon1.png" alt="初期カバー" className="rename-playlist-modal__initial-cover-img" />
-            )}
-          </div>
+          <PlaylistCoverImageGrid
+            images={tracks.map((track) => track.albumImage)}
+            wrapperClassName={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}
+            fallbackImgWrapperClassName="playlist-cover-fallback-wrapper"
+            fallbackImgClassName="playlist-cover-fallback "
+            imgClassName="rename-playlist-modal__cover"
+          />
+
           <div className="rename-playlist-modal__field modal-field">
             <label className="rename-playlist-modal__label modal-label" htmlFor="title">
               プレイリスト名を入力

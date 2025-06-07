@@ -8,6 +8,7 @@ import Tooltip from "../Tooltip";
 import useButtonTooltip from "../../hooks/useButtonTooltip";
 import useDelayedText from "../../hooks/useDelayText";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
+import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const TrackInfo = ({ actionsRef }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -15,10 +16,15 @@ const TrackInfo = ({ actionsRef }) => {
   const [artist, setArtist] = useState("アーティスト・作者");
   const imgRef = useRef(null);
   const [isHidden, setIsHidden] = useState(false);
+  const [width, setWidth] = useState(85);
+
   const { isPlaying, currentTitle, currentArtistName, currentCoverImage } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip(600);
-
   const tooltipText = useDelayedText("全画面表示：オフ", "全画面表示", isFullScreen, isFullScreen, 0);
+
+  const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
+  const { currentTrackId } = useContext(PlaybackContext);
+
   const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
   const prevSongIndex = useRef(null);
@@ -26,11 +32,7 @@ const TrackInfo = ({ actionsRef }) => {
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
 
-  const [width, setWidth] = useState(85);
-
-  const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
-
-  const { currentTrackId } = useContext(PlaybackContext);
+  const isUsedFallbackImage = currentCoverImage === FALLBACK_COVER_IMAGE;
 
   useLayoutEffect(() => {
     setTimeout(() => {
@@ -94,7 +96,12 @@ const TrackInfo = ({ actionsRef }) => {
       >
         <figure className="player-controls__track">
           <div id="js-track-thumbnail-wrapper" className="player-controls__track-thumbnail-wrapper">
-            <img ref={imgRef} src={currentCoverImage} alt="thumbnail" className="player-controls__track-thumbnail" />
+            <img
+              ref={imgRef}
+              src={currentCoverImage}
+              alt="thumbnail"
+              className={`player-controls__track-thumbnail ${isUsedFallbackImage ? "track-info-fallback-cover" : ""}`}
+            />
 
             <div ref={transitionRef} className="player-controls__track-thumbnail-transition" style={{ visibility: isHidden ? "hidden" : "visible" }}></div>
           </div>

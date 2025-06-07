@@ -1,21 +1,19 @@
+import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
+
 const DeletePlaylistModal = ({ isDeleteVisible, toggleDeleteVisible, tracks, deletePlaylist, id }) => {
   return (
     <div className="delete-playlist-modal modal" style={{ visibility: isDeleteVisible ? "visible" : "hidden" }}>
       <div className="delete-playlist-modal__smoke modal-smoke">
         <div className="delete-playlist-modal__content modal-content">
           <h2 className="delete-playlist-modal__title modal-title">本当にこのプレイリストを削除しますか？</h2>
-          <div className="delete-playlist-modal__cover-img-wrapper modal-cover-img-wrapper">
-            {tracks.length > 0 ? (
-              [...tracks]
-                .reverse()
-                .slice(0, 4)
-                .map((track, i) => (
-                  <img key={i} src={track.albumImage} alt={`track-${i}`} className={`playlist-detail__header-cover-img img-${i} modal-cover-img`} />
-                ))
-            ) : (
-              <img src="/img/playlist-icon1.png" alt="初期カバー" className="rename-playlist-modal__initial-cover-img" />
-            )}
-          </div>
+
+          <PlaylistCoverImageGrid
+            images={tracks.map((track) => track.albumImage)}
+            wrapperClassName={`rename-playlist-modal__cover-img-wrapper modal-cover-img-wrapper ${tracks.length <= 3 ? "single" : ""}`}
+            fallbackImgWrapperClassName="playlist-cover-fallback-wrapper"
+            fallbackImgClassName="playlist-cover-fallback "
+            imgClassName="rename-playlist-modal__cover"
+          />
 
           <div className="delete-playlist-modal__actions modal-actions">
             <button className="delete-playlist-modal__cancel modal-cancel-submit-button modal-cancel-button" onClick={toggleDeleteVisible}>
