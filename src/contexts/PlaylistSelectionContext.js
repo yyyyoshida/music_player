@@ -24,68 +24,81 @@ export const PlaylistSelectionProvider = ({ children }) => {
     setIsSelectVisible((prev) => !prev);
   }
 
-  const addTrackToPlaylist = async (playlistId) => {
+  async function saveTrackToFirestore(playlistId) {
+    await addDoc(collection(db, "playlists", playlistId, "tracks"), {
+      ...selectedTrack,
+      addedAt: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db, "playlists", playlistId), {
+      totalDuration: increment(selectedTrack.duration),
+    });
+  }
+
+  // 音声ファイルをStorageにアップロード
+  async function uploadAudio() {
+    const audioRef = ref(storage, `tracks/${selectedTrack.title}_${Date.now()}.mp3`);
+    await uploadBytes(audioRef, uploadTrackFile);
+    const audioURL = await getDownloadURL(audioRef);
+    const audioPath = audioRef.fullPath;
+
+    return { audioURL, audioPath };
+  }
+
+  // 画像もあればアップロード
+  async function uploadImage() {
+    let imageURL = FALLBACK_COVER_IMAGE;
+    let imagePath = null;
+
+    if (localCoverImageUrl && localCoverImageUrl.startsWith("blob:")) {
+      const response = await fetch(localCoverImageUrl);
+      const blob = await response.blob();
+
+      // 圧縮＆WebP変換
+      const compressedBlob = await imageCompression(blob, {
+        maxSizeMB: 0.1,
+        maxWidthOrHeight: 500,
+        fileType: "image/webp",
+        useWebWorker: true,
+      });
+
+      const imageRef = ref(storage, `covers/${selectedTrack.title}_${Date.now()}.webp`);
+      await uploadBytes(imageRef, compressedBlob, {
+        cacheControl: "public,max-age=86400",
+      });
+      imageURL = await getDownloadURL(imageRef);
+      imagePath = imageRef.fullPath;
+    }
+
+    return { imageURL, imagePath };
+  }
+
+  async function addTrackToPlaylist(playlistId) {
     if (!selectedTrack) return;
 
     try {
       if (selectedTrack.trackUri) {
-        await addDoc(collection(db, "playlists", playlistId, "tracks"), {
-          ...selectedTrack,
-          addedAt: serverTimestamp(),
-        });
-
-        await updateDoc(doc(db, "playlists", playlistId), {
-          totalDuration: increment(selectedTrack.duration),
-        });
+        await saveTrackToFirestore(playlistId);
       } else {
-        // 音声ファイルをStorageにアップロード
-        const audioRef = ref(storage, `tracks/${selectedTrack.title}_${Date.now()}.mp3`);
-        await uploadBytes(audioRef, uploadTrackFile);
-        const audioURL = await getDownloadURL(audioRef);
-        const audioPath = audioRef.fullPath;
+        const [audioResult, imageResult] = await Promise.all([uploadAudio(), uploadImage()]);
 
-        // 画像もあればアップロード
-        let imageURL = FALLBACK_COVER_IMAGE;
-        let imagePath = null;
+        await Promise.all([
+          addDoc(collection(db, "playlists", playlistId, "tracks"), {
+            title: selectedTrack.title,
+            artist: selectedTrack.artist,
+            duration: selectedTrack.duration,
+            albumImage: imageResult.imageURL,
+            imagePath: imageResult.imagePath,
+            audioURL: audioResult.audioURL,
+            audioPath: audioResult.audioPath,
+            addedAt: serverTimestamp(),
+            source: "local",
+          }),
 
-        if (localCoverImageUrl && localCoverImageUrl.startsWith("blob:")) {
-          const response = await fetch(localCoverImageUrl);
-          const blob = await response.blob();
-
-          // 圧縮＆WebP変換
-          const compressedBlob = await imageCompression(blob, {
-            maxSizeMB: 0.1,
-            maxWidthOrHeight: 500,
-            fileType: "image/webp",
-            useWebWorker: true,
-          });
-
-          const imageRef = ref(storage, `covers/${selectedTrack.title}_${Date.now()}.webp`);
-
-          await uploadBytes(imageRef, compressedBlob, {
-            cacheControl: "public,max-age=86400",
-          });
-
-          imageURL = await getDownloadURL(imageRef);
-          imagePath = imageRef.fullPath;
-        }
-
-        // Firestore に音声と画像のURL込みで保存
-        await addDoc(collection(db, "playlists", playlistId, "tracks"), {
-          title: selectedTrack.title,
-          artist: selectedTrack.artist,
-          duration: selectedTrack.duration,
-          albumImage: imageURL,
-          audioURL: audioURL,
-          audioPath: audioPath,
-          imagePath: imagePath,
-          addedAt: serverTimestamp(),
-          source: "local",
-        });
-
-        await updateDoc(doc(db, "playlists", playlistId), {
-          totalDuration: increment(selectedTrack.duration),
-        });
+          updateDoc(doc(db, "playlists", playlistId), {
+            totalDuration: increment(selectedTrack.duration),
+          }),
+        ]);
       }
 
       showMessage("add");
@@ -94,7 +107,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
       console.error(" 曲追加失敗", error);
       console.log(selectedTrack);
     }
-  };
+  }
 
   function handleTrackSelect(track, type, shouldToggle = true, file = null, imageUrl = null) {
     if (type === "searchResults") {

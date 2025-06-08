@@ -3,7 +3,7 @@ import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistCoverImageGrid = ({ images, wrapperClassName = "", fallbackImgWrapperClassName = "", fallbackImgClassName = "", imgClassName = "" }) => {
   const displayImages = [...images].slice(0, images.length <= 3 ? 1 : 4);
-  console.log(images);
+  // console.log(images);
   const isSingleImage = images.length <= 3;
 
   function isFallbackImage(imgSrc) {
