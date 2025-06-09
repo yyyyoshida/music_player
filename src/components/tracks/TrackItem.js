@@ -6,19 +6,19 @@ import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContex
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 
-const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, type, date, query }) => {
+const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, date, query }) => {
   const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  const { setIsClickedTrack, setIsTrackSet, setCurrentAudioURL } = usePlayerContext();
+  const { setIsClickedTrack, setIsTrackSet, setCurrentAudioURL, trackOrigin } = usePlayerContext();
 
   const buttonRef = useRef(null);
 
   const delayedIsClicked = useDelayedValue(isClicked);
   const delayedIsTrackPlaying = useDelayedValue(isTrackPlaying);
 
-  const resolvedIsPlaying = type === "firebase" ? delayedIsTrackPlaying : isTrackPlaying;
-  const resolvedIsClicked = type === "firebase" ? delayedIsClicked : isClicked;
+  const resolvedIsPlaying = trackOrigin === "firebase" ? delayedIsTrackPlaying : isTrackPlaying;
+  const resolvedIsClicked = trackOrigin === "firebase" ? delayedIsClicked : isClicked;
 
   const positionOffsetY = -60;
 
@@ -29,7 +29,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
     const [delayedValue, setDelayedValue] = useState(value);
 
     useEffect(() => {
-      if (type === "searchResults") return;
+      if (trackOrigin === "searchResults") return;
       const timeout = setTimeout(() => {
         setDelayedValue(value);
       }, delay);
@@ -103,7 +103,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
           onClick={(e) => {
             e.stopPropagation();
             setButtonPosition();
-            handleTrackSelect(track, type, false);
+            handleTrackSelect(track, false);
             toggleMenu(index);
 
             setTrackIndex(index);

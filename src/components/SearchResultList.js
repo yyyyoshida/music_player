@@ -7,7 +7,7 @@ import TrackListSkeleton from "./skeletonUI/TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const TrackList = ({ containerRef }) => {
-  const { playerTrack, formatTime, isPlaying, trackId } = usePlayerContext();
+  const { playerTrack, formatTime, isPlaying, trackId, setTrackOrigin } = usePlayerContext();
   const { searchResults, query } = useContext(SearchContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
 
@@ -22,6 +22,7 @@ const TrackList = ({ containerRef }) => {
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
     setInitialLoaded(false);
+    setTrackOrigin("searchResults");
   }, [query]);
 
   useEffect(() => {
@@ -53,7 +54,7 @@ const TrackList = ({ containerRef }) => {
                   // setIsTrackSet={setIsTrackSet}
                   playerTrack={playerTrack}
                   formatTime={formatTime}
-                  type={"searchResults"}
+                  // type={"searchResults"}
                   query={query}
                 />
               );
