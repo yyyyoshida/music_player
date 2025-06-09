@@ -28,3 +28,40 @@
     transform: translateY(0);
   }
 }
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  position: absolute;
+  left: 50%;
+  bottom: 120px;
+  // bottom: 100px;
+  transform: translateX(-50%);
+  height: 4px;
+  border-radius: 5px;
+  width: calc(100% - 80px);
+  --progress-layer: no-repeat linear-gradient(#f0f0f0 0 0);
+  background: var(--progress-layer), var(--progress-layer), #3a3a3a;
+  background-size: 60% 100%;
+}
+
+.loader.animate {
+  animation: progressAnimation 1s infinite;
+}
+
+@keyframes progressAnimation {
+  0% {
+    background-position:
+      -150% 0,
+      -150% 0;
+  }
+  66% {
+    background-position:
+      250% 0,
+      -150% 0;
+  }
+  100% {
+    background-position:
+      250% 0,
+      250% 0;
+  }
+}
