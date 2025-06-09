@@ -457,11 +457,21 @@
     border-radius: 5px;
     border: rgba(175, 175, 175, 0.2745098039) solid 1px;
     overflow: hidden;
+    position: relative;
   }
 
   &__track-cover-img {
     width: 100%;
     height: 100%;
+  }
+
+  &__track-cover-img.fallback-cover {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    left: 46.5%;
+    transform: translate(-50%, -50%);
   }
 
   &__track-title {

@@ -70,6 +70,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
     return { albumImage, albumImagePath };
   }
+  //ローカル曲に画像がない場合の処理アップロード中のUIを適応させる ★
+  // アップロード中で失敗したときの処理を追加する
 
   async function saveTrackToFirestore(playlistId) {
     await addDoc(collection(db, "playlists", playlistId, "tracks"), {
