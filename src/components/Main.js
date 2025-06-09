@@ -21,6 +21,7 @@ import PlaylistDetail from "./playlists/PlaylistDetail";
 import ActionSuccessMessage from "./ActionSuccessMessage";
 import TrackMoreMenu from "./tracks/TrackMoreMenu";
 import { TrackMoreMenuProvider } from "../contexts/TrackMoreMenuContext";
+import UploadStatusModal from "./UploadStatusModal";
 
 const Main = ({ token }) => {
   const [profile, setProfile] = useState(null);
@@ -100,6 +101,8 @@ const Main = ({ token }) => {
               {/* <PlaylistSelection /> */}
               <TrackMoreMenu />
               {isSelectVisible && <PlaylistSelection />}
+              <UploadStatusModal />
+
               <CreatePlaylist />
               {/* <PlaybackProvider> */}
               <Routes>

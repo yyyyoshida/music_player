@@ -4,17 +4,15 @@ import Main from "./components/Main";
 import Login from "./components/Login";
 import { getNewAccessToken } from "./utils/spotifyAuth"; // getNewAccessTokenをインポート
 import { SearchProvider } from "./contexts/SearchContext";
-// import { SearchContext } from './components/SearchContext';
 import { TokenContext } from "./contexts/isTokenContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
-
 import { BrowserRouter } from "react-router-dom";
-
 import { PlaybackProvider } from "./contexts/PlaybackContext";
 
 import { PlaylistProvider } from "./contexts/PlaylistContext";
 import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
+import { UploadModalProvider } from "./contexts/UploadModalContext";
 
 import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageContext";
 
@@ -89,13 +87,15 @@ function App() {
             <PlaybackProvider isTrackSet={isTrackSet} queue={queue} setQueue={setQueue} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
               <SearchProvider>
                 <PlaylistProvider>
-                  <PlaylistSelectionProvider>
-                    {/* <h1>Spotifyアプリ</h1> */}
-                    {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
-                    <Header token={token} onSearchResults={handleSearchResults} />
-                    {/* {!token && <Login />} */}
-                    <Main token={token} searchResults={searchResults} />
-                  </PlaylistSelectionProvider>
+                  <UploadModalProvider>
+                    <PlaylistSelectionProvider>
+                      {/* <h1>Spotifyアプリ</h1> */}
+                      {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
+                      <Header token={token} onSearchResults={handleSearchResults} />
+                      {/* {!token && <Login />} */}
+                      <Main token={token} searchResults={searchResults} />
+                    </PlaylistSelectionProvider>
+                  </UploadModalProvider>
                 </PlaylistProvider>
               </SearchProvider>
             </PlaybackProvider>
