@@ -22,7 +22,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [playlistInfo, setPlaylistInfo] = useState({ duration: 0 });
 
-  const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet } = usePlayerContext();
+  const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet, setTrackOrigin } = usePlayerContext();
 
   const { deletePlaylist, tracks, setTracks, formatTimeHours, setPlaylistId, playlistName, deletedTrackDuration, setDeletedTrackDuration, isCoverImageFading } =
     useContext(PlaylistContext);
@@ -38,6 +38,7 @@ const PlaylistDetail = ({ containerRef }) => {
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
     setDeletedTrackDuration(0);
+    setTrackOrigin("firebase");
   }, []);
 
   useEffect(() => {
@@ -197,7 +198,6 @@ const PlaylistDetail = ({ containerRef }) => {
               isClicked={isClicked}
               playerTrack={playerTrack}
               formatTime={formatTime}
-              type={"firebase"}
               addedAt={track.addedAt}
               date={date.toLocaleString()}
               currentPlayedAt={currentPlayedAt}

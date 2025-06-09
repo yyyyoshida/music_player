@@ -7,6 +7,7 @@ import { PlaylistContext } from "../contexts/PlaylistContext";
 import imageCompression from "browser-image-compression";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 import UploadModalContext from "./UploadModalContext";
+import { usePlayerContext } from "../contexts/PlayerContext";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -19,6 +20,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const { setPreselectedTrack } = useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
+  const { trackOrigin } = usePlayerContext();
 
   const playlistNameRef = useRef("");
 
@@ -84,11 +86,15 @@ export const PlaylistSelectionProvider = ({ children }) => {
   }
 
   async function addTrackToPlaylist(playlistId) {
+    console.log(selectedTrack);
+    console.log("if文が通るか", selectedTrack.audioURL);
     console.time("アップロード");
 
     if (!selectedTrack) return;
+    console.log(selectedTrack);
+    console.log("if文が通るか", selectedTrack.audioURL);
 
-    if (selectedTrack.source === "local") {
+    if (selectedTrack.source === "local" && selectedTrack.audioURL === false) {
       hideSelectModal();
       showUploadModal();
     }
@@ -96,6 +102,24 @@ export const PlaylistSelectionProvider = ({ children }) => {
     try {
       if (selectedTrack.trackUri) {
         await saveTrackToFirestore(playlistId);
+      } else if (selectedTrack.audioURL) {
+        await Promise.all([
+          addDoc(collection(db, "playlists", playlistId, "tracks"), {
+            title: selectedTrack.title,
+            artist: selectedTrack.artist,
+            duration: selectedTrack.duration,
+            albumImage: selectedTrack.imageURL,
+            imagePath: selectedTrack.imagePath,
+            audioURL: selectedTrack.audioURL,
+            audioPath: selectedTrack.audioPath,
+            addedAt: serverTimestamp(),
+            source: "local",
+          }),
+
+          updateDoc(doc(db, "playlists", playlistId), {
+            totalDuration: increment(selectedTrack.duration),
+          }),
+        ]);
       } else {
         const [audioResult, imageResult] = await Promise.all([uploadAudio(), uploadImage()]);
 
@@ -129,8 +153,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
     }
   }
 
-  function handleTrackSelect(track, type, shouldToggle = true, file = null, imageUrl = null) {
-    if (type === "searchResults") {
+  function handleTrackSelect(track, shouldToggle = true, file = null, imageUrl = null) {
+    console.log(trackOrigin, "どこから北のこの曲handleTrackSelect");
+    if (trackOrigin === "searchResults") {
       setSelectedTrack({
         trackId: track.id,
         trackUri: track.uri,
@@ -140,7 +165,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         duration: track.duration_ms,
         source: "spotify",
       });
-    } else if (type === "firebase") {
+    } else if (trackOrigin === "firebase" && track.source === "spotify") {
       setSelectedTrack({
         trackId: track.trackId,
         trackUri: track.trackUri,
@@ -150,12 +175,16 @@ export const PlaylistSelectionProvider = ({ children }) => {
         duration: track.duration,
         source: "spotify",
       });
-    } else if (type === "local") {
+    } else if (trackOrigin === "local" || track.source === "local") {
+      console.log(track);
       setSelectedTrack({
         title: track.title,
         artist: track.artist,
-        duration: track.duration_ms,
-        albumImage: track.image,
+        duration: track.duration_ms || track.duration,
+        imageURL: track.albumImage,
+        audioPath: track.audioPath,
+        audioURL: track.audioURL,
+        imagePath: track.imagePath,
         source: "local",
       });
       if (file) setUploadTrackFile(file);
