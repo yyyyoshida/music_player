@@ -42,6 +42,7 @@ const LocalFileImportNav = () => {
   function handleFileUpload(event) {
     const file = event.target.files[0];
     if (file) {
+      event.target.value = "";
       getMediaTags(file);
       setUploadTrackFile(file);
       console.log("選択されたファイル:", file);
