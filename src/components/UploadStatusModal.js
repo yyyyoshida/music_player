@@ -5,6 +5,8 @@ import PlaylistContext from "../contexts/PlaylistContext";
 const UploadStatusModal = () => {
   const { isVisible, hideUploadModal } = useContext(UploadModalContext);
   const { preselectedTrack } = useContext(PlaylistContext);
+  // let trackCoverImage;
+  const isUsedFallbackImage = preselectedTrack?.albumImage === "/img/fallback-cover.png";
 
   return (
     <div className="upload-modal modal" style={{ visibility: isVisible ? "visible" : "hidden" }}>
@@ -13,7 +15,11 @@ const UploadStatusModal = () => {
           <h2 className="modal-title">曲をアップロードしています. . .</h2>
           <div className="upload-modal__track">
             <div className="upload-modal__track-cover-img-wrapper">
-              <img src={preselectedTrack?.albumImage} className="upload-modal__track-cover-img" alt="アップロード中の曲のカバー画像" />
+              <img
+                src={preselectedTrack?.albumImage}
+                className={`upload-modal__track-cover-img ${isUsedFallbackImage ? "fallback-cover" : ""}`}
+                alt="アップロード中の曲のカバー画像"
+              />
             </div>
             <div className="upload-modal__track-info">
               <p className="upload-modal__track-title">{preselectedTrack?.title ?? "タイトル不明"}</p>
