@@ -6,6 +6,7 @@ import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageCon
 import { PlaylistContext } from "../contexts/PlaylistContext";
 import imageCompression from "browser-image-compression";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
+import UploadModalContext from "./UploadModalContext";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -17,11 +18,20 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const { setPreselectedTrack } = useContext(PlaylistContext);
+  const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
 
   const playlistNameRef = useRef("");
 
   function toggleSelectVisible() {
     setIsSelectVisible((prev) => !prev);
+  }
+
+  function showSelectModal() {
+    setIsSelectVisible(true);
+  }
+
+  function hideSelectModal() {
+    setIsSelectVisible(false);
   }
 
   async function saveTrackToFirestore(playlistId) {
@@ -74,7 +84,14 @@ export const PlaylistSelectionProvider = ({ children }) => {
   }
 
   async function addTrackToPlaylist(playlistId) {
+    console.time("アップロード");
+
     if (!selectedTrack) return;
+
+    if (selectedTrack.source === "local") {
+      hideSelectModal();
+      showUploadModal();
+    }
 
     try {
       if (selectedTrack.trackUri) {
@@ -101,8 +118,11 @@ export const PlaylistSelectionProvider = ({ children }) => {
         ]);
       }
 
+      console.timeEnd("アップロード");
       showMessage("add");
-      toggleSelectVisible();
+      // toggleSelectVisible();
+      hideSelectModal();
+      hideUploadModal();
     } catch (error) {
       console.error(" 曲追加失敗", error);
       console.log(selectedTrack);
