@@ -172,7 +172,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
       });
     }
 
-    if (shouldToggle) toggleSelectVisible();
+    if (shouldToggle) showSelectModal();
   }
 
   useEffect(() => {
