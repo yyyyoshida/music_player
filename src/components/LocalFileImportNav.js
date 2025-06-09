@@ -60,7 +60,8 @@ const LocalFileImportNav = () => {
         title: tags.title || uploadTrackFile.name,
         artist: tags.artist || "Unknown Artist",
         duration_ms: trackDuration,
-        imageURL: localCoverImageUrl || "/img/デフォルト画像.png",
+        albumImage: localCoverImageUrl || "/img/music-64.png",
+        // これ意味なくね↑ path上書きされるやんたしか
       };
 
       handleTrackSelect(localTrack, true, uploadTrackFile, localCoverImageUrl);

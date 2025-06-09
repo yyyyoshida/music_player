@@ -1,6 +1,6 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
 import { addDoc, collection, increment, serverTimestamp, updateDoc, doc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes, storageRef } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { PlaylistContext } from "../contexts/PlaylistContext";
@@ -24,28 +24,14 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
   const playlistNameRef = useRef("");
 
-  function toggleSelectVisible() {
-    setIsSelectVisible((prev) => !prev);
-  }
+  // コンポーネントの関数と簡単な処理は可読性重視のためアロー関数で書く↓
+  // それ以外はfunction宣言
 
-  function showSelectModal() {
-    setIsSelectVisible(true);
-  }
+  const toggleSelectVisible = () => setIsSelectVisible((prev) => !prev);
 
-  function hideSelectModal() {
-    setIsSelectVisible(false);
-  }
+  const showSelectModal = () => setIsSelectVisible(true);
 
-  async function saveTrackToFirestore(playlistId) {
-    await addDoc(collection(db, "playlists", playlistId, "tracks"), {
-      ...selectedTrack,
-      addedAt: serverTimestamp(),
-    });
-
-    await updateDoc(doc(db, "playlists", playlistId), {
-      totalDuration: increment(selectedTrack.duration),
-    });
-  }
+  const hideSelectPlaylistModal = () => setIsSelectVisible(false);
 
   // 音声ファイルをStorageにアップロード
   async function uploadAudio() {
@@ -59,8 +45,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
   // 画像もあればアップロード
   async function uploadImage() {
-    let imageURL = FALLBACK_COVER_IMAGE;
-    let imagePath = null;
+    let albumImage = FALLBACK_COVER_IMAGE;
+    let albumImagePath = null;
 
     if (localCoverImageUrl && localCoverImageUrl.startsWith("blob:")) {
       const response = await fetch(localCoverImageUrl);
@@ -78,11 +64,78 @@ export const PlaylistSelectionProvider = ({ children }) => {
       await uploadBytes(imageRef, compressedBlob, {
         cacheControl: "public,max-age=86400",
       });
-      imageURL = await getDownloadURL(imageRef);
-      imagePath = imageRef.fullPath;
+      albumImage = await getDownloadURL(imageRef);
+      albumImagePath = imageRef.fullPath;
     }
 
-    return { imageURL, imagePath };
+    return { albumImage, albumImagePath };
+  }
+
+  async function saveTrackToFirestore(playlistId) {
+    await addDoc(collection(db, "playlists", playlistId, "tracks"), {
+      ...selectedTrack,
+      addedAt: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db, "playlists", playlistId), {
+      totalDuration: increment(selectedTrack.duration),
+    });
+  }
+
+  async function saveUploadedLocalTrack(playlistId) {
+    await Promise.all([
+      addDoc(collection(db, "playlists", playlistId, "tracks"), {
+        title: selectedTrack.title,
+        artist: selectedTrack.artist,
+        duration_ms: selectedTrack.duration_ms,
+        albumImage: selectedTrack.albumImage,
+        albumImagePath: selectedTrack.albumImagePath,
+        audioURL: selectedTrack.audioURL,
+        audioPath: selectedTrack.audioPath,
+        addedAt: serverTimestamp(),
+        source: "local",
+      }),
+      updateDoc(doc(db, "playlists", playlistId), {
+        totalDuration: increment(selectedTrack.duration_ms),
+      }),
+    ]);
+  }
+
+  async function saveUploadAndNewTrack(playlistId) {
+    const [audioResult, imageResult] = await Promise.all([uploadAudio(), uploadImage()]);
+
+    await Promise.all([
+      addDoc(collection(db, "playlists", playlistId, "tracks"), {
+        title: selectedTrack.title,
+        artist: selectedTrack.artist,
+        duration_ms: selectedTrack.duration_ms,
+        albumImage: imageResult.albumImage,
+        albumImagePath: imageResult.albumImagePath,
+        audioURL: audioResult.audioURL,
+        audioPath: audioResult.audioPath,
+        addedAt: serverTimestamp(),
+        source: "local",
+      }),
+      updateDoc(doc(db, "playlists", playlistId), {
+        totalDuration: increment(selectedTrack.duration_ms),
+      }),
+    ]);
+  }
+
+  function afterTrackSaved() {
+    console.timeEnd("アップロード");
+    showMessage("add");
+    hideSelectPlaylistModal();
+    hideUploadModal();
+  }
+
+  async function executeTrackSave(actionFunction) {
+    try {
+      await actionFunction();
+      afterTrackSaved();
+    } catch (error) {
+      console.error("曲追加失敗", error);
+    }
   }
 
   async function addTrackToPlaylist(playlistId) {
@@ -91,70 +144,34 @@ export const PlaylistSelectionProvider = ({ children }) => {
     console.time("アップロード");
 
     if (!selectedTrack) return;
-    console.log(selectedTrack);
-    console.log("if文が通るか", selectedTrack.audioURL);
 
-    if (selectedTrack.source === "local" && selectedTrack.audioURL === false) {
-      hideSelectModal();
+    const isNewLocalTrack = selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
+    const isSpotifyTrack = selectedTrack.trackUri;
+    const isUploadedLocalTrack = selectedTrack.audioURL;
+
+    if (isNewLocalTrack) {
+      hideSelectPlaylistModal();
       showUploadModal();
     }
-
-    try {
-      if (selectedTrack.trackUri) {
-        await saveTrackToFirestore(playlistId);
-      } else if (selectedTrack.audioURL) {
-        await Promise.all([
-          addDoc(collection(db, "playlists", playlistId, "tracks"), {
-            title: selectedTrack.title,
-            artist: selectedTrack.artist,
-            duration: selectedTrack.duration,
-            albumImage: selectedTrack.imageURL,
-            imagePath: selectedTrack.imagePath,
-            audioURL: selectedTrack.audioURL,
-            audioPath: selectedTrack.audioPath,
-            addedAt: serverTimestamp(),
-            source: "local",
-          }),
-
-          updateDoc(doc(db, "playlists", playlistId), {
-            totalDuration: increment(selectedTrack.duration),
-          }),
-        ]);
-      } else {
-        const [audioResult, imageResult] = await Promise.all([uploadAudio(), uploadImage()]);
-
-        await Promise.all([
-          addDoc(collection(db, "playlists", playlistId, "tracks"), {
-            title: selectedTrack.title,
-            artist: selectedTrack.artist,
-            duration: selectedTrack.duration,
-            albumImage: imageResult.imageURL,
-            imagePath: imageResult.imagePath,
-            audioURL: audioResult.audioURL,
-            audioPath: audioResult.audioPath,
-            addedAt: serverTimestamp(),
-            source: "local",
-          }),
-
-          updateDoc(doc(db, "playlists", playlistId), {
-            totalDuration: increment(selectedTrack.duration),
-          }),
-        ]);
-      }
-
-      console.timeEnd("アップロード");
-      showMessage("add");
-      // toggleSelectVisible();
-      hideSelectModal();
-      hideUploadModal();
-    } catch (error) {
-      console.error(" 曲追加失敗", error);
-      console.log(selectedTrack);
+    // elseを使わず、returnで区切ったほうが個人的に読みやすかったのだが、
+    // それ以降の共通処理 catch()とかが実行されないので
+    // try-catch関数でラップして共通処理を走らせるようにした ↓↓↓
+    if (isSpotifyTrack) {
+      await executeTrackSave(() => saveTrackToFirestore(playlistId));
+      return;
     }
+
+    if (isUploadedLocalTrack) {
+      await executeTrackSave(() => saveUploadedLocalTrack(playlistId));
+      return;
+    }
+
+    await executeTrackSave(() => saveUploadAndNewTrack(playlistId));
   }
 
   function handleTrackSelect(track, shouldToggle = true, file = null, imageUrl = null) {
     console.log(trackOrigin, "どこから北のこの曲handleTrackSelect");
+
     if (trackOrigin === "searchResults") {
       setSelectedTrack({
         trackId: track.id,
@@ -162,7 +179,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         albumImage: track.album.images[1]?.url,
         title: track.name,
         artist: track.artists[0]?.name,
-        duration: track.duration_ms,
+        duration_ms: track.duration_ms,
         source: "spotify",
       });
     } else if (trackOrigin === "firebase" && track.source === "spotify") {
@@ -172,7 +189,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         albumImage: track.albumImage,
         title: track.title,
         artist: track.artist,
-        duration: track.duration,
+        duration_ms: track.duration,
         source: "spotify",
       });
     } else if (trackOrigin === "local" || track.source === "local") {
@@ -180,11 +197,11 @@ export const PlaylistSelectionProvider = ({ children }) => {
       setSelectedTrack({
         title: track.title,
         artist: track.artist,
-        duration: track.duration_ms || track.duration,
-        imageURL: track.albumImage,
+        duration_ms: track.duration_ms,
+        albumImage: track.albumImage,
+        albumImagePath: track.albumImagePath,
         audioPath: track.audioPath,
         audioURL: track.audioURL,
-        imagePath: track.imagePath,
         source: "local",
       });
       if (file) setUploadTrackFile(file);

@@ -73,7 +73,7 @@ export const PlaylistProvider = ({ children }) => {
       const playlistRef = await addDoc(collection(db, "playlists"), {
         name: newName,
         createdAt: serverTimestamp(),
-        ...(preselectedTrack ? { totalDuration: preselectedTrack.duration } : {}),
+        ...(preselectedTrack ? { totalDuration: preselectedTrack.duration_ms } : {}),
       });
 
       if (preselectedTrack) {

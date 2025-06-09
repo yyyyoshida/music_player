@@ -112,7 +112,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
         >
           <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
         </button>
-        <div className="track-item__track-duration">{formatTime(track.duration || track.duration_ms)}</div>
+        <div className="track-item__track-duration">{formatTime(track.duration_ms)}</div>
       </div>
     </li>
   );
