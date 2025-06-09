@@ -429,3 +429,52 @@
     // gap: 20px;
   }
 }
+
+.upload-modal {
+  &__track {
+    margin-top: 40px;
+
+    width: 100%;
+    height: 100px;
+    background-color: #3a3a3a;
+    border-radius: 5px;
+    display: flex;
+    padding: 10px;
+    align-items: center;
+  }
+
+  &__track-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-left: 10px;
+  }
+
+  &__track-cover-img-wrapper {
+    height: 100%;
+    aspect-ratio: 1/1;
+    background-color: #181818;
+    border-radius: 5px;
+    border: rgba(175, 175, 175, 0.2745098039) solid 1px;
+    overflow: hidden;
+  }
+
+  &__track-cover-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__track-title {
+    font-weight: 700;
+  }
+
+  &__track-artist {
+    color: $text-color-sub;
+  }
+
+  &__exsit-button {
+    position: absolute;
+    right: 40px;
+    bottom: 20px;
+  }
+}
