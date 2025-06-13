@@ -1,43 +1,48 @@
-import React, { useContext } from "react";
-// import { PlaylistSelectionContext } from './PlaylistSelectionContext';
+import { useContext } from "react";
+
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 const ActionSuccessMessage = () => {
   const { isMessageVisible, actionType } = useContext(ActionSuccessMessageContext);
 
   function getMessage() {
-    if (actionType === "add") {
-      return "楽曲をプレイリストに追加しました";
-    }
+    switch (actionType) {
+      case "add":
+        return "楽曲をプレイリストに追加しました";
 
-    if (actionType === "deleteTrack") {
-      return "楽曲をプレイリストから削除しました";
-    }
+      case "addFailed":
+        return (
+          <>
+            {<img src="/img/failed.png" className="toast-message__icon" />}
+            楽曲の追加に失敗しました
+          </>
+        );
 
-    if (actionType === "deletePlaylist") {
-      return "プレイリストを削除しました";
-    }
+      case "deleteTrack":
+        return "楽曲をプレイリストから削除しました";
 
-    if (actionType === "newPlaylist") {
-      return "新しいプレイリストを作成しました";
-    }
+      case "deletePlaylist":
+        return "プレイリストを削除しました";
 
-    if (actionType === "rename") {
-      return "プレイリストの名前を変更しました";
-    }
+      case "newPlaylist":
+        return "新しいプレイリストを作成しました";
 
-    if (actionType === "unselected") {
-      return "曲がセットされていません";
+      case "rename":
+        return "プレイリストの名前を変更しました";
+
+      case "unselected":
+        return "曲がセットされていません";
+
+      default:
+        return "";
     }
   }
 
   return (
-    <div className={`success-message ${isMessageVisible ? "playlist-update-success" : ""}`} style={{ visibility: isMessageVisible ? "visible" : "hidden" }}>
+    <div className={`toast-message ${isMessageVisible ? "playlist-update-success" : ""}`} style={{ visibility: isMessageVisible ? "visible" : "hidden" }}>
       {getMessage()}
     </div>
   );
 };
 
 export default ActionSuccessMessage;
-
-// dadfadf

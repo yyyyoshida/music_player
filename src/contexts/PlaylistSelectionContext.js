@@ -80,7 +80,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
     });
 
     await updateDoc(doc(db, "playlists", playlistId), {
-      totalDuration: increment(selectedTrack.duration),
+      totalDuration: increment(selectedTrack.duration_ms),
     });
   }
 
@@ -137,6 +137,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
       afterTrackSaved();
     } catch (error) {
       console.error("曲追加失敗", error);
+      hideUploadModal();
+      hideSelectPlaylistModal();
+      showMessage("addFailed");
     }
   }
 
