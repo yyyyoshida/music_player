@@ -1928,7 +1928,7 @@ footer {
   gap: 30px;
 }
 
-.success-message {
+.toast-message {
   visibility: hidden;
   position: fixed;
   right: 20px;
@@ -1943,7 +1943,11 @@ footer {
   padding: 16px;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
   will-change: right, opacity;
-  pointer-events: none;
+}
+.toast-message__icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
 }
 
 .playlist-update-success {
