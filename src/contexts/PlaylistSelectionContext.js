@@ -194,7 +194,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         albumImage: track.albumImage,
         title: track.title,
         artist: track.artist,
-        duration_ms: track.duration,
+        duration_ms: track.duration_ms,
         source: "spotify",
       });
     } else if (trackOrigin === "local" || track.source === "local") {

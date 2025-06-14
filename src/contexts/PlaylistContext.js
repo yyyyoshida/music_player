@@ -141,9 +141,9 @@ export const PlaylistProvider = ({ children }) => {
       await deleteDoc(trackRef);
 
       await updateDoc(doc(db, "playlists", playlistId), {
-        totalDuration: increment(-deletedTrack.duration),
+        totalDuration: increment(-deletedTrack.duration_ms),
       });
-      setDeletedTrackDuration((prev) => prev + deletedTrack.duration);
+      setDeletedTrackDuration((prev) => prev + deletedTrack.duration_ms);
 
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
 
