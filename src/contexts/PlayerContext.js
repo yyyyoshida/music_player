@@ -19,6 +19,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const [currentAudioURL, setCurrentAudioURL] = useState(null);
   const [isLocalPlaying, setIsLocalPlaying] = useState(false);
   const [isSpotifyPlaying, setIsSpotifyPlaying] = useState(false);
+  const [trackOrigin, setTrackOrigin] = useState(null);
 
   const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
   const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
@@ -327,6 +328,9 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
 
         isClickedTrack,
         setIsClickedTrack,
+
+        trackOrigin,
+        setTrackOrigin,
       }}
     >
       {children}

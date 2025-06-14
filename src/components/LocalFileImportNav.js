@@ -2,6 +2,7 @@ import { useEffect, useState, useContext, useRef } from "react";
 import jsmediatags from "jsmediatags/dist/jsmediatags.min.js";
 import LocalAudioDuration from "./LocalAudioDuration";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
+import { usePlayerContext } from "../contexts/PlayerContext";
 
 const LocalFileImportNav = () => {
   const fileInputRef = useRef(null);
@@ -12,8 +13,10 @@ const LocalFileImportNav = () => {
   const [tags, setTags] = useState(null);
 
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+  const { setTrackOrigin } = usePlayerContext();
 
   function handleClick() {
+    setTrackOrigin("local");
     fileInputRef.current?.click();
   }
 
@@ -42,6 +45,7 @@ const LocalFileImportNav = () => {
   function handleFileUpload(event) {
     const file = event.target.files[0];
     if (file) {
+      event.target.value = "";
       getMediaTags(file);
       setUploadTrackFile(file);
       console.log("選択されたファイル:", file);
@@ -56,10 +60,11 @@ const LocalFileImportNav = () => {
         title: tags.title || uploadTrackFile.name,
         artist: tags.artist || "Unknown Artist",
         duration_ms: trackDuration,
-        image: localCoverImageUrl || "/img/デフォルト画像.png",
+        albumImage: localCoverImageUrl || "/img/fallback-cover.png",
+        // これ意味なくね↑ path上書きされるやんたしか
       };
 
-      handleTrackSelect(localTrack, "local", true, uploadTrackFile, localCoverImageUrl);
+      handleTrackSelect(localTrack, true, uploadTrackFile, localCoverImageUrl);
       console.log("ローカルトラック情報", localTrack);
     }
   }, [uploadTrackFile, tags, trackDuration, localCoverImageUrl]);
