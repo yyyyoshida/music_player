@@ -1,5 +1,5 @@
 @use "variables" as *;
-.success-message {
+.toast-message {
   visibility: hidden;
   position: fixed;
   right: 20px;
@@ -16,6 +16,11 @@
   will-change: right, opacity;
 
   pointer-events: none;
+  &__icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+  }
 }
 
 .playlist-update-success {

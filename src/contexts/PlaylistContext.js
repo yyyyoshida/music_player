@@ -73,7 +73,7 @@ export const PlaylistProvider = ({ children }) => {
       const playlistRef = await addDoc(collection(db, "playlists"), {
         name: newName,
         createdAt: serverTimestamp(),
-        ...(preselectedTrack ? { totalDuration: preselectedTrack.duration } : {}),
+        ...(preselectedTrack ? { totalDuration: preselectedTrack.duration_ms } : {}),
       });
 
       if (preselectedTrack) {
@@ -141,9 +141,9 @@ export const PlaylistProvider = ({ children }) => {
       await deleteDoc(trackRef);
 
       await updateDoc(doc(db, "playlists", playlistId), {
-        totalDuration: increment(-deletedTrack.duration),
+        totalDuration: increment(-deletedTrack.duration_ms),
       });
-      setDeletedTrackDuration((prev) => prev + deletedTrack.duration);
+      setDeletedTrackDuration((prev) => prev + deletedTrack.duration_ms);
 
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
 

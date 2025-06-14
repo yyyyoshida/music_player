@@ -1479,6 +1479,55 @@ footer {
   bottom: 20px;
 }
 
+.upload-modal__track {
+  margin-top: 40px;
+  width: 100%;
+  height: 100px;
+  background-color: #3a3a3a;
+  border-radius: 5px;
+  display: flex;
+  padding: 10px;
+  align-items: center;
+}
+.upload-modal__track-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 10px;
+}
+.upload-modal__track-cover-img-wrapper {
+  height: 100%;
+  aspect-ratio: 1/1;
+  background-color: #181818;
+  border-radius: 5px;
+  border: rgba(175, 175, 175, 0.2745098039) solid 1px;
+  overflow: hidden;
+  position: relative;
+}
+.upload-modal__track-cover-img {
+  width: 100%;
+  height: 100%;
+}
+.upload-modal__track-cover-img.fallback-cover {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 50%;
+  left: 46.5%;
+  transform: translate(-50%, -50%);
+}
+.upload-modal__track-title {
+  font-weight: 700;
+}
+.upload-modal__track-artist {
+  color: #b3b3b3;
+}
+.upload-modal__exsit-button {
+  position: absolute;
+  right: 40px;
+  bottom: 20px;
+}
+
 .home {
   width: 100%;
 }
@@ -1879,7 +1928,7 @@ footer {
   gap: 30px;
 }
 
-.success-message {
+.toast-message {
   visibility: hidden;
   position: fixed;
   right: 20px;
@@ -1894,7 +1943,11 @@ footer {
   padding: 16px;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
   will-change: right, opacity;
-  pointer-events: none;
+}
+.toast-message__icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
 }
 
 .playlist-update-success {
@@ -2154,5 +2207,34 @@ footer {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+/* HTML: <div class="loader"></div> */
+.loader {
+  position: absolute;
+  left: 50%;
+  bottom: 120px;
+  transform: translateX(-50%);
+  height: 4px;
+  border-radius: 5px;
+  width: calc(100% - 80px);
+  --progress-layer: no-repeat linear-gradient(#f0f0f0 0 0);
+  background: var(--progress-layer), var(--progress-layer), #3a3a3a;
+  background-size: 60% 100%;
+}
+
+.loader.animate {
+  animation: progressAnimation 2s infinite;
+}
+
+@keyframes progressAnimation {
+  0% {
+    background-position: -150% 0, -150% 0;
+  }
+  66% {
+    background-position: 250% 0, -150% 0;
+  }
+  100% {
+    background-position: 250% 0, 250% 0;
   }
 }
