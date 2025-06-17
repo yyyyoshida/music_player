@@ -34,7 +34,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const coverImagesRef = useRef();
 
   const [showSkeleton, setShowSkeleton] = useState(true);
-
+  const SKELETON_TIME = 200;
   const isEmptyPlaylist = tracks.length === 0;
 
   useEffect(() => {
@@ -44,16 +44,20 @@ const PlaylistDetail = ({ containerRef }) => {
   }, []);
 
   useEffect(() => {
-    if (isEmptyPlaylist) {
-      setShowSkeleton(false);
-      return;
-    }
+    const timer = setTimeout(() => {
+      if (isEmptyPlaylist) {
+        setShowSkeleton(false);
+        return;
+      }
 
-    if (imagesLoaded) {
-      setShowSkeleton(false);
-    } else {
-      setShowSkeleton(true);
-    }
+      if (imagesLoaded) {
+        setShowSkeleton(false);
+      } else {
+        setShowSkeleton(true);
+      }
+    }, SKELETON_TIME);
+
+    return () => clearTimeout(timer);
   }, [imagesLoaded, isEmptyPlaylist]);
 
   useEffect(() => {
