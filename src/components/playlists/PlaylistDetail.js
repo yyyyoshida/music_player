@@ -21,9 +21,9 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isRenameVisible, setIsRenameVisible] = useState(false);
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [playlistInfo, setPlaylistInfo] = useState({ duration: 0 });
+  const [showSkeleton, setShowSkeleton] = useState(true);
 
   const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet, setTrackOrigin } = usePlayerContext();
-
   const { deletePlaylist, tracks, setTracks, formatTimeHours, setPlaylistId, playlistName, deletedTrackDuration, setDeletedTrackDuration, isCoverImageFading } =
     useContext(PlaylistContext);
   const { setCurrentTrackId, currentTrackId, setQueue, queue, updateCurrentIndex, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
@@ -31,9 +31,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
   const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], 100);
-  const coverImagesRef = useRef();
 
-  const [showSkeleton, setShowSkeleton] = useState(true);
   const SKELETON_TIME = 200;
   const isEmptyPlaylist = tracks.length === 0;
 
@@ -171,6 +169,9 @@ const PlaylistDetail = ({ containerRef }) => {
 
       <TrackListHead />
 
+      <div className="playlist-detail__empty-message-wrapper empty-message-wrapper">
+        <p className={`playlist-detail__empty-message fade-on-loaded ${showSkeleton || !isEmptyPlaylist ? "" : "fade-in-up"}`}>まだ何も保存されていません</p>
+      </div>
       {showSkeleton && <TrackListSkeleton count={8} />}
       <>
         <ul className={`playlist-detail__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
