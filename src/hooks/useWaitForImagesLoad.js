@@ -5,13 +5,11 @@ const useWaitForImagesLoad = (type, tracks, deps = [], delay = 0, imagesLoadCoun
 
   useEffect(() => {
     const imageUrls = getImageUrls(type, tracks, imagesLoadCount);
-
     if (imageUrls.length === 0) return;
 
     setImagesLoaded(false);
 
     let timeoutId;
-
     waitForAllImagesToLoad(imageUrls).then(() => {
       timeoutId = setTimeout(() => setImagesLoaded(true), delay);
     });
