@@ -33,7 +33,9 @@ const PlaylistDetail = ({ containerRef }) => {
   const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], 100);
   const coverImagesRef = useRef();
 
-  const [initialLoaded, setInitialLoaded] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  const isEmptyPlaylist = tracks.length === 0;
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
@@ -42,8 +44,17 @@ const PlaylistDetail = ({ containerRef }) => {
   }, []);
 
   useEffect(() => {
-    console.log("initialLoaded", initialLoaded);
-  }, [initialLoaded]);
+    if (isEmptyPlaylist) {
+      setShowSkeleton(false);
+      return;
+    }
+
+    if (imagesLoaded) {
+      setShowSkeleton(false);
+    } else {
+      setShowSkeleton(true);
+    }
+  }, [imagesLoaded, isEmptyPlaylist]);
 
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
@@ -71,10 +82,11 @@ const PlaylistDetail = ({ containerRef }) => {
         const q = query(tracksRef, orderBy("addedAt"));
         const trackSnapshot = await getDocs(q);
         const trackList = trackSnapshot.docs.map((doc) => ({
-          id: doc.id, // ← ここでFirestoreのドキュメントIDもゲット
+          id: doc.id, // ← ここでFirestoreのドキュメントIDも取得
           ...doc.data(), // ← トラックの中身
         }));
         setTracks(trackList);
+        setQueue(trackList);
       } catch (error) {
         console.error("曲の取得に失敗した", error);
       }
@@ -83,18 +95,12 @@ const PlaylistDetail = ({ containerRef }) => {
     fetchTracks();
   }, [id]);
 
-  useEffect(() => {
-    console.log("queuequeuequeue", queue);
-  }, [queue]);
-
   function toggleDeleteVisible() {
     setIsDeleteVisible((prev) => !prev);
   }
 
   useEffect(() => {
     const track = queue[currentIndex];
-    console.log("hakkkaaaaaaaaaaaaa");
-    // 順に再生ボタンが機能しない問題
     if (!track) return;
 
     console.log(track);
@@ -104,24 +110,13 @@ const PlaylistDetail = ({ containerRef }) => {
     setCurrentPlayedAt(date.toLocaleString());
   }, [currentIndex]);
 
-  useEffect(() => {
-    setQueue(tracks);
-    // setIsTrackSet(true);
-  }, [tracks]);
-
-  useEffect(() => {
-    if (imagesLoaded) {
-      setInitialLoaded(true);
-    }
-  }, [imagesLoaded]);
-
   return (
     <div className="playlist-detail">
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
           <PlaylistCoverImageGrid
             images={tracks.map((track) => track.albumImage)}
-            wrapperClassName={`playlist-detail__header-cover-imgs ${!initialLoaded ? "" : isCoverImageFading ? "fade-out" : "fade-in"}`}
+            wrapperClassName={`playlist-detail__header-cover-imgs ${showSkeleton || isEmptyPlaylist ? "" : isCoverImageFading ? "fade-out" : "fade-in"}`}
             fallbackImgWrapperClassName="header-cover-fallback-wrapper"
             fallbackImgClassName="playlist-cover-fallback"
           />
@@ -130,12 +125,10 @@ const PlaylistDetail = ({ containerRef }) => {
             <img src={FALLBACK_COVER_IMAGE} className=" playlist-initial-cover-img playlist-detail__header-initial-cover-img" />
           </div>
         </div>
-        <div className="playlist-detail__header-info">
-          <h2 className={`playlist-detail__header-title fade-on-loaded ${!initialLoaded ? "" : "fade-in"}`}>{playlistName}</h2>
+        <div className={`playlist-detail__header-info fade-on-loaded ${showSkeleton ? "" : "fade-in"}`}>
+          <h2 className="playlist-detail__header-title">{playlistName}</h2>
 
-          <p
-            className={`playlist-detail__header-status fade-on-loaded ${!initialLoaded ? "" : "fade-in"}`}
-          >{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration - deletedTrackDuration)}`}</p>
+          <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration - deletedTrackDuration)}`}</p>
         </div>
 
         <div className="playlist-detail__header-actions-buttons">
@@ -174,38 +167,37 @@ const PlaylistDetail = ({ containerRef }) => {
 
       <TrackListHead />
 
-      {!initialLoaded && <TrackListSkeleton count={8} />}
+      {showSkeleton && <TrackListSkeleton count={8} />}
+      <>
+        <ul className={`playlist-detail__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
+          {tracks.map((track, index) => {
+            const timestamp = track.addedAt;
+            const date = timestamp.toDate();
 
-      <ul className={`playlist-detail__list fade-on-loaded ${!initialLoaded ? "" : "fade-in-up"} `}>
-        {tracks.map((track, index) => {
-          const timestamp = track.addedAt;
-          const date = timestamp.toDate();
+            const isCurrentTrack = currentTrackId === track.id;
 
-          // const isCurrentTrack = currentPlayedAt === date.toLocaleString();
-          // const isCurrentTrack = currentPlayedAt === date.getTime();
-          const isCurrentTrack = currentTrackId === track.id;
+            const isTrackPlaying = isCurrentTrack && isPlaying;
+            const isClicked = isCurrentTrack;
 
-          const isTrackPlaying = isCurrentTrack && isPlaying;
-          const isClicked = isCurrentTrack;
-
-          return (
-            <TrackItem
-              key={track?.addedAt?.seconds || index}
-              track={track}
-              index={index}
-              isCurrentTrack={isCurrentTrack}
-              isTrackPlaying={isTrackPlaying}
-              isClicked={isClicked}
-              playerTrack={playerTrack}
-              formatTime={formatTime}
-              addedAt={track.addedAt}
-              date={date.toLocaleString()}
-              currentPlayedAt={currentPlayedAt}
-              setCurrentPlayedAt={setCurrentPlayedAt}
-            />
-          );
-        })}
-      </ul>
+            return (
+              <TrackItem
+                key={track?.addedAt?.seconds || index}
+                track={track}
+                index={index}
+                isCurrentTrack={isCurrentTrack}
+                isTrackPlaying={isTrackPlaying}
+                isClicked={isClicked}
+                playerTrack={playerTrack}
+                formatTime={formatTime}
+                addedAt={track.addedAt}
+                date={date.toLocaleString()}
+                currentPlayedAt={currentPlayedAt}
+                setCurrentPlayedAt={setCurrentPlayedAt}
+              />
+            );
+          })}
+        </ul>
+      </>
 
       <DeletePlaylistModal
         isDeleteVisible={isDeleteVisible}
