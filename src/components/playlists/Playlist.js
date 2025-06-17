@@ -13,26 +13,33 @@ const Playlist = () => {
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
 
+  const LOADING_DELAY = 250;
+  const SKELETON_TIME = LOADING_DELAY;
+
   const [showSkeleton, setShowSkeleton] = useState(true);
   const isPlaylistsEmpty = playlists.length === 0;
 
-  const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists]);
+  const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
 
   function handlePlaylistClick(playlistId) {
     navigate(`/playlist-detail/${playlistId}`);
   }
 
   useEffect(() => {
-    if (isPlaylistsEmpty) {
-      setShowSkeleton(false);
-      return;
-    }
+    const timer = setTimeout(() => {
+      if (isPlaylistsEmpty) {
+        setShowSkeleton(false);
+        return;
+      }
 
-    if (imagesLoaded) {
-      setShowSkeleton(false);
-    } else {
-      setShowSkeleton(true);
-    }
+      if (imagesLoaded) {
+        setShowSkeleton(false);
+      } else {
+        setShowSkeleton(true);
+      }
+    }, SKELETON_TIME);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
