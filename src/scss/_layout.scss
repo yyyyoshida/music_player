@@ -137,6 +137,8 @@ main {
   // height: 100%;
   padding: 40px 60px;
   max-height: 85vh;
+  height: 85vh;
+  position: relative;
 }
 footer {
   padding: 0 60px;
@@ -1051,6 +1053,24 @@ footer {
 .track-source-icon-local {
   color: #aaaaaa;
   // color: $primary-color-stronger;
+}
+
+.empty-message-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  color: $text-color-sub;
+  font-size: $font-size-18;
+  user-select: none;
+}
+
+.playlists-page__empty-message-wrapper {
+  top: 45%;
+}
+
+.playlist-detail__empty-message-wrapper {
+  top: 60%;
 }
 
 .disabled {
