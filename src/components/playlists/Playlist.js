@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
@@ -10,15 +10,30 @@ import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 
 const Playlist = () => {
   const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
-
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
+
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const isPlaylistsEmpty = playlists.length === 0;
 
   const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists]);
 
   function handlePlaylistClick(playlistId) {
     navigate(`/playlist-detail/${playlistId}`);
   }
+
+  useEffect(() => {
+    if (isPlaylistsEmpty) {
+      setShowSkeleton(false);
+      return;
+    }
+
+    if (imagesLoaded) {
+      setShowSkeleton(false);
+    } else {
+      setShowSkeleton(true);
+    }
+  }, []);
 
   return (
     <div className="playlists-page">
@@ -27,9 +42,9 @@ const Playlist = () => {
         ＋ 新規プレイリスト作成
       </button>
 
-      {!imagesLoaded && <CardListSkeleton />}
+      {showSkeleton && <CardListSkeleton />}
 
-      <ul className={`playlists-page__list fade-on-loaded ${imagesLoaded ? "fade-in-up" : ""}`}>
+      <ul className={`playlists-page__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
         {playlists.map((playlist) => {
           const isSingleImage = playlist.albumImages.length <= 3;
           const firstTrackIsFallbackImage = playlist.trackCount === 0 || (isSingleImage && playlist.albumImages[0] === FALLBACK_COVER_IMAGE);
