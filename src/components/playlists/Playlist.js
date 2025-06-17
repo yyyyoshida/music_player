@@ -49,6 +49,11 @@ const Playlist = () => {
         ＋ 新規プレイリスト作成
       </button>
 
+      <div className="playlists-page__empty-message-wrapper empty-message-wrapper">
+        <p className={`playlists-page__empty-message  fade-on-loaded ${showSkeleton || !isPlaylistsEmpty ? "" : "fade-in-up"}`}>
+          表示できるプレイリストがありません
+        </p>
+      </div>
       {showSkeleton && <CardListSkeleton />}
 
       <ul className={`playlists-page__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
