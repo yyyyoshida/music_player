@@ -2,24 +2,16 @@ import { useEffect, useState } from "react";
 
 const useWaitForImagesLoad = (type, tracks, deps = [], delay = 0, imagesLoadCount = 10) => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [isImageListEmpty, setIsImageListEmpty] = useState(false);
 
   useEffect(() => {
-    if (tracks.length === 0) return;
+    // if (tracks.length === 0) return;
     const imageUrls = getImageUrls(type, tracks, imagesLoadCount);
 
-    let timeoutId;
-
-    if (imageUrls.length === 0) {
-      timeoutId = setTimeout(() => {
-        setIsImageListEmpty(true);
-      }, delay);
-      return () => clearTimeout(timeoutId);
-    }
+    if (imageUrls.length === 0) return;
 
     setImagesLoaded(false);
-    setIsImageListEmpty(false);
 
+    let timeoutId;
     waitForAllImagesToLoad(imageUrls).then(() => {
       timeoutId = setTimeout(() => setImagesLoaded(true), delay);
     });
@@ -29,7 +21,7 @@ const useWaitForImagesLoad = (type, tracks, deps = [], delay = 0, imagesLoadCoun
     };
   }, deps);
 
-  return { imagesLoaded, isImageListEmpty };
+  return imagesLoaded;
 };
 
 function waitForAllImagesToLoad(imageUrls) {

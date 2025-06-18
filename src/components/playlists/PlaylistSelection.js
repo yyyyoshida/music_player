@@ -16,7 +16,7 @@ const PlaylistSelection = () => {
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
   const { toggleCreateVisible } = useContext(PlaylistContext);
   const { playlists, isPlaylistsLoading } = useFetchPlaylists();
-  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
+  const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
 
   const isPlaylistsEmpty = playlists.length === 0;
 
@@ -31,10 +31,10 @@ const PlaylistSelection = () => {
 
   // ロードが終わったらスケルトン解除
   useEffect(() => {
-    if (imagesLoaded || isImageListEmpty) {
+    if (imagesLoaded) {
       setShowSkeleton(false);
     }
-  }, [imagesLoaded, isImageListEmpty]);
+  }, [imagesLoaded]);
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>
@@ -53,6 +53,12 @@ const PlaylistSelection = () => {
           >
             ＋ 新しいプレイリスト作成
           </button>
+
+          <div className="playlists-selection__empty-message-wrapper empty-message-wrapper">
+            <p className={`playlists-selection__empty-message  fade-on-loaded ${showSkeleton || !isPlaylistsEmpty ? "" : "fade-in-up"}`}>
+              表示できるプレイリストがありません
+            </p>
+          </div>
 
           {showSkeleton && <PlaylistSelectSkeleton />}
           <ul className={`playlist-selection__list ${showSkeleton ? "" : "fade-in-up"}`}>

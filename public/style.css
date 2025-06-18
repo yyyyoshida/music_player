@@ -1150,6 +1150,11 @@ footer {
   top: 60%;
 }
 
+.playlists-selection__empty-message-wrapper {
+  text-wrap: nowrap;
+  top: 50%;
+}
+
 .disabled {
   opacity: 0.4;
   pointer-events: none;
