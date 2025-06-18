@@ -22,6 +22,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [playlistInfo, setPlaylistInfo] = useState({ duration: 0 });
   const [showSkeleton, setShowSkeleton] = useState(true);
+  const [isPlaylistLoading, setIsPlaylistLoading] = useState(true);
 
   const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet, setTrackOrigin } = usePlayerContext();
   const { deletePlaylist, tracks, setTracks, formatTimeHours, setPlaylistId, playlistName, deletedTrackDuration, setDeletedTrackDuration, isCoverImageFading } =
@@ -30,10 +31,11 @@ const PlaylistDetail = ({ containerRef }) => {
     useContext(PlaybackContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
-  const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], 100);
-
-  const SKELETON_TIME = 200;
+  const LOADING_DELAY = 200;
+  const SKELETON_TIME = LOADING_DELAY;
   const isEmptyPlaylist = tracks.length === 0;
+
+  const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], LOADING_DELAY);
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
@@ -41,22 +43,21 @@ const PlaylistDetail = ({ containerRef }) => {
     setTrackOrigin("firebase");
   }, []);
 
+  // 空だったら空状態のメッセージ
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (isEmptyPlaylist) {
-        setShowSkeleton(false);
-        return;
-      }
-
-      if (imagesLoaded) {
-        setShowSkeleton(false);
-      } else {
-        setShowSkeleton(true);
-      }
+      if (!isPlaylistLoading && isEmptyPlaylist) setShowSkeleton(false);
     }, SKELETON_TIME);
 
     return () => clearTimeout(timer);
-  }, [imagesLoaded, isEmptyPlaylist]);
+  }, [isPlaylistLoading]);
+
+  // ロードが終わったらスケルトン解除
+  useEffect(() => {
+    if (imagesLoaded) {
+      setShowSkeleton(false);
+    }
+  }, [imagesLoaded]);
 
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
@@ -79,6 +80,7 @@ const PlaylistDetail = ({ containerRef }) => {
 
   useEffect(() => {
     const fetchTracks = async () => {
+      setIsPlaylistLoading(true);
       try {
         const tracksRef = collection(db, "playlists", id, "tracks");
         const q = query(tracksRef, orderBy("addedAt"));
@@ -91,6 +93,8 @@ const PlaylistDetail = ({ containerRef }) => {
         setQueue(trackList);
       } catch (error) {
         console.error("曲の取得に失敗した", error);
+      } finally {
+        setIsPlaylistLoading(false);
       }
     };
 
