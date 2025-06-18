@@ -1,40 +1,24 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
-import useFetchPlaylists from "../../hooks/useFetchPlaylists";
-
 import PlaylistSelectSkeleton from "../skeletonUI/PlaylistSelectSkeleton";
-import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
-import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
+import useFetchPlaylists from "../../hooks/useFetchPlaylists";
+import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
+import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
+
 const PlaylistSelection = () => {
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
+  const { toggleCreateVisible } = useContext(PlaylistContext);
 
   const LOADING_DELAY = 200;
 
-  const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
-  const { toggleCreateVisible } = useContext(PlaylistContext);
-  const { playlists, isPlaylistsLoading } = useFetchPlaylists();
-  const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
-
+  const { playlists } = useFetchPlaylists();
+  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
   const isPlaylistsEmpty = playlists.length === 0;
-
-  // 空だったら空状態のメッセージ
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!isPlaylistsLoading && isPlaylistsEmpty) setShowSkeleton(false);
-    }, LOADING_DELAY);
-
-    return () => clearTimeout(timer);
-  }, [isPlaylistsLoading]);
-
-  // ロードが終わったらスケルトン解除
-  useEffect(() => {
-    if (imagesLoaded) {
-      setShowSkeleton(false);
-    }
-  }, [imagesLoaded]);
+  const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>

@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 
-const useWaitForImagesLoad = (type, tracks, deps = [], delay = 0, imagesLoadCount = 10) => {
+const useWaitForImagesLoad = (type, tracks, deps = [], delay = 200, imagesLoadCount = 10) => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [isImageListEmpty, setIsImageListEmpty] = useState(false);
 
   useEffect(() => {
-    // if (tracks.length === 0) return;
     const imageUrls = getImageUrls(type, tracks, imagesLoadCount);
 
-    if (imageUrls.length === 0) return;
+    let timeoutId;
+
+    if (imageUrls.length === 0) {
+      timeoutId = setTimeout(() => {
+        setIsImageListEmpty(true);
+        setImagesLoaded(false);
+      }, delay);
+
+      return () => clearTimeout(timeoutId);
+    }
 
     setImagesLoaded(false);
 
-    let timeoutId;
     waitForAllImagesToLoad(imageUrls).then(() => {
       timeoutId = setTimeout(() => setImagesLoaded(true), delay);
     });
@@ -21,7 +29,7 @@ const useWaitForImagesLoad = (type, tracks, deps = [], delay = 0, imagesLoadCoun
     };
   }, deps);
 
-  return imagesLoaded;
+  return { imagesLoaded, isImageListEmpty };
 };
 
 function waitForAllImagesToLoad(imageUrls) {
@@ -40,14 +48,27 @@ function waitForAllImagesToLoad(imageUrls) {
 function getImageUrls(type, tracks, imagesLoadCount) {
   if (!tracks || tracks.length === 0) return [];
 
+  let urls = [];
+
   if (type === "trackList") {
-    return tracks
-      .slice(0, imagesLoadCount)
-      .map((track) => track.album?.images[0]?.url || track.albumImage || track.track.album.images[1].url)
-      .filter(Boolean);
+    urls = tracks.slice(0, imagesLoadCount).map((track) => {
+      const primary = track.album?.images?.[0]?.url;
+      const fallback = track.albumImage;
+
+      return primary || fallback;
+    });
   } else {
-    return tracks.flatMap((track) => track.albumImages?.slice(0, 4) || []).filter(Boolean);
+    urls = tracks.flatMap((track) => {
+      const images = track.albumImages?.slice(0, 4) || [];
+      return images;
+    });
   }
+
+  return urls.filter(isValidUrl);
+}
+
+function isValidUrl(url) {
+  return typeof url === "string" && url.trim() !== "" && url.startsWith("http");
 }
 
 export default useWaitForImagesLoad;
