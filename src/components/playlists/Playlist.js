@@ -7,6 +7,7 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import CardListSkeleton from "../skeletonUI/CardListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
+import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 
 const Playlist = () => {
   const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
@@ -14,33 +15,14 @@ const Playlist = () => {
   const navigate = useNavigate();
 
   const LOADING_DELAY = 250;
-  const SKELETON_TIME = LOADING_DELAY;
-
-  const [showSkeleton, setShowSkeleton] = useState(true);
   const isPlaylistsEmpty = playlists.length === 0;
 
-  const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
+  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
+  const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
 
   function handlePlaylistClick(playlistId) {
     navigate(`/playlist-detail/${playlistId}`);
   }
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (isPlaylistsEmpty) {
-        setShowSkeleton(false);
-        return;
-      }
-
-      if (imagesLoaded) {
-        setShowSkeleton(false);
-      } else {
-        setShowSkeleton(true);
-      }
-    }, SKELETON_TIME);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <div className="playlists-page">

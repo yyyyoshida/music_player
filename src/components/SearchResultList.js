@@ -4,37 +4,24 @@ import { SearchContext } from "../contexts/SearchContext";
 import TrackItem from "./tracks/TrackItem";
 import TrackListSkeleton from "./skeletonUI/TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
+import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 
 const TrackList = ({ containerRef }) => {
   const { searchResults, query } = useContext(SearchContext);
   const { playerTrack, formatTime, isPlaying, trackId, setTrackOrigin } = usePlayerContext();
 
   const IMAGES_LOADED_COUNT = 10;
-  const SKELETON_TIME = 100;
+  const LOADING_DELAY = 100;
   const isEmptySearchResults = searchResults.length === 0;
 
-  const [showSkeleton, setShowSkeleton] = useState(true);
-  const imagesLoaded = useWaitForImagesLoad("trackList", searchResults, [searchResults], SKELETON_TIME, IMAGES_LOADED_COUNT);
+  const { imagesLoaded } = useWaitForImagesLoad("trackList", searchResults, [searchResults], LOADING_DELAY, IMAGES_LOADED_COUNT);
+  const showSkeleton = useSkeletonHandler({ imagesLoaded, resetKey: query });
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
-
-    setShowSkeleton(true);
-
     setTrackOrigin("searchResults");
   }, [query]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!imagesLoaded) {
-        setShowSkeleton(true);
-      } else {
-        setShowSkeleton(false);
-      }
-    }, SKELETON_TIME);
-
-    return () => clearTimeout(timer);
-  }, [imagesLoaded, isEmptySearchResults]);
   return (
     <>
       {showSkeleton && <TrackListSkeleton />}
