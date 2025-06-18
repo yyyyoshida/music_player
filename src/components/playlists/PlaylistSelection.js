@@ -13,23 +13,22 @@ const PlaylistSelection = () => {
 
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
   const { toggleCreateVisible } = useContext(PlaylistContext);
-  const { playlists } = useFetchPlaylists();
-  const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists], 0);
+  const { playlists, isPlaylistsLoading } = useFetchPlaylists();
+  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists]);
 
   const isPlaylistsEmpty = playlists.length === 0;
 
+  // 空だったら空状態のメッセージ
   useEffect(() => {
-    if (isPlaylistsEmpty) {
-      setShowSkeleton(false);
-      return;
-    }
+    if (!isPlaylistsLoading && isPlaylistsEmpty) setShowSkeleton(false);
+  }, [isPlaylistsLoading]);
 
-    if (imagesLoaded) {
+  // ロードが終わったらスケルトン解除
+  useEffect(() => {
+    if (imagesLoaded || isImageListEmpty) {
       setShowSkeleton(false);
-    } else {
-      setShowSkeleton(true);
     }
-  }, []);
+  }, [imagesLoaded, isImageListEmpty]);
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>
