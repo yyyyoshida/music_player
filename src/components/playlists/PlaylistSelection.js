@@ -11,16 +11,22 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 const PlaylistSelection = () => {
   const [showSkeleton, setShowSkeleton] = useState(true);
 
+  const LOADING_DELAY = 200;
+
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
   const { toggleCreateVisible } = useContext(PlaylistContext);
   const { playlists, isPlaylistsLoading } = useFetchPlaylists();
-  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists]);
+  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
 
   const isPlaylistsEmpty = playlists.length === 0;
 
   // 空だったら空状態のメッセージ
   useEffect(() => {
-    if (!isPlaylistsLoading && isPlaylistsEmpty) setShowSkeleton(false);
+    const timer = setTimeout(() => {
+      if (!isPlaylistsLoading && isPlaylistsEmpty) setShowSkeleton(false);
+    }, LOADING_DELAY);
+
+    return () => clearTimeout(timer);
   }, [isPlaylistsLoading]);
 
   // ロードが終わったらスケルトン解除
