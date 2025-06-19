@@ -1459,6 +1459,10 @@ footer {
   overflow: hidden;
   background-color: #181818;
 }
+.playlist-page__create-playlist-modal-cover-img {
+  width: 100%;
+  height: 100%;
+}
 .playlist-page__create-playlist-modal-initial-cover-img {
   width: 60px;
   height: 60px;

@@ -33,6 +33,8 @@ const LocalFileImportNav = () => {
           const imgSrc = URL.createObjectURL(blob);
           console.log(imgSrc);
           setLocalCoverImageUrl(imgSrc);
+        } else {
+          setLocalCoverImageUrl(null);
         }
       },
       onError: function (error) {
@@ -61,7 +63,6 @@ const LocalFileImportNav = () => {
         artist: tags.artist || "Unknown Artist",
         duration_ms: trackDuration,
         albumImage: localCoverImageUrl || "/img/fallback-cover.png",
-        // これ意味なくね↑ path上書きされるやんたしか
       };
 
       handleTrackSelect(localTrack, true, uploadTrackFile, localCoverImageUrl);
