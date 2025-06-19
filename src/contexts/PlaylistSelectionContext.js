@@ -238,6 +238,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
         setIsSelectVisible,
         playlistNameRef,
         addTrackToPlaylist,
+        selectedTrack,
         setSelectedTrack,
         handleTrackSelect,
       }}
