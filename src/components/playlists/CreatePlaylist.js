@@ -5,12 +5,13 @@ import { PlaylistContext } from "../../contexts/PlaylistContext";
 import PlaylistSelectionContext from "../../contexts/PlaylistSelectionContext";
 
 const CreatePlaylist = () => {
-  const { isShaking, errorMessage, toggleCreateVisible, handleCreatePlaylist, isCreateVisible, playlistNameRef, tracks } = useContext(PlaylistContext);
+  const { isShaking, errorMessage, hideCreatePlaylistModal, handleCreatePlaylist, isCreateVisible, playlistNameRef, tracks } = useContext(PlaylistContext);
 
   const { selectedTrack } = useContext(PlaylistSelectionContext);
 
   const playlistCover = selectedTrack?.albumImage;
-  const isFallbackCoverImage = selectedTrack?.albumImage === "/img/fallback-cover.png";
+
+  const isFallbackCoverImage = !selectedTrack?.albumImage || selectedTrack?.albumImage === "/img/fallback-cover.png";
 
   return (
     <div className="playlist-page__create-playlist-modal modal" style={{ visibility: isCreateVisible ? "visible" : "hidden" }}>
@@ -44,7 +45,7 @@ const CreatePlaylist = () => {
             )}
           </div>
           <div className="playlist-page__create-playlist-modal-actions modal-actions">
-            <button className="playlist-page__create-playlist-modal-cancel modal-cancel-submit-button modal-cancel-button" onClick={toggleCreateVisible}>
+            <button className="playlist-page__create-playlist-modal-cancel modal-cancel-submit-button modal-cancel-button" onClick={hideCreatePlaylistModal}>
               キャンセル
             </button>
             <button className="playlist-page__create-playlist-modal-create modal-cancel-submit-button modal-submit-button" onClick={handleCreatePlaylist}>

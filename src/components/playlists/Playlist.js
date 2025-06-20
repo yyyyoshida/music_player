@@ -10,7 +10,7 @@ import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 
 const Playlist = () => {
-  const { toggleCreateVisible, formatTimeHours } = useContext(PlaylistContext);
+  const { showCreatePlaylistModal, formatTimeHours } = useContext(PlaylistContext);
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
 
@@ -27,7 +27,7 @@ const Playlist = () => {
   return (
     <div className="playlists-page">
       <h2 className="playlists-page__title">プレイリスト</h2>
-      <button className="playlists-page__create-button playlist-create-button" onClick={toggleCreateVisible}>
+      <button className="playlists-page__create-button playlist-create-button" onClick={showCreatePlaylistModal}>
         ＋ 新規プレイリスト作成
       </button>
 

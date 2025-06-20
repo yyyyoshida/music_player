@@ -11,7 +11,7 @@ import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistSelection = () => {
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
-  const { toggleCreateVisible } = useContext(PlaylistContext);
+  const { showCreatePlaylistModal } = useContext(PlaylistContext);
 
   const LOADING_DELAY = 200;
 
@@ -31,7 +31,7 @@ const PlaylistSelection = () => {
           <button
             className="playlist-selection__create-button playlist-create-button"
             onClick={() => {
-              toggleCreateVisible();
+              showCreatePlaylistModal();
               toggleSelectVisible();
             }}
           >
