@@ -18,12 +18,12 @@ const TrackInfo = ({ actionsRef }) => {
   const [isHidden, setIsHidden] = useState(false);
   const [width, setWidth] = useState(85);
 
-  const { isPlaying, currentTitle, currentArtistName, currentCoverImage } = usePlayerContext();
+  const { isPlaying } = usePlayerContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip(600);
   const tooltipText = useDelayedText("全画面表示：オフ", "全画面表示", isFullScreen, isFullScreen, 0);
 
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
-  const { currentTrackId } = useContext(PlaybackContext);
+  const { currentTrackId, currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
 
   const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
@@ -99,7 +99,7 @@ const TrackInfo = ({ actionsRef }) => {
             <img
               ref={imgRef}
               src={currentCoverImage}
-              alt="thumbnail"
+              alt={`${currentArtistName} の ${currentTitle} のカバー画像`}
               className={`player-controls__track-thumbnail ${isUsedFallbackImage ? "track-info-fallback-cover" : ""}`}
             />
 
