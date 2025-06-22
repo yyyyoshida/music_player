@@ -4,7 +4,7 @@ import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 
 const PlayerContext = createContext();
 
-export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, queue, currentIndex }) => {
+export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, queue }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [player, setPlayer] = useState(null);
   const [playerReady, setPlayerReady] = useState(false);
@@ -21,10 +21,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const [isSpotifyPlaying, setIsSpotifyPlaying] = useState(false);
   const [trackOrigin, setTrackOrigin] = useState(null);
 
-  const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
-  const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
-  const [currentCoverImage, setCurrentCoverImage] = useState("img/not-found.jpg");
-  const [isClickedTrack, setIsClickedTrack] = useState(false);
+  const [isClickedTrack, setIsClickedTrack] = useState(null);
 
   const audioRef = useRef(null);
 
@@ -111,7 +108,8 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [isPlaying, currentTitle]);
+  }, [isPlaying, isTrackSet]);
+  // }, [isPlaying, currentTitle]);
 
   const togglePlayPause = (isRepeat) => {
     if (isPlayPauseCooldown) return;
@@ -284,17 +282,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }
 
-  useEffect(() => {
-    if (!isTrackSet) return;
-
-    if (!queue[currentIndex]) {
-    } else {
-      setCurrentArtistName(queue[currentIndex].artist || queue[currentIndex].artists[0].name);
-      setCurrentTitle(queue[currentIndex].title || queue[currentIndex].name);
-      setCurrentCoverImage(queue[currentIndex].albumImage || queue[currentIndex].album.images[0].url);
-    }
-  }, [currentIndex, queue, isTrackSet]);
-
   return (
     <PlayerContext.Provider
       value={{
@@ -321,10 +308,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
         currentAudioURL,
         setCurrentAudioURL,
         isLocalPlaying,
-
-        currentTitle,
-        currentArtistName,
-        currentCoverImage,
 
         isClickedTrack,
         setIsClickedTrack,

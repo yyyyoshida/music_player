@@ -1,12 +1,13 @@
 import { useContext, useRef, useState, useEffect } from "react";
 import { TrackInfoContext } from "../contexts/TrackInfoContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
+import { PlaybackContext } from "../contexts/PlaybackContext";
 // import { SearchContext } from "../contexts/SearchContext";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ThumbnailPreview = () => {
-  const { isPlaying, togglePlayPause, isTrackSet, currentTitle, currentArtistName, currentCoverImage } = usePlayerContext();
+  const { isPlaying, togglePlayPause, isTrackSet } = usePlayerContext();
   const { isVisible, setIsVisible } = useContext(TrackInfoContext);
   // const { isTrackSet } = useContext(SearchContext);
 
@@ -15,7 +16,8 @@ export const ThumbnailPreview = () => {
 
   const coverArtRef = useRef(null);
   const transitionRef = useRef(null);
-  const { showMessage } = useContext(ActionSuccessMessageContext);
+
+  const { currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
 
   const isUsedFallbackImage = currentCoverImage === FALLBACK_COVER_IMAGE;
 
@@ -61,17 +63,6 @@ export const ThumbnailPreview = () => {
 
   // const FADE_DURATION = 2500;
 
-  // useEffect(() => {
-  //   if (!isTrackSet && isPlaying) {
-  //     showMessage("unselected");
-  //     // setIsVisible(true);
-  //     setTimeout(() => {
-  //       // setIsVisible(false);
-  //       togglePlayPause();
-  //     }, FADE_DURATION);
-  //   }
-  // }, [isPlaying, trackTitle]);
-
   return (
     <>
       <div
@@ -88,8 +79,8 @@ export const ThumbnailPreview = () => {
             <img
               ref={coverArtRef}
               className={`thumbnail-preview__image ${isUsedFallbackImage ? "thumbnail-preview__image-fallback" : ""}`}
-              src={isTrackSet ? currentCoverImage : "/img/not-found.jpg"}
-              alt=""
+              src={isTrackSet ? currentCoverImage : FALLBACK_COVER_IMAGE}
+              alt={`${currentArtistName} の ${currentTitle} のカバー画像`}
             />
             <div ref={transitionRef} className="thumbnail-preview__image-transition"></div>
           </div>

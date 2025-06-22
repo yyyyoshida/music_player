@@ -6,12 +6,14 @@ import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContex
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 
-const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, date, query }) => {
+// const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, date, query }) => {
+const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query }) => {
   const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setIsClickedTrack, setIsTrackSet, setCurrentAudioURL, trackOrigin } = usePlayerContext();
 
+  const isClicked = currentTrackId === track.id;
   const buttonRef = useRef(null);
 
   const delayedIsClicked = useDelayedValue(isClicked);
@@ -23,6 +25,12 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
   const positionOffsetY = -60;
 
   const isUsedFallbackImage = track.albumImage === FALLBACK_COVER_IMAGE;
+
+  useEffect(() => {
+    // 今後はこれを消してcurrentTrackIdに変える
+
+    setIsClickedTrack(isClicked);
+  }, [isClicked]);
 
   // function useDelayedValue(value, delay = 200) {
   function useDelayedValue(value, delay = 200) {
@@ -61,7 +69,7 @@ const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, forma
         setCurrentTrackId(track.id);
         setCurrentAudioURL(track.audioURL);
         setCurrentPlayedAt(date);
-        setIsClickedTrack(isClicked);
+        // setIsClickedTrack(isClicked);
       }}
     >
       <div className="track-item__left">
