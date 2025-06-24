@@ -6,33 +6,25 @@ import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContex
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 
-// const TrackItem = ({ track, index, isTrackPlaying, isClicked, playerTrack, formatTime, date, query }) => {
 const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query }) => {
   const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  const { setIsClickedTrack, setIsTrackSet, setCurrentAudioURL, trackOrigin } = usePlayerContext();
+  const { setIsTrackSet, trackOrigin, togglePlayPause } = usePlayerContext();
 
-  const isClicked = currentTrackId === track.id;
+  const isCurrentTrack = currentTrackId === track.id;
   const buttonRef = useRef(null);
 
-  const delayedIsClicked = useDelayedValue(isClicked);
+  const delayedIsClicked = useDelayedValue(isCurrentTrack);
   const delayedIsTrackPlaying = useDelayedValue(isTrackPlaying);
 
   const resolvedIsPlaying = trackOrigin === "firebase" ? delayedIsTrackPlaying : isTrackPlaying;
-  const resolvedIsClicked = trackOrigin === "firebase" ? delayedIsClicked : isClicked;
+  const resolvedIsClicked = trackOrigin === "firebase" ? delayedIsClicked : isCurrentTrack;
 
   const positionOffsetY = -60;
 
   const isUsedFallbackImage = track.albumImage === FALLBACK_COVER_IMAGE;
 
-  useEffect(() => {
-    // 今後はこれを消してcurrentTrackIdに変える
-
-    setIsClickedTrack(isClicked);
-  }, [isClicked]);
-
-  // function useDelayedValue(value, delay = 200) {
   function useDelayedValue(value, delay = 200) {
     const [delayedValue, setDelayedValue] = useState(value);
 
@@ -59,19 +51,25 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
     }
   }
 
+  function handleClickTrackItem() {
+    if (isCurrentTrack) return togglePlayPause();
+    playNewTrack();
+  }
+
+  function playNewTrack() {
+    const uri = track.trackUri || track.uri || track.audioURL;
+
+    if (!uri) return console.warn("再生不可");
+
+    setIsTrackSet(true);
+    updateCurrentIndex(index);
+    setCurrentTrackId(track.id);
+    setCurrentPlayedAt(date);
+    playerTrack(uri, track.source);
+  }
+
   return (
-    <li
-      className={`track-item ${resolvedIsPlaying ? "playing" : ""} ${resolvedIsClicked ? "clicked" : ""} `}
-      onClick={() => {
-        playerTrack(track.trackUri || track.uri || track.audioURL, isClicked, track.source);
-        setIsTrackSet(true);
-        updateCurrentIndex(index);
-        setCurrentTrackId(track.id);
-        setCurrentAudioURL(track.audioURL);
-        setCurrentPlayedAt(date);
-        // setIsClickedTrack(isClicked);
-      }}
-    >
+    <li className={`track-item ${resolvedIsPlaying ? "playing" : ""} ${resolvedIsClicked ? "clicked" : ""} `} onClick={handleClickTrackItem}>
       <div className="track-item__left">
         <div className={`${track.trackId}`}></div>
         <button className="track-item__left-play-pause-button">
