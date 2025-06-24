@@ -356,6 +356,8 @@ img {
 main {
   padding: 40px 60px;
   max-height: 85vh;
+  height: 85vh;
+  position: relative;
 }
 
 footer {
@@ -575,6 +577,7 @@ footer {
 .player-controls__track-thumbnail {
   width: 100%;
   height: 100%;
+  font-size: 12px;
 }
 .player-controls .track-info-fallback-cover {
   position: absolute;
@@ -1129,6 +1132,30 @@ footer {
   color: #aaaaaa;
 }
 
+.empty-message-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #b3b3b3;
+  font-size: 1.125rem;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.playlists-page__empty-message-wrapper {
+  top: 45%;
+}
+
+.playlist-detail__empty-message-wrapper {
+  top: 60%;
+}
+
+.playlists-selection__empty-message-wrapper {
+  text-wrap: nowrap;
+  top: 50%;
+}
+
 .disabled {
   opacity: 0.4;
   pointer-events: none;
@@ -1432,6 +1459,10 @@ footer {
   position: relative;
   overflow: hidden;
   background-color: #181818;
+}
+.playlist-page__create-playlist-modal-cover-img {
+  width: 100%;
+  height: 100%;
 }
 .playlist-page__create-playlist-modal-initial-cover-img {
   width: 60px;
@@ -1943,6 +1974,7 @@ footer {
   padding: 16px;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
   will-change: right, opacity;
+  pointer-events: none;
 }
 .toast-message__icon {
   width: 18px;

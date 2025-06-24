@@ -1,12 +1,11 @@
 import { usePlayerContext } from "../contexts/PlayerContext";
 
 function AudioPlayer() {
-  const { audioRef, currentAudioURL } = usePlayerContext();
-  //   console.log(audioRef);
+  const { audioRef } = usePlayerContext();
 
   return (
     <div style={{ visibility: "hidden" }}>
-      <audio ref={audioRef} src={currentAudioURL} />
+      <audio ref={audioRef} />
     </div>
   );
 }

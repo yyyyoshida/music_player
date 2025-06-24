@@ -1,10 +1,17 @@
-import { useContext } from "react";
-import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { useEffect, useContext } from "react";
+import { FALLBACK_COVER_IMAGE, warningIcon } from "../../assets/icons";
+
 import { PlaylistContext } from "../../contexts/PlaylistContext";
-import { warningIcon } from "../../assets/icons";
+import PlaylistSelectionContext from "../../contexts/PlaylistSelectionContext";
 
 const CreatePlaylist = () => {
-  const { isShaking, errorMessage, toggleCreateVisible, handleCreatePlaylist, isCreateVisible, playlistNameRef } = useContext(PlaylistContext);
+  const { isShaking, errorMessage, hideCreatePlaylistModal, handleCreatePlaylist, isCreateVisible, playlistNameRef, tracks } = useContext(PlaylistContext);
+
+  const { selectedTrack } = useContext(PlaylistSelectionContext);
+
+  const playlistCover = selectedTrack?.albumImage;
+
+  const isFallbackCoverImage = !selectedTrack?.albumImage || selectedTrack?.albumImage === "/img/fallback-cover.png";
 
   return (
     <div className="playlist-page__create-playlist-modal modal" style={{ visibility: isCreateVisible ? "visible" : "hidden" }}>
@@ -12,8 +19,13 @@ const CreatePlaylist = () => {
         <div className="playlist-page__create-playlist-modal-content modal-content">
           <h2 className="playlist-page__create-playlist-modal-title modal-title">新しいプレイリスト</h2>
           <div className="playlist-page__create-playlist-modal-cover-img-wrapper modal-cover-img-wrapper">
-            <img className="playlist-page__create-playlist-modal-initial-cover-img" src={FALLBACK_COVER_IMAGE}></img>
+            {isFallbackCoverImage ? (
+              <img className="playlist-page__create-playlist-modal-initial-cover-img" src={FALLBACK_COVER_IMAGE} />
+            ) : (
+              <img className="playlist-page__create-playlist-modal-cover-img" src={playlistCover} />
+            )}
           </div>
+
           <div className="playlist-page__create-playlist-modal-field modal-field">
             <label className="playlist-page__create-playlist-modal-label modal-label" htmlFor="title">
               タイトル
@@ -33,7 +45,7 @@ const CreatePlaylist = () => {
             )}
           </div>
           <div className="playlist-page__create-playlist-modal-actions modal-actions">
-            <button className="playlist-page__create-playlist-modal-cancel modal-cancel-submit-button modal-cancel-button" onClick={toggleCreateVisible}>
+            <button className="playlist-page__create-playlist-modal-cancel modal-cancel-submit-button modal-cancel-button" onClick={hideCreatePlaylistModal}>
               キャンセル
             </button>
             <button className="playlist-page__create-playlist-modal-create modal-cancel-submit-button modal-submit-button" onClick={handleCreatePlaylist}>
