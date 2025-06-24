@@ -1,18 +1,24 @@
 import { useContext } from "react";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
-import useFetchPlaylists from "../../hooks/useFetchPlaylists";
-
 import PlaylistSelectSkeleton from "../skeletonUI/PlaylistSelectSkeleton";
-import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
-import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
+
+import useFetchPlaylists from "../../hooks/useFetchPlaylists";
+import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
+import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistSelection = () => {
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
-  const { toggleCreateVisible } = useContext(PlaylistContext);
+  const { showCreatePlaylistModal } = useContext(PlaylistContext);
+
+  const LOADING_DELAY = 200;
+
   const { playlists } = useFetchPlaylists();
-  const imagesLoaded = useWaitForImagesLoad("playlistCover", playlists, [playlists], 0);
+  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
+  const isPlaylistsEmpty = playlists.length === 0;
+  const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>
@@ -25,15 +31,21 @@ const PlaylistSelection = () => {
           <button
             className="playlist-selection__create-button playlist-create-button"
             onClick={() => {
-              toggleCreateVisible();
+              showCreatePlaylistModal();
               toggleSelectVisible();
             }}
           >
             ＋ 新しいプレイリスト作成
           </button>
 
-          {!imagesLoaded && <PlaylistSelectSkeleton />}
-          <ul className={`playlist-selection__list ${imagesLoaded ? "fade-in-up" : ""}`}>
+          <div className="playlists-selection__empty-message-wrapper empty-message-wrapper">
+            <p className={`playlists-selection__empty-message  fade-on-loaded ${showSkeleton || !isPlaylistsEmpty ? "" : "fade-in-up"}`}>
+              表示できるプレイリストがありません
+            </p>
+          </div>
+
+          {showSkeleton && <PlaylistSelectSkeleton />}
+          <ul className={`playlist-selection__list ${showSkeleton ? "" : "fade-in-up"}`}>
             {playlists.map((playlist, i) => {
               const isSingleImage = playlist.albumImages.length <= 3;
               const firstTrackIsFallbackImage = playlist.trackCount === 0 || (isSingleImage && playlist.albumImages[0] === FALLBACK_COVER_IMAGE);

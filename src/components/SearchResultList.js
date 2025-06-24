@@ -1,69 +1,56 @@
 import { useContext, useState, useEffect } from "react";
 import { usePlayerContext } from "../contexts/PlayerContext";
 import { SearchContext } from "../contexts/SearchContext";
-import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import TrackItem from "./tracks/TrackItem";
 import TrackListSkeleton from "./skeletonUI/TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
+import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 
 const TrackList = ({ containerRef }) => {
-  const { playerTrack, formatTime, isPlaying, trackId, setTrackOrigin } = usePlayerContext();
   const { searchResults, query } = useContext(SearchContext);
-  const { isSelectVisible } = useContext(PlaylistSelectionContext);
+  const { playerTrack, formatTime, isPlaying, trackId, setTrackOrigin } = usePlayerContext();
 
-  const [initialLoaded, setInitialLoaded] = useState(false);
+  const IMAGES_LOADED_COUNT = 10;
+  const LOADING_DELAY = 100;
+  const isEmptySearchResults = searchResults.length === 0;
 
-  const imagesLoaded = useWaitForImagesLoad("trackList", searchResults, [searchResults]);
-
-  // const { totalDuration } = useContext(PlaylistContext);
-
-  // console.log(totalDuration);
+  const { imagesLoaded } = useWaitForImagesLoad("trackList", searchResults, [searchResults], LOADING_DELAY, IMAGES_LOADED_COUNT);
+  const showSkeleton = useSkeletonHandler({ imagesLoaded, resetKey: query });
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
-    setInitialLoaded(false);
     setTrackOrigin("searchResults");
   }, [query]);
 
-  useEffect(() => {
-    if (imagesLoaded) {
-      setInitialLoaded(true);
-    }
-  }, [imagesLoaded]);
-
   return (
     <>
-      {!initialLoaded && !isSelectVisible && <TrackListSkeleton />}
+      {showSkeleton && <TrackListSkeleton />}
 
-      <div>
-        <ul className={`search-result__list fade-on-loaded ${initialLoaded ? "fade-in-up" : ""}`}>
-          {searchResults.length > 0 ? (
-            searchResults.map((track, index) => {
-              const isCurrentTrack = trackId === track.id;
-              const isTrackPlaying = isCurrentTrack && isPlaying;
-              const isClicked = isCurrentTrack;
+      <ul className={`search-result__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
+        {isEmptySearchResults ? (
+          <li>検索結果がありません</li>
+        ) : (
+          searchResults.map((track, index) => {
+            const isCurrentTrack = trackId === track.id;
+            const isTrackPlaying = isCurrentTrack && isPlaying;
+            const isClicked = isCurrentTrack;
 
-              return (
-                <TrackItem
-                  key={track.id + "-" + query}
-                  track={track}
-                  index={index}
-                  isCurrentTrack={isCurrentTrack}
-                  isTrackPlaying={isTrackPlaying}
-                  isClicked={isClicked}
-                  // setIsTrackSet={setIsTrackSet}
-                  playerTrack={playerTrack}
-                  formatTime={formatTime}
-                  // type={"searchResults"}
-                  query={query}
-                />
-              );
-            })
-          ) : (
-            <li>検索結果がありません</li>
-          )}
-        </ul>
-      </div>
+            return (
+              <TrackItem
+                key={track.id + "-" + query}
+                track={track}
+                index={index}
+                isCurrentTrack={isCurrentTrack}
+                isTrackPlaying={isTrackPlaying}
+                isClicked={isClicked}
+                playerTrack={playerTrack}
+                formatTime={formatTime}
+                query={query}
+              />
+            );
+          })
+        )}
+      </ul>
     </>
   );
 };

@@ -18,7 +18,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
-  const { setPreselectedTrack } = useContext(PlaylistContext);
+  const { setPreselectedTrack, addSelectedTrackToPlaylistRef } = useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
   const { trackOrigin } = usePlayerContext();
 
@@ -70,8 +70,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
     return { albumImage, albumImagePath };
   }
-  //ローカル曲に画像がない場合の処理アップロード中のUIを適応させる ★
-  // アップロード中で失敗したときの処理を追加する
 
   async function saveTrackToFirestore(playlistId) {
     await addDoc(collection(db, "playlists", playlistId, "tracks"), {
@@ -144,10 +142,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
   }
 
   async function addTrackToPlaylist(playlistId) {
-    console.log(selectedTrack);
-    console.log("if文が通るか", selectedTrack.audioURL);
-    console.time("アップロード");
-
     if (!selectedTrack) return;
 
     const isNewLocalTrack = selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
@@ -173,6 +167,10 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
     await executeTrackSave(() => saveUploadAndNewTrack(playlistId));
   }
+
+  useEffect(() => {
+    addSelectedTrackToPlaylistRef.current = addTrackToPlaylist;
+  }, [addTrackToPlaylist]);
 
   function handleTrackSelect(track, shouldToggle = true, file = null, imageUrl = null) {
     console.log(trackOrigin, "どこから北のこの曲handleTrackSelect");
@@ -238,6 +236,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
         setIsSelectVisible,
         playlistNameRef,
         addTrackToPlaylist,
+
+        selectedTrack,
         setSelectedTrack,
         handleTrackSelect,
       }}

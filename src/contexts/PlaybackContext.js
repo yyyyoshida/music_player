@@ -11,11 +11,15 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   const [currentTrackId, setCurrentTrackId] = useState(null);
   const { isToken, setIsToken } = useContext(TokenContext);
 
+  const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
+  const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
+  const [currentCoverImage, setCurrentCoverImage] = useState("/img/fallback-cover.png");
+
   const currentIndexRef = useRef(0);
 
   // const currentTrack = queue[currentIndex] || null;
 
-  const { playerTrack, player, isClickedTrack } = usePlayerContext();
+  const { playerTrack, player } = usePlayerContext();
 
   useEffect(() => {
     console.log("一覧のトラック数", queue);
@@ -25,7 +29,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
 
   useEffect(() => {
     if (!isToken) return;
-    console.log(!isTrackSet);
+    // console.log(!isTrackSet);
 
     if (!isTrackSet) {
       setIsPrevDisabled(!isTrackSet);
@@ -33,7 +37,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
       return;
     }
 
-    console.log(!isTrackSet);
+    // console.log(!isTrackSet);
     setIsPrevDisabled(currentIndexRef.current <= 0);
     setIsNextDisabled(currentIndexRef.current >= queue.length - 1);
   }, [queue, currentIndex, isTrackSet]);
@@ -42,7 +46,6 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
 
   // クリックしたトラックのインデックスをセット
   const updateCurrentIndex = (index) => {
-    console.log("発火");
     if (index >= 0 && index < queue.length) {
       setCurrentIndex(index);
 
@@ -51,11 +54,23 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   };
 
   useEffect(() => {
-    console.log(currentIndexRef.current, "これが現在の曲のインデックス");
-  }, [currentIndex]);
+    const track = queue[currentIndex];
+    if (!track) return;
+
+    const isClickedTrack = track.id === currentTrackId;
+
+    if (!isClickedTrack) return;
+
+    setCurrentArtistName(queue[currentIndex].artist || queue[currentIndex].artists[0].name);
+    setCurrentTitle(queue[currentIndex].title || queue[currentIndex].name);
+    setCurrentCoverImage(queue[currentIndex].albumImage || queue[currentIndex].album.images[0].url);
+  }, [currentIndex, queue, currentTrackId]);
 
   function playTrackAtIndex(index) {
+    // console.log(index, "index");
+
     const track = queue?.[index];
+    // console.log(track.name);
 
     const searchResultTrackUri = track?.uri;
     const spotifyTrackUri = track?.trackUri;
@@ -67,7 +82,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     currentIndexRef.current = index;
     setCurrentTrackId(track.id);
 
-    playerTrack(uriToPlay, isClickedTrack, track.source);
+    playerTrack(uriToPlay, track.source);
   }
 
   function goToNextTrack() {
@@ -90,14 +105,6 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     player.resume().then(() => {});
   }
 
-  useEffect(() => {
-    console.log(currentPlayedAt);
-  }, [currentPlayedAt]);
-
-  useEffect(() => {
-    console.log(currentIndex);
-  }, [currentIndex]);
-
   return (
     <PlaybackContext.Provider
       value={{
@@ -118,6 +125,10 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
 
         currentTrackId,
         setCurrentTrackId,
+
+        currentTitle,
+        currentArtistName,
+        currentCoverImage,
       }}
     >
       {children}
