@@ -1570,6 +1570,11 @@ footer {
   padding-top: 40px;
   font-size: 1.125rem;
 }
+.home__text-info {
+  padding-top: 40px;
+  color: #b3b3b3;
+  font-size: 0.875rem;
+}
 .home__track-list {
   margin-top: 54px;
   display: flex;

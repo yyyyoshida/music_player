@@ -12,6 +12,12 @@
     font-size: $font-size-18;
   }
 
+  &__text-info {
+    padding-top: 40px;
+    color: $text-color-sub;
+    font-size: $font-size-14;
+  }
+
   &__track-list {
     margin-top: 54px;
     display: flex;
