@@ -36,6 +36,13 @@ body {
   }
 }
 
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  object-fit: cover;
+}
+
 .container {
   width: 100%;
   width: calc(100% - 300px);
@@ -130,6 +137,8 @@ main {
   // height: 100%;
   padding: 40px 60px;
   max-height: 85vh;
+  height: 85vh;
+  position: relative;
 }
 footer {
   padding: 0 60px;
@@ -179,8 +188,7 @@ footer {
   // &::-webkit-scrollbar {
   //   scrollbar-width: none;
   // }
-  &__background {
-    //////////////////////////////////////////////////
+  &__background-image {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -191,7 +199,8 @@ footer {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 100%;
+    width: calc(100vw + 9px);
+    height: 100vh;
     margin: -10px;
     height: calc(100% + 20px);
     margin-bottom: 300px;
@@ -234,25 +243,28 @@ footer {
     width: 400px;
     height: 400px;
     border-radius: 10px;
-    // overflow: hidden;
     margin-bottom: 20px;
-  }
-  &__image {
-    // width: 400px;
-    // height: 400px;
-    width: 100%;
-    height: 100%;
     border-radius: 10px;
-    object-fit: cover;
-    border: #31313150 solid 1px;
-    border: #99999936 solid 1px;
     border: #b1b1b136 solid 1px;
     box-shadow: 0 0px 6px rgba(0, 0, 0, 0.4);
-    // box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
   }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__image-fallback {
+    position: absolute;
+    top: 50%;
+    left: 46.5%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 160px;
+  }
+
   &__image-transition {
-    // width: 400px;
-    // height: 400px;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -352,6 +364,7 @@ footer {
     display: flex;
     align-items: center;
   }
+
   &__track-thumbnail-wrapper {
     width: 75px;
     height: 75px;
@@ -359,19 +372,23 @@ footer {
     user-select: none;
     border-radius: 5px;
     transition: opacity 0.3s ease;
+    background-color: #181818;
+    border: #afafaf46 solid 1px;
+    overflow: hidden;
   }
+
   &__track-thumbnail-transition {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     z-index: 1000;
-    background-color: #131313;
+    background-color: #181818;
     transition: opacity 0.3s ease-out;
 
     border-radius: 5px;
-    border: #9292923b solid 1px;
-    border: #afafaf46 solid 1px;
+    // border: #9292923b solid 1px;
+    // border: #afafaf46 solid 1px;
     &::after {
       content: "";
       // background-image: url(/img/8分音符アイコン\ 3.png);
@@ -390,10 +407,23 @@ footer {
   &__track-thumbnail {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border-radius: 5px;
-    border: #9292923b solid 1px;
+
+    font-size: 12px;
+    // object-fit: cover;
+    // border-radius: 5px;
+    // border: #9292923b solid 1px;
   }
+
+  .track-info-fallback-cover {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 50%;
+    left: 46.5%;
+    transform: translate(-50%, -50%);
+    border: none;
+  }
+
   &__track-meta {
     position: absolute;
     // top: 10px;
@@ -900,6 +930,10 @@ footer {
     .track-menu-button {
       opacity: 1;
     }
+
+    .track-source-icon {
+      opacity: 1;
+    }
   }
 
   &__left {
@@ -937,6 +971,9 @@ footer {
       font-weight: 700;
       color: $primary-color;
     }
+    .track-source-icon {
+      opacity: 1;
+    }
   }
 
   &.clicked:hover {
@@ -959,15 +996,34 @@ footer {
     font-size: $font-size-14;
   }
 
-  &__cover-art {
+  &__cover {
+    object-fit: cover;
+  }
+
+  &__cover-art-wrapper {
+    position: relative;
     width: 50px;
     height: 50px;
+    background-color: #181818;
     border-radius: 5px;
+    border: rgba(146, 146, 146, 0.231372549) solid 1px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    border: #9292923b solid 1px;
+    overflow: hidden;
+  }
+
+  &__initial-cover {
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    top: 50%;
+    left: 46.5%;
+    transform: translate(-50%, -50%);
+
+    object-fit: cover;
   }
 
   &__right {
+    width: 112px;
     position: absolute;
     right: 20px;
     top: 50%;
@@ -985,6 +1041,43 @@ footer {
   .bar {
     margin: 0.05em;
   }
+}
+
+.track-source-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.track-source-icon-spotify {
+  color: #1db954;
+}
+
+.track-source-icon-local {
+  color: #aaaaaa;
+  // color: $primary-color-stronger;
+}
+
+.empty-message-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  color: $text-color-sub;
+  font-size: $font-size-18;
+  user-select: none;
+}
+
+.playlists-page__empty-message-wrapper {
+  top: 45%;
+}
+
+.playlist-detail__empty-message-wrapper {
+  top: 60%;
+}
+
+.playlists-selection__empty-message-wrapper {
+  text-wrap: nowrap;
+  top: 50%;
 }
 
 .disabled {

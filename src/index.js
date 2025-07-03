@@ -1,10 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { TokenProvider } from './contexts/isTokenContext';
+import { Buffer } from "buffer"; // これを一番上に追加
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { TokenProvider } from "./contexts/isTokenContext";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+window.Buffer = Buffer;
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
   // </React.StrictMode>
