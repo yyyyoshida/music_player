@@ -3,6 +3,7 @@ import ProgressBar from "./ProgressBar";
 import TrackInfo from "../tracks/TrackInfo";
 import PlayerActions from "./PlayerActions";
 import PlayerOptions from "./PlayerOptions";
+import AudioPlayer from "../AudioPlayer";
 // import { RepeatProvider } from './RepeatContext';
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
 
@@ -13,6 +14,7 @@ const PlayerControls = () => {
   return (
     // <div className="player-controls">
     <div className={`player-controls ${isVisible ? "thumbnail-expanded has-overlay" : ""}`}>
+      <AudioPlayer />
       {/* isPlayingを使いまわすため */}
       {/* <PlayerProvider> */}
       {/* <RepeatProvider> */}

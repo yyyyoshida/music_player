@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useRef, useEffect } from "react";
 import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { deleteObject, ref as storageRef } from "firebase/storage";
+import { storage } from "../firebase"; // ストレージのインスタンス
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 import { useNavigate } from "react-router-dom";
 
@@ -23,10 +25,14 @@ export const PlaylistProvider = ({ children }) => {
   const [preselectedTrack, setPreselectedTrack] = useState(null);
   const [isCoverImageFading, setIsCoverImageFading] = useState(false);
 
-  function toggleCreateVisible() {
+  useEffect(() => {
     setErrorMessage("");
-    setIsCreateVisible((prev) => !prev);
-  }
+  }, [isCreateVisible]);
+
+  const showCreatePlaylistModal = () => setIsCreateVisible(true);
+  const hideCreatePlaylistModal = () => setIsCreateVisible(false);
+
+  const addSelectedTrackToPlaylistRef = useRef(() => {});
 
   function countNameLength(string) {
     let nameLength = 0;
@@ -48,7 +54,7 @@ export const PlaylistProvider = ({ children }) => {
 
   useEffect(() => {
     if (isCreateVisible && playlistNameRef.current) {
-      playlistNameRef.current.focus(); // ← これでEnterの発火対象がinputになる
+      playlistNameRef.current.focus();
     }
   }, [isCreateVisible]);
 
@@ -66,25 +72,23 @@ export const PlaylistProvider = ({ children }) => {
       triggerError(`文字数オーバーです`);
       return;
     }
+    hideCreatePlaylistModal();
 
     try {
       const playlistRef = await addDoc(collection(db, "playlists"), {
         name: newName,
         createdAt: serverTimestamp(),
-        ...(preselectedTrack ? { totalDuration: preselectedTrack.duration } : {}),
       });
-
+      console.log(preselectedTrack);
       if (preselectedTrack) {
-        await addDoc(collection(db, "playlists", playlistRef.id, "tracks"), {
-          ...preselectedTrack,
-          addedAt: serverTimestamp(),
-        });
+        await addSelectedTrackToPlaylistRef.current(playlistRef.id);
+        hideCreatePlaylistModal();
       }
 
       showMessage("newPlaylist");
       playlistNameRef.current.value = "";
       setPreselectedTrack(null);
-      toggleCreateVisible();
+      hideCreatePlaylistModal();
     } catch (error) {
       console.error("作成失敗", error);
     }
@@ -106,7 +110,7 @@ export const PlaylistProvider = ({ children }) => {
       return `${minutes}分`;
     }
   }
-
+  // 曲を削除するときにストレージにある画像と音声ファイル削除するｄ
   async function deleteTrack(playlistId, trackId) {
     fadeCoverImages();
     try {
@@ -120,12 +124,27 @@ export const PlaylistProvider = ({ children }) => {
 
       const deletedTrack = trackSnap.data();
 
+      // ストレージの画像や音声を削除
+      if (deletedTrack.imagePath) {
+        const coverRef = storageRef(storage, deletedTrack.imagePath);
+        await deleteObject(coverRef).catch((err) => {
+          console.warn("カバー画像削除失敗", err);
+        });
+      }
+
+      if (deletedTrack.audioPath) {
+        const audioRef = storageRef(storage, deletedTrack.audioPath);
+        await deleteObject(audioRef).catch((err) => {
+          console.warn("音声ファイル削除失敗", err);
+        });
+      }
+
       await deleteDoc(trackRef);
 
       await updateDoc(doc(db, "playlists", playlistId), {
-        totalDuration: increment(-deletedTrack.duration),
+        totalDuration: increment(-deletedTrack.duration_ms),
       });
-      setDeletedTrackDuration((prev) => prev + deletedTrack.duration);
+      setDeletedTrackDuration((prev) => prev + deletedTrack.duration_ms);
 
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
 
@@ -163,9 +182,10 @@ export const PlaylistProvider = ({ children }) => {
     <PlaylistContext.Provider
       value={{
         handleCreatePlaylist,
-        toggleCreateVisible,
+        showCreatePlaylistModal,
+        hideCreatePlaylistModal,
         isCreateVisible,
-        setIsCreateVisible,
+
         playlistNameRef,
         formatTimeHours,
         playlistName,
@@ -194,6 +214,8 @@ export const PlaylistProvider = ({ children }) => {
         setPreselectedTrack,
 
         isCoverImageFading,
+
+        addSelectedTrackToPlaylistRef,
       }}
     >
       {children}
