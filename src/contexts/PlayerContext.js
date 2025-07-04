@@ -19,6 +19,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const [isLocalPlaying, setIsLocalPlaying] = useState(false);
   const [isSpotifyPlaying, setIsSpotifyPlaying] = useState(false);
   const [trackOrigin, setTrackOrigin] = useState(null);
+  const [isLocalReady, setIsLocalReady] = useState(false);
 
   const trackIdRef = useRef(null);
   const audioRef = useRef(null);
@@ -144,11 +145,15 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
     const audio = audioRef.current;
     if (!audio) return;
 
+    setIsLocalPlaying(true);
+
     audio
       .play()
-      .then(() => setIsPlaying(true))
-      .catch((err) => {
-        console.error("再生失敗", err);
+
+      .then(() => {
+        setIsPlaying(true);
+
+        setIsLocalReady(true);
       });
 
     audio.removeEventListener("canplay", handleCanPlay);
@@ -203,6 +208,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
     }
     if (!audioRef.current) return;
 
+    setIsLocalReady(false);
     setIsLocalPlaying(true);
     const audio = audioRef.current;
     audio.src = trackUri;
@@ -320,6 +326,8 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
 
         trackOrigin,
         setTrackOrigin,
+
+        isLocalReady,
       }}
     >
       {children}
