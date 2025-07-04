@@ -1,5 +1,5 @@
 import { useRef, useContext } from "react";
-import ProgressBar from "./ProgressBar";
+import ProgressBarWrapper from "./ProgressBarWrapper";
 import TrackInfo from "../tracks/TrackInfo";
 import PlayerActions from "./PlayerActions";
 import PlayerOptions from "./PlayerOptions";
@@ -18,7 +18,7 @@ const PlayerControls = () => {
       {/* isPlayingを使いまわすため */}
       {/* <PlayerProvider> */}
       {/* <RepeatProvider> */}
-      <ProgressBar />
+      <ProgressBarWrapper />
       <div className="player-controls__info">
         <TrackInfo actionsRef={actionsRef} />
         <PlayerActions actionsRef={actionsRef} />
