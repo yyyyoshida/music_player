@@ -229,7 +229,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
     player.setVolume(volume);
   }
 
-  function seekTo(seekTime) {
+  function seekToSpotify(seekTime) {
     if (!player) return;
     player.seek(seekTime);
   }
@@ -302,7 +302,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
         playerReady,
         playerTrack,
         updateVolume,
-        seekTo,
+        seekToSpotify,
         duration,
         position,
         currentTime,

@@ -25,7 +25,7 @@ const Bar = ({ ParentClassName, type, value }) => {
   const { isRepeat } = useRepeatContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
-  const { updateVolume, seekTo, duration, position, isPlaying, setIsPlaying, isLocalPlaying, audioRef } = usePlayerContext();
+  const { updateVolume, seekToSpotify, duration, position, isPlaying, setIsPlaying, isLocalPlaying, audioRef } = usePlayerContext();
   const { goToNextTrack } = useContext(PlaybackContext);
 
   const isVolumeType = type === "volume";
@@ -44,7 +44,9 @@ const Bar = ({ ParentClassName, type, value }) => {
     !isMuted ? updateVolume(initialVolume / 100) : applyVolume(0);
   }, [isMuted, playerReady]);
 
+  //備忘録　 Spotifyの曲が再生中に再生バーを自動更新する
   useEffect(() => {
+    if (isDragging) return;
     if (isVolumeType) return;
 
     if (!isLocalPlaying && duration && !isNaN(duration)) {
@@ -53,23 +55,30 @@ const Bar = ({ ParentClassName, type, value }) => {
       setPercentage(newTime);
       return;
     }
-
-    if (isLocalPlaying && audioRef?.current) {
-      const audio = audioRef.current;
-      const updateProgress = () => {
-        const newTime = roundToTwoDecimals((audio.currentTime / audio.duration) * 100);
-        setPercentage(newTime || 0);
-      };
-
-      audio.addEventListener("timeupdate", updateProgress);
-      return () => {
-        audio.removeEventListener("timeupdate", updateProgress);
-      };
-    }
   }, [position, type, isLocalPlaying]);
 
+  // 備忘録　ローカルの曲が再生中に再生バーを自動更新する
   useEffect(() => {
-    if (!isDragging) return;
+    if (isVolumeType || !audioRef?.current) return;
+
+    const audio = audioRef.current;
+
+    const updateProgress = () => {
+      if (isDragging) return;
+      const newTime = roundToTwoDecimals((audio.currentTime / audio.duration) * 100);
+      setPercentage(newTime || 0);
+    };
+
+    audio.addEventListener("timeupdate", updateProgress);
+
+    return () => {
+      audio.removeEventListener("timeupdate", updateProgress);
+    };
+  }, [position, type, isLocalPlaying, isDragging]);
+
+  //備忘録 ドラッグが終わったときに再生位置を反映
+  useEffect(() => {
+    if (isDragging) return;
 
     if (isVolumeType) return;
 
@@ -79,9 +88,10 @@ const Bar = ({ ParentClassName, type, value }) => {
       audio.currentTime = seekTime;
     } else {
       const seekTime = Math.trunc((percentage / 100) * duration);
-      seekTo(seekTime);
+
+      seekToSpotify(seekTime);
     }
-  }, [duration, percentage, isDragging, isLocalPlaying]);
+  }, [isDragging]);
 
   function applyVolume(value) {
     if (isLocalPlaying && audioRef?.current) {
@@ -100,11 +110,11 @@ const Bar = ({ ParentClassName, type, value }) => {
     applyVolume(newPercentage / 100);
   }
 
-  const handleClickBar = (e) => {
+  function handleClickBar(e) {
     const barRect = barRef.current.getBoundingClientRect();
     const clickX = e.clientX - barRect.left;
     const newPercentage = roundToTwoDecimals((clickX / barRect.width) * 100);
-
+    console.log(newPercentage);
     if (isProgressType) {
       setPercentage(newPercentage);
       return;
@@ -113,14 +123,15 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (isVolumeType) {
       handleVolumeChange(newPercentage);
     }
-  };
+  }
 
-  const handleMouseDown = (e) => {
+  function handleMouseDown(e) {
     setIsDragging(true);
     handleClickBar(e);
-  };
+  }
 
-  const handleDrag = (e) => {
+  // 備忘録　ドラッグ中にバーの位置を％で計算して見た目だけ反映させる（実際の音量やシークは別処理）
+  function handleDrag(e) {
     if (!isDragging) return;
 
     const barRect = barRef.current.getBoundingClientRect();
@@ -135,7 +146,7 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (isVolumeType) {
       handleVolumeChange(newPercentage);
     }
-  };
+  }
 
   useEffect(() => {
     if (isProgressType) return;
@@ -143,9 +154,9 @@ const Bar = ({ ParentClassName, type, value }) => {
     localStorage.setItem("player_volume", percentage);
   }, [percentage]);
 
-  const handleMouseUp = () => {
+  function handleMouseUp() {
     setIsDragging(false);
-  };
+  }
 
   useEffect(() => {
     if (isDragging) {
@@ -205,11 +216,11 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (isLocalPlaying || !isTrackSet) return;
     const isTrackFinished = isProgressType && duration - currentTime <= 200;
 
-    if (isTrackFinished && isRepeat) return seekTo(0);
+    if (isTrackFinished && isRepeat) return seekToSpotify(0);
 
     if (isTrackFinished) setIsPlaying(false);
     if (isTrackFinished && !isRepeat && !isPlaying) {
-      seekTo(0);
+      seekToSpotify(0);
       goToNextTrack();
     }
   }, [currentTime, duration]);
