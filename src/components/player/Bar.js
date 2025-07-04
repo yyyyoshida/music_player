@@ -21,7 +21,7 @@ const Bar = ({ ParentClassName, type, value }) => {
   const barRef = useRef(null);
   const volumeValueRef = useRef(percentage);
 
-  const { playerReady, currentTime, isTrackSet } = usePlayerContext();
+  const { playerReady, currentTime, isTrackSet, isLocalReady } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
@@ -83,6 +83,8 @@ const Bar = ({ ParentClassName, type, value }) => {
     if (isVolumeType) return;
 
     if (isLocalPlaying && audioRef?.current) {
+      if (!isLocalReady) return;
+
       const audio = audioRef.current;
       const seekTime = (percentage / 100) * audio.duration;
       audio.currentTime = seekTime;
@@ -91,7 +93,7 @@ const Bar = ({ ParentClassName, type, value }) => {
 
       seekToSpotify(seekTime);
     }
-  }, [isDragging]);
+  }, [isDragging, isLocalPlaying, isLocalReady]);
 
   function applyVolume(value) {
     if (isLocalPlaying && audioRef?.current) {
@@ -110,7 +112,13 @@ const Bar = ({ ParentClassName, type, value }) => {
     applyVolume(newPercentage / 100);
   }
 
+  useEffect(() => {
+    console.log(isLocalReady);
+  }, [isLocalReady]);
+
   function handleClickBar(e) {
+    if (isProgressType && isLocalPlaying && !isLocalReady) return;
+
     const barRect = barRef.current.getBoundingClientRect();
     const clickX = e.clientX - barRect.left;
     const newPercentage = roundToTwoDecimals((clickX / barRect.width) * 100);
@@ -133,6 +141,8 @@ const Bar = ({ ParentClassName, type, value }) => {
   // 備忘録　ドラッグ中にバーの位置を％で計算して見た目だけ反映させる（実際の音量やシークは別処理）
   function handleDrag(e) {
     if (!isDragging) return;
+
+    if (isProgressType && isLocalPlaying && !isLocalReady) return;
 
     const barRect = barRef.current.getBoundingClientRect();
     const moveX = e.clientX - barRect.left;
