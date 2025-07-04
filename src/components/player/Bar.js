@@ -19,7 +19,6 @@ const Bar = ({ ParentClassName, type, value }) => {
   });
 
   const barRef = useRef(null);
-  const volumeValueRef = useRef(percentage);
 
   const { playerReady, currentTime, isTrackSet, isLocalReady } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
@@ -37,11 +36,9 @@ const Bar = ({ ParentClassName, type, value }) => {
     const savedVolume = localStorage.getItem("player_volume");
     const initialVolume = savedVolume ? parseFloat(savedVolume) : 30;
 
-    volumeValueRef.current = initialVolume;
-
     setPercentage(initialVolume);
 
-    !isMuted ? updateVolume(initialVolume / 100) : applyVolume(0);
+    !isMuted ? applyVolume(initialVolume / 100) : applyVolume(0);
   }, [isMuted, playerReady]);
 
   //備忘録　 Spotifyの曲が再生中に再生バーを自動更新する
@@ -96,25 +93,17 @@ const Bar = ({ ParentClassName, type, value }) => {
   }, [isDragging, isLocalPlaying, isLocalReady]);
 
   function applyVolume(value) {
-    if (isLocalPlaying && audioRef?.current) {
-      audioRef.current.volume = value;
-    } else {
-      updateVolume(value);
-    }
+    audioRef.current.volume = value;
+    updateVolume(value);
   }
 
   function handleVolumeChange(newPercentage) {
-    volumeValueRef.current = newPercentage;
     setPercentage(newPercentage);
 
     if (!playerReady) return;
 
     applyVolume(newPercentage / 100);
   }
-
-  useEffect(() => {
-    console.log(isLocalReady);
-  }, [isLocalReady]);
 
   function handleClickBar(e) {
     if (isProgressType && isLocalPlaying && !isLocalReady) return;
