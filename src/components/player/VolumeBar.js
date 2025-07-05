@@ -33,7 +33,7 @@ const VolumeBar = ({ initialValue }) => {
 
   function handleVolumeChange(newPercentage) {
     setPercentage(newPercentage);
-    if (!playerReady) return;
+    if (!playerReady || isMuted) return;
     applyVolume(newPercentage / 100);
   }
 
