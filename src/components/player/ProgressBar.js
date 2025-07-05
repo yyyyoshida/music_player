@@ -1,4 +1,4 @@
-import { useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import { useRepeatContext } from "../../contexts/RepeatContext";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
@@ -15,6 +15,8 @@ const ProgressBar = ({ initialValue }) => {
     value: initialValue,
     barRef: barRef,
   });
+
+  const LOADING_DELAY = 200;
 
   //備忘録　 Spotifyの曲が再生中に再生バーを自動更新する
   useEffect(() => {
@@ -94,14 +96,31 @@ const ProgressBar = ({ initialValue }) => {
     }
   }, [currentTime, duration]);
 
+  const [visibleLoading, setVisibleLoading] = useState(false);
+
+  useEffect(() => {
+    setVisibleLoading(true);
+
+    const timer = setTimeout(() => {
+      if (!isLocalReady) return;
+      setVisibleLoading(false);
+    }, LOADING_DELAY);
+
+    return () => clearTimeout(timer);
+  }, [isLocalReady]);
+
   return (
     <>
       <div ref={barRef} className="player-controls__progress-bar--wrapper" onMouseDown={handleMouseDown}>
-        <div className="player-controls__progress-bar">
-          <div className="player-controls__progress-fill" style={{ width: `${percentage}%` }}>
-            <div className="player-controls__progress-thumb" style={{ left: `${percentage}%` }}></div>
+        {isLocalPlaying && visibleLoading ? (
+          <div className="progress-bar-loading"></div>
+        ) : (
+          <div className="player-controls__progress-bar">
+            <div className="player-controls__progress-fill" style={{ width: `${percentage}%` }}>
+              <div className="player-controls__progress-thumb" style={{ left: `${percentage}%` }}></div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
