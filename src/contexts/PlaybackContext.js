@@ -19,7 +19,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
 
   // const currentTrack = queue[currentIndex] || null;
 
-  const { playerTrack, player } = usePlayerContext();
+  const { playerTrack, player, setCurrentTime, setDuration } = usePlayerContext();
 
   useEffect(() => {
     console.log("一覧のトラック数", queue);
@@ -65,6 +65,11 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     setCurrentTitle(queue[currentIndex].title || queue[currentIndex].name);
     setCurrentCoverImage(queue[currentIndex].albumImage || queue[currentIndex].album.images[0].url);
   }, [currentIndex, queue, currentTrackId]);
+
+  useEffect(() => {
+    setCurrentTime(0);
+    setDuration(0);
+  }, [currentIndex]);
 
   function playTrackAtIndex(index) {
     // console.log(index, "index");
