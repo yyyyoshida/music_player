@@ -1,21 +1,23 @@
-.fade-on-loaded {
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
+body {
+  .fade-on-loaded {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
 
-.fade-out {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
+  .fade-out {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
 
-.fade-in {
-  opacity: 1;
-  transition: opacity 0.5s ease;
-}
+  .fade-in {
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
 
-.fade-in-up {
-  animation: fadeInUp 0.4s ease forwards;
-  // animation-delay: 0.1s;
+  .fade-in-up {
+    animation: fadeInUp 0.4s ease forwards;
+    // animation-delay: 0.1s;
+  }
 }
 
 @keyframes fadeInUp {
