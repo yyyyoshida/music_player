@@ -85,7 +85,7 @@ const ProgressBar = ({ initialValue }) => {
   useEffect(() => {
     if (isLocalPlaying || !isTrackSet) return;
 
-    const isTrackFinished = duration - currentTime <= 200;
+    const isTrackFinished = currentTime !== 0 && duration - currentTime <= 200;
 
     if (isTrackFinished && isRepeat) return seekToSpotify(0);
 
