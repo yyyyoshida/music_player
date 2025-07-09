@@ -1,8 +1,7 @@
 import { useState } from "react";
-import Bar from "./Bar";
-import { music, songs, playSong } from "./PlayMusic";
 import Tooltip from "../Tooltip";
 import useButtonTooltip from "../../hooks/useButtonTooltip";
+import VolumeBar from "./VolumeBar";
 
 const PlayerOptions = () => {
   const { isButtonPressed, isHovered, setIsHovered } = useButtonTooltip();
@@ -20,7 +19,7 @@ const PlayerOptions = () => {
     <>
       <div className="player-controls__options">
         <div className="player-controls__volume">
-          <Bar ParentClassName="player-controls__volume" type="volume" value="30" />
+          <VolumeBar initialValue={30} />
         </div>
         <button
           className="player-controls__button player-controls__button--more"

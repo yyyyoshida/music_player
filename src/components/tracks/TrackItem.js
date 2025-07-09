@@ -6,50 +6,33 @@ import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContex
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 
+function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDelay) {
+  const [delayedValue, setDelayedValue] = useState(value);
+
+  useEffect(() => {
+    const delay = trackOrigin === "searchResult" ? searchResultsDelay : defaultDelay;
+    const timeout = setTimeout(() => setDelayedValue(value), delay);
+    return () => clearTimeout(timeout);
+  }, [value, trackOrigin, defaultDelay, searchResultsDelay]);
+
+  return delayedValue;
+}
+
 const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query }) => {
   const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet, trackOrigin, togglePlayPause } = usePlayerContext();
 
-  const isCurrentTrack = currentTrackId === track.id;
   const buttonRef = useRef(null);
 
-  const delayedIsClicked = useDelayedValue(isCurrentTrack);
-  const delayedIsTrackPlaying = useDelayedValue(isTrackPlaying);
-
-  const resolvedIsPlaying = trackOrigin === "firebase" ? delayedIsTrackPlaying : isTrackPlaying;
-  const resolvedIsClicked = trackOrigin === "firebase" ? delayedIsClicked : isCurrentTrack;
-
-  const positionOffsetY = -60;
-
+  const isCurrentTrack = currentTrackId === track.id;
   const isUsedFallbackImage = track.albumImage === FALLBACK_COVER_IMAGE;
 
-  function useDelayedValue(value, delay = 200) {
-    const [delayedValue, setDelayedValue] = useState(value);
+  const delayedIsClicked = useDelayByTrackOrigin(isCurrentTrack, trackOrigin, 0, 100);
+  const delayedIsTrackPlaying = useDelayByTrackOrigin(isTrackPlaying, trackOrigin, 0, 0);
 
-    useEffect(() => {
-      if (trackOrigin === "searchResults") return;
-      const timeout = setTimeout(() => {
-        setDelayedValue(value);
-      }, delay);
-
-      return () => clearTimeout(timeout);
-    }, [value]);
-
-    return delayedValue;
-  }
-
-  function setButtonPosition() {
-    const rect = buttonRef.current.getBoundingClientRect();
-    const newPositionTop = rect.top + positionOffsetY;
-
-    if (newPositionTop >= 10) {
-      setMenuPositionTop(newPositionTop);
-    } else {
-      setMenuPositionTop(10);
-    }
-  }
+  const positionOffsetY = -60;
 
   function handleClickTrackItem() {
     if (isCurrentTrack) return togglePlayPause();
@@ -68,15 +51,26 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
     playerTrack(uri, track.source);
   }
 
+  function setButtonPosition() {
+    const rect = buttonRef.current.getBoundingClientRect();
+    const newPositionTop = rect.top + positionOffsetY;
+
+    if (newPositionTop >= 10) {
+      setMenuPositionTop(newPositionTop);
+    } else {
+      setMenuPositionTop(10);
+    }
+  }
+
   return (
-    <li className={`track-item ${resolvedIsPlaying ? "playing" : ""} ${resolvedIsClicked ? "clicked" : ""} `} onClick={handleClickTrackItem}>
+    <li className={`track-item ${delayedIsTrackPlaying ? "playing" : ""} ${delayedIsClicked ? "clicked" : ""} `} onClick={handleClickTrackItem}>
       <div className="track-item__left">
         <div className={`${track.trackId}`}></div>
         <button className="track-item__left-play-pause-button">
-          <img src={resolvedIsPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
+          <img src={delayedIsTrackPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
         </button>
 
-        <div className={`equalizer ${resolvedIsPlaying ? "" : "hidden"}`}>
+        <div className={`equalizer ${delayedIsTrackPlaying ? "" : "hidden"}`}>
           <div className="bar"></div>
           <div className="bar"></div>
           <div className="bar"></div>
