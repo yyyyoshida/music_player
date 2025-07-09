@@ -9,7 +9,7 @@ const ProgressBar = ({ initialValue }) => {
 
   const { currentTime, isTrackSet, isLocalReady, seekToSpotify, duration, position, isPlaying, setIsPlaying, isLocalPlaying, audioRef } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
-  const { goToNextTrack } = useContext(PlaybackContext);
+  const { goToNextTrack, currentIndex } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
     type: "progress",
     value: initialValue,
@@ -108,6 +108,12 @@ const ProgressBar = ({ initialValue }) => {
 
     return () => clearTimeout(timer);
   }, [isLocalReady]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    audio.currentTime = 0;
+    seekToSpotify(0);
+  }, [currentIndex]);
 
   return (
     <>
