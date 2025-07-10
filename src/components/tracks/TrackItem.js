@@ -10,7 +10,8 @@ function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDe
   const [delayedValue, setDelayedValue] = useState(value);
 
   useEffect(() => {
-    const delay = trackOrigin === "searchResult" ? searchResultsDelay : defaultDelay;
+    const delay = trackOrigin === "searchResults" ? searchResultsDelay : defaultDelay;
+
     const timeout = setTimeout(() => setDelayedValue(value), delay);
     return () => clearTimeout(timeout);
   }, [value, trackOrigin, defaultDelay, searchResultsDelay]);
@@ -29,7 +30,7 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   const isCurrentTrack = currentTrackId === track.id;
   const isUsedFallbackImage = track.albumImage === FALLBACK_COVER_IMAGE;
 
-  const delayedIsClicked = useDelayByTrackOrigin(isCurrentTrack, trackOrigin, 0, 100);
+  const delayedIsClicked = useDelayByTrackOrigin(isCurrentTrack, trackOrigin, 0, 350);
   const delayedIsTrackPlaying = useDelayByTrackOrigin(isTrackPlaying, trackOrigin, 0, 0);
 
   const positionOffsetY = -60;
