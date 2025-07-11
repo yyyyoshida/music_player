@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useRef, useEffect } from "react";
-import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment, serverTimestamp, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { deleteObject, ref as storageRef } from "firebase/storage";
 import { storage } from "../firebase"; // ストレージのインスタンス
@@ -157,12 +157,41 @@ export const PlaylistProvider = ({ children }) => {
 
   async function deletePlaylist(playlistId) {
     try {
-      await deleteDoc(doc(db, "playlists", playlistId));
-      console.log("プレイリスト削除成功");
+      const tracksRef = collection(db, "playlists", playlistId, "tracks");
+      const tracksSnapshot = await getDocs(tracksRef);
+
+      for (const trackDoc of tracksSnapshot.docs) {
+        const data = trackDoc.data();
+
+        if (data.albumImagePath) {
+          const imageRef = storageRef(storage, data.albumImagePath);
+          try {
+            await deleteObject(imageRef);
+          } catch (e) {
+            console.log("画像削除失敗", e);
+          }
+        }
+
+        if (data.audioPath) {
+          const audioRef = storageRef(storage, data.audioPath);
+          try {
+            await deleteObject(audioRef);
+          } catch (e) {
+            console.log("音声削除失敗", e);
+          }
+        }
+
+        await deleteDoc(trackDoc.ref);
+      }
+
+      const playlistRef = doc(db, "playlists", playlistId);
+      await deleteDoc(playlistRef);
+
+      console.log("削除完了");
       navigate("/playlist");
       showMessage("deletePlaylist");
-    } catch (err) {
-      console.error("プレイリスト削除失敗", err);
+    } catch (e) {
+      console.error("削除に失敗", e);
     }
   }
 
