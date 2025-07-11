@@ -21,6 +21,9 @@ const ActionSuccessMessage = () => {
       case "deleteTrack":
         return "楽曲をプレイリストから削除しました";
 
+      case "deleteTrackFailed":
+        return "楽曲の削除に失敗しました";
+
       case "deletePlaylist":
         return "プレイリストを削除しました";
 
