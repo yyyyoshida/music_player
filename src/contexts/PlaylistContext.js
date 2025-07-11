@@ -110,33 +110,25 @@ export const PlaylistProvider = ({ children }) => {
       return `${minutes}分`;
     }
   }
-  // 曲を削除するときにストレージにある画像と音声ファイル削除するｄ
+  // 曲を削除するときにストレージにある画像と音声ファイルにあれば削除するｄ
   async function deleteTrack(playlistId, trackId) {
     fadeCoverImages();
     try {
       const trackRef = doc(db, "playlists", playlistId, "tracks", trackId);
       const trackSnap = await getDoc(trackRef);
 
-      if (!trackSnap.exists()) {
-        console.warn("削除対象のトラックが存在しない"); //今後これの警告トースト通知をつくる
-        return;
-      }
+      if (!trackSnap.exists()) return;
 
       const deletedTrack = trackSnap.data();
 
-      // ストレージの画像や音声を削除
       if (deletedTrack.albumImagePath) {
         const coverRef = storageRef(storage, deletedTrack.albumImagePath);
-        await deleteObject(coverRef).catch((err) => {
-          console.warn("カバー画像削除失敗", err);
-        });
+        await deleteObject(coverRef);
       }
 
       if (deletedTrack.audioPath) {
         const audioRef = storageRef(storage, deletedTrack.audioPath);
-        await deleteObject(audioRef).catch((err) => {
-          console.warn("音声ファイル削除失敗", err);
-        });
+        await deleteObject(audioRef);
       }
 
       await deleteDoc(trackRef);
@@ -149,9 +141,8 @@ export const PlaylistProvider = ({ children }) => {
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
 
       showMessage("deleteTrack");
-      console.log("削除成功");
-    } catch (err) {
-      console.error("削除失敗", err);
+    } catch {
+      showMessage("deleteTrackFailed");
     }
   }
 
