@@ -125,8 +125,8 @@ export const PlaylistProvider = ({ children }) => {
       const deletedTrack = trackSnap.data();
 
       // ストレージの画像や音声を削除
-      if (deletedTrack.imagePath) {
-        const coverRef = storageRef(storage, deletedTrack.imagePath);
+      if (deletedTrack.albumImagePath) {
+        const coverRef = storageRef(storage, deletedTrack.albumImagePath);
         await deleteObject(coverRef).catch((err) => {
           console.warn("カバー画像削除失敗", err);
         });
