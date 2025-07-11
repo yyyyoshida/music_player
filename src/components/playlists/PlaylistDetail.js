@@ -20,12 +20,22 @@ const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
-  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
+
   const [playlistInfo, setPlaylistInfo] = useState({ duration: 0 });
 
   const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet, setTrackOrigin } = usePlayerContext();
-  const { deletePlaylist, tracks, setTracks, formatTimeHours, setPlaylistId, playlistName, deletedTrackDuration, setDeletedTrackDuration, isCoverImageFading } =
-    useContext(PlaylistContext);
+  const {
+    showDeletePlaylistModal,
+    deletePlaylist,
+    tracks,
+    setTracks,
+    formatTimeHours,
+    setPlaylistId,
+    playlistName,
+    deletedTrackDuration,
+    setDeletedTrackDuration,
+    isCoverImageFading,
+  } = useContext(PlaylistContext);
   const { setCurrentTrackId, currentTrackId, setQueue, queue, updateCurrentIndex, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
     useContext(PlaybackContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
@@ -81,10 +91,6 @@ const PlaylistDetail = ({ containerRef }) => {
 
     fetchTracks();
   }, [id]);
-
-  function toggleDeleteVisible() {
-    setIsDeleteVisible((prev) => !prev);
-  }
 
   useEffect(() => {
     const track = queue[currentIndex];
@@ -145,7 +151,7 @@ const PlaylistDetail = ({ containerRef }) => {
             <img src="/img/rename.png" className="playlist-detail__header-rename-button-icon playlist-detail__header-button-icon" />
             名前を変更
           </button>
-          <button className="playlist-detail__header-delete-button playlist-detail__header-button" onClick={toggleDeleteVisible}>
+          <button className="playlist-detail__header-delete-button playlist-detail__header-button" onClick={showDeletePlaylistModal}>
             <img src="/img/delete.png" className="playlist-detail__header-delete-button-icon playlist-detail__header-button-icon" />
             削除
           </button>
@@ -189,13 +195,7 @@ const PlaylistDetail = ({ containerRef }) => {
         </ul>
       </>
 
-      <DeletePlaylistModal
-        isDeleteVisible={isDeleteVisible}
-        toggleDeleteVisible={toggleDeleteVisible}
-        tracks={tracks}
-        deletePlaylist={deletePlaylist}
-        id={id}
-      />
+      <DeletePlaylistModal tracks={tracks} deletePlaylist={deletePlaylist} id={id} />
       <RenamePlaylist isRenameVisible={isRenameVisible} setIsRenameVisible={setIsRenameVisible} tracks={tracks} />
     </div>
   );
