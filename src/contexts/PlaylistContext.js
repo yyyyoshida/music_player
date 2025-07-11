@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useRef, useEffect } from "react";
-import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment, serverTimestamp, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { deleteObject, ref as storageRef } from "firebase/storage";
 import { storage } from "../firebase"; // ストレージのインスタンス
@@ -10,6 +10,7 @@ export const PlaylistContext = createContext();
 
 export const PlaylistProvider = ({ children }) => {
   const [isCreateVisible, setIsCreateVisible] = useState(false);
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const playlistNameRef = useRef("");
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
@@ -31,6 +32,8 @@ export const PlaylistProvider = ({ children }) => {
 
   const showCreatePlaylistModal = () => setIsCreateVisible(true);
   const hideCreatePlaylistModal = () => setIsCreateVisible(false);
+  const showDeletePlaylistModal = () => setIsDeleteVisible(true);
+  const hideDeletePlaylistModal = () => setIsDeleteVisible(false);
 
   const addSelectedTrackToPlaylistRef = useRef(() => {});
 
@@ -110,33 +113,25 @@ export const PlaylistProvider = ({ children }) => {
       return `${minutes}分`;
     }
   }
-  // 曲を削除するときにストレージにある画像と音声ファイル削除するｄ
+  // 曲を削除するときにストレージにある画像と音声ファイルにあれば削除するｄ
   async function deleteTrack(playlistId, trackId) {
     fadeCoverImages();
     try {
       const trackRef = doc(db, "playlists", playlistId, "tracks", trackId);
       const trackSnap = await getDoc(trackRef);
 
-      if (!trackSnap.exists()) {
-        console.warn("削除対象のトラックが存在しない"); //今後これの警告トースト通知をつくる
-        return;
-      }
+      if (!trackSnap.exists()) return;
 
       const deletedTrack = trackSnap.data();
 
-      // ストレージの画像や音声を削除
-      if (deletedTrack.imagePath) {
-        const coverRef = storageRef(storage, deletedTrack.imagePath);
-        await deleteObject(coverRef).catch((err) => {
-          console.warn("カバー画像削除失敗", err);
-        });
+      if (deletedTrack.albumImagePath) {
+        const coverRef = storageRef(storage, deletedTrack.albumImagePath);
+        await deleteObject(coverRef);
       }
 
       if (deletedTrack.audioPath) {
         const audioRef = storageRef(storage, deletedTrack.audioPath);
-        await deleteObject(audioRef).catch((err) => {
-          console.warn("音声ファイル削除失敗", err);
-        });
+        await deleteObject(audioRef);
       }
 
       await deleteDoc(trackRef);
@@ -149,20 +144,40 @@ export const PlaylistProvider = ({ children }) => {
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
 
       showMessage("deleteTrack");
-      console.log("削除成功");
-    } catch (err) {
-      console.error("削除失敗", err);
+    } catch {
+      showMessage("deleteTrackFailed");
     }
   }
 
   async function deletePlaylist(playlistId) {
     try {
-      await deleteDoc(doc(db, "playlists", playlistId));
-      console.log("プレイリスト削除成功");
+      const tracksRef = collection(db, "playlists", playlistId, "tracks");
+      const tracksSnapshot = await getDocs(tracksRef);
+
+      for (const trackDoc of tracksSnapshot.docs) {
+        const data = trackDoc.data();
+
+        if (data.albumImagePath) {
+          const imageRef = storageRef(storage, data.albumImagePath);
+          await deleteObject(imageRef);
+        }
+
+        if (data.audioPath) {
+          const audioRef = storageRef(storage, data.audioPath);
+          await deleteObject(audioRef);
+        }
+
+        await deleteDoc(trackDoc.ref);
+      }
+
+      const playlistRef = doc(db, "playlists", playlistId);
+      await deleteDoc(playlistRef);
+
       navigate("/playlist");
       showMessage("deletePlaylist");
-    } catch (err) {
-      console.error("プレイリスト削除失敗", err);
+    } catch (e) {
+      hideDeletePlaylistModal();
+      showMessage("deletePlaylistFailed");
     }
   }
 
@@ -185,6 +200,9 @@ export const PlaylistProvider = ({ children }) => {
         showCreatePlaylistModal,
         hideCreatePlaylistModal,
         isCreateVisible,
+        showDeletePlaylistModal,
+        hideDeletePlaylistModal,
+        isDeleteVisible,
 
         playlistNameRef,
         formatTimeHours,
