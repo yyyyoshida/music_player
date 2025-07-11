@@ -10,6 +10,7 @@ export const PlaylistContext = createContext();
 
 export const PlaylistProvider = ({ children }) => {
   const [isCreateVisible, setIsCreateVisible] = useState(false);
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const playlistNameRef = useRef("");
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
@@ -31,6 +32,8 @@ export const PlaylistProvider = ({ children }) => {
 
   const showCreatePlaylistModal = () => setIsCreateVisible(true);
   const hideCreatePlaylistModal = () => setIsCreateVisible(false);
+  const showDeletePlaylistModal = () => setIsDeleteVisible(true);
+  const hideDeletePlaylistModal = () => setIsDeleteVisible(false);
 
   const addSelectedTrackToPlaylistRef = useRef(() => {});
 
@@ -156,20 +159,12 @@ export const PlaylistProvider = ({ children }) => {
 
         if (data.albumImagePath) {
           const imageRef = storageRef(storage, data.albumImagePath);
-          try {
-            await deleteObject(imageRef);
-          } catch (e) {
-            console.log("画像削除失敗", e);
-          }
+          await deleteObject(imageRef);
         }
 
         if (data.audioPath) {
           const audioRef = storageRef(storage, data.audioPath);
-          try {
-            await deleteObject(audioRef);
-          } catch (e) {
-            console.log("音声削除失敗", e);
-          }
+          await deleteObject(audioRef);
         }
 
         await deleteDoc(trackDoc.ref);
@@ -178,11 +173,11 @@ export const PlaylistProvider = ({ children }) => {
       const playlistRef = doc(db, "playlists", playlistId);
       await deleteDoc(playlistRef);
 
-      console.log("削除完了");
       navigate("/playlist");
       showMessage("deletePlaylist");
     } catch (e) {
-      console.error("削除に失敗", e);
+      hideDeletePlaylistModal();
+      showMessage("deletePlaylistFailed");
     }
   }
 
@@ -205,6 +200,9 @@ export const PlaylistProvider = ({ children }) => {
         showCreatePlaylistModal,
         hideCreatePlaylistModal,
         isCreateVisible,
+        showDeletePlaylistModal,
+        hideDeletePlaylistModal,
+        isDeleteVisible,
 
         playlistNameRef,
         formatTimeHours,
