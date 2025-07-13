@@ -1,5 +1,5 @@
 import { useEffect, useContext, useRef, useState } from "react";
-import { playIcon, pauseIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { playIcon, pauseIcon, FALLBACK_COVER_IMAGE, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
@@ -105,8 +105,7 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
                 e.stopPropagation();
               }}
             >
-              {/* <img src="/img/favorite.png" /> */}
-              <img src="/img/heart.png" />
+              <img src={FAVORITE_ICON} />
             </button>
             <button
               className="track-item__button track-item__add-playlist-button"
@@ -116,7 +115,7 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
                 toggleSelectVisible();
               }}
             >
-              <img src="/img/plus.png" />
+              <img src={ADD_TO_PLAYLIST_ICON} />
             </button>
           </>
         ) : (
