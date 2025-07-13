@@ -22,7 +22,7 @@ function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDe
 const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query }) => {
   const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
-  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+  const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet, trackOrigin, togglePlayPause } = usePlayerContext();
 
   const buttonRef = useRef(null);
@@ -34,6 +34,7 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   const delayedIsTrackPlaying = useDelayByTrackOrigin(isTrackPlaying, trackOrigin, 0, 0);
 
   const positionOffsetY = -60;
+  const isSearchPage = window.location.pathname === "/search-result";
 
   function handleClickTrackItem() {
     if (isCurrentTrack) return togglePlayPause();
@@ -96,23 +97,47 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
       </div>
       <div className="track-item__right">
         {track.source && <TrackSourceIcon source={track.source} />}
-        <button
-          className="track-item__more-button track-menu-button"
-          ref={buttonRef}
-          onMouseEnter={() => setIsButtonHovered(true)}
-          onMouseLeave={() => setIsButtonHovered(false)}
-          onClick={(e) => {
-            e.stopPropagation();
-            setButtonPosition();
-            handleTrackSelect(track, false);
-            toggleMenu(index);
+        {isSearchPage ? (
+          <>
+            <button
+              className="track-item__button track-item__favorite-button"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              {/* <img src="/img/favorite.png" /> */}
+              <img src="/img/heart.png" />
+            </button>
+            <button
+              className="track-item__button track-item__add-playlist-button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTrackSelect(track, false);
+                toggleSelectVisible();
+              }}
+            >
+              <img src="/img/plus.png" />
+            </button>
+          </>
+        ) : (
+          <button
+            className="track-item__button track-item__more-button "
+            ref={buttonRef}
+            onMouseEnter={() => setIsButtonHovered(true)}
+            onMouseLeave={() => setIsButtonHovered(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setButtonPosition();
+              handleTrackSelect(track, false);
+              toggleMenu(index);
 
-            setTrackIndex(index);
-            setTrackId(track.id);
-          }}
-        >
-          <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
-        </button>
+              setTrackIndex(index);
+              setTrackId(track.id);
+            }}
+          >
+            <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
+          </button>
+        )}
         <div className="track-item__track-duration">{formatTime(track.duration_ms)}</div>
       </div>
     </li>
