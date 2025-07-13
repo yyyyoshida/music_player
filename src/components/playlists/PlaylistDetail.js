@@ -46,6 +46,7 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("trackList", tracks, [tracks], LOADING_DELAY);
   const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
+  const playlistDetailRef = useRef(null);
 
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
@@ -104,7 +105,7 @@ const PlaylistDetail = ({ containerRef }) => {
   }, [currentIndex]);
 
   return (
-    <div className="playlist-detail">
+    <div className="playlist-detail" ref={playlistDetailRef}>
       <div className="playlist-detail__header">
         <div className="playlist-detail__header-cover-img-wrapper">
           <PlaylistCoverImageGrid
@@ -189,6 +190,7 @@ const PlaylistDetail = ({ containerRef }) => {
                 date={date.toLocaleString()}
                 currentPlayedAt={currentPlayedAt}
                 setCurrentPlayedAt={setCurrentPlayedAt}
+                parentRef={playlistDetailRef}
               />
             );
           })}

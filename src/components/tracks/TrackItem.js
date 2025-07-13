@@ -19,7 +19,7 @@ function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDe
   return delayedValue;
 }
 
-const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query }) => {
+const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query, parentRef }) => {
   const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
@@ -54,20 +54,18 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   }
 
   function setButtonPosition() {
-    const rect = buttonRef.current.getBoundingClientRect();
-    const newPositionTop = rect.top + positionOffsetY;
+    if (!buttonRef.current || !parentRef.current) return;
 
-    if (newPositionTop >= 10) {
-      setMenuPositionTop(newPositionTop);
-    } else {
-      setMenuPositionTop(10);
-    }
+    const buttonRect = buttonRef.current.getBoundingClientRect();
+    const parentRect = parentRef.current.getBoundingClientRect();
+
+    const offset = buttonRect.top - parentRect.top + window.scrollY + positionOffsetY;
+    setMenuPositionTop(offset);
   }
 
   return (
     <li className={`track-item ${delayedIsTrackPlaying ? "playing" : ""} ${delayedIsClicked ? "clicked" : ""} `} onClick={handleClickTrackItem}>
       <div className="track-item__left">
-        <div className={`${track.trackId}`}></div>
         <button className="track-item__left-play-pause-button">
           <img src={delayedIsTrackPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
         </button>
