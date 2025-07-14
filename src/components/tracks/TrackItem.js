@@ -12,9 +12,12 @@ function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDe
   useEffect(() => {
     const delay = trackOrigin === "searchResults" ? searchResultsDelay : defaultDelay;
 
+    if (value === delayedValue) return;
+    if (delay === 0) return setDelayedValue(value);
+
     const timeout = setTimeout(() => setDelayedValue(value), delay);
     return () => clearTimeout(timeout);
-  }, [value, trackOrigin, defaultDelay, searchResultsDelay]);
+  }, [value, delayedValue, trackOrigin, defaultDelay, searchResultsDelay]);
 
   return delayedValue;
 }
