@@ -1,33 +1,26 @@
 import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
-
 import { usePlayerContext } from "../../contexts/PlayerContext";
-
-import { throttle } from "lodash";
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
-import Tooltip from "../Tooltip";
-import useButtonTooltip from "../../hooks/useButtonTooltip";
 import useDelayedText from "../../hooks/useDelayText";
+import { TooltipContext } from "../../contexts/TooltipContext";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
-const TrackInfo = ({ actionsRef }) => {
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [title, setTitle] = useState("123456789123456789123456789123456789123456789123456789");
-  const [artist, setArtist] = useState("アーティスト・作者");
+const TrackInfo = () => {
   const imgRef = useRef(null);
   const [isHidden, setIsHidden] = useState(false);
   const [width, setWidth] = useState(85);
 
   const { isPlaying } = usePlayerContext();
-  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip(600);
-  const tooltipText = useDelayedText("全画面表示：オフ", "全画面表示", isFullScreen, isFullScreen, 0);
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
 
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
   const { currentTrackId, currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
+  useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
   const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
-  const prevSongIndex = useRef(null);
+
   // トラックの抜粋機能↓↓
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
@@ -52,7 +45,7 @@ const TrackInfo = ({ actionsRef }) => {
         setWidth(newWidth);
       }
     }, 0);
-  }, [isPlaying, title, isVisible, currentTitle]);
+  }, [isPlaying, isVisible, currentTitle]);
 
   function fadeTransition() {
     const transitionElement = transitionRef.current;
@@ -85,14 +78,17 @@ const TrackInfo = ({ actionsRef }) => {
         ref={trackInfoRef}
         className="player-controls__track-info"
         style={{ width: `${width}px` }}
-        // onClick={handleTrackInfoClick}
         onClick={() => {
           handleTrackInfoClick();
           handleButtonPress();
-          setIsFullScreen((prev) => !prev);
         }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={(e) => {
+          setTooltipText(isVisible ? "全画面表示：オフ" : "全画面表示");
+          handleMouseEnter(e);
+        }}
+        onMouseLeave={() => {
+          handleMouseLeave();
+        }}
       >
         <figure className="player-controls__track">
           <div id="js-track-thumbnail-wrapper" className="player-controls__track-thumbnail-wrapper">
@@ -111,9 +107,6 @@ const TrackInfo = ({ actionsRef }) => {
             <p className="player-controls__artist">{currentArtistName}</p>
           </figcaption>
         </figure>
-        <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={"tooltip-track-info"}>
-          {tooltipText}
-        </Tooltip>
       </div>
     </>
   );
