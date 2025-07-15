@@ -1,8 +1,11 @@
-import React from "react";
+import { useContext } from "react";
 import SearchBar from "./SearchBar";
 import LocalFileImportNav from "./LocalFileImportNav";
+import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 function Header({ token, onSearchResults }) {
+  const { showMessage } = useContext(ActionSuccessMessageContext);
+
   return (
     <header className="sidebar-header">
       <h1 className="sidebar-header__logo">
@@ -30,7 +33,12 @@ function Header({ token, onSearchResults }) {
 
           <LocalFileImportNav />
 
-          <li className="sidebar-header__item">
+          <li
+            className="sidebar-header__item"
+            onClick={() => {
+              showMessage("未実装");
+            }}
+          >
             <a className="sidebar-header__link" href="#">
               <img src="/img/無料の設定歯車アイコン (1).png" alt="" className="sidebar-header__item-icon" />
               設定

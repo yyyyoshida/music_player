@@ -1,15 +1,21 @@
 import { useState, useContext } from "react";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import VolumeBar from "./VolumeBar";
+import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
 
 const PlayerOptions = () => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
-
   const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
+  const { showMessage } = useContext(ActionSuccessMessageContext);
 
   function toggleOpenMenu() {
     handleButtonPress();
     setIsOpenMenu((prev) => !prev);
+  }
+
+  function closeMenu() {
+    setIsOpenMenu(false);
+    showMessage("未実装");
   }
 
   return (
@@ -33,22 +39,22 @@ const PlayerOptions = () => {
         </button>
         <div className={`player-controls__options-menu ${isOpenMenu ? "is-option" : ""}`}>
           <ul className="player-controls__options-list">
-            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
+            <li className="player-controls__options-item" onClick={closeMenu}>
               お気に入りに追加
             </li>
             {/* <li className="player-controls__options-item" onClick={toggleOpenMenu}>
               スマホ版UIに変更
             </li> */}
-            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
+            <li className="player-controls__options-item" onClick={closeMenu}>
               プレイリストから削除する
             </li>
-            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
+            <li className="player-controls__options-item" onClick={closeMenu}>
               そろそろ飽きた
             </li>
-            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
+            <li className="player-controls__options-item" onClick={closeMenu}>
               ビートアニメーションを無効化
             </li>
-            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
+            <li className="player-controls__options-item" onClick={closeMenu}>
               波形エフェクトを非表示
             </li>
             {/* <li className="player-controls__options-item" onClick={toggleOpenMenu}>
