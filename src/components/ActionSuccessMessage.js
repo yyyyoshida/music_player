@@ -39,6 +39,9 @@ const ActionSuccessMessage = () => {
       case "unselected":
         return "曲がセットされていません";
 
+      case "未実装":
+        return "この機能はまだ未実装です";
+
       default:
         return "";
     }
