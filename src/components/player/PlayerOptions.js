@@ -1,18 +1,15 @@
-import { useState } from "react";
-import Tooltip from "../Tooltip";
-import useButtonTooltip from "../../hooks/useButtonTooltip";
+import { useState, useContext } from "react";
+import { TooltipContext } from "../../contexts/TooltipContext";
 import VolumeBar from "./VolumeBar";
 
 const PlayerOptions = () => {
-  const { isButtonPressed, isHovered, setIsHovered } = useButtonTooltip();
   const [isOpenMenu, setIsOpenMenu] = useState(false);
 
-  function toggleOpen() {
-    setIsOpenMenu((prev) => !prev);
-  }
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
 
-  function clickMenu() {
-    toggleOpen();
+  function toggleOpenMenu() {
+    handleButtonPress();
+    setIsOpenMenu((prev) => !prev);
   }
 
   return (
@@ -23,38 +20,40 @@ const PlayerOptions = () => {
         </div>
         <button
           className="player-controls__button player-controls__button--more"
-          onClick={toggleOpen}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onClick={toggleOpenMenu}
+          onMouseEnter={(e) => {
+            setTooltipText("その他のオプション");
+            handleMouseEnter(e);
+          }}
+          onMouseLeave={() => {
+            handleMouseLeave();
+          }}
         >
           <img src="/img/三点リーダーアイコン1.png" alt="" className="player-controls__button--more-icon" />
-          <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={"tooltip-other"} isOpenMenu={isOpenMenu}>
-            その他のオプション
-          </Tooltip>
         </button>
         <div className={`player-controls__options-menu ${isOpenMenu ? "is-option" : ""}`}>
           <ul className="player-controls__options-list">
-            <li className="player-controls__options-item" onClick={clickMenu}>
+            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
               お気に入りに追加
             </li>
-            <li className="player-controls__options-item" onClick={clickMenu}>
+            {/* <li className="player-controls__options-item" onClick={toggleOpenMenu}>
               スマホ版UIに変更
-            </li>
-            <li className="player-controls__options-item" onClick={clickMenu}>
+            </li> */}
+            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
               プレイリストから削除する
             </li>
-            <li className="player-controls__options-item" onClick={clickMenu}>
+            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
               そろそろ飽きた
             </li>
-            <li className="player-controls__options-item" onClick={clickMenu}>
+            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
               ビートアニメーションを無効化
             </li>
-            <li className="player-controls__options-item" onClick={clickMenu}>
+            <li className="player-controls__options-item" onClick={toggleOpenMenu}>
               波形エフェクトを非表示
             </li>
-            <li className="player-controls__options-item" onClick={clickMenu}>
+            {/* <li className="player-controls__options-item" onClick={toggleOpenMenu}>
               楽曲の速度を変更する
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>

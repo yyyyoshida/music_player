@@ -5,6 +5,7 @@ import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
+import { TooltipContext } from "../../contexts/TooltipContext";
 
 function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDelay) {
   const [delayedValue, setDelayedValue] = useState(value);
@@ -27,6 +28,7 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet, trackOrigin, togglePlayPause } = usePlayerContext();
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
 
   const buttonRef = useRef(null);
 
@@ -104,6 +106,14 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
               className="track-item__button track-item__favorite-button"
               onClick={(e) => {
                 e.stopPropagation();
+                handleButtonPress();
+              }}
+              onMouseEnter={(e) => {
+                setTooltipText("お気入りに追加");
+                handleMouseEnter(e);
+              }}
+              onMouseLeave={() => {
+                handleMouseLeave();
               }}
             >
               <img src={FAVORITE_ICON} />
@@ -115,6 +125,13 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
                 handleTrackSelect(track, false);
                 toggleSelectVisible();
               }}
+              onMouseEnter={(e) => {
+                setTooltipText("プレイリストに追加");
+                handleMouseEnter(e);
+              }}
+              onMouseLeave={() => {
+                handleMouseLeave();
+              }}
             >
               <img src={ADD_TO_PLAYLIST_ICON} />
             </button>
@@ -123,14 +140,21 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
           <button
             className="track-item__button track-item__more-button "
             ref={buttonRef}
-            onMouseEnter={() => setIsButtonHovered(true)}
-            onMouseLeave={() => setIsButtonHovered(false)}
+            onMouseEnter={(e) => {
+              setIsButtonHovered(true);
+              setTooltipText("プレイリストに追加");
+              handleMouseEnter(e);
+            }}
+            onMouseLeave={() => {
+              setIsButtonHovered(false);
+              handleMouseLeave();
+            }}
             onClick={(e) => {
               e.stopPropagation();
               setButtonPosition();
               handleTrackSelect(track, false);
               toggleMenu(index);
-
+              handleButtonPress();
               setTrackIndex(index);
               setTrackId(track.id);
             }}

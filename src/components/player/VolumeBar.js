@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { usePlayerContext } from "../../contexts/PlayerContext";
-import useButtonTooltip from "../../hooks/useButtonTooltip";
+import { TooltipContext } from "../../contexts/TooltipContext";
 import useDelayedText from "../../hooks/useDelayText";
 import useBarHandler from "../../hooks/useBarHandler";
-import Tooltip from "../Tooltip";
 import VolumeIcon from "./VolumeIcon";
 
 const VolumeBar = ({ initialValue }) => {
@@ -14,10 +13,18 @@ const VolumeBar = ({ initialValue }) => {
 
   const barRef = useRef(null);
 
+  useDelayedText(isMuted, "ミュート：解除", "ミュート");
+  const {
+    handleButtonPress,
+    handleMouseEnter,
+
+    handleMouseLeave,
+
+    setTooltipText,
+  } = useContext(TooltipContext);
+
   const { playerReady, updateVolume, audioRef } = usePlayerContext();
 
-  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
-  const tooltipText = useDelayedText("ミュート解除", "ミュート", isMuted, isMuted);
   const { percentage, setPercentage, handleMouseDown } = useBarHandler({
     type: "volume",
     value: initialValue,
@@ -72,14 +79,15 @@ const VolumeBar = ({ initialValue }) => {
       <button
         className="player-controls__button player-controls__button--volume"
         onClick={toggleMute}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={(e) => {
+          setTooltipText(isMuted ? "ミュート：解除" : "ミュート");
+          handleMouseEnter(e);
+        }}
+        onMouseLeave={() => {
+          handleMouseLeave();
+        }}
       >
         <VolumeIcon volume={percentage} isMuted={isMuted} />
-
-        <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={"tooltip-volume"}>
-          {tooltipText}
-        </Tooltip>
       </button>
       <div ref={barRef} className="player-controls__volume-bar--wrapper" onMouseDown={handleMouseDown}>
         <div className="player-controls__volume-bar">
