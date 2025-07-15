@@ -141,12 +141,10 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
             className="track-item__button track-item__more-button "
             ref={buttonRef}
             onMouseEnter={(e) => {
-              setIsButtonHovered(true);
               setTooltipText("プレイリストに追加");
               handleMouseEnter(e);
             }}
             onMouseLeave={() => {
-              setIsButtonHovered(false);
               handleMouseLeave();
             }}
             onClick={(e) => {
