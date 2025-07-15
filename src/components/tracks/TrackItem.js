@@ -1,10 +1,11 @@
 import { useEffect, useContext, useRef, useState } from "react";
-import { playIcon, pauseIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { playIcon, pauseIcon, FALLBACK_COVER_IMAGE, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
+import { TooltipContext } from "../../contexts/TooltipContext";
 
 function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDelay) {
   const [delayedValue, setDelayedValue] = useState(value);
@@ -12,18 +13,22 @@ function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDe
   useEffect(() => {
     const delay = trackOrigin === "searchResults" ? searchResultsDelay : defaultDelay;
 
+    if (value === delayedValue) return;
+    if (delay === 0) return setDelayedValue(value);
+
     const timeout = setTimeout(() => setDelayedValue(value), delay);
     return () => clearTimeout(timeout);
-  }, [value, trackOrigin, defaultDelay, searchResultsDelay]);
+  }, [value, delayedValue, trackOrigin, defaultDelay, searchResultsDelay]);
 
   return delayedValue;
 }
 
-const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query }) => {
+const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query, parentRef }) => {
   const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
-  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+  const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet, trackOrigin, togglePlayPause } = usePlayerContext();
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
 
   const buttonRef = useRef(null);
 
@@ -34,6 +39,7 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   const delayedIsTrackPlaying = useDelayByTrackOrigin(isTrackPlaying, trackOrigin, 0, 0);
 
   const positionOffsetY = -60;
+  const isSearchPage = window.location.pathname === "/search-result";
 
   function handleClickTrackItem() {
     if (isCurrentTrack) return togglePlayPause();
@@ -53,20 +59,18 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   }
 
   function setButtonPosition() {
-    const rect = buttonRef.current.getBoundingClientRect();
-    const newPositionTop = rect.top + positionOffsetY;
+    if (!buttonRef.current || !parentRef.current) return;
 
-    if (newPositionTop >= 10) {
-      setMenuPositionTop(newPositionTop);
-    } else {
-      setMenuPositionTop(10);
-    }
+    const buttonRect = buttonRef.current.getBoundingClientRect();
+    const parentRect = parentRef.current.getBoundingClientRect();
+
+    const offset = buttonRect.top - parentRect.top + window.scrollY + positionOffsetY;
+    setMenuPositionTop(offset);
   }
 
   return (
     <li className={`track-item ${delayedIsTrackPlaying ? "playing" : ""} ${delayedIsClicked ? "clicked" : ""} `} onClick={handleClickTrackItem}>
       <div className="track-item__left">
-        <div className={`${track.trackId}`}></div>
         <button className="track-item__left-play-pause-button">
           <img src={delayedIsTrackPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
         </button>
@@ -96,23 +100,66 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
       </div>
       <div className="track-item__right">
         {track.source && <TrackSourceIcon source={track.source} />}
-        <button
-          className="track-item__more-button track-menu-button"
-          ref={buttonRef}
-          onMouseEnter={() => setIsButtonHovered(true)}
-          onMouseLeave={() => setIsButtonHovered(false)}
-          onClick={(e) => {
-            e.stopPropagation();
-            setButtonPosition();
-            handleTrackSelect(track, false);
-            toggleMenu(index);
-
-            setTrackIndex(index);
-            setTrackId(track.id);
-          }}
-        >
-          <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
-        </button>
+        {isSearchPage ? (
+          <>
+            <button
+              className="track-item__button track-item__favorite-button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleButtonPress();
+              }}
+              onMouseEnter={(e) => {
+                setTooltipText("お気入りに追加");
+                handleMouseEnter(e);
+              }}
+              onMouseLeave={() => {
+                handleMouseLeave();
+              }}
+            >
+              <img src={FAVORITE_ICON} />
+            </button>
+            <button
+              className="track-item__button track-item__add-playlist-button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTrackSelect(track, false);
+                toggleSelectVisible();
+              }}
+              onMouseEnter={(e) => {
+                setTooltipText("プレイリストに追加");
+                handleMouseEnter(e);
+              }}
+              onMouseLeave={() => {
+                handleMouseLeave();
+              }}
+            >
+              <img src={ADD_TO_PLAYLIST_ICON} />
+            </button>
+          </>
+        ) : (
+          <button
+            className="track-item__button track-item__more-button "
+            ref={buttonRef}
+            onMouseEnter={(e) => {
+              setTooltipText("プレイリストに追加");
+              handleMouseEnter(e);
+            }}
+            onMouseLeave={() => {
+              handleMouseLeave();
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setButtonPosition();
+              handleTrackSelect(track, false);
+              toggleMenu(index);
+              handleButtonPress();
+              setTrackIndex(index);
+              setTrackId(track.id);
+            }}
+          >
+            <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
+          </button>
+        )}
         <div className="track-item__track-duration">{formatTime(track.duration_ms)}</div>
       </div>
     </li>

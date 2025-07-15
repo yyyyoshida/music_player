@@ -1,13 +1,12 @@
-import { useState } from "react";
-import Tooltip from "../Tooltip";
-import useButtonTooltip from "../../hooks/useButtonTooltip";
+import { useState, useContext } from "react";
 import useDelayedText from "../../hooks/useDelayText";
+import { TooltipContext } from "../../contexts/TooltipContext";
 
 const ShuffleButton = () => {
   const [isShuffle, setIsShuffle] = useState(false);
 
-  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
-  const tooltipText = useDelayedText("オン", "オフ", isShuffle, isShuffle);
+  useDelayedText(isShuffle, "シャッフル：オン", "シャッフル：オフ");
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
 
   function toggleShuffle() {
     setIsShuffle((prev) => !prev);
@@ -19,15 +18,15 @@ const ShuffleButton = () => {
       id="js-player-controls"
       className="player-controls__button player-controls__button--shuffle"
       onClick={toggleShuffle}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={(e) => {
+        setTooltipText(isShuffle ? "シャッフル：オン" : "シャッフル：オフ");
+        handleMouseEnter(e);
+      }}
+      onMouseLeave={() => {
+        handleMouseLeave();
+      }}
     >
-      {/* <img src="img/シャッフル.png" alt=""></img> */}
       <img src={isShuffle ? "/img/シャッフルオン.png" : "/img/シャッフル.png"} alt="Shuffle Icon" />
-      {/* まだ、クリックしたら非表示の機能はない */}
-      <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={"tooltip-shuffle"}>
-        {`シャッフル：${tooltipText}`}
-      </Tooltip>
     </button>
   );
 };

@@ -1,14 +1,20 @@
-import { useEffect } from "react";
-import Tooltip from "../Tooltip";
-import useButtonTooltip from "../../hooks/useButtonTooltip";
+import { useEffect, useContext } from "react";
 import { useRepeatContext } from "../../contexts/RepeatContext";
+import { TooltipContext } from "../../contexts/TooltipContext";
 import useDelayedText from "../../hooks/useDelayText";
 import { repeatOnIcon, repeatOffIcon } from "../../assets/icons";
 
 const RepeatButton = () => {
-  const { isButtonPressed, isHovered, handleButtonPress, setIsHovered } = useButtonTooltip();
   const { isRepeat, toggleRepeat } = useRepeatContext();
-  const tooltipText = useDelayedText("オン", "オフ", isRepeat, isRepeat);
+  useDelayedText(isRepeat, "リピート：オン", "リピート：オフ");
+
+  const {
+    handleButtonPress,
+    handleMouseEnter,
+
+    handleMouseLeave,
+    setTooltipText,
+  } = useContext(TooltipContext);
 
   useEffect(() => {
     console.log("isRepeatが変わった瞬間", isRepeat);
@@ -21,16 +27,15 @@ const RepeatButton = () => {
         toggleRepeat();
         handleButtonPress();
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={(e) => {
+        setTooltipText(isRepeat ? "リピート：オン" : "リピート：オフ");
+        handleMouseEnter(e);
+      }}
+      onMouseLeave={() => {
+        handleMouseLeave();
+      }}
     >
-      {/* <img src={isRepeat ? 'img/repeat-on.png' : 'img/repeat.png'} alt="Repeat Icon" width="18" height="18" /> */}
-      {/* <img src={isRepeat ? 'img/repeat-on.png' : 'img/repeat.png'} alt="Repeat Icon" width="18" height="18" /> */}
       <img src={isRepeat ? repeatOnIcon : repeatOffIcon} alt="Repeat Icon" width="18" height="18" />
-
-      <Tooltip isHovered={isHovered} isButtonPressed={isButtonPressed} className={"tooltip-repeat"}>
-        {`リピート：${tooltipText}`}
-      </Tooltip>
     </button>
   );
 };

@@ -1,11 +1,28 @@
+import { useContext } from "react";
 import { FaCompactDisc, FaSpotify } from "react-icons/fa";
+import { TooltipContext } from "../contexts/TooltipContext";
 
 const TrackSourceIcon = ({ source }) => {
-  //   console.log(source);
-  return source === "local" ? (
-    <FaCompactDisc title="ローカル再生" className="track-source-icon track-source-icon-local" />
-  ) : (
-    <FaSpotify title="Spotify再生" className="track-source-icon track-source-icon-spotify" />
+  const { handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
+
+  return (
+    <div
+      className="track-source-icon-wrapper"
+      onMouseEnter={(e) => {
+        setTooltipText(source === "spotify" ? "Spotify再生" : "ローカル再生");
+        handleMouseEnter(e);
+      }}
+      onMouseLeave={() => {
+        handleMouseLeave();
+      }}
+      style={{ position: "relative", display: "inline-block" }}
+    >
+      {source === "spotify" ? (
+        <FaSpotify className="track-source-icon track-source-icon-spotify" />
+      ) : (
+        <FaCompactDisc className="track-source-icon track-source-icon-local" />
+      )}
+    </div>
   );
 };
 
