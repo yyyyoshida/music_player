@@ -885,7 +885,6 @@ footer {
 }
 
 .tooltip {
-  top: -32px;
   visibility: hidden;
   opacity: 0;
   border: 1px solid #141414;
@@ -895,42 +894,14 @@ footer {
   border-radius: 10%;
   background-color: #272727;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
-  position: absolute;
+  position: fixed;
   text-wrap: nowrap;
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
+  pointer-events: none;
   transition: right 1s, opacity 0.2s ease-in;
-  z-index: 3000;
-  cursor: auto;
-}
-.tooltip-play, .tooltip-pause {
-  left: 50%;
-  transform: translateX(-50%);
-}
-.tooltip-prev {
-  left: 40px;
-}
-.tooltip-next {
-  right: 40px;
-}
-.tooltip-repeat {
-  right: -35px;
-}
-.tooltip-shuffle {
-  left: -40px;
-}
-.tooltip-volume {
-  left: -25px;
-  letter-spacing: -2px;
-}
-.tooltip-other {
-  right: 0;
-  letter-spacing: -1px;
-}
-.tooltip-track-info {
-  top: -10px;
-  right: -35px;
+  z-index: 3001;
 }
 
 .thumbnail-expanded .player-controls__track-info:hover {
