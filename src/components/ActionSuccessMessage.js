@@ -1,9 +1,18 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
 const ActionSuccessMessage = () => {
   const { isMessageVisible, actionType } = useContext(ActionSuccessMessageContext);
+  const [style, setStyle] = useState({ opacity: 0, right: -350 });
+
+  useEffect(() => {
+    if (isMessageVisible) {
+      setStyle({ opacity: 1, right: 20 });
+    } else {
+      setStyle({ opacity: 0, right: -350 });
+    }
+  }, [isMessageVisible]);
 
   function getMessage() {
     switch (actionType) {
@@ -39,13 +48,22 @@ const ActionSuccessMessage = () => {
       case "unselected":
         return "曲がセットされていません";
 
+      case "未実装":
+        return "この機能はまだ未実装です";
+
       default:
-        return "";
+        return "通知内容を取得できませんでした";
     }
   }
 
   return (
-    <div className={`toast-message ${isMessageVisible ? "playlist-update-success" : ""}`} style={{ visibility: isMessageVisible ? "visible" : "hidden" }}>
+    <div
+      className="toast-message"
+      style={{
+        opacity: style.opacity,
+        right: style.right,
+      }}
+    >
       {getMessage()}
     </div>
   );
