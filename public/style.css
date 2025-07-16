@@ -2030,7 +2030,6 @@ footer {
 }
 
 .toast-message {
-  visibility: hidden;
   position: fixed;
   right: 20px;
   bottom: 150px;
@@ -2044,6 +2043,7 @@ footer {
   padding: 16px;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
   will-change: right, opacity;
+  transition: right 0.5s ease, opacity 0.5s ease;
   pointer-events: none;
 }
 .toast-message__icon {
@@ -2052,31 +2052,6 @@ footer {
   margin-right: 5px;
 }
 
-.playlist-update-success {
-  visibility: visible;
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-@keyframes fadein {
-  from {
-    right: -350px;
-    opacity: 0;
-  }
-  to {
-    right: 20px;
-    opacity: 1;
-  }
-}
-@keyframes fadeout {
-  from {
-    right: 20px;
-    opacity: 1;
-  }
-  to {
-    right: -350px;
-    opacity: 0;
-  }
-}
 .track-more-menu {
   position: absolute;
   width: 250px;
