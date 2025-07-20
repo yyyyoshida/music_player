@@ -1,6 +1,7 @@
 import { useContext, useRef, useEffect } from "react";
 import { SearchContext } from "../contexts/SearchContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { fetchWithRefresh } from "../utils/spotifyAuth";
 
 const SearchBar = ({ token }) => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useContext(SearchContext);
@@ -18,34 +19,63 @@ const SearchBar = ({ token }) => {
     handleSearch();
   }, [token]);
 
+  // async function handleSearch() {
+  //   if (!queryRef.current.value || queryRef.current.value === query) return;
+
+  //   setQuery(queryRef.current.value);
+  //   localStorage.setItem("searchQuery", queryRef.current.value);
+  //   navigate(`/search-result?query=${encodeURIComponent(queryRef.current.value)}`);
+
+  //   console.log(token);
+  //   if (!token) {
+  //     console.error("アクセストークンが無効です。再度ログインしてください。");
+
+  //     return;
+  //   }
+
+  //   try {
+  //     const encodedQuery = encodeURIComponent(queryRef.current.value); // クエリをURLエンコード
+  //     const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`, // トークンをヘッダーに含める
+  //       },
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorText = await response.text();
+  //       console.error("APIからのエラー:", errorText);
+  //       throw new Error("Spotify APIからの応答がありません");
+  //     }
+
+  //     const data = await response.json();
+
+  //     if (data.tracks?.items?.length) {
+  //       setSearchResults(data.tracks.items);
+  //       setHasSearchError(false);
+  //     } else {
+  //       setSearchResults([]);
+  //       setHasSearchError(true);
+  //     }
+  //     // setQuery('');
+  //   } catch (err) {
+  //     setHasSearchError(true);
+  //     setSearchResults([]);
+  //   }
+  // }
   async function handleSearch() {
-    if (!queryRef.current.value || queryRef.current.value === query) return;
+    const queryText = queryRef.current.value;
+    if (!queryText || queryText === query) return;
 
-    setQuery(queryRef.current.value);
-    localStorage.setItem("searchQuery", queryRef.current.value);
-    navigate(`/search-result?query=${encodeURIComponent(queryRef.current.value)}`);
-
-    console.log(token);
-    if (!token) {
-      console.error("アクセストークンが無効です。再度ログインしてください。");
-
-      return;
-    }
+    setQuery(queryText);
+    localStorage.setItem("searchQuery", queryText);
+    navigate(`/search-result?query=${encodeURIComponent(queryText)}`);
 
     try {
-      const encodedQuery = encodeURIComponent(queryRef.current.value); // クエリをURLエンコード
-      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
+      const encodedQuery = encodeURIComponent(queryText);
+      const response = await fetchWithRefresh(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`, // トークンをヘッダーに含める
-        },
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("APIからのエラー:", errorText);
-        throw new Error("Spotify APIからの応答がありません");
-      }
 
       const data = await response.json();
 
@@ -56,7 +86,6 @@ const SearchBar = ({ token }) => {
         setSearchResults([]);
         setHasSearchError(true);
       }
-      // setQuery('');
     } catch (err) {
       setHasSearchError(true);
       setSearchResults([]);

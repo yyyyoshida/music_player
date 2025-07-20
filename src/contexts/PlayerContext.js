@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
+import { fetchWithRefresh } from "../utils/spotifyAuth";
+import { TokenContext } from "../contexts/isTokenContext";
 
 const PlayerContext = createContext();
 
@@ -14,6 +16,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const [currentTime, setCurrentTime] = useState(0);
   const [trackId, setTrackId] = useState(null);
   const { isRepeat } = useRepeatContext();
+  const { isToken } = useContext(TokenContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
   const [isLocalPlaying, setIsLocalPlaying] = useState(false);
@@ -43,10 +46,10 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
       const playerInstance = new window.Spotify.Player({
         name: "MyMusicPlayer",
         getOAuthToken: (cb) => {
-          if (token) {
+          if (isToken) {
             cb(token);
           } else {
-            console.error("トークンが未設定です");
+            console.error("トークンが無効。試しにページをロード");
           }
         },
         volume: 0.3,
@@ -87,7 +90,8 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
         player.disconnect();
       }
     };
-  }, [token]);
+  }, [isToken]);
+  // }, [token, isToken]);
 
   const FADE_DURATION = 3000;
 
@@ -179,10 +183,9 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
 
     setIsSpotifyPlaying(true);
 
-    fetch(url, {
+    fetchWithRefresh(url, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
@@ -216,8 +219,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   }
 
   function playerTrack(trackUri, source = "spotify") {
-    // console.log(trackUri, "trackUri");
-
     setIsPlayPauseCooldown(false);
 
     if (source === "spotify") {
@@ -247,7 +248,16 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   useEffect(() => {
     if (!player || !isSpotifyPlaying) return;
 
-    player.addListener("player_state_changed", ({ position, duration, track_window: { current_track }, paused }) => {
+    player.addListener("player_state_changed", (state) => {
+      if (!state || !state.track_window?.current_track) return;
+
+      const {
+        position,
+        duration,
+        track_window: { current_track },
+        paused,
+      } = state;
+
       setPosition((position / duration) * 100);
       setDuration(duration);
       setTrackId(current_track.id);
@@ -257,8 +267,12 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
       player.getCurrentState().then((state) => {
         if (!state) return;
 
-        setPosition((state.position / state.duration) * 100);
-        setCurrentTime(state.position);
+        const { position, duration } = state;
+
+        if (typeof position === "number" && typeof duration === "number") {
+          setPosition((position / duration) * 100);
+          setCurrentTime(position);
+        }
       });
     }, 200);
 
