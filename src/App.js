@@ -1,23 +1,20 @@
-import { useState, useEffect, useContext, useLayoutEffect } from "react";
-import Header from "./components/Header";
-import Main from "./components/Main";
-import Login from "./components/Login";
-import { getNewAccessToken } from "./utils/spotifyAuth"; // getNewAccessTokenをインポート
-import { SearchProvider } from "./contexts/SearchContext";
+import { useState, useEffect, useContext } from "react";
+
+import { BrowserRouter } from "react-router-dom";
+import { getNewAccessToken } from "./utils/spotifyAuth";
+
 import { TokenContext } from "./contexts/isTokenContext";
+import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
-import { BrowserRouter } from "react-router-dom";
 import { PlaybackProvider } from "./contexts/PlaybackContext";
-
 import { PlaylistProvider } from "./contexts/PlaylistContext";
 import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
 import { UploadModalProvider } from "./contexts/UploadModalContext";
-
 import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageContext";
 
-// import db from './firebase';
-// import { collection, getDocs } from 'firebase/firestore';
+import Header from "./components/Header";
+import Main from "./components/Main";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -27,57 +24,149 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const { isToken, setIsToken } = useContext(TokenContext);
-  // const {toggle}
+
+  function cutText(text) {
+    if (!text) return;
+    return text.substring(0, 20);
+  }
 
   useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("code");
     const hash = window.location.hash;
-    const accessToken = window.localStorage.getItem("access_token");
-    const refreshToken = window.localStorage.getItem("refresh_token");
+    const localAccessToken = localStorage.getItem("access_token");
+    const localRefreshToken = localStorage.getItem("refresh_token");
 
-    // ① ハッシュがあれば最優先で処理
-    if (hash) {
-      const parsedToken = hash
-        .substring(1)
-        .split("&")
-        .find((elem) => elem.startsWith("access_token"))
-        ?.split("=")[1];
+    console.log("🪪 初期 localStorage access_token:", cutText(localAccessToken));
+    console.log("🔁 初期 localStorage refresh_token:", cutText(localRefreshToken));
 
-      if (parsedToken) {
-        window.localStorage.setItem("access_token", parsedToken);
-        setToken(parsedToken);
-        window.location.hash = ""; // ハッシュ消す
-        return;
-      }
+    // ① codeからのトークン交換が最優先
+    if (code) {
+      console.log("➀");
+      const fetchTokens = async () => {
+        try {
+          const res = await fetch("http://localhost:4000/api/exchange_token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code }),
+          });
+
+          const data = await res.json();
+
+          console.log("🎫 token交換成功:", cutText(data));
+
+          if (data.access_token) {
+            localStorage.setItem("access_token", data.access_token);
+            setToken(data.access_token);
+          }
+
+          if (data.refresh_token) {
+            localStorage.setItem("refresh_token", data.refresh_token);
+
+            console.log("💾 保存した refresh_token:", cutText(data.refresh_token));
+          }
+
+          window.history.replaceState({}, null, "/");
+        } catch (err) {
+          console.error("🔥 トークン交換失敗:", err);
+        }
+      };
+
+      fetchTokens();
+      return;
     }
 
-    // ② トークンなければ refreshToken から取得
-    if (!isToken && refreshToken && !hash) {
+    // ② hashでトークン渡された場合（古いやつ想定）
+    if (hash) {
+      console.log("②");
+      const params = new URLSearchParams(hash.substring(1));
+      const parsedToken = params.get("access_token");
+      const parsedRefreshToken = params.get("refresh_token");
+
+      if (parsedToken) {
+        localStorage.setItem("access_token", parsedToken);
+        setToken(parsedToken);
+      }
+
+      // refresh_tokenがある場合のみ保存（なければ前のを維持）
+      if (parsedRefreshToken) {
+        localStorage.setItem("refresh_token", parsedRefreshToken);
+        console.log("✅ hashからrefresh_token保存:", parsedRefreshToken);
+      } else {
+        console.log("refresh_tokenは既存のを維持する");
+      }
+
+      window.location.hash = "";
+      return;
+    }
+
+    // ③ refresh_tokenがあるならアクセストークンを再取得
+    if (!localAccessToken && localRefreshToken) {
+      console.log("③");
       getNewAccessToken()
         .then((newToken) => {
           if (newToken) {
             setToken(newToken);
-            window.localStorage.setItem("access_token", newToken);
+            setIsToken(true);
+            localStorage.setItem("access_token", newToken);
+
+            console.log("🔄 アクセストークン再取得成功:", cutText(newToken));
+            console.log("💾 保存中のrefresh_token:", cutText(localStorage.getItem("refresh_token")));
+          } else {
+            setIsToken(false);
           }
         })
         .catch((err) => {
-          console.error(" トークンの更新失敗:", err);
-          // setToken(null);
+          setIsToken(false);
+          console.error("🔁 トークンの更新失敗:", err);
         });
     }
-    // ③ 普通に accessToken があるとき
-    else if (accessToken) {
-      setToken(accessToken);
+
+    // ④ access_tokenがすでにあるならそのまま使う
+    if (localAccessToken) {
+      console.log("④");
+      setToken(localAccessToken);
     }
+
+    console.log("✅ useEffect 完了時点での refresh_token:", cutText(localStorage.getItem("refresh_token")));
   }, []);
+
+  useEffect(() => {
+    let intervalId;
+
+    if (token) {
+      intervalId = setInterval(
+        () => {
+          console.log("毎回10分後のやつ発火");
+
+          getNewAccessToken()
+            .then((newToken) => {
+              if (newToken) {
+                setToken(newToken);
+                setIsToken(true);
+                window.localStorage.setItem("access_token", newToken);
+
+                console.log("⏱️ 自動更新 access_token:", cutText(newToken));
+                console.log("⏱️ 現在のrefresh_token:", cutText(window.localStorage.getItem("refresh_token"))); // ★
+              } else {
+                setIsToken(false);
+              }
+            })
+            // .catch(console.error);
+            .catch((err) => {
+              console.error("🔁 トークン更新失敗:", err);
+              setIsToken(false);
+            });
+        },
+        1000 * 60 * 10
+      );
+    }
+
+    return () => clearInterval(intervalId);
+  }, [token]);
 
   function handleSearchResults(results) {
     setSearchResults(results);
   }
-
-  // if (!token) {
-  //   // if (!isToken) {
-  //   return <Login />;
-  // }
 
   return (
     <BrowserRouter>
@@ -89,10 +178,7 @@ function App() {
                 <PlaylistProvider>
                   <UploadModalProvider>
                     <PlaylistSelectionProvider>
-                      {/* <h1>Spotifyアプリ</h1> */}
-                      {/* {token ? <p>ログイン済み</p> : <p>ログインしていません</p>} */}
                       <Header token={token} onSearchResults={handleSearchResults} />
-                      {/* {!token && <Login />} */}
                       <Main token={token} searchResults={searchResults} />
                     </PlaylistSelectionProvider>
                   </UploadModalProvider>
