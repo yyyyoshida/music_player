@@ -26,8 +26,9 @@ function App() {
   const { isToken, setIsToken } = useContext(TokenContext);
 
   function cutText(text) {
-    if (!text) return;
-    return text.substring(0, 20);
+    // if (!text) return;
+    // return text.substring(0, 20);
+    return String(text).substring(0, 20);
   }
 
   useEffect(() => {
@@ -130,39 +131,20 @@ function App() {
     console.log("✅ useEffect 完了時点での refresh_token:", cutText(localStorage.getItem("refresh_token")));
   }, []);
 
-  useEffect(() => {
-    let intervalId;
+  // useEffect(() => {
+  //   let intervalId;
 
-    if (token) {
-      intervalId = setInterval(
-        () => {
-          console.log("毎回10分後のやつ発火");
+  //   intervalId = setInterval(
+  //     () => {
+  //       console.log("トークンを無効化");
+  //       localStorage.removeItem("access_token");
+  //       setToken(null);
+  //     },
 
-          getNewAccessToken()
-            .then((newToken) => {
-              if (newToken) {
-                setToken(newToken);
-                setIsToken(true);
-                window.localStorage.setItem("access_token", newToken);
-
-                console.log("⏱️ 自動更新 access_token:", cutText(newToken));
-                console.log("⏱️ 現在のrefresh_token:", cutText(window.localStorage.getItem("refresh_token"))); // ★
-              } else {
-                setIsToken(false);
-              }
-            })
-            // .catch(console.error);
-            .catch((err) => {
-              console.error("🔁 トークン更新失敗:", err);
-              setIsToken(false);
-            });
-        },
-        1000 * 60 * 10
-      );
-    }
-
-    return () => clearInterval(intervalId);
-  }, [token]);
+  //     // 1000 * 60 * 1
+  //     1000 * 30 * 1
+  //   );
+  // }, []);
 
   function handleSearchResults(results) {
     setSearchResults(results);
