@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
-import { fetchWithRefresh } from "../utils/spotifyAuth";
+import { fetchWithRefresh, getNewAccessToken } from "../utils/spotifyAuth";
 import { TokenContext } from "../contexts/isTokenContext";
 
 const PlayerContext = createContext();
@@ -45,11 +45,14 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
     window.onSpotifyWebPlaybackSDKReady = () => {
       const playerInstance = new window.Spotify.Player({
         name: "MyMusicPlayer",
-        getOAuthToken: (cb) => {
-          if (isToken) {
+        getOAuthToken: async (cb) => {
+          try {
+            const token = await getNewAccessToken(); // ← こいつは access_token を返す想定
+            console.log("🎫 再取得したアクセストークン:", token);
             cb(token);
-          } else {
-            console.error("トークンが無効。試しにページをロード");
+          } catch (e) {
+            console.error("トークン再取得失敗:", e);
+            cb("");
           }
         },
         volume: 0.3,
