@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { Routes, Route } from "react-router-dom";
+import { getNewAccessToken } from "../utils/spotifyAuth";
 
 import { TokenContext } from "../contexts/isTokenContext";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
@@ -23,12 +24,19 @@ import UploadStatusModal from "./UploadStatusModal";
 import ActionSuccessMessage from "./ActionSuccessMessage";
 import Tooltip from "./Tooltip";
 
-const Main = ({ token }) => {
+const Main = ({ token, setToken }) => {
   const [profile, setProfile] = useState(null);
   const { setIsToken } = useContext(TokenContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
 
   const containerRef = useRef(null);
+  const localRefreshToken = localStorage.getItem("refresh_token");
+
+  function cutText(text) {
+    // if (!text) return;
+    // return text.substring(0, 20);
+    return String(text).substring(0, 20);
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -42,6 +50,22 @@ const Main = ({ token }) => {
         if (!res.ok) {
           console.error("❌ /me 取得失敗。token 無効かも");
           setIsToken(false);
+          localStorage.removeItem("access_token");
+          console.log("Main.js側：", cutText(localStorage.getItem("refresh_token")));
+
+          if (localRefreshToken) {
+            console.log("Main.js側：：ローカルリフレッシュでログイン");
+            async function loginWithLocalRefreshToken() {
+              try {
+                const newToken = await getNewAccessToken(localRefreshToken);
+                console.log(cutText(newToken));
+                setToken(newToken);
+                localStorage.setItem("access_token", newToken);
+              } catch {}
+            }
+            loginWithLocalRefreshToken();
+            return;
+          }
           return;
         }
 
@@ -55,6 +79,11 @@ const Main = ({ token }) => {
     };
 
     fetchProfile();
+  }, [token]);
+
+  useEffect(() => {
+    console.log("token:", cutText(token));
+    console.log("TOKENが変わったよ：Main.js");
   }, [token]);
 
   return (

@@ -1,3 +1,13 @@
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./my-music-player-8ae45-firebase-adminsdk-fbsvc-149eac64fa.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore();
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -84,6 +94,38 @@ app.post("/api/refresh_token", async (req, res) => {
   } catch (error) {
     console.error("内部エラー:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// トークン保存
+app.post("/api/save_refresh_token", async (req, res) => {
+  const { refresh_token } = req.body;
+  if (!refresh_token) {
+    return res.status(400).json({ error: "userId and refresh_token required" });
+  }
+
+  try {
+    await db.collection("users").doc("only_user").set({ refresh_token }, { merge: true });
+    res.json({ message: "リフレッシュトークン保存完了" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "保存に失敗しました" });
+  }
+});
+
+// トークン取得
+app.post("/api/get_refresh_token", async (req, res) => {
+  try {
+    const docs = await db.collection("users").limit(1).get();
+    if (docs.empty) {
+      return res.status(404).json({ error: "トークンが見つかりません" });
+    }
+
+    const doc = docs.docs[0];
+    res.json({ refresh_token: doc.data().refresh_token });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "取得に失敗しました" });
   }
 });
 
