@@ -1,8 +1,8 @@
-import { Buffer } from "buffer"; // これを一番上に追加
+import { Buffer } from "buffer";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { TokenProvider } from "./contexts/isTokenContext";
+import { TokenProvider } from "./contexts/TokenContext";
 
 window.Buffer = Buffer;
 
