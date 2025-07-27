@@ -2,11 +2,11 @@ import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 import { fetchWithRefresh, getNewAccessToken } from "../utils/spotifyAuth";
-import { TokenContext } from "../contexts/isTokenContext";
+import { TokenContext } from "./TokenContext";
 
 const PlayerContext = createContext();
 
-export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, queue }) => {
+export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [player, setPlayer] = useState(null);
   const [playerReady, setPlayerReady] = useState(false);
@@ -16,7 +16,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const [currentTime, setCurrentTime] = useState(0);
   const [trackId, setTrackId] = useState(null);
   const { isRepeat } = useRepeatContext();
-  const { isToken } = useContext(TokenContext);
+  const { token, isToken } = useContext(TokenContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
   const [isLocalPlaying, setIsLocalPlaying] = useState(false);
@@ -338,7 +338,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
         currentTime,
         setCurrentTime,
         formatTime,
-        token,
+        // token,
         trackId,
 
         isTrackSet,

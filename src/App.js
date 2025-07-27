@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { getNewAccessToken, saveRefreshToken, getRefreshToken } from "./utils/spotifyAuth";
 
-import { TokenContext } from "./contexts/isTokenContext";
+import { TokenContext } from "./contexts/TokenContext";
 import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
@@ -17,15 +17,12 @@ import Header from "./components/Header";
 import Main from "./components/Main";
 
 function App() {
-  // const [token, setToken] = useState(localStorage.getItem("access_token"));
-  const [token, setToken] = useState(null);
-
   const [isTrackSet, setIsTrackSet] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [queue, setQueue] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { isToken, setIsToken } = useContext(TokenContext);
+  const { token, setToken, isToken, setIsToken } = useContext(TokenContext);
 
   function cutText(text) {
     // if (!text) return;
@@ -153,14 +150,14 @@ function App() {
     <BrowserRouter>
       <ActionSuccessMessageProvider>
         <RepeatProvider>
-          <PlayerProvider token={token} isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet} queue={queue} currentIndex={currentIndex}>
+          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet} queue={queue} currentIndex={currentIndex}>
             <PlaybackProvider isTrackSet={isTrackSet} queue={queue} setQueue={setQueue} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
               <SearchProvider>
                 <PlaylistProvider>
                   <UploadModalProvider>
                     <PlaylistSelectionProvider>
-                      <Header token={token} onSearchResults={handleSearchResults} />
-                      <Main token={token} setToken={setToken} searchResults={searchResults} />
+                      <Header onSearchResults={handleSearchResults} />
+                      <Main searchResults={searchResults} />
                     </PlaylistSelectionProvider>
                   </UploadModalProvider>
                 </PlaylistProvider>

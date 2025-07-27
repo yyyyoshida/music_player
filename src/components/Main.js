@@ -2,7 +2,7 @@ import { useState, useEffect, useContext, useRef } from "react";
 import { Routes, Route } from "react-router-dom";
 import { getNewAccessToken } from "../utils/spotifyAuth";
 
-import { TokenContext } from "../contexts/isTokenContext";
+import { TokenContext } from "../contexts/TokenContext";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 import { TrackMoreMenuProvider } from "../contexts/TrackMoreMenuContext";
@@ -24,9 +24,9 @@ import UploadStatusModal from "./UploadStatusModal";
 import ActionSuccessMessage from "./ActionSuccessMessage";
 import Tooltip from "./Tooltip";
 
-const Main = ({ token, setToken }) => {
+const Main = () => {
   const [profile, setProfile] = useState(null);
-  const { setIsToken } = useContext(TokenContext);
+  const { token, setToken, setIsToken } = useContext(TokenContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
 
   const containerRef = useRef(null);
@@ -102,7 +102,7 @@ const Main = ({ token, setToken }) => {
                 <UploadStatusModal />
                 <CreatePlaylist />
                 <Routes>
-                  <Route path="/" element={<Home token={token} />} />
+                  <Route path="/" element={<Home />} />
                   <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
                   <Route path="/playlist" element={<Playlist />} />
                   <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />

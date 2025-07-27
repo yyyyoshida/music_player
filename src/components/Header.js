@@ -3,7 +3,7 @@ import SearchBar from "./SearchBar";
 import LocalFileImportNav from "./LocalFileImportNav";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 
-function Header({ token, onSearchResults }) {
+function Header({ onSearchResults }) {
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
   return (
@@ -15,7 +15,7 @@ function Header({ token, onSearchResults }) {
         <img src="/img/favicon.jpg" alt="" className="sidebar-header__user-icon" />
         <p className="sidebar-header__user-name">AA</p>
       </div>
-      <SearchBar token={token} onSearchResults={onSearchResults} /> {/* 検索結果を受け取る */}
+      <SearchBar onSearchResults={onSearchResults} /> {/* 検索結果を受け取る */}
       <nav className="sidebar-header__nav">
         <ul className="sidebar-header__list">
           <li className="sidebar-header__item">
