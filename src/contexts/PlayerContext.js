@@ -46,14 +46,20 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
       const playerInstance = new window.Spotify.Player({
         name: "MyMusicPlayer",
         getOAuthToken: async (cb) => {
-          try {
-            const token = await getNewAccessToken(); // ← こいつは access_token を返す想定
-            console.log("🎫 再取得したアクセストークン:", token);
+          if (isToken) {
             cb(token);
-          } catch (e) {
-            console.error("トークン再取得失敗:", e);
+          } else {
             cb("");
           }
+          // try {
+          //   console.log("Spotify SDKの初期化");
+          //   const token = await getNewAccessToken(); // ← こいつは access_token を返す想定
+          //   console.log("🎫 再取得したアクセストークン:", token);
+          //   cb(token);
+          // } catch (e) {
+          //   console.error("トークン再取得失敗:", e);
+          //   cb("");
+          // }
         },
         volume: 0.3,
       });
