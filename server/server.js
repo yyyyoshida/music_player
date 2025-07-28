@@ -1,5 +1,4 @@
 var admin = require("firebase-admin");
-
 var serviceAccount = require("./my-music-player-8ae45-firebase-adminsdk-fbsvc-149eac64fa.json");
 
 admin.initializeApp({
@@ -7,14 +6,20 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-
 const express = require("express");
 const cors = require("cors");
+
 require("dotenv").config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("ローカルサーバーは立ち上がってる！！");
+});
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
 
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
@@ -129,13 +134,32 @@ app.post("/api/get_refresh_token", async (req, res) => {
   }
 });
 
-// ブラウザでアクセスした時
+// プレイリスト取得
+app.get("/api/playlists", async (req, res) => {
+  try {
+    const playlistsRef = db.collection("playlists");
+    const playlistSnapshot = await playlistsRef.get();
 
-app.get("/", (req, res) => {
-  res.send("🎧 Spotify API Server is running!");
+    const playlists = await Promise.all(
+      playlistSnapshot.docs.map(async (doc) => {
+        const playlistId = doc.id;
+        const tracksSnapshot = await playlistsRef.doc(playlistId).collection("tracks").get();
+        const tracks = tracksSnapshot.docs.map((doc) => doc.data());
+        const tracksSortedByOldest = tracks.slice().sort((a, b) => a.addedAt?.seconds - b.addedAt?.seconds);
+        const firstFourAlbumImages = tracksSortedByOldest.slice(0, 4).map((track) => track.albumImage);
+
+        return {
+          id: playlistId,
+          ...doc.data(),
+          trackCount: tracksSnapshot.size,
+          albumImages: firstFourAlbumImages,
+        };
+      })
+    );
+
+    res.json(playlists);
+  } catch (error) {
+    console.error("エラー:", error);
+    res.status(500).json({ error: "データ取得失敗" });
+  }
 });
-
-// サーバー起動時
-
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
