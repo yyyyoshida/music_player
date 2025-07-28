@@ -1,7 +1,5 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { db } from "../../firebase";
-import { collection, getDocs, getDoc, doc, query, orderBy } from "firebase/firestore";
 import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import TrackListHead from "../tracks/TrackListHead";
 import { usePlayerContext } from "../../contexts/PlayerContext";
@@ -36,13 +34,23 @@ const PlaylistDetail = ({ containerRef }) => {
     setDeletedTrackDuration,
     isCoverImageFading,
   } = useContext(PlaylistContext);
-  const { setCurrentTrackId, currentTrackId, setQueue, queue, updateCurrentIndex, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
-    useContext(PlaybackContext);
+  const {
+    setCurrentTrackId,
+    currentTrackId,
+    setQueue,
+    queue,
+    updateCurrentIndex,
+    currentPlayedAt,
+    setCurrentPlayedAt,
+    currentIndex,
+    setCurrentIndex,
+  } = useContext(PlaybackContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
   const LOADING_DELAY = 200;
 
   const isEmptyPlaylist = tracks.length === 0;
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("trackList", tracks, [tracks], LOADING_DELAY);
   const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
@@ -55,52 +63,45 @@ const PlaylistDetail = ({ containerRef }) => {
   }, []);
 
   useEffect(() => {
-    const fetchPlaylistInfo = async () => {
+    (async () => {
       try {
-        const docRef = doc(db, "playlists", id);
-        const docSnap = await getDoc(docRef);
+        const response = await fetch(`${BASE_URL}/api/playlists/${id}/info`);
 
-        if (docSnap.exists()) {
-          setPlaylistInfo(docSnap.data());
-        }
-      } catch (error) {
-        console.error("プレイリスト情報の取得に失敗", error);
+        if (!response.ok) throw new Error("Failed to fetch playlists");
+
+        const data = await response.json();
+        setPlaylistInfo(data);
+        console.log(data);
+      } catch {
+        showMessage("fetchPlaylistInfoFailed");
       }
-    };
-
-    setPlaylistId(id);
-
-    fetchPlaylistInfo();
+    })();
   }, [id]);
 
   useEffect(() => {
-    const fetchTracks = async () => {
+    (async () => {
       try {
-        const tracksRef = collection(db, "playlists", id, "tracks");
-        const q = query(tracksRef, orderBy("addedAt"));
-        const trackSnapshot = await getDocs(q);
-        const trackList = trackSnapshot.docs.map((doc) => ({
-          id: doc.id, // ← ここでFirestoreのドキュメントIDも取得
-          ...doc.data(), // ← トラックの中身
-        }));
-        setTracks(trackList);
-        setQueue(trackList);
-      } catch (error) {
-        console.error("曲の取得に失敗した", error);
-      }
-    };
+        const response = await fetch(`${BASE_URL}/api/playlists/${id}/tracks`);
 
-    fetchTracks();
+        if (!response.ok) throw new Error("Failed to fetch playlists");
+
+        const data = await response.json();
+        console.log(data, "👌PlaylistDetailのdata");
+        setTracks(data);
+        setQueue(data);
+      } catch {
+        showMessage("fetchPlaylistDetailFailed");
+      }
+    })();
   }, [id]);
 
   useEffect(() => {
     const track = queue[currentIndex];
     if (!track) return;
 
-    console.log(track);
+    const addedAt = track.addedAt;
+    const date = addedAt instanceof Date ? addedAt : new Date(addedAt);
 
-    const timestamp = track.addedAt;
-    const date = timestamp.toDate();
     setCurrentPlayedAt(date.toLocaleString());
   }, [currentIndex]);
 
@@ -162,14 +163,16 @@ const PlaylistDetail = ({ containerRef }) => {
       <TrackListHead />
 
       <div className="playlist-detail__empty-message-wrapper empty-message-wrapper">
-        <p className={`playlist-detail__empty-message fade-on-loaded ${showSkeleton || !isEmptyPlaylist ? "" : "fade-in-up"}`}>まだ何も保存されていません</p>
+        <p className={`playlist-detail__empty-message fade-on-loaded ${showSkeleton || !isEmptyPlaylist ? "" : "fade-in-up"}`}>
+          まだ何も保存されていません
+        </p>
       </div>
       {showSkeleton && <TrackListSkeleton count={8} />}
       <>
         <ul className={`playlist-detail__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
           {tracks.map((track, index) => {
-            const timestamp = track.addedAt;
-            const date = timestamp.toDate();
+            const addedAt = track.addedAt;
+            const date = addedAt instanceof Date ? addedAt : new Date(addedAt);
 
             const isCurrentTrack = currentTrackId === track.id;
 
