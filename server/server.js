@@ -134,7 +134,7 @@ app.post("/api/get_refresh_token", async (req, res) => {
   }
 });
 
-// プレイリスト取得
+// プレイリスト一覧取得
 app.get("/api/playlists", async (req, res) => {
   try {
     const playlistsRef = db.collection("playlists");
@@ -161,5 +161,47 @@ app.get("/api/playlists", async (req, res) => {
   } catch (error) {
     console.error("エラー:", error);
     res.status(500).json({ error: "データ取得失敗" });
+  }
+});
+
+// プレイリストのメタ情報取得
+app.get("/api/playlists/:id/info", async (req, res) => {
+  try {
+    const playlistId = req.params.id;
+    const playlistRef = db.collection("playlists").doc(playlistId);
+    const playlistSnapshot = await playlistRef.get();
+    const data = playlistSnapshot.data();
+    const responseData = {
+      name: data.name,
+      totalDuration: data.totalDuration,
+      createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
+    };
+
+    res.json(responseData);
+  } catch (error) {
+    console.error("エラー", error);
+    res.status(500).json({ error: "プレイリストのメタ情報取得失敗" });
+  }
+});
+
+// プレイリストのトラック取得
+app.get("/api/playlists/:id/tracks", async (req, res) => {
+  try {
+    const playlistId = req.params.id;
+    const tracksRef = db.collection("playlists").doc(playlistId).collection("tracks");
+    const tracksSnapshot = await tracksRef.get();
+    const tracks = tracksSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...doc.data(),
+        addedAt: data.addedAt ? data.addedAt.toDate().toISOString() : null,
+      };
+    });
+
+    res.json(tracks);
+  } catch (error) {
+    console.error("エラー", error);
+    res.status(500).json({ error: "トラック取得失敗" });
   }
 });
