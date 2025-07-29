@@ -25,6 +25,7 @@ export const PlaylistProvider = ({ children }) => {
   const [isShaking, setIsShaking] = useState(false);
   const [preselectedTrack, setPreselectedTrack] = useState(null);
   const [isCoverImageFading, setIsCoverImageFading] = useState(false);
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     setErrorMessage("");
@@ -75,26 +76,50 @@ export const PlaylistProvider = ({ children }) => {
       triggerError(`文字数オーバーです`);
       return;
     }
-    hideCreatePlaylistModal();
 
     try {
-      const playlistRef = await addDoc(collection(db, "playlists"), {
-        name: newName,
-        createdAt: serverTimestamp(),
+      const response = await fetch(`${BASE_URL}/api/playlists`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newName,
+        }),
       });
-      console.log(preselectedTrack);
-      if (preselectedTrack) {
-        await addSelectedTrackToPlaylistRef.current(playlistRef.id);
-        hideCreatePlaylistModal();
+
+      if (!response.ok) {
+        const data = await response.json();
+        triggerError(data.error);
+        return;
       }
 
+      const data = await response.json();
+      console.log("作成されたプレイリストID:", data.playlistId);
       showMessage("newPlaylist");
       playlistNameRef.current.value = "";
       setPreselectedTrack(null);
       hideCreatePlaylistModal();
-    } catch (error) {
-      console.error("作成失敗", error);
-    }
+    } catch {}
+
+    // try {
+    //   const playlistRef = await addDoc(collection(db, "playlists"), {
+    //     name: newName,
+    //     createdAt: serverTimestamp(),
+    //   });
+    //   console.log(preselectedTrack);
+    //   if (preselectedTrack) {
+    //     await addSelectedTrackToPlaylistRef.current(playlistRef.id);
+    //     hideCreatePlaylistModal();
+    //   }
+
+    //   showMessage("newPlaylist");
+    //   playlistNameRef.current.value = "";
+    //   setPreselectedTrack(null);
+    //   hideCreatePlaylistModal();
+    // } catch (error) {
+    //   console.error("作成失敗", error);
+    // }
   };
 
   function formatTimeHours(time) {
