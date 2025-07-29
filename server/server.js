@@ -137,13 +137,13 @@ app.post("/api/get_refresh_token", async (req, res) => {
 // プレイリスト一覧取得
 app.get("/api/playlists", async (req, res) => {
   try {
-    const playlistsRef = db.collection("playlists");
+    const playlistsRef = db.collection("playlists").orderBy("createdAt", "asc");
     const playlistSnapshot = await playlistsRef.get();
 
     const playlists = await Promise.all(
       playlistSnapshot.docs.map(async (doc) => {
         const playlistId = doc.id;
-        const tracksSnapshot = await playlistsRef.doc(playlistId).collection("tracks").get();
+        const tracksSnapshot = await db.collection("playlists").doc(playlistId).collection("tracks").get();
         const tracks = tracksSnapshot.docs.map((doc) => doc.data());
         const tracksSortedByOldest = tracks.slice().sort((a, b) => a.addedAt?.seconds - b.addedAt?.seconds);
         const firstFourAlbumImages = tracksSortedByOldest.slice(0, 4).map((track) => track.albumImage);
@@ -203,5 +203,48 @@ app.get("/api/playlists/:id/tracks", async (req, res) => {
   } catch (error) {
     console.error("エラー", error);
     res.status(500).json({ error: "トラック取得失敗" });
+  }
+});
+
+// プレイリスト新規作成
+const MAX_NAME_LENGTH = 10;
+
+function validatePlaylistName(name) {
+  if (typeof name !== "string") return "名前は文字列である必要があります";
+
+  const trimmedName = name.trim();
+  const nameLength = countNameLength(trimmedName);
+
+  if (!trimmedName) return "名前を入力してください";
+  if (nameLength > MAX_NAME_LENGTH) return "文字数オーバーです";
+
+  return null;
+}
+
+function countNameLength(string) {
+  let nameLength = 0;
+  for (let i = 0; i < string.length; i++) {
+    const code = string.charCodeAt(i);
+    nameLength += code <= 0x007f ? 0.5 : 1;
+  }
+  return nameLength;
+}
+
+app.post("/api/playlists", async (req, res) => {
+  const { name } = req.body;
+
+  const error = validatePlaylistName(name);
+  if (error) return res.status(400).json({ error });
+
+  try {
+    const playlistRef = await db.collection("playlists").add({
+      name: name.trim(),
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.status(201).json({ playlistId: playlistRef.id });
+  } catch (error) {
+    console.error("プレイリスト作成失敗", error);
+    res.status(500).json({ error: "プレイリスト作成失敗" });
   }
 });
