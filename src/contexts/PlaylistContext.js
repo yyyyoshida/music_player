@@ -19,17 +19,27 @@ export const PlaylistProvider = ({ children }) => {
   const [tracks, setTracks] = useState([]);
   const [deletedTrackDuration, setDeletedTrackDuration] = useState(0);
   const navigate = useNavigate();
-
-  const [errorMessage, setErrorMessage] = useState("");
   const MAX_NAME_LENGTH = 10;
+  const [errorMessage, setErrorMessage] = useState("");
   const [isShaking, setIsShaking] = useState(false);
   const [preselectedTrack, setPreselectedTrack] = useState(null);
   const [isCoverImageFading, setIsCoverImageFading] = useState(false);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const SHAKE_DURATION_MS = 600;
 
   useEffect(() => {
     setErrorMessage("");
   }, [isCreateVisible]);
+
+  useEffect(() => {
+    if (!isShaking) return;
+
+    const timer = setTimeout(() => {
+      setIsShaking(false);
+    }, SHAKE_DURATION_MS);
+
+    return () => clearTimeout(timer);
+  }, [isShaking]);
 
   const showCreatePlaylistModal = () => setIsCreateVisible(true);
   const hideCreatePlaylistModal = () => setIsCreateVisible(false);
@@ -50,10 +60,6 @@ export const PlaylistProvider = ({ children }) => {
   function triggerError(message) {
     setErrorMessage(message);
     setIsShaking(true);
-
-    setTimeout(() => {
-      setIsShaking(false);
-    }, 600);
   }
 
   useEffect(() => {
