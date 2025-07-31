@@ -4,7 +4,7 @@ import { TrackInfoContext } from "../../contexts/TrackInfoContext";
 import useDelayedText from "../../hooks/useDelayText";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
-import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { isFallback } from "../../utils/isFallback";
 
 const TrackInfo = () => {
   const imgRef = useRef(null);
@@ -25,7 +25,7 @@ const TrackInfo = () => {
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
 
-  const isUsedFallbackImage = currentCoverImage.endsWith(FALLBACK_COVER_IMAGE);
+  const isUsedFallbackImage = isFallback(currentCoverImage);
 
   useLayoutEffect(() => {
     setTimeout(() => {
