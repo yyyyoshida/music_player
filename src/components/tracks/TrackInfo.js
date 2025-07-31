@@ -25,7 +25,7 @@ const TrackInfo = () => {
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
 
-  const isUsedFallbackImage = currentCoverImage === FALLBACK_COVER_IMAGE;
+  const isUsedFallbackImage = currentCoverImage.endsWith(FALLBACK_COVER_IMAGE);
 
   useLayoutEffect(() => {
     setTimeout(() => {
@@ -99,7 +99,11 @@ const TrackInfo = () => {
               className={`player-controls__track-thumbnail ${isUsedFallbackImage ? "track-info-fallback-cover" : ""}`}
             />
 
-            <div ref={transitionRef} className="player-controls__track-thumbnail-transition" style={{ visibility: isHidden ? "hidden" : "visible" }}></div>
+            <div
+              ref={transitionRef}
+              className="player-controls__track-thumbnail-transition"
+              style={{ visibility: isHidden ? "hidden" : "visible" }}
+            ></div>
           </div>
           <figcaption ref={trackMetaRef} className="player-controls__track-meta">
             <p className="player-controls__title">{currentTitle}</p>

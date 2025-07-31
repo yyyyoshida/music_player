@@ -33,7 +33,7 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   const buttonRef = useRef(null);
 
   const isCurrentTrack = currentTrackId === track.id;
-  const isUsedFallbackImage = track.albumImage === FALLBACK_COVER_IMAGE;
+  const isUsedFallbackImage = track.albumImage.endsWith(FALLBACK_COVER_IMAGE);
 
   const delayedIsClicked = useDelayByTrackOrigin(isCurrentTrack, trackOrigin, 0, 350);
   const delayedIsTrackPlaying = useDelayByTrackOrigin(isTrackPlaying, trackOrigin, 0, 0);
