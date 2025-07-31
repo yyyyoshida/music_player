@@ -40,7 +40,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
       body: JSON.stringify(selectedTrack),
     });
 
-    if (!response.ok) throw new Error("Spotify曲をプレイリストに追加失敗");
+    if (!response.ok) throw new Error("addFailedSpotify");
   }
 
   async function saveUploadedLocalTrack(playlistId) {
@@ -52,7 +52,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
       body: JSON.stringify(selectedTrack),
     });
 
-    if (!response.ok) throw new Error("ローカル曲をプレイリストに追加失敗");
+    if (!response.ok) throw new Error("addFailedLocal");
   }
 
   async function blobUrlToFile(blobUrl, filename) {
@@ -82,7 +82,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
       body: formData,
     });
 
-    if (!response.ok) throw new Error("PCからの曲をプレイリストに追加失敗");
+    if (!response.ok) throw new Error("addFailedNewLocal");
   }
 
   async function executeTrackSave(actionFunction) {
@@ -92,10 +92,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
       hideSelectPlaylistModal();
       hideUploadModal();
     } catch (error) {
-      console.error("曲追加失敗", error);
       hideUploadModal();
       hideSelectPlaylistModal();
-      console.log(error.message);
+      showMessage(error.message);
     }
   }
 
