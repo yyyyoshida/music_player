@@ -3,23 +3,33 @@ var serviceAccount = require("./my-music-player-8ae45-firebase-adminsdk-fbsvc-14
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
+  // storageBucket: "my-music-player-8ae45.appspot.com",
+  storageBucket: "my-music-player-8ae45.firebasestorage.app",
 });
 
-const db = admin.firestore();
+const bucket = admin.storage().bucket();
+
 const express = require("express");
 const cors = require("cors");
-
-require("dotenv").config();
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
+const sharp = require("sharp");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static("public"));
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+const db = admin.firestore();
+
+require("dotenv").config();
 
 app.get("/", (req, res) => {
   res.send("ローカルサーバーは立ち上がってる！！");
 });
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
 
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
@@ -246,5 +256,144 @@ app.post("/api/playlists", async (req, res) => {
   } catch (error) {
     console.error("プレイリスト作成失敗", error);
     res.status(500).json({ error: "プレイリスト作成失敗" });
+  }
+});
+//========================
+// プレイリストに曲を追加
+//========================
+
+// Spotify曲のプレイリストに追加
+app.post("/api/playlists/:id/spotify-tracks", async (req, res) => {
+  // Spotify API由来だからデータ信頼性があるのでバリデーションは書いてない
+  try {
+    const playlistId = req.params.id;
+    const track = req.body;
+    const playlistRef = db.collection("playlists").doc(playlistId);
+
+    await playlistRef.collection("tracks").add({
+      ...track,
+      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    await playlistRef.update({
+      totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("プレイリストに追加失敗", error);
+    res.status(500).json({ error: "プレイリストに追加失敗" });
+  }
+});
+
+// プレイリストにあるローカル曲を他のプレイリストに追加
+app.post("/api/playlists/:id/local-tracks", async (req, res) => {
+  try {
+    const playlistId = req.params.id;
+    const track = req.body;
+    const playlistRef = db.collection("playlists").doc(playlistId);
+
+    await Promise.all([
+      playlistRef.collection("tracks").add({
+        title: track.title,
+        artist: track.artist,
+        duration_ms: track.duration_ms,
+        albumImage: track.albumImage,
+        albumImagePath: track.albumImagePath,
+        audioURL: track.audioURL,
+        audioPath: track.audioPath,
+        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+        source: "local",
+      }),
+
+      playlistRef.update({
+        totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+      }),
+    ]);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("プレイリストに追加(ローカル曲)失敗", error);
+    res.status(500).json({ error: "プレイリストに追加（ローカル）失敗" });
+  }
+});
+
+// PCからローカル曲をプレイリストに追加
+// 備忘録 Date.now()はバッティング防止
+
+// 音声ファイルをStorageにアップロードしてURLとパスを返す
+async function uploadAudio(fileBuffer, title) {
+  const fileName = `tracks/${title}_${Date.now()}.mp3`;
+  const storageFile = bucket.file(fileName);
+
+  await storageFile.save(fileBuffer, {
+    metadata: { contentType: "audio/mpeg" },
+    public: true,
+  });
+
+  const url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+
+  console.log("アップロード完了:", url);
+  return { audioURL: url, audioPath: fileName };
+}
+
+// 画像もあればアップロードしてURLとパスを返す
+const FALLBACK_COVER_IMAGE = "http://localhost:3000/img/fallback-cover.png";
+
+async function uploadImage(imageFile) {
+  if (!imageFile || !imageFile.buffer || !imageFile.mimetype.startsWith("image/")) {
+    return { albumImageURL: FALLBACK_COVER_IMAGE, albumImagePath: null };
+  }
+
+  const fileName = `covers/${imageFile.originalname}_${Date.now()}.webp`;
+  const webpBuffer = await sharp(imageFile.buffer).resize(500).webp({ quality: 80 }).toBuffer();
+  const storageFile = bucket.file(fileName);
+
+  await storageFile.save(webpBuffer, {
+    metadata: {
+      contentType: "image/webp",
+      cacheControl: "public,max-age=86400",
+    },
+    public: true,
+  });
+
+  const albumImageURL = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+
+  return { albumImageURL, albumImagePath: fileName };
+}
+
+app.post("/api/playlists/:id/local-tracks/new", upload.fields([{ name: "audio" }, { name: "cover" }]), async (req, res) => {
+  if (!req.files?.audio?.length) return res.status(400).json({ error: "音声ファイルが見つかりません" });
+
+  try {
+    const playlistId = req.params.id;
+    const track = JSON.parse(req.body.track);
+    const audioFile = req.files.audio[0];
+    const coverFile = req.files.cover?.[0] ?? null;
+    const playlistRef = db.collection("playlists").doc(playlistId);
+
+    const [audioResult, imageResult] = await Promise.all([uploadAudio(audioFile.buffer, track.title), uploadImage(coverFile)]);
+
+    await Promise.all([
+      playlistRef.collection("tracks").add({
+        title: track.title,
+        artist: track.artist,
+        duration_ms: track.duration_ms,
+        albumImage: imageResult.albumImageURL,
+        albumImagePath: imageResult.albumImagePath,
+        audioURL: audioResult.audioURL,
+        audioPath: audioResult.audioPath,
+        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+        source: "local",
+      }),
+      playlistRef.update({
+        totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+      }),
+    ]);
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("PCからプレイリストに追加失敗", error);
+    res.status(500).json({ error: "PCからプレイリストに追加失敗" });
   }
 });
