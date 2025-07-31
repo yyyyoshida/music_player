@@ -1,10 +1,16 @@
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
-const PlaylistCoverImageGrid = ({ images, wrapperClassName = "", fallbackImgWrapperClassName = "", fallbackImgClassName = "", imgClassName = "" }) => {
+const PlaylistCoverImageGrid = ({
+  images,
+  wrapperClassName = "",
+  fallbackImgWrapperClassName = "",
+  fallbackImgClassName = "",
+  imgClassName = "",
+}) => {
   const hasNoImage = images.length === 0;
   const isSingleImage = images.length <= 3;
   const displayImages = hasNoImage ? [FALLBACK_COVER_IMAGE] : [...images].slice(0, images.length <= 3 ? 1 : 4);
-  const isFallbackImage = (imgSrc) => imgSrc === FALLBACK_COVER_IMAGE;
+  const isFallbackImage = (imgSrc) => imgSrc.endsWith(FALLBACK_COVER_IMAGE);
 
   return (
     <div className={`playlist-cover-image-grid ${isSingleImage ? "single" : ""} ${wrapperClassName}`}>

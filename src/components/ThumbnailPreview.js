@@ -19,7 +19,7 @@ export const ThumbnailPreview = () => {
 
   const { currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
 
-  const isUsedFallbackImage = currentCoverImage === FALLBACK_COVER_IMAGE;
+  const isUsedFallbackImage = currentCoverImage.endsWith(FALLBACK_COVER_IMAGE);
 
   function showThumbnail() {
     setDelayedVisibility("visible");
