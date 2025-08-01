@@ -1,6 +1,7 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { PlaylistContext } from "../contexts/PlaylistContext";
+import { PlaybackContext } from "../contexts/PlaybackContext";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 import UploadModalContext from "./UploadModalContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
@@ -17,6 +18,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const { setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } = useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
   const { trackOrigin } = usePlayerContext();
+  const { setQueue } = useContext(PlaybackContext);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const playlistNameRef = useRef("");
@@ -32,6 +34,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
   function addTrackToList(addedTrack) {
     setTracks((prev) => [...prev, addedTrack]);
+    setQueue((prev) => [...prev, addedTrack]);
     setAddedTrackDuration((prev) => prev + addedTrack.duration_ms);
     console.log("addedTrack", addedTrack);
   }
