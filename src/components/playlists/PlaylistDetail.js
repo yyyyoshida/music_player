@@ -32,6 +32,8 @@ const PlaylistDetail = ({ containerRef }) => {
     playlistName,
     deletedTrackDuration,
     setDeletedTrackDuration,
+    addedTrackDuration,
+    setAddedTrackDuration,
     isCoverImageFading,
   } = useContext(PlaylistContext);
   const {
@@ -59,6 +61,7 @@ const PlaylistDetail = ({ containerRef }) => {
   useEffect(() => {
     containerRef.current.scrollTo(0, 0);
     setDeletedTrackDuration(0);
+    setAddedTrackDuration(0);
     setTrackOrigin("firebase");
     setPlaylistId(id);
   }, []);
@@ -124,7 +127,7 @@ const PlaylistDetail = ({ containerRef }) => {
         <div className={`playlist-detail__header-info fade-on-loaded ${showSkeleton ? "" : "fade-in"}`}>
           <h2 className="playlist-detail__header-title">{playlistName}</h2>
 
-          <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration - deletedTrackDuration)}`}</p>
+          <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration + addedTrackDuration - deletedTrackDuration)}`}</p>
         </div>
 
         <div className="playlist-detail__header-actions-buttons">

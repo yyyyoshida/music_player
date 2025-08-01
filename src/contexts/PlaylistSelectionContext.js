@@ -14,7 +14,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
-  const { setPreselectedTrack } = useContext(PlaylistContext);
+  const { setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } = useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
   const { trackOrigin } = usePlayerContext();
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -30,6 +30,12 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
   const hideSelectPlaylistModal = () => setIsSelectVisible(false);
 
+  function addTrackToList(addedTrack) {
+    setTracks((prev) => [...prev, addedTrack]);
+    setAddedTrackDuration((prev) => prev + addedTrack.duration_ms);
+    console.log("addedTrack", addedTrack);
+  }
+
   // executeTrackSave関数でtry-catchをラップしてるから不要↓
   async function saveTrackToFirestore(playlistId) {
     const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/spotify-tracks`, {
@@ -41,6 +47,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
     });
 
     if (!response.ok) throw new Error("addFailedSpotify");
+
+    const { addedTrack } = await response.json();
+    addTrackToList(addedTrack);
   }
 
   async function saveUploadedLocalTrack(playlistId) {
@@ -53,6 +62,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
     });
 
     if (!response.ok) throw new Error("addFailedLocal");
+
+    const { addedTrack } = await response.json();
+    addTrackToList(addedTrack);
   }
 
   async function blobUrlToFile(blobUrl, filename) {
@@ -83,6 +95,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
     });
 
     if (!response.ok) throw new Error("addFailedNewLocal");
+
+    const { addedTrack } = await response.json();
+    addTrackToList(addedTrack);
   }
 
   async function executeTrackSave(actionFunction) {

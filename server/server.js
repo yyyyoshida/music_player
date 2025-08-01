@@ -270,16 +270,19 @@ app.post("/api/playlists/:id/spotify-tracks", async (req, res) => {
     const track = req.body;
     const playlistRef = db.collection("playlists").doc(playlistId);
 
-    await playlistRef.collection("tracks").add({
+    const newTrackRef = await playlistRef.collection("tracks").add({
       ...track,
       addedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+
+    const newTrackSnapshot = await newTrackRef.get();
+    const addedTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
 
     await playlistRef.update({
       totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
     });
 
-    res.sendStatus(200);
+    res.status(200).json({ addedTrack });
   } catch (error) {
     console.error("プレイリストに追加失敗", error);
     res.status(500).json({ error: "プレイリストに追加失敗" });
@@ -293,25 +296,26 @@ app.post("/api/playlists/:id/local-tracks", async (req, res) => {
     const track = req.body;
     const playlistRef = db.collection("playlists").doc(playlistId);
 
-    await Promise.all([
-      playlistRef.collection("tracks").add({
-        title: track.title,
-        artist: track.artist,
-        duration_ms: track.duration_ms,
-        albumImage: track.albumImage,
-        albumImagePath: track.albumImagePath,
-        audioURL: track.audioURL,
-        audioPath: track.audioPath,
-        addedAt: admin.firestore.FieldValue.serverTimestamp(),
-        source: "local",
-      }),
+    const newTrackRef = await playlistRef.collection("tracks").add({
+      title: track.title,
+      artist: track.artist,
+      duration_ms: track.duration_ms,
+      albumImage: track.albumImage,
+      albumImagePath: track.albumImagePath,
+      audioURL: track.audioURL,
+      audioPath: track.audioPath,
+      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      source: "local",
+    });
 
-      playlistRef.update({
-        totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
-      }),
-    ]);
+    const newTrackSnapshot = await newTrackRef.get();
+    const addedTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
 
-    res.sendStatus(200);
+    await playlistRef.update({
+      totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+    });
+
+    res.status(200).json({ addedTrack });
   } catch (error) {
     console.error("プレイリストに追加(ローカル曲)失敗", error);
     res.status(500).json({ error: "プレイリストに追加（ローカル）失敗" });
@@ -374,24 +378,26 @@ app.post("/api/playlists/:id/local-tracks/new", upload.fields([{ name: "audio" }
 
     const [audioResult, imageResult] = await Promise.all([uploadAudio(audioFile.buffer, track.title), uploadImage(coverFile)]);
 
-    await Promise.all([
-      playlistRef.collection("tracks").add({
-        title: track.title,
-        artist: track.artist,
-        duration_ms: track.duration_ms,
-        albumImage: imageResult.albumImageURL,
-        albumImagePath: imageResult.albumImagePath,
-        audioURL: audioResult.audioURL,
-        audioPath: audioResult.audioPath,
-        addedAt: admin.firestore.FieldValue.serverTimestamp(),
-        source: "local",
-      }),
-      playlistRef.update({
-        totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
-      }),
-    ]);
+    const newTrackRef = await playlistRef.collection("tracks").add({
+      title: track.title,
+      artist: track.artist,
+      duration_ms: track.duration_ms,
+      albumImage: imageResult.albumImageURL,
+      albumImagePath: imageResult.albumImagePath,
+      audioURL: audioResult.audioURL,
+      audioPath: audioResult.audioPath,
+      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      source: "local",
+    });
 
-    res.status(200).json({ success: true });
+    const newTrackSnapshot = await newTrackRef.get();
+    const addedTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
+
+    await playlistRef.update({
+      totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+    });
+
+    res.status(200).json({ addedTrack });
   } catch (error) {
     console.error("PCからプレイリストに追加失敗", error);
     res.status(500).json({ error: "PCからプレイリストに追加失敗" });

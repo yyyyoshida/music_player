@@ -18,6 +18,7 @@ export const PlaylistProvider = ({ children }) => {
   const [playlistId, setPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [deletedTrackDuration, setDeletedTrackDuration] = useState(0);
+  const [addedTrackDuration, setAddedTrackDuration] = useState(0);
   const navigate = useNavigate();
   const MAX_NAME_LENGTH = 10;
   const [errorMessage, setErrorMessage] = useState("");
@@ -239,6 +240,8 @@ export const PlaylistProvider = ({ children }) => {
 
         deletedTrackDuration,
         setDeletedTrackDuration,
+        addedTrackDuration,
+        setAddedTrackDuration,
 
         errorMessage,
         setErrorMessage,
