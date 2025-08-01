@@ -335,6 +335,8 @@ async function uploadAudio(fileBuffer, title) {
     public: true,
   });
 
+  await storageFile.makePublic();
+
   const url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
 
   console.log("アップロード完了:", url);
@@ -360,6 +362,8 @@ async function uploadImage(imageFile) {
     },
     public: true,
   });
+
+  await storageFile.makePublic();
 
   const albumImageURL = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
 
