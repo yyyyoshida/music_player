@@ -60,6 +60,7 @@ const PlaylistDetail = ({ containerRef }) => {
     containerRef.current.scrollTo(0, 0);
     setDeletedTrackDuration(0);
     setTrackOrigin("firebase");
+    setPlaylistId(id);
   }, []);
 
   useEffect(() => {

@@ -145,31 +145,19 @@ export const PlaylistProvider = ({ children }) => {
     }
   }
   // 曲を削除するときにストレージにある画像と音声ファイルにあれば削除するｄ
-  async function deleteTrack(playlistId, trackId) {
+  async function deleteTrack(trackId) {
     fadeCoverImages();
+
     try {
-      const trackRef = doc(db, "playlists", playlistId, "tracks", trackId);
-      const trackSnap = await getDoc(trackRef);
-
-      if (!trackSnap.exists()) return;
-
-      const deletedTrack = trackSnap.data();
-
-      if (deletedTrack.albumImagePath) {
-        const coverRef = storageRef(storage, deletedTrack.albumImagePath);
-        await deleteObject(coverRef);
-      }
-
-      if (deletedTrack.audioPath) {
-        const audioRef = storageRef(storage, deletedTrack.audioPath);
-        await deleteObject(audioRef);
-      }
-
-      await deleteDoc(trackRef);
-
-      await updateDoc(doc(db, "playlists", playlistId), {
-        totalDuration: increment(-deletedTrack.duration_ms),
+      const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/tracks/${trackId}`, {
+        method: "DELETE",
       });
+
+      if (!response.ok) throw new Error("楽曲削除失敗");
+
+      const { deletedTrack } = await response.json();
+      console.log(deleteTrack);
+
       setDeletedTrackDuration((prev) => prev + deletedTrack.duration_ms);
 
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
