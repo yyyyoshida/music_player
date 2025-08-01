@@ -397,3 +397,48 @@ app.post("/api/playlists/:id/local-tracks/new", upload.fields([{ name: "audio" }
     res.status(500).json({ error: "PCからプレイリストに追加失敗" });
   }
 });
+
+//=======================
+// プレイリストの楽曲削除
+//=======================
+
+async function deleteFile(path) {
+  if (!path) return;
+  try {
+    await bucket.file(path).delete();
+  } catch (error) {
+    console.warn(`ファイル削除失敗: ${path}`, error.message);
+  }
+}
+
+app.delete("/api/playlists/:playlistId/tracks/:trackId", async (req, res) => {
+  const { playlistId, trackId } = req.params;
+
+  try {
+    const playlistRef = db.collection("playlists").doc(playlistId);
+    const trackRef = playlistRef.collection("tracks").doc(trackId);
+    console.log("playlistId:", playlistId);
+    console.log("trackId:", trackId);
+
+    const trackSnapshot = await trackRef.get();
+    console.log("trackSnapshot.exists:", trackSnapshot.exists);
+    if (!trackSnapshot.exists) {
+      return res.status(404).json({ error: "Track not found" });
+    }
+
+    const deletedTrack = trackSnapshot.data();
+
+    await deleteFile(deletedTrack.albumImagePath);
+    await deleteFile(deletedTrack.audioPath);
+    await trackRef.delete();
+
+    await playlistRef.update({
+      totalDuration: admin.firestore.FieldValue.increment(-deletedTrack.duration_ms),
+    });
+
+    res.status(200).json({ deletedTrack });
+  } catch (error) {
+    console.error("楽曲削除失敗", error);
+    res.status(500).json({ error: "楽曲削除失敗" });
+  }
+});

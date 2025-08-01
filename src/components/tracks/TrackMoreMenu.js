@@ -64,7 +64,7 @@ const TrackMoreMenu = () => {
             <li
               className="track-more-menu__item"
               onClick={() => {
-                deleteTrack(playlistId, trackId);
+                deleteTrack(trackId);
                 closeMenu();
               }}
             >
