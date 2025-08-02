@@ -412,34 +412,42 @@ app.post("/api/playlists/:id/local-tracks/new", upload.fields([{ name: "audio" }
 // プレイリストの楽曲削除
 //=======================
 
-async function deleteFile(path) {
-  if (!path) return;
-  try {
-    await bucket.file(path).delete();
-  } catch (error) {
-    console.warn(`ファイル削除失敗: ${path}`, error.message);
+async function deleteFileIfUnused(field, filePath) {
+  if (!filePath) return;
+
+  const tracksUsingSameFile = await db.collectionGroup("tracks").where(field, "==", filePath).get();
+
+  if (tracksUsingSameFile.size <= 1) {
+    try {
+      await bucket.file(filePath).delete();
+      console.log(`Storageファイル削除済み: ${filePath}`);
+    } catch (error) {
+      console.warn(`Storageファイル削除失敗: ${filePath}`, error.message);
+    }
+  } else {
+    console.log(`他のトラックも使用中のため削除スキップ: ${filePath}`);
   }
 }
 
 app.delete("/api/playlists/:playlistId/tracks/:trackId", async (req, res) => {
   const { playlistId, trackId } = req.params;
 
+  let deletedTrack = null;
+
   try {
     const playlistRef = db.collection("playlists").doc(playlistId);
     const trackRef = playlistRef.collection("tracks").doc(trackId);
-    console.log("playlistId:", playlistId);
-    console.log("trackId:", trackId);
-
     const trackSnapshot = await trackRef.get();
-    console.log("trackSnapshot.exists:", trackSnapshot.exists);
+
     if (!trackSnapshot.exists) {
       return res.status(404).json({ error: "Track not found" });
     }
 
-    const deletedTrack = trackSnapshot.data();
+    deletedTrack = trackSnapshot.data();
 
-    await deleteFile(deletedTrack.albumImagePath);
-    await deleteFile(deletedTrack.audioPath);
+    await deleteFileIfUnused("audioPath", deletedTrack.audioPath);
+    await deleteFileIfUnused("albumImagePath", deletedTrack.albumImagePath);
+
     await trackRef.delete();
 
     await playlistRef.update({
@@ -448,7 +456,7 @@ app.delete("/api/playlists/:playlistId/tracks/:trackId", async (req, res) => {
 
     res.status(200).json({ deletedTrack });
   } catch (error) {
-    console.error("楽曲削除失敗", error);
-    res.status(500).json({ error: "楽曲削除失敗" });
+    console.error("曲の削除に失敗", error);
+    res.status(500).json({ error: "曲の削除に失敗" });
   }
 });
