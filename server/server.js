@@ -198,7 +198,7 @@ app.get("/api/playlists/:id/info", async (req, res) => {
 app.get("/api/playlists/:id/tracks", async (req, res) => {
   try {
     const playlistId = req.params.id;
-    const tracksRef = db.collection("playlists").doc(playlistId).collection("tracks");
+    const tracksRef = db.collection("playlists").doc(playlistId).collection("tracks").orderBy("addedAt", "asc");
     const tracksSnapshot = await tracksRef.get();
     const tracks = tracksSnapshot.docs.map((doc) => {
       const data = doc.data();
