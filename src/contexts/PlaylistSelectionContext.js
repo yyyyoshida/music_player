@@ -15,7 +15,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
-  const { setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } = useContext(PlaylistContext);
+  const { currentPlaylistId, setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } = useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
   const { trackOrigin } = usePlayerContext();
   const { setQueue } = useContext(PlaybackContext);
@@ -32,11 +32,11 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
   const hideSelectPlaylistModal = () => setIsSelectVisible(false);
 
-  function addTrackToList(addedTrack) {
+  function addTrackToList(playlistId, addedTrack) {
+    if (currentPlaylistId !== playlistId) return;
     setTracks((prev) => [...prev, addedTrack]);
     setQueue((prev) => [...prev, addedTrack]);
     setAddedTrackDuration((prev) => prev + addedTrack.duration_ms);
-    console.log("addedTrack", addedTrack);
   }
 
   // executeTrackSave関数でtry-catchをラップしてるから不要↓
@@ -52,7 +52,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
     if (!response.ok) throw new Error("addFailedSpotify");
 
     const { addedTrack } = await response.json();
-    addTrackToList(addedTrack);
+    addTrackToList(playlistId, addedTrack);
   }
 
   async function saveUploadedLocalTrack(playlistId) {
@@ -67,7 +67,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
     if (!response.ok) throw new Error("addFailedLocal");
 
     const { addedTrack } = await response.json();
-    addTrackToList(addedTrack);
+    addTrackToList(playlistId, addedTrack);
   }
 
   async function blobUrlToFile(blobUrl, filename) {
@@ -100,7 +100,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
     if (!response.ok) throw new Error("addFailedNewLocal");
 
     const { addedTrack } = await response.json();
-    addTrackToList(addedTrack);
+    addTrackToList(playlistId, addedTrack);
   }
 
   async function executeTrackSave(actionFunction) {

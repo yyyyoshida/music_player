@@ -15,7 +15,7 @@ export const PlaylistProvider = ({ children }) => {
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
   const { showMessage } = useContext(ActionSuccessMessageContext);
-  const [playlistId, setPlaylistId] = useState(null);
+  const [currentPlaylistId, setCurrentPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [deletedTrackDuration, setDeletedTrackDuration] = useState(0);
   const [addedTrackDuration, setAddedTrackDuration] = useState(0);
@@ -150,7 +150,7 @@ export const PlaylistProvider = ({ children }) => {
     fadeCoverImages();
 
     try {
-      const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/tracks/${trackId}`, {
+      const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
         method: "DELETE",
       });
 
@@ -232,8 +232,8 @@ export const PlaylistProvider = ({ children }) => {
         deleteTrack,
         deletePlaylist,
 
-        playlistId,
-        setPlaylistId,
+        currentPlaylistId,
+        setCurrentPlaylistId,
 
         tracks,
         setTracks,
