@@ -15,7 +15,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
-  const { currentPlaylistId, setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } = useContext(PlaylistContext);
+  const { fadeCoverImages, currentPlaylistId, setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } =
+    useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
   const { trackOrigin } = usePlayerContext();
   const { setQueue } = useContext(PlaybackContext);
@@ -106,6 +107,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
   async function executeTrackSave(actionFunction) {
     try {
       await actionFunction();
+      fadeCoverImages();
       showMessage("add");
       hideSelectPlaylistModal();
       hideUploadModal();
