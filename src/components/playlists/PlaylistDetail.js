@@ -28,7 +28,7 @@ const PlaylistDetail = ({ containerRef }) => {
     tracks,
     setTracks,
     formatTimeHours,
-    setPlaylistId,
+    setCurrentPlaylistId,
     playlistName,
     deletedTrackDuration,
     setDeletedTrackDuration,
@@ -63,7 +63,7 @@ const PlaylistDetail = ({ containerRef }) => {
     setDeletedTrackDuration(0);
     setAddedTrackDuration(0);
     setTrackOrigin("firebase");
-    setPlaylistId(id);
+    setCurrentPlaylistId(id);
   }, []);
 
   useEffect(() => {
