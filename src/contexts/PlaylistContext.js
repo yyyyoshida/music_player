@@ -147,8 +147,6 @@ export const PlaylistProvider = ({ children }) => {
   }
   // 曲を削除するときにストレージにある画像と音声ファイルにあれば削除するｄ
   async function deleteTrack(trackId) {
-    fadeCoverImages();
-
     try {
       const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
         method: "DELETE",
@@ -163,6 +161,7 @@ export const PlaylistProvider = ({ children }) => {
 
       setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
 
+      fadeCoverImages();
       showMessage("deleteTrack");
     } catch {
       showMessage("deleteTrackFailed");
@@ -256,6 +255,7 @@ export const PlaylistProvider = ({ children }) => {
         isCoverImageFading,
 
         addSelectedTrackToPlaylistRef,
+        fadeCoverImages,
       }}
     >
       {children}
