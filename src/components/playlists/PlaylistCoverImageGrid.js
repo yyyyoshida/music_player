@@ -1,10 +1,29 @@
+import { useState, useContext, useRef, useEffect } from "react";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { isFallback } from "../../utils/isFallback";
 
-const PlaylistCoverImageGrid = ({ images, wrapperClassName = "", fallbackImgWrapperClassName = "", fallbackImgClassName = "", imgClassName = "" }) => {
-  const hasNoImage = images.length === 0;
-  const isSingleImage = images.length <= 3;
-  const displayImages = hasNoImage ? [FALLBACK_COVER_IMAGE] : [...images].slice(0, images.length <= 3 ? 1 : 4);
-  const isFallbackImage = (imgSrc) => imgSrc === FALLBACK_COVER_IMAGE;
+const PlaylistCoverImageGrid = ({
+  images,
+  wrapperClassName = "",
+  fallbackImgWrapperClassName = "",
+  fallbackImgClassName = "",
+  imgClassName = "",
+}) => {
+  const [delayedImages, setDelayedImages] = useState(images);
+  const DELAYED_REFLECTION_TIME = 160;
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDelayedImages(images);
+    }, DELAYED_REFLECTION_TIME);
+
+    return () => clearTimeout(timeoutId);
+  }, [images]);
+
+  const hasNoImage = delayedImages.length === 0;
+  const isSingleImage = delayedImages.length <= 3;
+  const displayImages = hasNoImage ? [FALLBACK_COVER_IMAGE] : [...delayedImages].slice(0, delayedImages.length <= 3 ? 1 : 4);
+  const isFallbackImage = (imgSrc) => isFallback(imgSrc);
 
   return (
     <div className={`playlist-cover-image-grid ${isSingleImage ? "single" : ""} ${wrapperClassName}`}>
