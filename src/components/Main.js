@@ -24,8 +24,8 @@ import UploadStatusModal from "./UploadStatusModal";
 import ActionSuccessMessage from "./ActionSuccessMessage";
 import Tooltip from "./Tooltip";
 
-const Main = () => {
-  const [profile, setProfile] = useState(null);
+const Main = ({ setProfile }) => {
+  // const [profile, setProfile] = useState(null);
   const { token, setToken, setIsToken } = useContext(TokenContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
 
