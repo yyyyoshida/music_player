@@ -1,6 +1,4 @@
 import { useEffect, useRef, useContext } from "react";
-import { doc, updateDoc, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebase";
 import { useParams } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
@@ -13,28 +11,15 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const { playlistName, setPlaylistName, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
     useContext(PlaylistContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
-
-  useEffect(() => {
-    const playlistRef = doc(db, "playlists", id);
-
-    const unsubscribe = onSnapshot(playlistRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setPlaylistName(docSnap.data().name); // プレイリスト名の更新
-      }
-    });
-
-    // コンポーネントがアンマウントされた時に監視を解除
-    return () => unsubscribe();
-  }, [id]);
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   function toggleRenameVisible() {
     setErrorMessage("");
     setIsRenameVisible((prev) => !prev);
   }
 
-  function handleSaveRename() {
+  async function handleSaveRename() {
     const newName = RenameRef.current.value.trim();
-
     const nameLength = countNameLength(newName);
 
     if (!newName) {
@@ -54,17 +39,27 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       return;
     }
 
-    const playlistRef = doc(db, "playlists", id);
-
-    updateDoc(playlistRef, { name: newName })
-      .then(() => {
-        showMessage("rename");
-        setPlaylistName(newName);
-        toggleRenameVisible();
-      })
-      .catch((error) => {
-        console.error("更新失敗:", error);
+    try {
+      const response = await fetch(`${BASE_URL}/api/playlists/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newName, beforeName: playlistName }),
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        triggerError(data.error);
+        return;
+      }
+
+      showMessage("rename");
+      setPlaylistName(newName);
+    } catch (error) {
+      console.error("プレイリスト名変更エラー:", error);
+      showMessage("renameFailed");
+    } finally {
+      toggleRenameVisible();
+    }
   }
 
   useEffect(() => {
@@ -90,7 +85,12 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
             <label className="rename-playlist-modal__label modal-label" htmlFor="title">
               プレイリスト名を入力
             </label>
-            <input className="rename-playlist-modal__input modal-input" id="title" ref={RenameRef} onKeyDown={(e) => e.key === "Enter" && handleSaveRename()} />
+            <input
+              className="rename-playlist-modal__input modal-input"
+              id="title"
+              ref={RenameRef}
+              onKeyDown={(e) => e.key === "Enter" && handleSaveRename()}
+            />
 
             {errorMessage && (
               <p className={`error-text ${isShaking ? "shake" : ""}`}>

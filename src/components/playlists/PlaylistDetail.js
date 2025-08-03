@@ -19,8 +19,6 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
-  const [playlistInfo, setPlaylistInfo] = useState({ duration: 0 });
-
   const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet, setTrackOrigin } = usePlayerContext();
   const {
     showDeletePlaylistModal,
@@ -30,11 +28,14 @@ const PlaylistDetail = ({ containerRef }) => {
     formatTimeHours,
     setCurrentPlaylistId,
     playlistName,
+    setPlaylistName,
     deletedTrackDuration,
     setDeletedTrackDuration,
     addedTrackDuration,
     setAddedTrackDuration,
     isCoverImageFading,
+    playlistInfo,
+    setPlaylistInfo,
   } = useContext(PlaylistContext);
   const {
     setCurrentTrackId,
@@ -65,6 +66,10 @@ const PlaylistDetail = ({ containerRef }) => {
     setTrackOrigin("firebase");
     setCurrentPlaylistId(id);
   }, []);
+
+  useEffect(() => {
+    setPlaylistName(playlistInfo.name);
+  }, [playlistInfo]);
 
   useEffect(() => {
     (async () => {

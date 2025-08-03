@@ -189,6 +189,7 @@ export const PlaylistProvider = ({ children }) => {
         playlistName,
         setPlaylistName,
         playlistInfo,
+        setPlaylistInfo,
         deleteTrack,
         deletePlaylist,
 
