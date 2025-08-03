@@ -430,11 +430,8 @@ async function deleteFileIfUnused(field, filePath) {
 }
 
 app.delete("/api/playlists/:playlistId/tracks/:trackId", async (req, res) => {
-  const { playlistId, trackId } = req.params;
-
-  let deletedTrack = null;
-
   try {
+    const { playlistId, trackId } = req.params;
     const playlistRef = db.collection("playlists").doc(playlistId);
     const trackRef = playlistRef.collection("tracks").doc(trackId);
     const trackSnapshot = await trackRef.get();
@@ -443,7 +440,7 @@ app.delete("/api/playlists/:playlistId/tracks/:trackId", async (req, res) => {
       return res.status(404).json({ error: "Track not found" });
     }
 
-    deletedTrack = trackSnapshot.data();
+    const deletedTrack = trackSnapshot.data();
 
     await deleteFileIfUnused("audioPath", deletedTrack.audioPath);
     await deleteFileIfUnused("albumImagePath", deletedTrack.albumImagePath);
@@ -458,5 +455,37 @@ app.delete("/api/playlists/:playlistId/tracks/:trackId", async (req, res) => {
   } catch (error) {
     console.error("曲の削除に失敗", error);
     res.status(500).json({ error: "曲の削除に失敗" });
+  }
+});
+
+//===================
+// プレイリストの削除
+//===================
+
+app.delete("/api/playlists/:playlistId", async (req, res) => {
+  try {
+    const { playlistId } = req.params;
+    const playlistRef = db.collection("playlists").doc(playlistId);
+    const tracksRef = playlistRef.collection("tracks");
+
+    const tracksSnapshot = await tracksRef.get();
+    const batch = db.batch();
+    tracksSnapshot.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+
+    await playlistRef.delete();
+    // //////////////////////////////////////////////////////////////////////////
+    const deletePromises = tracksSnapshot.docs.flatMap((doc) => {
+      const data = doc.data();
+      return [deleteFileIfUnused("audioPath", data.audioPath), deleteFileIfUnused("albumImagePath", data.albumImagePath)];
+    });
+
+    await Promise.all(deletePromises);
+
+    res.sendStatus(200);
+    console.log("✅プレイリスト削除成功");
+  } catch (error) {
+    console.error("プレイリストの削除に失敗", error);
+    res.status(500).json({ error: "プレイリストの削除に失敗" });
   }
 });

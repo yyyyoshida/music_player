@@ -1,8 +1,4 @@
 import { createContext, useState, useContext, useRef, useEffect } from "react";
-import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc, increment, serverTimestamp, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
-import { deleteObject, ref as storageRef } from "firebase/storage";
-import { storage } from "../firebase"; // ストレージのインスタンス
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +23,7 @@ export const PlaylistProvider = ({ children }) => {
   const [isCoverImageFading, setIsCoverImageFading] = useState(false);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const SHAKE_DURATION_MS = 600;
+  const addSelectedTrackToPlaylistRef = useRef(() => {});
 
   useEffect(() => {
     setErrorMessage("");
@@ -42,12 +39,25 @@ export const PlaylistProvider = ({ children }) => {
     return () => clearTimeout(timer);
   }, [isShaking]);
 
-  const showCreatePlaylistModal = () => setIsCreateVisible(true);
+  function showCreatePlaylistModal() {
+    setIsCreateVisible(true);
+    playlistNameRef.current.value = "";
+  }
   const hideCreatePlaylistModal = () => setIsCreateVisible(false);
   const showDeletePlaylistModal = () => setIsDeleteVisible(true);
   const hideDeletePlaylistModal = () => setIsDeleteVisible(false);
 
-  const addSelectedTrackToPlaylistRef = useRef(() => {});
+  const fadeCoverImages = () => setIsCoverImageFading(true);
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (isCoverImageFading) {
+      timeoutId = setTimeout(() => setIsCoverImageFading(false), 400);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [isCoverImageFading]);
 
   function countNameLength(string) {
     let nameLength = 0;
@@ -74,15 +84,9 @@ export const PlaylistProvider = ({ children }) => {
 
     const nameLength = countNameLength(newName.trim());
 
-    if (!newName.trim()) {
-      triggerError("名前を入力してください");
-      return;
-    }
+    if (!newName.trim()) return triggerError("名前を入力してください");
 
-    if (nameLength > MAX_NAME_LENGTH) {
-      triggerError(`文字数オーバーです`);
-      return;
-    }
+    if (nameLength > MAX_NAME_LENGTH) return triggerError(`文字数オーバーです`);
 
     try {
       const response = await fetch(`${BASE_URL}/api/playlists`, {
@@ -108,31 +112,11 @@ export const PlaylistProvider = ({ children }) => {
       setPreselectedTrack(null);
       hideCreatePlaylistModal();
     } catch {}
-
-    // try {
-    //   const playlistRef = await addDoc(collection(db, "playlists"), {
-    //     name: newName,
-    //     createdAt: serverTimestamp(),
-    //   });
-    //   console.log(preselectedTrack);
-    //   if (preselectedTrack) {
-    //     await addSelectedTrackToPlaylistRef.current(playlistRef.id);
-    //     hideCreatePlaylistModal();
-    //   }
-
-    //   showMessage("newPlaylist");
-    //   playlistNameRef.current.value = "";
-    //   setPreselectedTrack(null);
-    //   hideCreatePlaylistModal();
-    // } catch (error) {
-    //   console.error("作成失敗", error);
-    // }
   };
 
   function formatTimeHours(time) {
-    if (!time) {
-      return "0分";
-    }
+    if (!time) return "0分";
+
     const MS_HOUR = 3600000;
     const MS_MINUTE = 60000;
 
@@ -145,7 +129,7 @@ export const PlaylistProvider = ({ children }) => {
       return `${minutes}分`;
     }
   }
-  // 曲を削除するときにストレージにある画像と音声ファイルにあれば削除するｄ
+
   async function deleteTrack(trackId) {
     try {
       const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
@@ -170,42 +154,19 @@ export const PlaylistProvider = ({ children }) => {
 
   async function deletePlaylist(playlistId) {
     try {
-      const tracksRef = collection(db, "playlists", playlistId, "tracks");
-      const tracksSnapshot = await getDocs(tracksRef);
+      const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}`, {
+        method: "DELETE",
+      });
 
-      for (const trackDoc of tracksSnapshot.docs) {
-        const data = trackDoc.data();
-
-        if (data.albumImagePath) {
-          const imageRef = storageRef(storage, data.albumImagePath);
-          await deleteObject(imageRef);
-        }
-
-        if (data.audioPath) {
-          const audioRef = storageRef(storage, data.audioPath);
-          await deleteObject(audioRef);
-        }
-
-        await deleteDoc(trackDoc.ref);
-      }
-
-      const playlistRef = doc(db, "playlists", playlistId);
-      await deleteDoc(playlistRef);
+      if (!response.ok) throw new Error("プレイリスト削除失敗");
 
       navigate("/playlist");
       showMessage("deletePlaylist");
-    } catch (e) {
-      hideDeletePlaylistModal();
+    } catch {
       showMessage("deletePlaylistFailed");
+    } finally {
+      hideDeletePlaylistModal();
     }
-  }
-
-  function fadeCoverImages() {
-    setIsCoverImageFading(true);
-
-    setTimeout(() => {
-      setIsCoverImageFading(false);
-    }, 400);
   }
 
   useEffect(() => {
