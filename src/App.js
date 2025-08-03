@@ -17,6 +17,7 @@ import Header from "./components/Header";
 import Main from "./components/Main";
 
 function App() {
+  const [profile, setProfile] = useState(null);
   const [isTrackSet, setIsTrackSet] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [queue, setQueue] = useState([]);
@@ -156,8 +157,8 @@ function App() {
                 <PlaylistProvider>
                   <UploadModalProvider>
                     <PlaylistSelectionProvider>
-                      <Header onSearchResults={handleSearchResults} />
-                      <Main searchResults={searchResults} />
+                      <Header onSearchResults={handleSearchResults} profile={profile} />
+                      <Main searchResults={searchResults} setProfile={setProfile} />
                     </PlaylistSelectionProvider>
                   </UploadModalProvider>
                 </PlaylistProvider>
