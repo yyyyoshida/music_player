@@ -219,14 +219,25 @@ app.get("/api/playlists/:id/tracks", async (req, res) => {
 // プレイリスト新規作成
 const MAX_NAME_LENGTH = 10;
 
-function validatePlaylistName(name) {
-  if (typeof name !== "string") return "名前は文字列である必要があります";
+function validatePlaylistName(name, BeforePlaylistName = null) {
+  if (typeof name !== "string") {
+    return "名前は文字列である必要があります";
+  }
 
   const trimmedName = name.trim();
   const nameLength = countNameLength(trimmedName);
 
-  if (!trimmedName) return "名前を入力してください";
-  if (nameLength > MAX_NAME_LENGTH) return "文字数オーバーです";
+  if (!trimmedName) {
+    return "名前を入力してください";
+  }
+
+  if (nameLength > MAX_NAME_LENGTH) {
+    return "文字数オーバーです";
+  }
+
+  if (BeforePlaylistName !== null && trimmedName === BeforePlaylistName.trim()) {
+    return "名前が同じです。違う名前にしてください";
+  }
 
   return null;
 }
@@ -484,6 +495,31 @@ app.delete("/api/playlists/:playlistId", async (req, res) => {
 
     res.sendStatus(200);
     console.log("✅プレイリスト削除成功");
+  } catch (error) {
+    console.error("プレイリストの削除に失敗", error);
+    res.status(500).json({ error: "プレイリストの削除に失敗" });
+  }
+});
+
+//=======================
+// プレイリストの名前変更
+//=======================
+
+app.patch("/api/playlists/:playlistId", async (req, res) => {
+  try {
+    const { playlistId } = req.params;
+    const { newName, beforeName } = req.body;
+
+    const error = validatePlaylistName(newName, beforeName);
+
+    if (error) {
+      console.log(`バリデーションエラー: ${error} newName: "${newName}", beforeName: "${beforeName}"）`);
+      return res.status(400).json({ error });
+    }
+
+    const playlistRef = db.collection("playlists").doc(playlistId);
+    await playlistRef.update({ name: newName });
+    res.sendStatus(200);
   } catch (error) {
     console.error("プレイリストの削除に失敗", error);
     res.status(500).json({ error: "プレイリストの削除に失敗" });
