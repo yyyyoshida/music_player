@@ -80,7 +80,6 @@ const PlaylistDetail = ({ containerRef }) => {
 
         const data = await response.json();
         setPlaylistInfo(data);
-        console.log(data);
       } catch {
         showMessage("fetchPlaylistInfoFailed");
       }
@@ -114,6 +113,22 @@ const PlaylistDetail = ({ containerRef }) => {
     setCurrentPlayedAt(date.toLocaleString());
   }, [currentIndex]);
 
+  function playFirstTrack() {
+    const firstTrack = queue?.[0];
+    if (!firstTrack?.trackUri && !firstTrack?.audioURL) {
+      return showMessage("unselected");
+    }
+
+    const audioSrc = firstTrack.trackUri || firstTrack.audioURL;
+    const trackSource = firstTrack.source;
+
+    setIsTrackSet(true);
+    updateCurrentIndex(0);
+    setCurrentTrackId(firstTrack.id);
+    playerTrack(audioSrc, trackSource);
+    setCurrentIndex(0);
+  }
+
   return (
     <div className="playlist-detail" ref={playlistDetailRef}>
       <div className="playlist-detail__header">
@@ -136,23 +151,11 @@ const PlaylistDetail = ({ containerRef }) => {
         </div>
 
         <div className="playlist-detail__header-actions-buttons">
-          <button
-            className="playlist-detail__header-play-button playlist-detail__header-button"
-            onClick={() => {
-              if (!queue?.[0]?.trackUri) {
-                showMessage("unselected");
-                return;
-              }
-              setIsTrackSet(true);
-              updateCurrentIndex(0);
-              setCurrentTrackId(queue[0].id);
-              playerTrack(queue[0].trackUri);
-              setCurrentIndex(0);
-            }}
-          >
+          <button className="playlist-detail__header-play-button playlist-detail__header-button" onClick={playFirstTrack}>
             <img src={playIcon} className="playlist-detail__header-play-button-icon playlist-detail__header-button-icon" />
             順に再生
           </button>
+
           <button
             className="playlist-detail__header-rename-button playlist-detail__header-button"
             onClick={() => {
@@ -162,6 +165,7 @@ const PlaylistDetail = ({ containerRef }) => {
             <img src="/img/rename.png" className="playlist-detail__header-rename-button-icon playlist-detail__header-button-icon" />
             名前を変更
           </button>
+
           <button className="playlist-detail__header-delete-button playlist-detail__header-button" onClick={showDeletePlaylistModal}>
             <img src="/img/delete.png" className="playlist-detail__header-delete-button-icon playlist-detail__header-button-icon" />
             削除
