@@ -8,7 +8,7 @@ import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessage
 const TrackMoreMenu = () => {
   const { trackId, isButtonHovered, menuPositionTop, isMenuVisible, setIsMenuVisible, openMenu, closeMenu } = useContext(TrackMoreMenuContext);
   const { toggleSelectVisible } = useContext(PlaylistSelectionContext);
-  const { deleteTrack, playlistId } = useContext(PlaylistContext);
+  const { deleteTrack } = useContext(PlaylistContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const menuRef = useRef(null);
   const isButtonHoveredRef = useRef(null);
@@ -64,7 +64,7 @@ const TrackMoreMenu = () => {
             <li
               className="track-more-menu__item"
               onClick={() => {
-                deleteTrack(playlistId, trackId);
+                deleteTrack(trackId);
                 closeMenu();
               }}
             >

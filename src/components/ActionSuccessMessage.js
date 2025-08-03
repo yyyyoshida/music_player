@@ -15,46 +15,40 @@ const ActionSuccessMessage = () => {
   }, [isMessageVisible]);
 
   function getMessage() {
-    switch (actionType) {
-      case "add":
-        return "楽曲をプレイリストに追加しました";
+    const message = messages[actionType];
+    if (!message) return "通知内容を取得できませんでした";
 
-      case "addFailed":
-        return (
-          <>
-            {<img src="/img/failed.png" className="toast-message__icon" />}
-            楽曲の追加に失敗しました
-          </>
-        );
-
-      case "deleteTrack":
-        return "楽曲をプレイリストから削除しました";
-
-      case "deleteTrackFailed":
-        return "楽曲の削除に失敗しました";
-
-      case "deletePlaylist":
-        return "プレイリストを削除しました";
-
-      case "deletePlaylistFailed":
-        return "プレイリストの削除に失敗しました";
-
-      case "newPlaylist":
-        return "新しいプレイリストを作成しました";
-
-      case "rename":
-        return "プレイリストの名前を変更しました";
-
-      case "unselected":
-        return "曲がセットされていません";
-
-      case "未実装":
-        return "この機能はまだ未実装です";
-
-      default:
-        return "通知内容を取得できませんでした";
-    }
+    return (
+      <>
+        {message.success === false && <img src="/img/failed.png" className="toast-message__icon" />}
+        {message.text}
+      </>
+    );
   }
+
+  const messages = {
+    add: { text: "楽曲をプレイリストに追加しました", success: true },
+    addFailedSpotify: { text: "Spotify曲の追加に失敗しました", success: false },
+    addFailedLocal: { text: "ローカル曲の追加に失敗しました", success: false },
+    addFailedLocal: { text: "ローカル曲の追加に失敗しました", success: false },
+    addFailedNewLocal: { text: "PCからの曲をプレイリストに追加失敗", success: false },
+
+    deleteTrack: { text: "楽曲をプレイリストから削除しました", success: true },
+    deleteTrackFailed: { text: "楽曲の削除に失敗しました", success: false },
+
+    deletePlaylist: { text: "プレイリストを削除しました", success: true },
+    deletePlaylistFailed: { text: "プレイリストの削除に失敗しました", success: false },
+
+    fetchPlaylistsFailed: { text: "プレイリスト一覧の取得に失敗しました", success: false },
+    fetchPlaylistInfoFailed: { text: "プレイリストのメタ情報取得に失敗しました", success: false },
+    fetchPlaylistDetailFailed: { text: "プレイリストの詳細情報取得に失敗しました", success: false },
+    newPlaylist: { text: "新しいプレイリストを作成しました", success: true },
+    rename: { text: "プレイリストの名前を変更しました", success: true },
+    renameFailed: { text: "プレイリストの名前の変更失敗しました", success: false },
+
+    unselected: { text: "曲がセットされていません", success: false },
+    未実装: { text: "この機能はまだ未実装です", success: true },
+  };
 
   return (
     <div
