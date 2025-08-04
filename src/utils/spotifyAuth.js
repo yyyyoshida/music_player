@@ -20,6 +20,7 @@ async function getNewAccessToken(refreshToken) {
   }
 
   const data = await response.json();
+  console.log("取ってきたデータ", data);
   window.localStorage.setItem("access_token", data.access_token);
 
   if (data.refresh_token) {
@@ -41,6 +42,7 @@ async function fetchWithRefresh(url, options = {}, retry = true) {
 
   // トークンが切れてるとき
   if (res.status === 401 && retry) {
+    // if (!res.ok) {
     console.warn("🔐 トークン切れ検知 → 再取得して再実行");
 
     try {
