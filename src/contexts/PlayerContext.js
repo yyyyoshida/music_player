@@ -16,7 +16,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const [currentTime, setCurrentTime] = useState(0);
   const [trackId, setTrackId] = useState(null);
   const { isRepeat } = useRepeatContext();
-  const { token, isToken } = useContext(TokenContext);
+  const { token, isToken, setToken } = useContext(TokenContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
   const [isLocalPlaying, setIsLocalPlaying] = useState(false);
@@ -29,77 +29,158 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
   useEffect(() => {
     if (!token) return;
+    if (window.Spotify) return; // 2回読み込み防止
 
-    const script = document.createElement("script");
-    script.src = "https://sdk.scdn.co/spotify-player.js";
-    script.async = true;
+    let playerInstance: Spotify.Player;
 
-    // スクリプトのエラーチェック
-    script.onerror = () => {
-      console.error("Spotify SDK の読み込みに失敗しました。");
-    };
-
-    document.body.appendChild(script);
-
-    // Spotify SDKの初期化
+    // 先にcallback定義しとく（これが超大事！！）
     window.onSpotifyWebPlaybackSDKReady = () => {
-      const playerInstance = new window.Spotify.Player({
-        name: "MyMusicPlayer",
-        getOAuthToken: async (cb) => {
-          if (isToken) {
-            cb(token);
-          } else {
-            cb("");
-          }
-          // try {
-          //   console.log("Spotify SDKの初期化");
-          //   const token = await getNewAccessToken(); // ← こいつは access_token を返す想定
-          //   console.log("🎫 再取得したアクセストークン:", token);
-          //   cb(token);
-          // } catch (e) {
-          //   console.error("トークン再取得失敗:", e);
-          //   cb("");
-          // }
-        },
-        volume: 0.3,
-      });
+      // playerInstance = new window.Spotify.Player({
+      //   name: "MyMusicPlayer",
+      //   getOAuthToken: (cb) =>  cb(token),
+      //   volume: 0.3,
+      // });
 
+      playerInstance = new window.Spotify.Player({
+  name: "MyMusicPlayer",
+  getOAuthToken: async (cb) => {
+    try {
+      // let currentToken = window.localStorage.getItem("access_token");
+      const localRefreshToken = localStorage.getItem("refresh_token");
+
+      const newToken = await getNewAccessToken(localRefreshToken);
+setToken(newToken)
+
+      cb(newToken);
+    } catch (err) {
+      console.error("❌ getOAuthToken 失敗:", err);
+      cb(""); // 空でも一応渡す
+    }
+  },
+  volume: 0.3,
+});
+
+    playerInstance.addListener("initialization_error", ({ message }) => {
+      console.error("❌ Initialization error:", message);
+    });
+    playerInstance.addListener("authentication_error", ({ message }) => {
+      console.error("❌ Authentication error:", message);
+    });
+    playerInstance.addListener("account_error", ({ message }) => {
+      console.error("❌ Account error:", message);
+    });
+    // playerInstance.addListener("playback_error", ({ message }) => {
+    //   console.error("❌ Playback error:", message);
+    // });
+
+      // イベント登録
       playerInstance.addListener("ready", ({ device_id }) => {
-        if (device_id) {
-          console.log("🎵 Player is ready! Device ID:", device_id);
-          setDeviceId(device_id);
-          setPlayerReady(true);
-        } else {
-          console.error("Device ID is missing");
-        }
+        console.log("🎵 Player is ready! Device ID:", device_id);
+        setDeviceId(device_id);
+        setPlayerReady(true);
       });
 
-      playerInstance.addListener("player_state_changed", (state) => {
-        if (state) {
-          setIsPlaying(!state.paused);
-        } else {
-          console.error("状態が取得できませんでした");
-        }
-      });
-
-      playerInstance
-        .connect()
-        .then(() => {
-          console.log("プレイヤー接続成功");
-        })
-        .catch((err) => {
+      playerInstance.connect().then(() => {
+        console.log("プレイヤー接続成功");
+      }).catch((err) => {
           console.error("接続エラー:", err);
-        });
+        });;
 
       setPlayer(playerInstance);
     };
 
+    // そのあと script 読み込みｓ
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.onerror = () => {
+      console.error("Spotify SDK の読み込みに失敗しました。");
+    };
+    document.body.appendChild(script);
+
     return () => {
-      if (player) {
-        player.disconnect();
+      if (playerInstance) {
+        playerInstance.disconnect();
+        console.log("🧹 Spotify Player disconnected");
       }
     };
-  }, [isToken]);
+  }, [token]);
+
+  //
+  // useEffect(() => {
+  //   if (!token) return;
+
+  //   const script = document.createElement("script");
+  //   script.src = "https://sdk.scdn.co/spotify-player.js";
+  //   script.async = true;
+
+  //   // スクリプトのエラーチェック
+  //   script.onerror = () => {
+  //     console.error("Spotify SDK の読み込みに失敗しました。");
+  //   };
+
+  //   document.body.appendChild(script);
+
+  //   // Spotify SDKの初期化
+  //   window.onSpotifyWebPlaybackSDKReady = () => {
+  //     const playerInstance = new window.Spotify.Player({
+  //       name: "MyMusicPlayer",
+  //       getOAuthToken: async (cb) => {
+  //         if (isToken) {
+  //           cb(token);
+  //         } else {
+  //           cb("");
+  //         }
+  //         // try {
+  //         //   console.log("Spotify SDKの初期化");
+  //         //   const token = await getNewAccessToken(); // ← こいつは access_token を返す想定
+  //         //   console.log("🎫 再取得したアクセストークン:", token);
+  //         //   cb(token);
+  //         // } catch (e) {
+  //         //   console.error("トークン再取得失敗:", e);
+  //         //   cb("");
+  //         // }
+  //       },
+  //       volume: 0.3,
+  //     });
+
+  //     playerInstance.addListener("ready", ({ device_id }) => {
+  //       if (device_id) {
+  //         console.log("🎵 Player is ready! Device ID:", device_id);
+  //         setDeviceId(device_id);
+  //         setPlayerReady(true);
+  //       } else {
+  //         console.error("Device ID is missing");
+  //       }
+  //     });
+
+  //     playerInstance.addListener("player_state_changed", (state) => {
+  //       if (state) {
+  //         setIsPlaying(!state.paused);
+  //       } else {
+  //         console.error("状態が取得できませんでした");
+  //       }
+  //     });
+
+  //     playerInstance
+  //       .connect()
+  //       .then(() => {
+  //         console.log("プレイヤー接続成功");
+  //       })
+  //       .catch((err) => {
+  //         console.error("接続エラー:", err);
+  //       });
+
+  //     setPlayer(playerInstance);
+  //   };
+
+  //   return () => {
+  //     if (player) {
+  //       player.disconnect();
+  //     }
+  //   };
+  // }, [isToken]);
   // }, [token, isToken]);
 
   const FADE_DURATION = 3000;
@@ -183,6 +264,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       setIsLocalPlaying(false);
     }
 
+    console.log(deviceId,'diviceId')
     const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
     const data = {
       uris: [trackUri],
