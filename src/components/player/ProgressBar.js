@@ -7,7 +7,8 @@ import useBarHandler from "../../hooks/useBarHandler";
 const ProgressBar = ({ initialValue }) => {
   const barRef = useRef(null);
 
-  const { currentTime, isTrackSet, isLocalReady, seekToSpotify, duration, position, isPlaying, setIsPlaying, isLocalPlaying, audioRef } = usePlayerContext();
+  const { currentTime, isTrackSet, isLocalReady, seekToSpotify, duration, position, isPlaying, setIsPlaying, isLocalPlaying, audioRef } =
+    usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { goToNextTrack, currentIndex } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
@@ -37,6 +38,7 @@ const ProgressBar = ({ initialValue }) => {
 
     const updateProgress = () => {
       if (isDragging) return;
+      // console.log(audio.currentTime);
       const newTime = roundToTwoDecimals((audio.currentTime / audio.duration) * 100);
       setPercentage(newTime || 0);
     };
@@ -44,6 +46,11 @@ const ProgressBar = ({ initialValue }) => {
     audio.addEventListener("timeupdate", updateProgress);
     return () => audio.removeEventListener("timeupdate", updateProgress);
   }, [position, isLocalPlaying, isDragging]);
+
+  // 曲のソースが変わったとき
+  useEffect(() => {
+    setPercentage(0);
+  }, [isLocalPlaying]);
 
   //備忘録 ドラッグしてクリックが外れたときに再生位置を反映
   useEffect(() => {
