@@ -1,10 +1,7 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
-import { addDoc, collection, increment, serverTimestamp, updateDoc, doc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "../firebase";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { PlaylistContext } from "../contexts/PlaylistContext";
-import imageCompression from "browser-image-compression";
+import { PlaybackContext } from "../contexts/PlaybackContext";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 import UploadModalContext from "./UploadModalContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
@@ -18,9 +15,12 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
-  const { setPreselectedTrack, addSelectedTrackToPlaylistRef } = useContext(PlaylistContext);
+  const { fadeCoverImages, currentPlaylistId, setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } =
+    useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
   const { trackOrigin } = usePlayerContext();
+  const { setQueue } = useContext(PlaybackContext);
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const playlistNameRef = useRef("");
 
@@ -33,111 +33,88 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
   const hideSelectPlaylistModal = () => setIsSelectVisible(false);
 
-  // 音声ファイルをStorageにアップロード
-  async function uploadAudio() {
-    const audioRef = ref(storage, `tracks/${selectedTrack.title}_${Date.now()}.mp3`);
-    await uploadBytes(audioRef, uploadTrackFile);
-    const audioURL = await getDownloadURL(audioRef);
-    const audioPath = audioRef.fullPath;
-
-    return { audioURL, audioPath };
+  function addTrackToList(playlistId, addedTrack) {
+    if (currentPlaylistId !== playlistId) return;
+    setTracks((prev) => [...prev, addedTrack]);
+    setQueue((prev) => [...prev, addedTrack]);
+    setAddedTrackDuration((prev) => prev + addedTrack.duration_ms);
   }
 
-  // 画像もあればアップロード
-  async function uploadImage() {
-    let albumImage = FALLBACK_COVER_IMAGE;
-    let albumImagePath = null;
-
-    if (localCoverImageUrl && localCoverImageUrl.startsWith("blob:")) {
-      const response = await fetch(localCoverImageUrl);
-      const blob = await response.blob();
-
-      // 圧縮＆WebP変換
-      const compressedBlob = await imageCompression(blob, {
-        maxSizeMB: 0.1,
-        maxWidthOrHeight: 500,
-        fileType: "image/webp",
-        useWebWorker: true,
-      });
-
-      const imageRef = ref(storage, `covers/${selectedTrack.title}_${Date.now()}.webp`);
-      await uploadBytes(imageRef, compressedBlob, {
-        cacheControl: "public,max-age=86400",
-      });
-      albumImage = await getDownloadURL(imageRef);
-      albumImagePath = imageRef.fullPath;
-    }
-
-    return { albumImage, albumImagePath };
-  }
-
+  // executeTrackSave関数でtry-catchをラップしてるから不要↓
   async function saveTrackToFirestore(playlistId) {
-    await addDoc(collection(db, "playlists", playlistId, "tracks"), {
-      ...selectedTrack,
-      addedAt: serverTimestamp(),
+    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/spotify-tracks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedTrack),
     });
 
-    await updateDoc(doc(db, "playlists", playlistId), {
-      totalDuration: increment(selectedTrack.duration_ms),
-    });
+    if (!response.ok) throw new Error("addFailedSpotify");
+
+    const { addedTrack } = await response.json();
+    addTrackToList(playlistId, addedTrack);
   }
 
   async function saveUploadedLocalTrack(playlistId) {
-    await Promise.all([
-      addDoc(collection(db, "playlists", playlistId, "tracks"), {
-        title: selectedTrack.title,
-        artist: selectedTrack.artist,
-        duration_ms: selectedTrack.duration_ms,
-        albumImage: selectedTrack.albumImage,
-        albumImagePath: selectedTrack.albumImagePath,
-        audioURL: selectedTrack.audioURL,
-        audioPath: selectedTrack.audioPath,
-        addedAt: serverTimestamp(),
-        source: "local",
-      }),
-      updateDoc(doc(db, "playlists", playlistId), {
-        totalDuration: increment(selectedTrack.duration_ms),
-      }),
-    ]);
+    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/local-tracks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedTrack),
+    });
+
+    if (!response.ok) throw new Error("addFailedLocal");
+
+    const { addedTrack } = await response.json();
+    addTrackToList(playlistId, addedTrack);
+  }
+
+  async function blobUrlToFile(blobUrl, filename) {
+    const res = await fetch(blobUrl);
+    if (!res.ok) throw new Error("Blob取得失敗");
+    const blob = await res.blob();
+    return new File([blob], filename, { type: blob.type });
   }
 
   async function saveUploadAndNewTrack(playlistId) {
-    const [audioResult, imageResult] = await Promise.all([uploadAudio(), uploadImage()]);
+    const formData = new FormData();
 
-    await Promise.all([
-      addDoc(collection(db, "playlists", playlistId, "tracks"), {
-        title: selectedTrack.title,
-        artist: selectedTrack.artist,
-        duration_ms: selectedTrack.duration_ms,
-        albumImage: imageResult.albumImage,
-        albumImagePath: imageResult.albumImagePath,
-        audioURL: audioResult.audioURL,
-        audioPath: audioResult.audioPath,
-        addedAt: serverTimestamp(),
-        source: "local",
-      }),
-      updateDoc(doc(db, "playlists", playlistId), {
-        totalDuration: increment(selectedTrack.duration_ms),
-      }),
-    ]);
-  }
+    let coverImageFile;
 
-  function afterTrackSaved() {
-    console.timeEnd("アップロード");
-    showMessage("add");
-    hideSelectPlaylistModal();
-    hideUploadModal();
+    try {
+      coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
+    } catch {
+      coverImageFile = null;
+    }
+
+    if (coverImageFile) formData.append("cover", coverImageFile);
+    formData.append("audio", uploadTrackFile);
+    formData.append("track", JSON.stringify(selectedTrack));
+
+    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/local-tracks/new`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("addFailedNewLocal");
+
+    const { addedTrack } = await response.json();
+    addTrackToList(playlistId, addedTrack);
   }
 
   async function executeTrackSave(actionFunction) {
     try {
       await actionFunction();
-      afterTrackSaved();
+      fadeCoverImages();
+      showMessage("add");
+      hideSelectPlaylistModal();
+      hideUploadModal();
     } catch (error) {
-      console.error("曲追加失敗", error);
       hideUploadModal();
       hideSelectPlaylistModal();
-      showMessage("addFailed");
+      showMessage(error.message);
     }
   }
 
@@ -155,6 +132,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
     // elseを使わず、returnで区切ったほうが個人的に読みやすかったのだが、
     // それ以降の共通処理 catch()とかが実行されないので
     // try-catch関数でラップして共通処理を走らせるようにした ↓↓↓
+
     if (isSpotifyTrack) {
       await executeTrackSave(() => saveTrackToFirestore(playlistId));
       return;
@@ -167,10 +145,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
     await executeTrackSave(() => saveUploadAndNewTrack(playlistId));
   }
-
-  useEffect(() => {
-    addSelectedTrackToPlaylistRef.current = addTrackToPlaylist;
-  }, [addTrackToPlaylist]);
 
   function handleTrackSelect(track, shouldToggle = true, file = null, imageUrl = null) {
     console.log(trackOrigin, "どこから北のこの曲handleTrackSelect");

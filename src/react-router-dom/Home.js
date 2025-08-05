@@ -3,18 +3,20 @@ import { usePlayerContext } from "../contexts/PlayerContext";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { playIcon, pauseIcon } from "../assets/icons";
 import { PlaybackContext } from "../contexts/PlaybackContext";
+import { TokenContext } from "../contexts/TokenContext";
 
 import CardListSkeleton from "../components/skeletonUI/CardListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 import { divide } from "lodash";
 
-const Home = ({ token }) => {
+const Home = () => {
   const [tracks, setTracks] = useState([]);
   const [initialLoaded, setInitialLoaded] = useState(false);
 
   const { playerTrack, isPlaying, trackId, setIsTrackSet } = usePlayerContext();
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setQueue } = useContext(PlaybackContext);
+  const { token } = useContext(TokenContext);
 
   const changeCountRef = useRef(0);
 

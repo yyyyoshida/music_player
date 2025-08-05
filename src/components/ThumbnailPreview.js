@@ -3,6 +3,7 @@ import { TrackInfoContext } from "../contexts/TrackInfoContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 // import { SearchContext } from "../contexts/SearchContext";
+import { isFallback } from "../utils/isFallback";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
@@ -19,7 +20,7 @@ export const ThumbnailPreview = () => {
 
   const { currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
 
-  const isUsedFallbackImage = currentCoverImage === FALLBACK_COVER_IMAGE;
+  const isUsedFallbackImage = isFallback(currentCoverImage);
 
   function showThumbnail() {
     setDelayedVisibility("visible");
