@@ -1,11 +1,12 @@
 import { useEffect, useContext, useRef, useState } from "react";
-import { playIcon, pauseIcon, FALLBACK_COVER_IMAGE, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
+import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 import { TooltipContext } from "../../contexts/TooltipContext";
+import { isFallback } from "../../utils/isFallback";
 
 function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDelay) {
   const [delayedValue, setDelayedValue] = useState(value);
@@ -33,7 +34,8 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   const buttonRef = useRef(null);
 
   const isCurrentTrack = currentTrackId === track.id;
-  const isUsedFallbackImage = track.albumImage === FALLBACK_COVER_IMAGE;
+
+  const isUsedFallbackImage = isFallback(track.albumImage);
 
   const delayedIsClicked = useDelayByTrackOrigin(isCurrentTrack, trackOrigin, 0, 350);
   const delayedIsTrackPlaying = useDelayByTrackOrigin(isTrackPlaying, trackOrigin, 0, 0);

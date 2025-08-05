@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { usePlayerContext } from "./PlayerContext";
-import { TokenContext } from "../contexts/isTokenContext";
+import { TokenContext } from "./TokenContext";
 
 export const PlaybackContext = createContext();
 

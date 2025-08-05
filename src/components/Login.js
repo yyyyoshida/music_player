@@ -1,6 +1,6 @@
-import React, { useEffect, useContext, useState } from 'react';
-import LOGIN_URL from '../config/spotifyConfig';
-import { TokenContext } from '../contexts/isTokenContext';
+import React, { useEffect, useContext, useState } from "react";
+import LOGIN_URL from "../config/spotifyConfig";
+import { TokenContext } from "../contexts/TokenContext";
 
 const Login = () => {
   const { isToken } = useContext(TokenContext);
@@ -24,7 +24,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="login modal" style={{ visibility: newIsToken ? 'hidden' : 'visible' }}>
+      <div className="login modal" style={{ visibility: newIsToken ? "hidden" : "visible" }}>
         <div className="login__smoke modal-smoke"></div>
         <div className="login__content modal-content">
           <h2 className="login__title modal-title">Spotifyを使った独自の音楽プレイヤー</h2>

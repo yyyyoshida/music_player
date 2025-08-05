@@ -1,10 +1,12 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
+import { fetchWithRefresh, getNewAccessToken } from "../utils/spotifyAuth";
+import { TokenContext } from "./TokenContext";
 
 const PlayerContext = createContext();
 
-export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, queue }) => {
+export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [player, setPlayer] = useState(null);
   const [playerReady, setPlayerReady] = useState(false);
@@ -14,6 +16,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const [currentTime, setCurrentTime] = useState(0);
   const [trackId, setTrackId] = useState(null);
   const { isRepeat } = useRepeatContext();
+  const { token, isToken, setToken } = useContext(TokenContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
   const [isLocalPlaying, setIsLocalPlaying] = useState(false);
@@ -25,49 +28,59 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   const audioRef = useRef(null);
 
   useEffect(() => {
+    console.log("✅✅✅PlayerContextの発火");
     if (!token) return;
+    if (window.Spotify) return; // 2回読み込み防止
 
-    const script = document.createElement("script");
-    script.src = "https://sdk.scdn.co/spotify-player.js";
-    script.async = true;
+    let playerInstance;
 
-    // スクリプトのエラーチェック
-    script.onerror = () => {
-      console.error("Spotify SDK の読み込みに失敗しました。");
-    };
-
-    document.body.appendChild(script);
-
-    // Spotify SDKの初期化
     window.onSpotifyWebPlaybackSDKReady = () => {
-      const playerInstance = new window.Spotify.Player({
+      playerInstance = new window.Spotify.Player({
         name: "MyMusicPlayer",
-        getOAuthToken: (cb) => {
-          if (token) {
-            cb(token);
-          } else {
-            console.error("トークンが未設定です");
+
+        getOAuthToken: async (cb) => {
+          const currentToken = localStorage.getItem("access_token");
+          const localRefreshToken = localStorage.getItem("refresh_token");
+
+          if (currentToken) {
+            cb(currentToken);
+            return;
+          }
+
+          if (!localRefreshToken) {
+            console.error("リフレッシュトークンがないよ");
+            cb(""); // トークンなしは空文字投げとく
+            return;
+          }
+
+          try {
+            const newToken = await getNewAccessToken(localRefreshToken);
+            localStorage.setItem("access_token", newToken);
+            setToken(newToken); // これが必要ならOKだけど無理にしなくてもいい
+            cb(newToken);
+          } catch (err) {
+            console.error("❌ getOAuthToken失敗:", err);
+            cb("");
           }
         },
         volume: 0.3,
       });
 
-      playerInstance.addListener("ready", ({ device_id }) => {
-        if (device_id) {
-          console.log("🎵 Player is ready! Device ID:", device_id);
-          setDeviceId(device_id);
-          setPlayerReady(true);
-        } else {
-          console.error("Device ID is missing");
-        }
+      playerInstance.addListener("initialization_error", ({ message }) => {
+        console.error("❌ Initialization error:", message);
+      });
+      playerInstance.addListener("authentication_error", ({ message }) => {
+        console.error("❌ Authentication error:", message);
+      });
+      playerInstance.addListener("account_error", ({ message }) => {
+        console.error("❌ Account error:", message);
       });
 
-      playerInstance.addListener("player_state_changed", (state) => {
-        if (state) {
-          setIsPlaying(!state.paused);
-        } else {
-          console.error("状態が取得できませんでした");
-        }
+      // イベント登録
+      playerInstance.addListener("ready", ({ device_id }) => {
+        console.log("🎵 Player is ready! Device ID:", device_id);
+        setDeviceId(device_id);
+        setPlayerReady(true);
       });
 
       playerInstance
@@ -82,9 +95,20 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
       setPlayer(playerInstance);
     };
 
+    // そのあと script 読み込みｓ
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.onerror = () => {
+      console.error("Spotify SDK の読み込みに失敗しました。");
+    };
+    document.body.appendChild(script);
+
     return () => {
-      if (player) {
-        player.disconnect();
+      if (playerInstance) {
+        playerInstance.disconnect();
+        console.log("🧹 Spotify Player disconnected");
       }
     };
   }, [token]);
@@ -170,6 +194,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
       setIsLocalPlaying(false);
     }
 
+    console.log(deviceId, "diviceId");
     const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
     const data = {
       uris: [trackUri],
@@ -179,10 +204,9 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
 
     setIsSpotifyPlaying(true);
 
-    fetch(url, {
+    fetchWithRefresh(url, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
@@ -216,8 +240,6 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   }
 
   function playerTrack(trackUri, source = "spotify") {
-    // console.log(trackUri, "trackUri");
-
     setIsPlayPauseCooldown(false);
 
     if (source === "spotify") {
@@ -247,7 +269,16 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
   useEffect(() => {
     if (!player || !isSpotifyPlaying) return;
 
-    player.addListener("player_state_changed", ({ position, duration, track_window: { current_track }, paused }) => {
+    player.addListener("player_state_changed", (state) => {
+      if (!state || !state.track_window?.current_track) return;
+
+      const {
+        position,
+        duration,
+        track_window: { current_track },
+        paused,
+      } = state;
+
       setPosition((position / duration) * 100);
       setDuration(duration);
       setTrackId(current_track.id);
@@ -257,8 +288,12 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
       player.getCurrentState().then((state) => {
         if (!state) return;
 
-        setPosition((state.position / state.duration) * 100);
-        setCurrentTime(state.position);
+        const { position, duration } = state;
+
+        if (typeof position === "number" && typeof duration === "number") {
+          setPosition((position / duration) * 100);
+          setCurrentTime(position);
+        }
       });
     }, 200);
 
@@ -315,7 +350,7 @@ export const PlayerProvider = ({ children, token, isTrackSet, setIsTrackSet, que
         currentTime,
         setCurrentTime,
         formatTime,
-        token,
+        // token,
         trackId,
 
         isTrackSet,
