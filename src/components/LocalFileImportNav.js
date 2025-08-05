@@ -31,7 +31,6 @@ const LocalFileImportNav = () => {
           const uint8Array = new Uint8Array(picture.data);
           const blob = new Blob([uint8Array], { type: picture.format });
           const imgSrc = URL.createObjectURL(blob);
-          console.log(imgSrc);
           setLocalCoverImageUrl(imgSrc);
         } else {
           setLocalCoverImageUrl(null);
@@ -50,14 +49,12 @@ const LocalFileImportNav = () => {
       event.target.value = "";
       getMediaTags(file);
       setUploadTrackFile(file);
-      console.log("選択されたファイル:", file);
     }
   }
 
   // データベースに保存する情報の紐付け
   useEffect(() => {
     if (uploadTrackFile && tags && trackDuration !== null) {
-      console.log(uploadTrackFile);
       const localTrack = {
         title: tags.title || uploadTrackFile.name,
         artist: tags.artist || "Unknown Artist",
@@ -66,7 +63,6 @@ const LocalFileImportNav = () => {
       };
 
       handleTrackSelect(localTrack, true, uploadTrackFile, localCoverImageUrl);
-      console.log("ローカルトラック情報", localTrack);
     }
   }, [uploadTrackFile, tags, trackDuration, localCoverImageUrl]);
 

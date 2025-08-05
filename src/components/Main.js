@@ -25,18 +25,11 @@ import ActionSuccessMessage from "./ActionSuccessMessage";
 import Tooltip from "./Tooltip";
 
 const Main = ({ setProfile }) => {
-  // const [profile, setProfile] = useState(null);
   const { token, setToken, setIsToken } = useContext(TokenContext);
   const { isSelectVisible } = useContext(PlaylistSelectionContext);
 
   const containerRef = useRef(null);
   const localRefreshToken = localStorage.getItem("refresh_token");
-
-  function cutText(text) {
-    // if (!text) return;
-    // return text.substring(0, 20);
-    return String(text).substring(0, 20);
-  }
 
   useEffect(() => {
     if (!token) return;
@@ -51,14 +44,11 @@ const Main = ({ setProfile }) => {
           console.error("❌ /me 取得失敗。token 無効かも");
           setIsToken(false);
           localStorage.removeItem("access_token");
-          console.log("Main.js側：", cutText(localStorage.getItem("refresh_token")));
 
           if (localRefreshToken) {
-            console.log("Main.js側：：ローカルリフレッシュでログイン");
             async function loginWithLocalRefreshToken() {
               try {
                 const newToken = await getNewAccessToken(localRefreshToken);
-                console.log(cutText(newToken));
                 setToken(newToken);
                 localStorage.setItem("access_token", newToken);
               } catch {}
@@ -79,11 +69,6 @@ const Main = ({ setProfile }) => {
     };
 
     fetchProfile();
-  }, [token]);
-
-  useEffect(() => {
-    console.log("token:", cutText(token));
-    console.log("TOKENが変わったよ：Main.js");
   }, [token]);
 
   return (
