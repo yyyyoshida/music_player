@@ -9,6 +9,7 @@ const PrevNextButton = ({ type }) => {
   const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
 
   function handlePrevNextClick() {
+    if ((type === "prev" && isPrevDisabled) || (type === "next" && isNextDisabled)) return;
     if (!isClickable) return;
 
     handleButtonPress();
