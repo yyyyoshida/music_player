@@ -13,3 +13,4 @@ export const RepeatProvider = ({ children }) => {
 };
 
 export const useRepeatContext = () => useContext(RepeatContext);
+export default RepeatContext;
