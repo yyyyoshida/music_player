@@ -366,3 +366,4 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   );
 };
 export const usePlayerContext = () => useContext(PlayerContext);
+export default PlayerContext;
