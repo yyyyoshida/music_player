@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePlayerContext } from "../contexts/PlayerContext";
 
-export default function useBarHandler({ type, value = 0, barRef, handleVolumeChange }) {
+export default function useBarHandler({ type, initialVolume = 0, barRef, handleVolumeChange }) {
   const isVolumeType = type === "volume";
   const isProgressType = type === "progress";
 
@@ -9,7 +9,9 @@ export default function useBarHandler({ type, value = 0, barRef, handleVolumeCha
 
   const [percentage, setPercentage] = useState(() => {
     const saved = localStorage.getItem("player_volume");
-    return isVolumeType ? parseFloat(saved) || value : value;
+
+    if (saved === null) return initialVolume;
+    return parseInt(saved);
   });
   const [isDragging, setIsDragging] = useState(false);
 
