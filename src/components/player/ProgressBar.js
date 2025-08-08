@@ -101,7 +101,8 @@ const ProgressBar = ({ initialValue }) => {
       seekToSpotify(0);
       goToNextTrack();
     }
-  }, [currentTime, duration]);
+    // }, [currentTime, duration]);
+  }, [currentTime, duration, isRepeat, isPlaying]);
 
   const [visibleLoading, setVisibleLoading] = useState(false);
 

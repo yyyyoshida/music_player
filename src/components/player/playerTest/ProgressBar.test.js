@@ -1,11 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import ProgressBar from "../ProgressBar";
 import RepeatContext from "../../../contexts/RepeatContext";
 import { PlaybackContext } from "../../../contexts/PlaybackContext";
 import PlayerContext from "../../../contexts/PlayerContext";
 import useBarHandler from "../../../hooks/useBarHandler";
-import { TbRectangleRoundedTop } from "react-icons/tb";
 
 jest.mock("../../../hooks/useBarHandler", () => ({
   __esModule: true,
@@ -16,6 +14,7 @@ const mockSeekToSpotify = jest.fn();
 const mockSetIsPlaying = jest.fn();
 
 const mockGoToNextTrack = jest.fn();
+const mockCurrentIndex = jest.fn();
 
 const mockSetPercentage = jest.fn();
 const mockRoundToTwoDecimals = jest.fn();
@@ -30,6 +29,18 @@ const mockAudioRef = {
 };
 
 beforeEach(() => {
+  mockAudioRef.current = {
+    currentTime: 0,
+    play: jest.fn(),
+    listeners: {},
+    addEventListener: function (event, cb) {
+      this.listeners[event] = cb;
+    },
+    removeEventListener: function (event) {
+      delete this.listeners[event];
+    },
+  };
+
   useBarHandler.mockReturnValue({
     percentage: 0,
     setPercentage: mockSetPercentage,
@@ -39,18 +50,27 @@ beforeEach(() => {
   });
 });
 
-function RenderAllProviders(isLocalPlaying = false, visibleLoading = false) {
-  return render(
-    <RepeatContext.Provider value={{ isRepeat: false }}>
+function allProviders({
+  currentTime = 0,
+  isTrackSet = false,
+  isRepeat = false,
+  duration = 0,
+  position = 0,
+  isPlaying = false,
+  isLocalPlaying = false,
+  visibleLoading = false,
+} = {}) {
+  return (
+    <RepeatContext.Provider value={{ isRepeat }}>
       <PlayerContext.Provider
         value={{
-          currentTime: 0,
-          isTrackSet: false,
+          currentTime,
+          isTrackSet,
           isLocalReady: false,
           seekToSpotify: mockSeekToSpotify,
-          duration: 0,
-          position: 0,
-          isPlaying: false,
+          duration,
+          position,
+          isPlaying,
           setIsPlaying: mockSetIsPlaying,
           isLocalPlaying,
           visibleLoading,
@@ -60,7 +80,7 @@ function RenderAllProviders(isLocalPlaying = false, visibleLoading = false) {
         <PlaybackContext.Provider
           value={{
             goToNextTrack: mockGoToNextTrack,
-            currentIndex: 0,
+            currentIndex: mockCurrentIndex,
           }}
         >
           <ProgressBar />
@@ -74,7 +94,7 @@ function RenderAllProviders(isLocalPlaying = false, visibleLoading = false) {
 // UIレンダリング系
 //=================
 test("初期レンダリング時のUIが正しく初期化されている", async () => {
-  RenderAllProviders();
+  render(allProviders());
 
   const progressFill = document.querySelector(".player-controls__progress-fill");
   expect(progressFill).toBeInTheDocument();
@@ -86,7 +106,7 @@ test("初期レンダリング時のUIが正しく初期化されている", asy
 });
 
 test("isLocalPlaying && visibleLoading のときにローディング表示される", () => {
-  RenderAllProviders(true, true);
+  render(allProviders({ isLocalPlaying: true, visibleLoading: true }));
   const loadingProgressBar = document.querySelector(".progress-bar-loading");
 
   expect(loadingProgressBar).toBeInTheDocument();
@@ -104,7 +124,7 @@ test("再生バーをクリックするとhoandleMouseDownが発火", async () =
     handleMouseDown: mockHandleMouseDown,
   });
 
-  RenderAllProviders();
+  render(allProviders());
 
   const progressBarWrapper = document.querySelector(".player-controls__progress-bar--wrapper");
   fireEvent.mouseDown(progressBarWrapper);
@@ -119,7 +139,7 @@ test("再生バーをドラッグすると位置が更新される", async () =>
     handleMouseDown: mockHandleMouseDown,
   });
 
-  RenderAllProviders();
+  render(allProviders());
 
   const progressThumb = document.querySelector(".player-controls__progress-thumb");
   const progressFill = document.querySelector(".player-controls__progress-fill");
@@ -128,7 +148,10 @@ test("再生バーをドラッグすると位置が更新される", async () =>
   expect(progressFill).toHaveStyle({ width: "75%" });
 });
 
-test("positionが変化したときsetPercentageが呼ばれるか(ローカル再生じゃない場合)", async () => {
+//=================
+// 再生時のバー更新
+//=================
+test("positionが変化したときsetPercentageが呼ばれるか", async () => {
   const mockRound = jest.fn().mockReturnValue(42);
 
   useBarHandler.mockReturnValue({
@@ -139,53 +162,65 @@ test("positionが変化したときsetPercentageが呼ばれるか(ローカル�
     handleMouseDown: mockHandleMouseDown,
   });
 
-  const { rerender } = render(
-    <RepeatContext.Provider value={{ isRepeat: false }}>
-      <PlayerContext.Provider
-        value={{
-          currentTime: 0,
-          isTrackSet: false,
-          isLocalReady: false,
-          seekToSpotify: mockSeekToSpotify,
-          duration: 100,
-          position: 0,
-          isPlaying: false,
-          setIsPlaying: mockSetIsPlaying,
-          isLocalPlaying: false,
-          audioRef: mockAudioRef,
-        }}
-      >
-        <PlaybackContext.Provider value={{ goToNextTrack: mockGoToNextTrack, currentIndex: 0 }}>
-          <ProgressBar />
-        </PlaybackContext.Provider>
-      </PlayerContext.Provider>
-    </RepeatContext.Provider>
-  );
+  const { rerender } = render(allProviders());
 
-  // position変更
-  rerender(
-    <RepeatContext.Provider value={{ isRepeat: false }}>
-      <PlayerContext.Provider
-        value={{
-          currentTime: 0,
-          isTrackSet: false,
-          isLocalReady: false,
-          seekToSpotify: mockSeekToSpotify,
-          duration: 100,
-          position: 10,
-          isPlaying: false,
-          setIsPlaying: mockSetIsPlaying,
-          isLocalPlaying: false,
-          audioRef: mockAudioRef,
-        }}
-      >
-        <PlaybackContext.Provider value={{ goToNextTrack: mockGoToNextTrack, currentIndex: 0 }}>
-          <ProgressBar />
-        </PlaybackContext.Provider>
-      </PlayerContext.Provider>
-    </RepeatContext.Provider>
-  );
+  rerender(allProviders({ duration: 100, position: 10 }));
 
   expect(mockRound).toHaveBeenCalledWith(10);
   expect(mockSetPercentage).toHaveBeenCalledWith(42);
+});
+
+//=================
+// 再生終了時の挙動
+//=================
+
+test("Spotify曲の場合、0.2秒以下とリピートオンでseekToSpotify(0)が呼ばれるか", async () => {
+  jest.useFakeTimers();
+  const { rerender } = render(allProviders({ isRepeat: true, duration: 10, position: 5 }));
+
+  rerender(allProviders({ isRepeat: true, duration: 10, position: 9.9 }));
+  jest.runAllTimers();
+
+  expect(mockSeekToSpotify).toHaveBeenCalledWith(0);
+  jest.useRealTimers();
+});
+
+mockAudioRef.current.dispatchEvent = jest.fn();
+
+test("ローカル曲の場合、リピートオンでaudio.currentTime = 0になるか", async () => {
+  jest.useFakeTimers();
+  const { rerender } = render(allProviders({ isRepeat: true, duration: 10, position: 5, isLocalPlaying: true }));
+
+  rerender(allProviders({ isRepeat: true, duration: 10, position: 9.9, isLocalPlaying: true }));
+  mockAudioRef.current.listeners["ended"] && mockAudioRef.current.listeners["ended"]();
+
+  jest.runAllTimers();
+
+  expect(mockAudioRef.current.currentTime).toBe(0);
+  expect(mockAudioRef.current.play).toHaveBeenCalled();
+
+  jest.useRealTimers();
+});
+
+test("Spotify曲の場合、0.2秒以下で次の曲へ切り替わるか", async () => {
+  jest.useFakeTimers();
+  const { rerender } = render(allProviders({ currentTime: 5000, isTrackSet: true, duration: 10000, position: 5000 }));
+
+  rerender(allProviders({ currentTime: 9900, isTrackSet: true, duration: 10000, position: 9900 }));
+  jest.runAllTimers();
+
+  expect(mockGoToNextTrack).toHaveBeenCalled();
+  jest.useRealTimers();
+});
+
+test("ローカル曲の場合、0.2秒以下で次の曲へ切り替わるか", async () => {
+  jest.useFakeTimers();
+  const { rerender } = render(allProviders({ duration: 10000, position: 5000, isLocalPlaying: true }));
+
+  rerender(allProviders({ duration: 10000, position: 9900, isLocalPlaying: true }));
+  mockAudioRef.current.listeners["ended"] && mockAudioRef.current.listeners["ended"]();
+  jest.runAllTimers();
+
+  expect(mockGoToNextTrack).toHaveBeenCalled();
+  jest.useRealTimers();
 });
