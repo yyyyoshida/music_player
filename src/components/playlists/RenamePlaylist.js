@@ -19,6 +19,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   }
 
   async function handleSaveRename() {
+    let shouldToggle = true;
     const newName = RenameRef.current.value.trim();
     const nameLength = countNameLength(newName);
 
@@ -47,6 +48,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       });
 
       if (!response.ok) {
+        shouldToggle = false;
         const data = await response.json();
         triggerError(data.error);
         return;
@@ -58,7 +60,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       console.error("プレイリスト名変更エラー:", error);
       showMessage("renameFailed");
     } finally {
-      toggleRenameVisible();
+      if (shouldToggle) toggleRenameVisible();
     }
   }
 
