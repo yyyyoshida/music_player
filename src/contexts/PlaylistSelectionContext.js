@@ -147,8 +147,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
   }
 
   function handleTrackSelect(track, shouldToggle = true, file = null, imageUrl = null) {
-    console.log(trackOrigin, "どこから北のこの曲handleTrackSelect");
-
     if (trackOrigin === "searchResults") {
       setSelectedTrack({
         trackId: track.id,
@@ -170,7 +168,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
         source: "spotify",
       });
     } else if (trackOrigin === "local" || track.source === "local") {
-      console.log(track);
       setSelectedTrack({
         title: track.title,
         artist: track.artist,

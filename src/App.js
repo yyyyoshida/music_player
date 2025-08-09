@@ -36,18 +36,13 @@ function App() {
     const hash = window.location.hash;
     const localAccessToken = localStorage.getItem("access_token");
     const localRefreshToken = localStorage.getItem("refresh_token");
-    console.log("hash!!!!!!!!：", hash);
-    console.log("🪪 初期 localStorage access_token:", cutText(localAccessToken));
-    console.log("🔁 初期 localStorage refresh_token:", cutText(localRefreshToken));
 
     if (localAccessToken) {
-      console.log("◆：：ローカルトークンでログイン");
       setToken(localAccessToken);
       return;
     }
 
     if (localRefreshToken) {
-      console.log("◆：：ローカルリフレッシュでログイン");
       async function loginWithLocalRefreshToken() {
         try {
           const newToken = await getNewAccessToken(localRefreshToken);
@@ -59,7 +54,6 @@ function App() {
     }
 
     if (code) {
-      console.log("初回ログイン後の処理");
       async function handleInitialSpotifyLogin() {
         try {
           const res = await fetch("http://localhost:4000/api/exchange_token", {
@@ -70,8 +64,6 @@ function App() {
 
           const data = await res.json();
 
-          console.log("🎫 token交換成功:", cutText(data));
-
           if (data.access_token) {
             localStorage.setItem("access_token", data.access_token);
             setToken(data.access_token);
@@ -80,8 +72,6 @@ function App() {
           if (data.refresh_token) {
             localStorage.setItem("refresh_token", data.refresh_token);
             await saveRefreshToken(data.refresh_token);
-
-            console.log("💾 保存した refresh_token:", cutText(data.refresh_token));
           }
 
           window.history.replaceState({}, null, "/");
@@ -95,12 +85,9 @@ function App() {
     }
 
     if (!localAccessToken && !localRefreshToken) {
-      console.log("◆：：サーバーから取ってログイン");
-
       async function loginWithServerRefreshToken() {
         try {
           const storedRefreshToken = await getRefreshToken();
-          console.log(storedRefreshToken);
           const newToken = await getNewAccessToken(storedRefreshToken);
           setToken(newToken);
           localStorage.setItem("access_token", newToken);
@@ -117,31 +104,6 @@ function App() {
       loginWithServerRefreshToken();
     }
   }, []);
-
-  useEffect(() => {
-    console.log("token:", cutText(token));
-    console.log("TOKENが変わったよ：App.js");
-  }, [token]);
-
-  // useEffect(() => {
-  //   let intervalId;
-
-  //   intervalId = setInterval(
-  //     () => {
-  //       console.log("トークンが切れたお\('ω')ノ");
-  //       localStorage.setItem("access_token", "This is Token null");
-  //       // setToken("This is Token null");
-  //     },
-
-  //     // 1000 * 60 * 1
-  //     1000 * 20 * 1
-  //   );
-  // }, [token]);
-
-  // useEffect(() => {
-  //   console.log("token:", cutText(token));
-  //   console.log("localToken:", cutText(localStorage.getItem("access_token")));
-  // }, [token]);
 
   function handleSearchResults(results) {
     setSearchResults(results);
