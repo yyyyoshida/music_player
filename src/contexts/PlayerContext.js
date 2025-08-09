@@ -28,7 +28,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const audioRef = useRef(null);
 
   useEffect(() => {
-    console.log("✅✅✅PlayerContextの発火");
     if (!token) return;
     if (window.Spotify) return; // 2回読み込み防止
 
@@ -78,16 +77,13 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
       // イベント登録
       playerInstance.addListener("ready", ({ device_id }) => {
-        console.log("🎵 Player is ready! Device ID:", device_id);
         setDeviceId(device_id);
         setPlayerReady(true);
       });
 
       playerInstance
         .connect()
-        .then(() => {
-          console.log("プレイヤー接続成功");
-        })
+        .then(() => {})
         .catch((err) => {
           console.error("接続エラー:", err);
         });
@@ -108,7 +104,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     return () => {
       if (playerInstance) {
         playerInstance.disconnect();
-        console.log("🧹 Spotify Player disconnected");
       }
     };
   }, [token]);
@@ -194,7 +189,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       setIsLocalPlaying(false);
     }
 
-    console.log(deviceId, "diviceId");
     const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
     const data = {
       uris: [trackUri],
@@ -372,3 +366,4 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   );
 };
 export const usePlayerContext = () => useContext(PlayerContext);
+export default PlayerContext;

@@ -4,10 +4,7 @@ function cutText(text) {
 }
 
 async function getNewAccessToken(refreshToken) {
-  console.log(cutText(refreshToken, "::", window.localStorage.getItem("refresh_token")));
-
   const tokenToUse = refreshToken || window.localStorage.getItem("refresh_token");
-  console.log("spotifyAuth側refreshToken：", tokenToUse ? tokenToUse.substring(0, 20) : tokenToUse);
 
   const response = await fetch("http://localhost:4000/api/refresh_token", {
     method: "POST",
@@ -20,7 +17,6 @@ async function getNewAccessToken(refreshToken) {
   }
 
   const data = await response.json();
-  console.log("取ってきたデータ", data);
   window.localStorage.setItem("access_token", data.access_token);
 
   if (data.refresh_token) {
@@ -66,8 +62,6 @@ async function saveRefreshToken(refreshToken) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh_token: refreshToken }),
   });
-
-  console.log("リフレッシュトークンをサーバーに保存官僚");
 
   if (!res.ok) {
     throw new Error("リフレッシュトークン保存に失敗");

@@ -15,13 +15,13 @@ export const SearchProvider = ({ children }) => {
   useEffect(() => {
     if (location.pathname !== "/search-result") return;
 
-    console.log("SearchContextのsetQueueが発火");
-
     setQueue(searchResults);
   }, [searchResults, location.pathname]);
 
   return (
-    <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults, hasSearchError, setHasSearchError }}>{children}</SearchContext.Provider>
+    <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults, hasSearchError, setHasSearchError }}>
+      {children}
+    </SearchContext.Provider>
   );
 };
 

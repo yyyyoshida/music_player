@@ -22,14 +22,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   const { playerTrack, player, setCurrentTime, setDuration } = usePlayerContext();
 
   useEffect(() => {
-    console.log("一覧のトラック数", queue);
-  }, [queue]);
-
-  // console.log(queue.length === 0);
-
-  useEffect(() => {
     if (!isToken) return;
-    // console.log(!isTrackSet);
 
     if (!isTrackSet) {
       setIsPrevDisabled(!isTrackSet);
@@ -37,7 +30,6 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
       return;
     }
 
-    // console.log(!isTrackSet);
     setIsPrevDisabled(currentIndexRef.current <= 0);
     setIsNextDisabled(currentIndexRef.current >= queue.length - 1);
   }, [queue, currentIndex, isTrackSet]);
@@ -72,10 +64,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   }, [currentIndex]);
 
   function playTrackAtIndex(index) {
-    // console.log(index, "index");
-
     const track = queue?.[index];
-    // console.log(track.name);
 
     const searchResultTrackUri = track?.uri;
     const spotifyTrackUri = track?.trackUri;

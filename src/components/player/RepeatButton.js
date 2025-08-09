@@ -16,10 +16,6 @@ const RepeatButton = () => {
     setTooltipText,
   } = useContext(TooltipContext);
 
-  useEffect(() => {
-    console.log("isRepeatが変わった瞬間", isRepeat);
-  }, [isRepeat]);
-
   return (
     <button
       className="player-controls__button player-controls__button--repeat"

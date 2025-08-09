@@ -48,10 +48,6 @@ export const TooltipProvider = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log(tooltipPosition);
-  }, [tooltipPosition]);
-
   return (
     <TooltipContext.Provider
       value={{

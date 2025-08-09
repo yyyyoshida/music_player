@@ -94,7 +94,6 @@ const PlaylistDetail = ({ containerRef }) => {
         if (!response.ok) throw new Error("Failed to fetch playlists");
 
         const data = await response.json();
-        console.log(data, "👌PlaylistDetailのdata");
         setTracks(data);
         setQueue(data);
       } catch {

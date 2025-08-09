@@ -27,7 +27,7 @@ const VolumeBar = ({ initialValue }) => {
 
   const { percentage, setPercentage, handleMouseDown } = useBarHandler({
     type: "volume",
-    value: initialValue,
+    initialVolume: initialValue,
     barRef: barRef,
     handleVolumeChange: handleVolumeChange,
   });

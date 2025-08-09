@@ -21,7 +21,6 @@ const useFetchPlaylists = () => {
         if (!response.ok) throw new Error("Failed to fetch playlists");
 
         const data = await response.json();
-        console.log(data, "👌useFetchPlaylistsのdata");
         setPlaylists(data);
       } catch {
         timer = setTimeout(() => {

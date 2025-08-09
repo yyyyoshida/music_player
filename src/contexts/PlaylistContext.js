@@ -106,7 +106,6 @@ export const PlaylistProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      console.log("作成されたプレイリストID:", data.playlistId);
       showMessage("newPlaylist");
       playlistNameRef.current.value = "";
       setPreselectedTrack(null);
@@ -139,7 +138,6 @@ export const PlaylistProvider = ({ children }) => {
       if (!response.ok) throw new Error("楽曲削除失敗");
 
       const { deletedTrack } = await response.json();
-      console.log(deleteTrack);
 
       setDeletedTrackDuration((prev) => prev + deletedTrack.duration_ms);
 
@@ -168,10 +166,6 @@ export const PlaylistProvider = ({ children }) => {
       hideDeletePlaylistModal();
     }
   }
-
-  useEffect(() => {
-    console.log(preselectedTrack);
-  }, [preselectedTrack]);
 
   return (
     <PlaylistContext.Provider
