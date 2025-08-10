@@ -175,6 +175,7 @@ export const PlaylistProvider = ({ children }) => {
 
       if (!response.ok) throw new Error("プレイリスト削除失敗");
 
+      clearPlaylistsCache();
       navigate("/playlist");
       showMessage("deletePlaylist");
     } catch {
