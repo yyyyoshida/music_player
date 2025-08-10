@@ -5,6 +5,7 @@ import { PlaybackContext } from "../contexts/PlaybackContext";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 import UploadModalContext from "./UploadModalContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
+import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -104,17 +105,20 @@ export const PlaylistSelectionProvider = ({ children }) => {
     addTrackToList(playlistId, addedTrack);
   }
 
-  async function executeTrackSave(actionFunction) {
+  async function executeTrackSave(actionFunction, id) {
     try {
       await actionFunction();
       fadeCoverImages();
       showMessage("add");
       hideSelectPlaylistModal();
       hideUploadModal();
+      clearPlaylistCache(id);
+      console.log(id);
     } catch (error) {
       hideUploadModal();
       hideSelectPlaylistModal();
       showMessage(error.message);
+      console.log(error.message);
     }
   }
 
@@ -134,16 +138,16 @@ export const PlaylistSelectionProvider = ({ children }) => {
     // try-catch関数でラップして共通処理を走らせるようにした ↓↓↓
 
     if (isSpotifyTrack) {
-      await executeTrackSave(() => saveTrackToFirestore(playlistId));
+      await executeTrackSave(() => saveTrackToFirestore(playlistId), playlistId);
       return;
     }
 
     if (isUploadedLocalTrack) {
-      await executeTrackSave(() => saveUploadedLocalTrack(playlistId));
+      await executeTrackSave(() => saveUploadedLocalTrack(playlistId), playlistId);
       return;
     }
 
-    await executeTrackSave(() => saveUploadAndNewTrack(playlistId));
+    await executeTrackSave(() => saveUploadAndNewTrack(playlistId), playlistId);
   }
 
   function handleTrackSelect(track, shouldToggle = true, file = null, imageUrl = null) {
