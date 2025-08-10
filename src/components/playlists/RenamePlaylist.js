@@ -4,14 +4,19 @@ import { PlaylistContext } from "../../contexts/PlaylistContext";
 import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
 import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
+import { clearPlaylistsCache } from "../../utils/clearPlaylistCache";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
   const { id } = useParams();
-  const { playlistName, setPlaylistName, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
+  const { setPlaylistInfo, playlistInfo, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
     useContext(PlaylistContext);
+
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+  const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${id}Info`);
+  const playlistInfoData = cachedPlaylistInfo ? JSON.parse(cachedPlaylistInfo) : null;
 
   function toggleRenameVisible() {
     setErrorMessage("");
@@ -20,6 +25,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
 
   async function handleSaveRename() {
     let shouldToggle = true;
+    const playlistName = playlistInfo?.name;
     const newName = RenameRef.current.value.trim();
     const nameLength = countNameLength(newName);
 
@@ -55,7 +61,13 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       }
 
       showMessage("rename");
-      setPlaylistName(newName);
+      const updatedInfoData = { ...playlistInfoData, name: newName };
+      localStorage.setItem(`playlistDetail:${id}Info`, JSON.stringify(updatedInfoData));
+      setPlaylistInfo((prev) => ({
+        ...prev,
+        name: newName,
+      }));
+      clearPlaylistsCache();
     } catch (error) {
       console.error("プレイリスト名変更エラー:", error);
       showMessage("renameFailed");
@@ -65,9 +77,9 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   }
 
   useEffect(() => {
-    RenameRef.current.value = playlistName;
+    RenameRef.current.value = playlistInfo.name;
     RenameRef.current.select();
-  }, [isRenameVisible, playlistName]);
+  }, [isRenameVisible, playlistInfo]);
 
   return (
     <div className="rename-playlist-modal modal" style={{ visibility: isRenameVisible ? "visible" : "hidden" }}>
