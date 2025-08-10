@@ -72,6 +72,10 @@ const PlaylistDetail = ({ containerRef }) => {
   }, [playlistInfo]);
 
   useEffect(() => {
+    const cachedInfo = localStorage.getItem(`playlistDetail:${id}Info`);
+
+    if (cachedInfo) return setPlaylistInfo(JSON.parse(cachedInfo));
+
     (async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/playlists/${id}/info`);
@@ -80,13 +84,23 @@ const PlaylistDetail = ({ containerRef }) => {
 
         const data = await response.json();
         setPlaylistInfo(data);
-      } catch {
+        localStorage.setItem(`playlistDetail:${id}Info`, JSON.stringify(data));
+      } catch (error) {
+        console.error(error);
         showMessage("fetchPlaylistInfoFailed");
       }
     })();
   }, [id]);
 
   useEffect(() => {
+    const cachedTracks = localStorage.getItem(`playlistDetail:${id}Tracks`);
+
+    if (cachedTracks) {
+      setTracks(JSON.parse(cachedTracks));
+      setQueue(JSON.parse(cachedTracks));
+      return;
+    }
+
     (async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/playlists/${id}/tracks`);
@@ -94,6 +108,7 @@ const PlaylistDetail = ({ containerRef }) => {
         if (!response.ok) throw new Error("Failed to fetch playlists");
 
         const data = await response.json();
+        localStorage.setItem(`playlistDetail:${id}Tracks`, JSON.stringify(data));
         setTracks(data);
         setQueue(data);
       } catch {
