@@ -68,10 +68,6 @@ const PlaylistDetail = ({ containerRef }) => {
   }, []);
 
   useEffect(() => {
-    setPlaylistName(playlistInfo.name);
-  }, [playlistInfo]);
-
-  useEffect(() => {
     const cachedInfo = localStorage.getItem(`playlistDetail:${id}Info`);
 
     if (cachedInfo) return setPlaylistInfo(JSON.parse(cachedInfo));
@@ -159,7 +155,7 @@ const PlaylistDetail = ({ containerRef }) => {
           </div>
         </div>
         <div className={`playlist-detail__header-info fade-on-loaded ${showSkeleton ? "" : "fade-in"}`}>
-          <h2 className="playlist-detail__header-title">{playlistName}</h2>
+          <h2 className="playlist-detail__header-title">{playlistInfo.name}</h2>
 
           <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration + addedTrackDuration - deletedTrackDuration)}`}</p>
         </div>
