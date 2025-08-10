@@ -14,6 +14,13 @@ const useFetchPlaylists = () => {
     let timer;
 
     setIsPlaylistsLoading(true);
+    const cachedPlaylists = localStorage.getItem("playlists");
+    if (cachedPlaylists) {
+      setPlaylists(JSON.parse(cachedPlaylists));
+      setIsPlaylistsLoading(false);
+      return;
+    }
+
     (async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/playlists`);
@@ -22,6 +29,7 @@ const useFetchPlaylists = () => {
 
         const data = await response.json();
         setPlaylists(data);
+        localStorage.setItem("playlists", JSON.stringify(data));
       } catch {
         timer = setTimeout(() => {
           showMessage("fetchPlaylistsFailed");
