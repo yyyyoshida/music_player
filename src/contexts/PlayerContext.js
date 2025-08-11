@@ -210,6 +210,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
           setIsPlaying(true);
         } else {
           console.warn("再生リクエスト失敗:", res.status);
+          showMessage("deviceNotFound");
           setIsSpotifyPlaying(false);
         }
       })
