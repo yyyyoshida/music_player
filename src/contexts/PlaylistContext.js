@@ -11,6 +11,7 @@ export const PlaylistProvider = ({ children }) => {
   const playlistNameRef = useRef("");
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
+  const [playlists, setPlaylists] = useState([]);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [currentPlaylistId, setCurrentPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
@@ -200,6 +201,8 @@ export const PlaylistProvider = ({ children }) => {
         formatTimeHours,
         playlistName,
         setPlaylistName,
+        playlists,
+        setPlaylists,
         playlistInfo,
         setPlaylistInfo,
         deleteTrack,
