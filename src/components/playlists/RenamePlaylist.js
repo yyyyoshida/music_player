@@ -4,12 +4,11 @@ import { PlaylistContext } from "../../contexts/PlaylistContext";
 import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
 import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
-import { clearPlaylistsCache } from "../../utils/clearPlaylistCache";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
   const { id } = useParams();
-  const { setPlaylistInfo, playlistInfo, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
+  const { setPlaylists, setPlaylistInfo, playlistInfo, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
     useContext(PlaylistContext);
 
   const { showMessage } = useContext(ActionSuccessMessageContext);
@@ -23,27 +22,34 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
     setIsRenameVisible((prev) => !prev);
   }
 
+  function validatePlaylistName(newName, beforeName) {
+    if (typeof newName !== "string") {
+      return "名前は文字列である必要があります";
+    }
+
+    if (!newName) {
+      return "名前を入力してください";
+    }
+
+    if (newName === beforeName) {
+      return "名前が同じです。違う名前にしてください";
+    }
+
+    if (countNameLength(newName) > MAX_NAME_LENGTH) {
+      return "文字数オーバーです";
+    }
+
+    return null;
+  }
+
   async function handleSaveRename() {
     let shouldToggle = true;
     const playlistName = playlistInfo?.name;
     const newName = RenameRef.current.value.trim();
-    const nameLength = countNameLength(newName);
+    const validationError = validatePlaylistName(newName, playlistName);
 
-    if (!newName) {
-      triggerError("名前を入力してください");
-
-      return;
-    }
-
-    if (!newName || newName === playlistName) {
-      triggerError("名前が同じです。違う名前にしてください");
-      return;
-    }
-
-    if (nameLength > MAX_NAME_LENGTH) {
-      triggerError("文字数オーバーです");
-
-      return;
+    if (validationError) {
+      return triggerError(validationError);
     }
 
     try {
@@ -61,13 +67,16 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       }
 
       showMessage("rename");
+
       const updatedInfoData = { ...playlistInfoData, name: newName };
+      const cachedPlaylists = JSON.parse(localStorage.getItem("playlists") || "[]");
+      const updatedPlaylists = cachedPlaylists.map((playlist) => (playlist.id === id ? { ...playlist, name: newName } : playlist));
+
+      setPlaylistInfo((prev) => ({ ...prev, name: newName }));
+      setPlaylists(updatedPlaylists);
+
       localStorage.setItem(`playlistDetail:${id}Info`, JSON.stringify(updatedInfoData));
-      setPlaylistInfo((prev) => ({
-        ...prev,
-        name: newName,
-      }));
-      clearPlaylistsCache();
+      localStorage.setItem("playlists", JSON.stringify(updatedPlaylists));
     } catch (error) {
       console.error("プレイリスト名変更エラー:", error);
       showMessage("renameFailed");
