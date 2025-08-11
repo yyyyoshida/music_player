@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useRef, useEffect } from "react";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 import { useNavigate } from "react-router-dom";
+import { clearPlaylistsCache } from "../utils/clearPlaylistCache";
+import { getPlaylistInfo } from "../utils/playlistUtils";
 
 export const PlaylistContext = createContext();
 
@@ -10,6 +12,7 @@ export const PlaylistProvider = ({ children }) => {
   const playlistNameRef = useRef("");
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
+  const [playlists, setPlaylists] = useState([]);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [currentPlaylistId, setCurrentPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
@@ -131,6 +134,9 @@ export const PlaylistProvider = ({ children }) => {
 
   async function deleteTrack(trackId) {
     try {
+      const playlistInfoData = await getPlaylistInfo(currentPlaylistId);
+      const totalDuration = playlistInfoData.totalDuration;
+
       const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
         method: "DELETE",
       });
@@ -139,12 +145,25 @@ export const PlaylistProvider = ({ children }) => {
 
       const { deletedTrack } = await response.json();
 
-      setDeletedTrackDuration((prev) => prev + deletedTrack.duration_ms);
+      setDeletedTrackDuration((prev) => {
+        const deletedTrackDuration = prev + deletedTrack.duration_ms;
+        const resultTotalDuration = totalDuration - deletedTrackDuration;
 
-      setTracks((prevTracks) => prevTracks.filter((track) => track.id !== trackId));
+        const updatedInfoData = { ...playlistInfoData, totalDuration: resultTotalDuration };
+        localStorage.setItem(`playlistDetail:${currentPlaylistId}Info`, JSON.stringify(updatedInfoData));
+
+        return deletedTrackDuration;
+      });
+
+      setTracks((prevTracks) => {
+        const updatedTracks = prevTracks.filter((track) => track.id !== trackId);
+        localStorage.setItem(`playlistDetail:${currentPlaylistId}Tracks`, JSON.stringify(updatedTracks));
+        return updatedTracks;
+      });
 
       fadeCoverImages();
       showMessage("deleteTrack");
+      clearPlaylistsCache();
     } catch {
       showMessage("deleteTrackFailed");
     }
@@ -158,6 +177,7 @@ export const PlaylistProvider = ({ children }) => {
 
       if (!response.ok) throw new Error("プレイリスト削除失敗");
 
+      clearPlaylistsCache();
       navigate("/playlist");
       showMessage("deletePlaylist");
     } catch {
@@ -182,6 +202,8 @@ export const PlaylistProvider = ({ children }) => {
         formatTimeHours,
         playlistName,
         setPlaylistName,
+        playlists,
+        setPlaylists,
         playlistInfo,
         setPlaylistInfo,
         deleteTrack,

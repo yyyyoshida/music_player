@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
+import PlaylistContext from "../contexts/PlaylistContext";
 
 const useFetchPlaylists = () => {
-  const [playlists, setPlaylists] = useState([]);
+  const { playlists, setPlaylists } = useContext(PlaylistContext);
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const FETCH_PLAYLISTS_ERROR_DELAY = 1000;
@@ -14,6 +15,13 @@ const useFetchPlaylists = () => {
     let timer;
 
     setIsPlaylistsLoading(true);
+    const cachedPlaylists = localStorage.getItem("playlists");
+    if (cachedPlaylists) {
+      setPlaylists(JSON.parse(cachedPlaylists));
+      setIsPlaylistsLoading(false);
+      return;
+    }
+
     (async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/playlists`);
@@ -22,6 +30,7 @@ const useFetchPlaylists = () => {
 
         const data = await response.json();
         setPlaylists(data);
+        localStorage.setItem("playlists", JSON.stringify(data));
       } catch {
         timer = setTimeout(() => {
           showMessage("fetchPlaylistsFailed");

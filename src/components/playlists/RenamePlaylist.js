@@ -8,36 +8,48 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
   const { id } = useParams();
-  const { playlistName, setPlaylistName, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
+  const { setPlaylists, setPlaylistInfo, playlistInfo, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
     useContext(PlaylistContext);
+
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+  const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${id}Info`);
+  const playlistInfoData = cachedPlaylistInfo ? JSON.parse(cachedPlaylistInfo) : null;
 
   function toggleRenameVisible() {
     setErrorMessage("");
     setIsRenameVisible((prev) => !prev);
   }
 
-  async function handleSaveRename() {
-    let shouldToggle = true;
-    const newName = RenameRef.current.value.trim();
-    const nameLength = countNameLength(newName);
+  function validatePlaylistName(newName, beforeName) {
+    if (typeof newName !== "string") {
+      return "名前は文字列である必要があります";
+    }
 
     if (!newName) {
-      triggerError("名前を入力してください");
-
-      return;
+      return "名前を入力してください";
     }
 
-    if (!newName || newName === playlistName) {
-      triggerError("名前が同じです。違う名前にしてください");
-      return;
+    if (newName === beforeName) {
+      return "名前が同じです。違う名前にしてください";
     }
 
-    if (nameLength > MAX_NAME_LENGTH) {
-      triggerError("文字数オーバーです");
+    if (countNameLength(newName) > MAX_NAME_LENGTH) {
+      return "文字数オーバーです";
+    }
 
-      return;
+    return null;
+  }
+
+  async function handleSaveRename() {
+    let shouldToggle = true;
+    const playlistName = playlistInfo?.name;
+    const newName = RenameRef.current.value.trim();
+    const validationError = validatePlaylistName(newName, playlistName);
+
+    if (validationError) {
+      return triggerError(validationError);
     }
 
     try {
@@ -55,7 +67,16 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       }
 
       showMessage("rename");
-      setPlaylistName(newName);
+
+      const updatedInfoData = { ...playlistInfoData, name: newName };
+      const cachedPlaylists = JSON.parse(localStorage.getItem("playlists") || "[]");
+      const updatedPlaylists = cachedPlaylists.map((playlist) => (playlist.id === id ? { ...playlist, name: newName } : playlist));
+
+      setPlaylistInfo((prev) => ({ ...prev, name: newName }));
+      setPlaylists(updatedPlaylists);
+
+      localStorage.setItem(`playlistDetail:${id}Info`, JSON.stringify(updatedInfoData));
+      localStorage.setItem("playlists", JSON.stringify(updatedPlaylists));
     } catch (error) {
       console.error("プレイリスト名変更エラー:", error);
       showMessage("renameFailed");
@@ -65,9 +86,9 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   }
 
   useEffect(() => {
-    RenameRef.current.value = playlistName;
+    RenameRef.current.value = playlistInfo.name;
     RenameRef.current.select();
-  }, [isRenameVisible, playlistName]);
+  }, [isRenameVisible, playlistInfo]);
 
   return (
     <div className="rename-playlist-modal modal" style={{ visibility: isRenameVisible ? "visible" : "hidden" }}>

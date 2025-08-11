@@ -13,13 +13,14 @@ import TrackListSkeleton from "../skeletonUI/TrackListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import { getPlaylistInfo } from "../../utils/playlistUtils";
 
 const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
-  const { playerTrack, formatTime, isPlaying, trackId, setIsTrackSet, setTrackOrigin } = usePlayerContext();
+  const { playerTrack, formatTime, isPlaying, setIsTrackSet, setTrackOrigin } = usePlayerContext();
   const {
     showDeletePlaylistModal,
     deletePlaylist,
@@ -27,8 +28,6 @@ const PlaylistDetail = ({ containerRef }) => {
     setTracks,
     formatTimeHours,
     setCurrentPlaylistId,
-    playlistName,
-    setPlaylistName,
     deletedTrackDuration,
     setDeletedTrackDuration,
     addedTrackDuration,
@@ -68,25 +67,26 @@ const PlaylistDetail = ({ containerRef }) => {
   }, []);
 
   useEffect(() => {
-    setPlaylistName(playlistInfo.name);
-  }, [playlistInfo]);
-
-  useEffect(() => {
     (async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/playlists/${id}/info`);
-
-        if (!response.ok) throw new Error("Failed to fetch playlists");
-
-        const data = await response.json();
-        setPlaylistInfo(data);
-      } catch {
+        const playlistInfoData = await getPlaylistInfo(id);
+        setPlaylistInfo(playlistInfoData);
+      } catch (error) {
+        console.error(error);
         showMessage("fetchPlaylistInfoFailed");
       }
     })();
   }, [id]);
 
   useEffect(() => {
+    const cachedTracks = localStorage.getItem(`playlistDetail:${id}Tracks`);
+
+    if (cachedTracks) {
+      setTracks(JSON.parse(cachedTracks));
+      setQueue(JSON.parse(cachedTracks));
+      return;
+    }
+
     (async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/playlists/${id}/tracks`);
@@ -94,6 +94,7 @@ const PlaylistDetail = ({ containerRef }) => {
         if (!response.ok) throw new Error("Failed to fetch playlists");
 
         const data = await response.json();
+        localStorage.setItem(`playlistDetail:${id}Tracks`, JSON.stringify(data));
         setTracks(data);
         setQueue(data);
       } catch {
@@ -144,7 +145,7 @@ const PlaylistDetail = ({ containerRef }) => {
           </div>
         </div>
         <div className={`playlist-detail__header-info fade-on-loaded ${showSkeleton ? "" : "fade-in"}`}>
-          <h2 className="playlist-detail__header-title">{playlistName}</h2>
+          <h2 className="playlist-detail__header-title">{playlistInfo.name}</h2>
 
           <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration + addedTrackDuration - deletedTrackDuration)}`}</p>
         </div>
