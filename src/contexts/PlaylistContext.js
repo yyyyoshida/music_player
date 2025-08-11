@@ -2,6 +2,7 @@ import { createContext, useState, useContext, useRef, useEffect } from "react";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 import { useNavigate } from "react-router-dom";
 import { clearPlaylistsCache } from "../utils/clearPlaylistCache";
+import { getPlaylistInfo } from "../utils/playlistUtils";
 
 export const PlaylistContext = createContext();
 
@@ -132,10 +133,10 @@ export const PlaylistProvider = ({ children }) => {
   }
 
   async function deleteTrack(trackId) {
-    const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${currentPlaylistId}Info`);
-    const playlistInfoData = cachedPlaylistInfo ? JSON.parse(cachedPlaylistInfo) : null;
-    const totalDuration = playlistInfoData?.totalDuration;
     try {
+      const playlistInfoData = await getPlaylistInfo(currentPlaylistId);
+      const totalDuration = playlistInfoData.totalDuration;
+
       const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
         method: "DELETE",
       });
