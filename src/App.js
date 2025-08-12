@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 
 import { BrowserRouter } from "react-router-dom";
-import { getNewAccessToken, saveRefreshToken, getRefreshToken } from "./utils/spotifyAuth";
+import { getNewAccessToken, saveRefreshToken, getRefreshToken, isValidToken } from "./utils/spotifyAuth";
 
 import { TokenContext } from "./contexts/TokenContext";
 import { SearchProvider } from "./contexts/SearchContext";
@@ -23,38 +23,33 @@ function App() {
   const [queue, setQueue] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { token, setToken, isToken, setIsToken } = useContext(TokenContext);
-
-  function cutText(text) {
-    // if (!text) return;
-    // return text.substring(0, 20);
-    return String(text).substring(0, 20);
-  }
+  const { setToken, setIsToken } = useContext(TokenContext);
 
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get("code");
-    const hash = window.location.hash;
-    const localAccessToken = localStorage.getItem("access_token");
-    const localRefreshToken = localStorage.getItem("refresh_token");
+    async function init() {
+      const code = new URLSearchParams(window.location.search).get("code");
+      const localAccessToken = localStorage.getItem("access_token");
+      const localRefreshToken = localStorage.getItem("refresh_token");
 
-    if (localAccessToken) {
-      setToken(localAccessToken);
-      return;
-    }
-
-    if (localRefreshToken) {
-      async function loginWithLocalRefreshToken() {
-        try {
-          const newToken = await getNewAccessToken(localRefreshToken);
-          setToken(newToken);
-        } catch {}
+      // ローカルのトークンでログイン
+      if (localAccessToken && (await isValidToken(localAccessToken))) {
+        setToken(localAccessToken);
+        return;
       }
-      loginWithLocalRefreshToken();
-      return;
-    }
 
-    if (code) {
-      async function handleInitialSpotifyLogin() {
+      // ローカルのリフレッシュトークンでログイン
+      if (localRefreshToken) {
+        try {
+          const newToken = await getNewAccessToken();
+          setToken(newToken);
+          return;
+        } catch (error) {
+          console.warn("ローカルリフレッシュ失敗(次の手段でログイン):", error);
+        }
+      }
+
+      // 初回ログイン後にトークンとリフレッシュトークンを保存
+      if (code) {
         try {
           const res = await fetch("http://localhost:4000/api/exchange_token", {
             method: "POST",
@@ -75,17 +70,14 @@ function App() {
           }
 
           window.history.replaceState({}, null, "/");
-        } catch (err) {
-          console.error("🔥 トークン交換失敗:", err);
+          return;
+        } catch (error) {
+          console.warn("トークン交換失敗(次の手段でログイン):", error);
         }
       }
 
-      handleInitialSpotifyLogin();
-      return;
-    }
-
-    if (!localAccessToken && !localRefreshToken) {
-      async function loginWithServerRefreshToken() {
+      // DBに保存されたリフレッシュトークンでログイン
+      if (!localAccessToken && !localRefreshToken) {
         try {
           const storedRefreshToken = await getRefreshToken();
           const newToken = await getNewAccessToken(storedRefreshToken);
@@ -93,16 +85,14 @@ function App() {
           localStorage.setItem("access_token", newToken);
           localStorage.setItem("refresh_token", storedRefreshToken);
 
-          // if (!storedRefreshToken) throw new Error("リフレッシュトークンがサーバーにない");
-
-          // そのrefresh_tokenを使って新しいaccess_tokenをもらう
-        } catch (err) {
+          if (!storedRefreshToken) throw new Error("リフレッシュトークンがサーバーにない");
+        } catch (error) {
           setIsToken(false);
-          console.error("🔁 トークンの更新失敗:", err);
+          console.error("🔁 トークンの更新失敗 ログインしてください:", error);
         }
       }
-      loginWithServerRefreshToken();
     }
+    init();
   }, []);
 
   function handleSearchResults(results) {

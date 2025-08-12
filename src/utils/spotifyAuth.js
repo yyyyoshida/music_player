@@ -1,9 +1,4 @@
-function cutText(text) {
-  if (!text) return;
-  return text.substring(0, 20);
-}
-
-async function getNewAccessToken(refreshToken) {
+async function getNewAccessToken(refreshToken = null) {
   const tokenToUse = refreshToken || window.localStorage.getItem("refresh_token");
 
   const response = await fetch("http://localhost:4000/api/refresh_token", {
@@ -82,4 +77,20 @@ async function getRefreshToken() {
   return data.refresh_token;
 }
 
-export { getNewAccessToken, fetchWithRefresh, saveRefreshToken, getRefreshToken };
+async function isValidToken(localAccessToken) {
+  try {
+    const response = await fetch("https://api.spotify.com/v1/me", {
+      headers: { Authorization: `Bearer ${localAccessToken}` },
+    });
+
+    if (response.ok) {
+      return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+export { getNewAccessToken, fetchWithRefresh, saveRefreshToken, getRefreshToken, isValidToken };
