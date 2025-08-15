@@ -59,8 +59,9 @@ const ProgressBar = ({ initialValue }) => {
     if (isLocalPlaying && audioRef?.current) {
       if (!isLocalReady) return;
 
-      const audio = audioRef.current;
+      const audio = audioRef?.current;
       const seekTime = (percentage / 100) * audio.duration;
+
       audio.currentTime = seekTime;
     } else {
       const seekTime = Math.trunc((percentage / 100) * duration);
