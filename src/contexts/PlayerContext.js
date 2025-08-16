@@ -170,7 +170,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   async function playSpotifyTrack(trackUri) {
     const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
     if (!validDeviceId) {
-      console.error("❌ 有効なデバイスIDが取得できない");
+      console.error("有効なデバイスIDが取得できない");
       showMessage("deviceNotFound");
       return;
     }
@@ -180,7 +180,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       setIsLocalPlaying(false);
     }
 
-    const url = `https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`;
     const data = {
       uris: [trackUri],
       offset: { position: 0 },
@@ -189,24 +188,24 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
     setIsSpotifyPlaying(true);
 
-    fetchWithRefresh(url, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        if (res.ok) {
-          setIsPlaying(true);
-        } else {
-          console.warn("再生リクエスト失敗:", res.status);
-          showMessage("deviceNotFound");
-          setIsSpotifyPlaying(false);
-        }
-      })
-      .catch((err) => {
-        console.error("通信エラー:", err);
-        setIsSpotifyPlaying(false);
+    try {
+      await fetchWithRefresh(`https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
+
+      setIsPlaying(true);
+    } catch (error) {
+      if (error.message === "TOKEN_REFRESH_FAILED") {
+        console.error("トークン再取得失敗");
+        showMessage("tokenExpired");
+      } else {
+        console.error("通信エラー:", error);
+        showMessage("networkError");
+      }
+      // setIsSpotifyPlaying(false);
+    }
   }
 
   function playLocalTrack(trackUri) {

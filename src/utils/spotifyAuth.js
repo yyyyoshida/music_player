@@ -33,8 +33,7 @@ async function fetchWithRefresh(url, options = {}, retry = true) {
 
   // トークンが切れてるとき
   if (res.status === 401 && retry) {
-    // if (!res.ok) {
-    console.warn("🔐 トークン切れ検知 → 再取得して再実行");
+    console.warn("トークン切れ検知 → 再取得して再実行");
 
     try {
       const newToken = await getNewAccessToken();
@@ -43,9 +42,13 @@ async function fetchWithRefresh(url, options = {}, retry = true) {
       // 再試行（1回限り）
       return fetchWithRefresh(url, options, false);
     } catch (err) {
-      console.error("❌ トークン再取得失敗:", err);
-      throw err;
+      console.error("トークン再取得失敗:", err);
+      throw new Error("TOKEN_REFRESH_FAILED");
     }
+  }
+
+  if (!res.ok) {
+    console.error(`Fetch失敗: ${res.status} ${res.statusText}`);
   }
 
   return res;
@@ -156,20 +159,6 @@ export async function validateDeviceId(currentDeviceId, player, setDeviceId) {
     return currentDeviceId;
   }
 
-  // if (!player) {
-  //   const { playerInstance, deviceId } = await initSpotifyPlayer();
-  //   return deviceId;
-  // }
-
-  // const connected = await player.connect();
-  // if (connected) {
-  //   return new Promise((resolve) => {
-  //     player.addListener("ready", ({ device_id }) => resolve(device_id));
-  //   });
-  // }
-
-  // return null;
-
   return new Promise(async (resolve) => {
     await connectSpotifyPlayer(player, (newId) => {
       setDeviceId(newId);
@@ -199,30 +188,30 @@ export async function getOAuthTokenFromStorage(cb, setToken) {
     setToken(newToken);
     cb(newToken);
   } catch (err) {
-    console.error("❌ getOAuthToken失敗:", err);
+    console.error("getOAuthToken失敗:", err);
     cb("");
   }
 }
 //
 export async function connectSpotifyPlayer(player, setDeviceId) {
-  console.log("❌❌❌❌connectSpotifyPlayer発火");
+  console.log("connectSpotifyPlayer発火");
   if (!player) {
     console.warn("player が null なので新規作成します");
     await initSpotifyPlayer();
   }
 
   if (!player) {
-    console.error("❌ player が存在せず接続できない");
+    console.error("player が存在せず接続できない");
     return null;
   }
 
   const connected = await player.connect();
   if (!connected) {
-    console.error("❌ Spotify Player 接続失敗");
+    console.error("Spotify Player 接続失敗");
     return null;
   }
 
-  console.log("🎉 Spotify Player 接続成功");
+  console.log("Spotify Player 接続成功");
 
   // すでに deviceId がセットされてる場合は即返す
   if (player._options && player._options.id) {
@@ -235,19 +224,11 @@ export async function connectSpotifyPlayer(player, setDeviceId) {
   player.removeListener("ready");
   return new Promise((resolve) => {
     player.addListener("ready", ({ device_id }) => {
-      console.log(`🎯 新しい deviceId を取得: ${device_id}`);
+      console.log(`新しい deviceId を取得: ${device_id}`);
       setDeviceId(device_id);
       resolve(device_id);
     });
   });
-
-  // return new Promise((resolve) => {
-  //   player.addListener("ready", ({ device_id }) => {
-  //     console.log(`🎯 新しい deviceId を取得: ${device_id}`);
-  //     setDeviceId(device_id);
-  //     resolve(device_id);
-  //   });
-  // });
 }
 
 export { getNewAccessToken, fetchWithRefresh, saveRefreshToken, getRefreshToken, isValidToken };
