@@ -147,14 +147,25 @@ export function createSpotifyPlayer({ getOAuthToken }) {
   });
 }
 
+let lastDeviceCheck = 0;
+let cachedDeviceId = null;
+
 export async function validateDeviceId(currentDeviceId, player, setDeviceId) {
-  const response = await fetchWithRefresh("https://api.spotify.com/v1/me/player/devices");
-  if (!response.ok) {
-    return null;
+  const now = Date.now();
+
+  if (cachedDeviceId && now - lastDeviceCheck < 30000) {
+    return cachedDeviceId;
   }
+
+  const response = await fetchWithRefresh("https://api.spotify.com/v1/me/player/devices");
+  if (!response.ok) return null;
 
   const data = await response.json();
   const isStillAlive = data.devices.some((d) => d.id === currentDeviceId);
+
+  lastDeviceCheck = now;
+  cachedDeviceId = isStillAlive ? currentDeviceId : null;
+
   if (isStillAlive) {
     return currentDeviceId;
   }
@@ -162,6 +173,7 @@ export async function validateDeviceId(currentDeviceId, player, setDeviceId) {
   return new Promise(async (resolve) => {
     await connectSpotifyPlayer(player, (newId) => {
       setDeviceId(newId);
+      cachedDeviceId = newId;
       resolve(newId);
     });
   });
