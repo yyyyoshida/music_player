@@ -43,7 +43,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
     const setup = async () => {
       try {
-        const Spotify = await loadSpotifySDK(); // ここを置き換え
+        const Spotify = await loadSpotifySDK();
         playerInstance = createSpotifyPlayer({
           getOAuthToken: (cb) => getOAuthTokenFromStorage(cb, setToken),
         });
@@ -85,37 +85,34 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     };
   }, [isPlaying, isTrackSet]);
 
-  const togglePlayPause = (isRepeat) => {
+  async function togglePlayPause() {
     if (isPlayPauseCooldown) return;
 
     if (isSpotifyPlaying && player) {
-      if (!isRepeat) {
-        player.togglePlay().then(() => setIsPlaying((prev) => !prev));
-        // player.togglePlay();
-
-        return;
+      const state = await player.getCurrentState();
+      if (!state) return;
+      if (state.paused) {
+        await player.resume();
+        setIsPlaying(true);
+      } else {
+        await player.pause();
+        setIsPlaying(false);
       }
-
-      if (isPlaying === true) {
-        player.resume().then(() => {});
-      }
-
       return;
     }
 
     if (isLocalPlaying && audioRef.current) {
       const audio = audioRef.current;
-
       if (audio.paused) {
-        audio.play().then(() => setIsPlaying(true));
+        await audio.play();
+        setIsPlaying(true);
       } else {
         audio.pause();
         setIsPlaying(false);
       }
-
       return;
     }
-  };
+  }
 
   function handleCanPlay() {
     const audio = audioRef.current;

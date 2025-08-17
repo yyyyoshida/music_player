@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect, useRef } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import { usePlayerContext } from "./PlayerContext";
 import { TokenContext } from "./TokenContext";
 
@@ -9,16 +9,10 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   const [isNextDisabled, setIsNextDisabled] = useState(true);
   const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
   const [currentTrackId, setCurrentTrackId] = useState(null);
-  const { isToken, setIsToken } = useContext(TokenContext);
-
   const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
   const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
   const [currentCoverImage, setCurrentCoverImage] = useState("/img/fallback-cover.png");
-
-  const currentIndexRef = useRef(0);
-
-  // const currentTrack = queue[currentIndex] || null;
-
+  const { isToken, setIsToken } = useContext(TokenContext);
   const { playerTrack, player, setCurrentTime, setDuration } = usePlayerContext();
 
   useEffect(() => {
@@ -30,18 +24,14 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
       return;
     }
 
-    setIsPrevDisabled(currentIndexRef.current <= 0);
-    setIsNextDisabled(currentIndexRef.current >= queue.length - 1);
+    setIsPrevDisabled(currentIndex <= 0);
+    setIsNextDisabled(currentIndex >= queue.length - 1);
   }, [queue, currentIndex, isTrackSet]);
-
-  // こいつ原因です
 
   // クリックしたトラックのインデックスをセット
   const updateCurrentIndex = (index) => {
     if (index >= 0 && index < queue.length) {
       setCurrentIndex(index);
-
-      currentIndexRef.current = index;
     }
   };
 
@@ -64,35 +54,34 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   }, [currentIndex]);
 
   function playTrackAtIndex(index) {
-    const track = queue?.[index];
+    const track = queue[index];
+    if (!track) return;
 
-    const searchResultTrackUri = track?.uri;
-    const spotifyTrackUri = track?.trackUri;
-    const localTrackUri = track?.audioURL;
-
-    const uriToPlay = searchResultTrackUri || spotifyTrackUri || localTrackUri;
-
-    setCurrentIndex(index);
-    currentIndexRef.current = index;
+    const uriToPlay = track.uri || track.trackUri || track.audioURL;
     setCurrentTrackId(track.id);
-
     playerTrack(uriToPlay, track.source);
   }
 
   function goToNextTrack() {
-    const nextIndex = currentIndexRef.current + 1;
-
-    if (nextIndex < queue.length) {
-      playTrackAtIndex(nextIndex);
-    }
+    setCurrentIndex((prevIndex) => {
+      const nextIndex = prevIndex + 1;
+      if (nextIndex < queue.length) {
+        playTrackAtIndex(nextIndex);
+        return nextIndex;
+      }
+      return prevIndex;
+    });
   }
 
   function goToPreviousTrack() {
-    const prevIndex = currentIndexRef.current - 1;
-
-    if (prevIndex >= 0) {
-      playTrackAtIndex(prevIndex);
-    }
+    setCurrentIndex((prevIndex) => {
+      const prev = prevIndex - 1;
+      if (prev >= 0) {
+        playTrackAtIndex(prev);
+        return prev;
+      }
+      return prevIndex;
+    });
   }
 
   function resumePlayback() {
@@ -106,7 +95,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
         setQueue,
         currentIndex,
         setCurrentIndex,
-        // currentTrack,
+
         updateCurrentIndex,
         goToNextTrack,
         goToPreviousTrack,
