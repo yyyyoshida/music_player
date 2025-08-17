@@ -8,8 +8,19 @@ const ProgressBar = ({ initialValue }) => {
   const barRef = useRef(null);
   const [visibleLoading, setVisibleLoading] = useState(false);
 
-  const { currentTime, isTrackSet, isLocalReady, seekToSpotify, duration, position, isPlaying, setIsPlaying, isLocalPlaying, audioRef } =
-    usePlayerContext();
+  const {
+    togglePlayPause,
+    currentTime,
+    isTrackSet,
+    isLocalReady,
+    seekToSpotify,
+    duration,
+    position,
+    isPlaying,
+    setIsPlaying,
+    isLocalPlaying,
+    audioRef,
+  } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { goToNextTrack, currentIndex } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
@@ -93,22 +104,27 @@ const ProgressBar = ({ initialValue }) => {
 
   // Spotifyの曲の再生が終わった後の処理
   useEffect(() => {
-    if (isLocalPlaying || !isTrackSet) return;
+    async function checkTrackEnd() {
+      if (isLocalPlaying || !isTrackSet) return;
 
-    const isTrackFinished = currentTime !== 0 && duration - currentTime <= 500;
+      const isTrackFinished = currentTime !== 0 && duration - currentTime <= 500;
 
-    if (isTrackFinished && !hasHandledEnd) {
-      setHasHandledEnd(true);
+      if (isTrackFinished && !hasHandledEnd) {
+        setHasHandledEnd(true);
 
-      if (isRepeat) {
-        seekToSpotify(0);
-      } else {
-        setIsPlaying(false);
-        goToNextTrack();
+        if (isRepeat) {
+          seekToSpotify(0);
+        } else {
+          await togglePlayPause();
+          setIsPlaying(false);
+          goToNextTrack();
+        }
       }
+
+      if (!isTrackFinished) setHasHandledEnd(false);
     }
 
-    if (!isTrackFinished) setHasHandledEnd(false);
+    checkTrackEnd();
   }, [currentTime, duration, isRepeat, isPlaying]);
 
   useEffect(() => {
