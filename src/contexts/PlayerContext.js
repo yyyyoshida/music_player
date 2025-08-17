@@ -36,24 +36,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const audioRef = useRef(null);
   const FADE_DURATION = 3000;
 
-  function loadSpotifyPlayer() {
-    return new Promise((resolve, reject) => {
-      if (window.Spotify) return resolve(window.Spotify);
-
-      // onSpotifyWebPlaybackSDKReady を先に定義
-      window.onSpotifyWebPlaybackSDKReady = () => {
-        resolve(window.Spotify);
-      };
-
-      const script = document.createElement("script");
-      script.src = "https://sdk.scdn.co/spotify-player.js";
-      script.async = true;
-      script.onerror = reject;
-      document.body.appendChild(script);
-    });
-  }
-
-  // useEffect 内
   useEffect(() => {
     if (!token) return;
 
@@ -61,7 +43,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
     const setup = async () => {
       try {
-        const Spotify = await loadSpotifyPlayer(); // SDKを確実にロード
+        const Spotify = await loadSpotifySDK(); // ここを置き換え
         playerInstance = createSpotifyPlayer({
           getOAuthToken: (cb) => getOAuthTokenFromStorage(cb, setToken),
         });
@@ -103,14 +85,13 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     };
   }, [isPlaying, isTrackSet]);
 
-  // }, [isPlaying, currentTitle]);
-
   const togglePlayPause = (isRepeat) => {
     if (isPlayPauseCooldown) return;
 
     if (isSpotifyPlaying && player) {
       if (!isRepeat) {
         player.togglePlay().then(() => setIsPlaying((prev) => !prev));
+        // player.togglePlay();
 
         return;
       }

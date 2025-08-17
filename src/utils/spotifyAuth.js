@@ -122,18 +122,18 @@ async function isValidToken(localAccessToken) {
   }
 }
 
-export async function loadSpotifySDK() {
+export function loadSpotifySDK() {
   return new Promise((resolve, reject) => {
-    if (window.Spotify) {
-      resolve();
-      return;
-    }
+    if (window.Spotify) return resolve(window.Spotify);
+
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      resolve(window.Spotify);
+    };
 
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
     script.crossOrigin = "anonymous";
-    script.onload = () => resolve();
     script.onerror = () => reject(new Error("Spotify SDK の読み込みに失敗"));
     document.body.appendChild(script);
   });
@@ -194,7 +194,6 @@ export async function getOAuthTokenFromStorage(cb, setToken) {
 }
 //
 export async function connectSpotifyPlayer(player, setDeviceId) {
-  console.log("connectSpotifyPlayer発火");
   if (!player) {
     console.warn("player が null なので新規作成します");
     await initSpotifyPlayer();
@@ -211,11 +210,9 @@ export async function connectSpotifyPlayer(player, setDeviceId) {
     return null;
   }
 
-  console.log("Spotify Player 接続成功");
-
   // すでに deviceId がセットされてる場合は即返す
   if (player._options && player._options.id) {
-    console.log(`⚡ 既存 deviceId を返す: ${player._options.id}`);
+    console.log(`既存 deviceId を返す: ${player._options.id}`);
     setDeviceId(player._options.id);
     return player._options.id;
   }
