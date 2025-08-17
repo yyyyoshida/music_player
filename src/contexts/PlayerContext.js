@@ -178,11 +178,11 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       if (error.message === "TOKEN_REFRESH_FAILED") {
         console.error("トークン再取得失敗");
         showMessage("tokenExpired");
-      } else {
-        console.error("通信エラー:", error);
-        showMessage("networkError");
+        return;
       }
-      // setIsSpotifyPlaying(false);
+
+      console.error("通信エラー:", error);
+      showMessage("networkError");
     }
   }
 
