@@ -46,6 +46,10 @@ const ActionSuccessMessage = () => {
     rename: { text: "プレイリストの名前を変更しました", success: true },
     renameFailed: { text: "プレイリストの名前の変更失敗しました", success: false },
 
+    deviceNotFound: { text: "404 Device not found: ページをリロードしてください", success: false },
+    tokenExpired: { text: "トークン再取得失敗: ページをリロードしてください", success: false },
+    networkError: { text: "通信エラー: ページをリロードしてください", success: false },
+
     unselected: { text: "曲がセットされていません", success: false },
     未実装: { text: "この機能はまだ未実装です", success: true },
   };

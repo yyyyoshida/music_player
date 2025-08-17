@@ -1,7 +1,15 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
-import { fetchWithRefresh, getNewAccessToken } from "../utils/spotifyAuth";
+import {
+  fetchWithRefresh,
+  getNewAccessToken,
+  loadSpotifySDK,
+  createSpotifyPlayer,
+  getOAuthTokenFromStorage,
+  connectSpotifyPlayer,
+  validateDeviceId,
+} from "../utils/spotifyAuth";
 import { TokenContext } from "./TokenContext";
 
 const PlayerContext = createContext();
@@ -16,7 +24,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const [currentTime, setCurrentTime] = useState(0);
   const [trackId, setTrackId] = useState(null);
   const { isRepeat } = useRepeatContext();
-  const { token, isToken, setToken } = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
   const [isLocalPlaying, setIsLocalPlaying] = useState(false);
@@ -26,89 +34,38 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
   const trackIdRef = useRef(null);
   const audioRef = useRef(null);
+  const FADE_DURATION = 3000;
 
   useEffect(() => {
     if (!token) return;
-    if (window.Spotify) return; // 2回読み込み防止
 
     let playerInstance;
 
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      playerInstance = new window.Spotify.Player({
-        name: "MyMusicPlayer",
-
-        getOAuthToken: async (cb) => {
-          const currentToken = localStorage.getItem("access_token");
-          const localRefreshToken = localStorage.getItem("refresh_token");
-
-          if (currentToken) {
-            cb(currentToken);
-            return;
-          }
-
-          if (!localRefreshToken) {
-            console.error("リフレッシュトークンがないよ");
-            cb(""); // トークンなしは空文字投げとく
-            return;
-          }
-
-          try {
-            const newToken = await getNewAccessToken(localRefreshToken);
-            localStorage.setItem("access_token", newToken);
-            setToken(newToken); // これが必要ならOKだけど無理にしなくてもいい
-            cb(newToken);
-          } catch (err) {
-            console.error("❌ getOAuthToken失敗:", err);
-            cb("");
-          }
-        },
-        volume: 0.3,
-      });
-
-      playerInstance.addListener("initialization_error", ({ message }) => {
-        console.error("❌ Initialization error:", message);
-      });
-      playerInstance.addListener("authentication_error", ({ message }) => {
-        console.error("❌ Authentication error:", message);
-      });
-      playerInstance.addListener("account_error", ({ message }) => {
-        console.error("❌ Account error:", message);
-      });
-
-      // イベント登録
-      playerInstance.addListener("ready", ({ device_id }) => {
-        setDeviceId(device_id);
-        setPlayerReady(true);
-      });
-
-      playerInstance
-        .connect()
-        .then(() => {})
-        .catch((err) => {
-          console.error("接続エラー:", err);
+    const setup = async () => {
+      try {
+        const Spotify = await loadSpotifySDK(); // ここを置き換え
+        playerInstance = createSpotifyPlayer({
+          getOAuthToken: (cb) => getOAuthTokenFromStorage(cb, setToken),
         });
 
-      setPlayer(playerInstance);
-    };
+        playerInstance.addListener("ready", ({ device_id }) => {
+          setDeviceId(device_id);
+          setPlayerReady(true);
+        });
 
-    // そのあと script 読み込みｓ
-    const script = document.createElement("script");
-    script.src = "https://sdk.scdn.co/spotify-player.js";
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    script.onerror = () => {
-      console.error("Spotify SDK の読み込みに失敗しました。");
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      if (playerInstance) {
-        playerInstance.disconnect();
+        await playerInstance.connect();
+        setPlayer(playerInstance);
+      } catch (err) {
+        console.error("Spotify Player初期化失敗:", err);
       }
     };
-  }, [token]);
 
-  const FADE_DURATION = 3000;
+    setup();
+
+    return () => {
+      if (playerInstance) playerInstance.disconnect();
+    };
+  }, [token]);
 
   useEffect(() => {
     let timeoutId;
@@ -127,7 +84,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       clearTimeout(timeoutId);
     };
   }, [isPlaying, isTrackSet]);
-  // }, [isPlaying, currentTitle]);
 
   const togglePlayPause = (isRepeat) => {
     if (isPlayPauseCooldown) return;
@@ -135,6 +91,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     if (isSpotifyPlaying && player) {
       if (!isRepeat) {
         player.togglePlay().then(() => setIsPlaying((prev) => !prev));
+        // player.togglePlay();
 
         return;
       }
@@ -178,9 +135,24 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     audio.removeEventListener("canplay", handleCanPlay);
   }
 
-  function playSpotifyTrack(trackUri) {
-    if (!deviceId) {
-      console.error("❌ デバイスIDなし");
+  function playerTrack(trackUri, source = "spotify") {
+    setIsPlayPauseCooldown(false);
+
+    if (source === "spotify") {
+      playSpotifyTrack(trackUri);
+      return;
+    }
+
+    if (source === "local") {
+      playLocalTrack(trackUri);
+    }
+  }
+
+  async function playSpotifyTrack(trackUri) {
+    const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
+    if (!validDeviceId) {
+      console.error("有効なデバイスIDが取得できない");
+      showMessage("deviceNotFound");
       return;
     }
 
@@ -189,7 +161,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       setIsLocalPlaying(false);
     }
 
-    const url = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
     const data = {
       uris: [trackUri],
       offset: { position: 0 },
@@ -198,25 +169,24 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
     setIsSpotifyPlaying(true);
 
-    fetchWithRefresh(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        if (res.ok) {
-          setIsPlaying(true);
-        } else {
-          console.warn("再生リクエスト失敗:", res.status);
-          setIsSpotifyPlaying(false);
-        }
-      })
-      .catch((err) => {
-        console.error("通信エラー:", err);
-        setIsSpotifyPlaying(false);
+    try {
+      await fetchWithRefresh(`https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
+
+      setIsPlaying(true);
+    } catch (error) {
+      if (error.message === "TOKEN_REFRESH_FAILED") {
+        console.error("トークン再取得失敗");
+        showMessage("tokenExpired");
+      } else {
+        console.error("通信エラー:", error);
+        showMessage("networkError");
+      }
+      // setIsSpotifyPlaying(false);
+    }
   }
 
   function playLocalTrack(trackUri) {
@@ -231,19 +201,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     const audio = audioRef.current;
     audio.src = trackUri;
     audio.addEventListener("canplay", handleCanPlay);
-  }
-
-  function playerTrack(trackUri, source = "spotify") {
-    setIsPlayPauseCooldown(false);
-
-    if (source === "spotify") {
-      playSpotifyTrack(trackUri);
-      return;
-    }
-
-    if (source === "local") {
-      playLocalTrack(trackUri);
-    }
   }
 
   function updateVolume(volume) {
@@ -344,7 +301,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
         currentTime,
         setCurrentTime,
         formatTime,
-        // token,
         trackId,
 
         isTrackSet,
