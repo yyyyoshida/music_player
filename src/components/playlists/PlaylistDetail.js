@@ -188,8 +188,6 @@ const PlaylistDetail = ({ containerRef }) => {
             const date = addedAt instanceof Date ? addedAt : new Date(addedAt);
 
             const isCurrentTrack = currentTrackId === track.id;
-
-            const isTrackPlaying = isCurrentTrack && isPlaying;
             const isClicked = isCurrentTrack;
 
             return (
@@ -198,7 +196,6 @@ const PlaylistDetail = ({ containerRef }) => {
                 track={track}
                 index={index}
                 isCurrentTrack={isCurrentTrack}
-                isTrackPlaying={isTrackPlaying}
                 isClicked={isClicked}
                 playerTrack={playerTrack}
                 formatTime={formatTime}
