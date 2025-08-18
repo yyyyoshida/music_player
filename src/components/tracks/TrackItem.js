@@ -7,6 +7,7 @@ import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import { isFallback } from "../../utils/isFallback";
+import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 
 function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDelay) {
   const [delayedValue, setDelayedValue] = useState(value);
@@ -28,8 +29,9 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
-  const { setIsTrackSet, trackOrigin, togglePlayPause } = usePlayerContext();
+  const { setIsTrackSet, trackOrigin, togglePlayPause, playDisable } = usePlayerContext();
   const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
+  const { showMessage } = useContext(ActionSuccessMessageContext);
 
   const buttonRef = useRef(null);
 
@@ -44,7 +46,15 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   const isSearchPage = window.location.pathname === "/search-result";
 
   function handleClickTrackItem() {
-    if (isCurrentTrack) return togglePlayPause();
+    if (playDisable) {
+      showMessage("tooFrequent");
+      return;
+    }
+
+    if (isCurrentTrack) {
+      togglePlayPause();
+      return;
+    }
     playNewTrack();
   }
 

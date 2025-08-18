@@ -31,6 +31,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const [isSpotifyPlaying, setIsSpotifyPlaying] = useState(false);
   const [trackOrigin, setTrackOrigin] = useState(null);
   const [isLocalReady, setIsLocalReady] = useState(false);
+  const [playDisable, setPlayDisable] = useState(false);
+  const TRACK_CHANGE_COOLDOWN = 600;
 
   const trackIdRef = useRef(null);
   const audioRef = useRef(null);
@@ -145,7 +147,13 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     }
   }
 
+  useEffect(() => {
+    console.log(playDisable);
+  }, [playDisable]);
+
   async function playSpotifyTrack(trackUri) {
+    if (playDisable) return;
+    setPlayDisable(true);
     const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
     if (!validDeviceId) {
       console.error("有効なデバイスIDが取得できない");
@@ -183,6 +191,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
       console.error("通信エラー:", error);
       showMessage("networkError");
+    } finally {
+      setTimeout(() => setPlayDisable(false), TRACK_CHANGE_COOLDOWN);
     }
   }
 
@@ -312,6 +322,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
         setTrackOrigin,
 
         isLocalReady,
+        playDisable,
       }}
     >
       {children}
