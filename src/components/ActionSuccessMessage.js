@@ -48,7 +48,7 @@ const ActionSuccessMessage = () => {
 
     deviceNotFound: { text: "404 Device not found: ページをリロードしてください", success: false },
     tokenExpired: { text: "トークン再取得失敗: ページをリロードしてください", success: false },
-    networkError: { text: "通信エラー: ページをリロードしてください", success: false },
+    tooFrequent: { text: "曲の切り替えの間隔が短すぎます。", success: false },
 
     unselected: { text: "曲がセットされていません", success: false },
     未実装: { text: "この機能はまだ未実装です", success: true },
