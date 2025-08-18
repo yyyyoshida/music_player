@@ -13,7 +13,7 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
   const [currentCoverImage, setCurrentCoverImage] = useState("/img/fallback-cover.png");
   const { isToken, setIsToken } = useContext(TokenContext);
-  const { playerTrack, player, setCurrentTime, setDuration } = usePlayerContext();
+  const { playerTrack, player, setCurrentTime, setDuration, playDisable } = usePlayerContext();
 
   useEffect(() => {
     if (!isToken) return;
@@ -29,18 +29,21 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   }, [queue, currentIndex, isTrackSet]);
 
   // クリックしたトラックのインデックスをセット
-  const updateCurrentIndex = (index) => {
-    if (index >= 0 && index < queue.length) {
+  function updateCurrentIndex(index) {
+    const isValidIndex = index >= 0 && index < queue.length;
+    const isDifferentTrack = index !== currentIndex;
+
+    if (isValidIndex && isDifferentTrack) {
       setCurrentIndex(index);
+      playTrackAtIndex(index);
     }
-  };
+  }
 
   useEffect(() => {
     const track = queue[currentIndex];
     if (!track) return;
 
     const isClickedTrack = track.id === currentTrackId;
-
     if (!isClickedTrack) return;
 
     setCurrentArtistName(queue[currentIndex].artist || queue[currentIndex].artists[0].name);
@@ -48,40 +51,37 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     setCurrentCoverImage(queue[currentIndex].albumImage || queue[currentIndex].album.images[0].url);
   }, [currentIndex, queue, currentTrackId]);
 
-  useEffect(() => {
-    setCurrentTime(0);
-    setDuration(0);
-  }, [currentIndex]);
-
   function playTrackAtIndex(index) {
+    if (playDisable) return;
+
     const track = queue[index];
     if (!track) return;
 
     const uriToPlay = track.uri || track.trackUri || track.audioURL;
     setCurrentTrackId(track.id);
+
     playerTrack(uriToPlay, track.source);
   }
 
+  useEffect(() => {
+    setCurrentTime(0);
+    setDuration(0);
+  }, [currentIndex]);
+
   function goToNextTrack() {
-    setCurrentIndex((prevIndex) => {
-      const nextIndex = prevIndex + 1;
-      if (nextIndex < queue.length) {
-        playTrackAtIndex(nextIndex);
-        return nextIndex;
-      }
-      return prevIndex;
-    });
+    if (playDisable) return;
+    const nextIndex = Math.min(currentIndex + 1, queue.length - 1);
+    if (nextIndex !== currentIndex) {
+      updateCurrentIndex(nextIndex);
+    }
   }
 
   function goToPreviousTrack() {
-    setCurrentIndex((prevIndex) => {
-      const prev = prevIndex - 1;
-      if (prev >= 0) {
-        playTrackAtIndex(prev);
-        return prev;
-      }
-      return prevIndex;
-    });
+    if (playDisable) return;
+    const prevIndex = Math.max(currentIndex - 1, 0);
+    if (prevIndex !== currentIndex) {
+      updateCurrentIndex(prevIndex);
+    }
   }
 
   function resumePlayback() {
