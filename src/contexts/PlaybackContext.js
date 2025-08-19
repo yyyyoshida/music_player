@@ -12,8 +12,8 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
   const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
   const [currentCoverImage, setCurrentCoverImage] = useState("/img/fallback-cover.png");
-  const { isToken, setIsToken } = useContext(TokenContext);
-  const { playerTrack, player, setCurrentTime, setDuration, playDisable } = usePlayerContext();
+  const { isToken } = useContext(TokenContext);
+  const { playerTrack, setCurrentTime, setDuration, playDisable } = usePlayerContext();
 
   useEffect(() => {
     if (!isToken) return;
@@ -28,45 +28,38 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     setIsNextDisabled(currentIndex >= queue.length - 1);
   }, [queue, currentIndex, isTrackSet]);
 
-  // クリックしたトラックのインデックスをセット
-  function updateCurrentIndex(index) {
+  function setTrackIndex(index) {
     const isValidIndex = index >= 0 && index < queue.length;
-    const isDifferentTrack = index !== currentIndex;
-
-    if (isValidIndex && isDifferentTrack) {
+    if (isValidIndex && index !== currentIndex) {
       setCurrentIndex(index);
-      playTrackAtIndex(index);
     }
   }
 
-  useEffect(() => {
-    const track = queue[currentIndex];
+  function updateTrackInfo(track) {
     if (!track) return;
 
-    const isClickedTrack = track.id === currentTrackId;
-    if (!isClickedTrack) return;
-
-    setCurrentArtistName(queue[currentIndex].artist || queue[currentIndex].artists[0].name);
-    setCurrentTitle(queue[currentIndex].title || queue[currentIndex].name);
-    setCurrentCoverImage(queue[currentIndex].albumImage || queue[currentIndex].album.images[0].url);
-  }, [currentIndex, queue, currentTrackId]);
-
-  function playTrackAtIndex(index) {
-    if (playDisable) return;
-
-    const track = queue[index];
-    if (!track) return;
-
-    const uriToPlay = track.uri || track.trackUri || track.audioURL;
     setCurrentTrackId(track.id);
+    setCurrentArtistName(track.artist || track.artists?.[0]?.name);
+    setCurrentTitle(track.title || track.name);
+    setCurrentCoverImage(track.albumImage || track.album?.images?.[0]?.url);
+    setCurrentTime(0);
+    setDuration(0);
+  }
 
+  function playTrack(track) {
+    if (!track || playDisable) return;
+    const uriToPlay = track.uri || track.trackUri || track.audioURL;
     playerTrack(uriToPlay, track.source);
   }
 
-  useEffect(() => {
-    setCurrentTime(0);
-    setDuration(0);
-  }, [currentIndex]);
+  function updateCurrentIndex(index) {
+    const track = queue[index];
+    if (!track || index === currentIndex) return;
+
+    updateTrackInfo(track);
+    playTrack(track);
+    setTrackIndex(index);
+  }
 
   function goToNextTrack() {
     if (playDisable) return;
@@ -84,10 +77,6 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     }
   }
 
-  function resumePlayback() {
-    player.resume().then(() => {});
-  }
-
   return (
     <PlaybackContext.Provider
       value={{
@@ -99,7 +88,6 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
         updateCurrentIndex,
         goToNextTrack,
         goToPreviousTrack,
-        resumePlayback,
         isPrevDisabled,
         isNextDisabled,
 
