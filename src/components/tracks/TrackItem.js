@@ -10,7 +10,7 @@ import { isFallback } from "../../utils/isFallback";
 import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 
 const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentRef }) => {
-  const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
+  const { setCurrentIndex, updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet, togglePlayPause, playDisable, isPlaying } = usePlayerContext();
@@ -47,11 +47,11 @@ const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentR
     if (!uri) return console.warn("再生不可");
 
     setIsTrackSet(true);
-    updateCurrentIndex(index);
+    setCurrentIndex(index);
     setCurrentTrackId(track.id);
     setCurrentPlayedAt(date);
-    playerTrack(uri, track.source);
     setPendingTrackId(null);
+    playerTrack(uri, track.source);
   }
 
   function setButtonPosition() {

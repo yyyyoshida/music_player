@@ -36,17 +36,8 @@ const PlaylistDetail = ({ containerRef }) => {
     playlistInfo,
     setPlaylistInfo,
   } = useContext(PlaylistContext);
-  const {
-    setCurrentTrackId,
-    currentTrackId,
-    setQueue,
-    queue,
-    updateCurrentIndex,
-    currentPlayedAt,
-    setCurrentPlayedAt,
-    currentIndex,
-    setCurrentIndex,
-  } = useContext(PlaybackContext);
+  const { setCurrentTrackId, currentTrackId, setQueue, queue, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
+    useContext(PlaybackContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
   const LOADING_DELAY = 200;
@@ -123,10 +114,9 @@ const PlaylistDetail = ({ containerRef }) => {
     const trackSource = firstTrack.source;
 
     setIsTrackSet(true);
-    updateCurrentIndex(0);
+    setCurrentIndex(0);
     setCurrentTrackId(firstTrack.id);
     playerTrack(audioSrc, trackSource);
-    setCurrentIndex(0);
   }
 
   return (
