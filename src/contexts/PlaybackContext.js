@@ -28,6 +28,16 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
     setIsNextDisabled(currentIndex >= queue.length - 1);
   }, [queue, currentIndex, isTrackSet]);
 
+  useEffect(() => {
+    const track = queue[currentIndex];
+    if (!track) return;
+
+    const isClickedTrack = track.id === currentTrackId;
+    if (!isClickedTrack) return;
+
+    updateTrackInfo(track);
+  }, [queue, currentIndex, currentTrackId]);
+
   function setTrackIndex(index) {
     const isValidIndex = index >= 0 && index < queue.length;
     if (isValidIndex && index !== currentIndex) {
