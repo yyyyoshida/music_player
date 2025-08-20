@@ -32,7 +32,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const [trackOrigin, setTrackOrigin] = useState(null);
   const [isLocalReady, setIsLocalReady] = useState(false);
   const [playDisable, setPlayDisable] = useState(false);
-  const TRACK_CHANGE_COOLDOWN = 600;
+  const TRACK_CHANGE_COOLDOWN = 1000;
 
   const trackIdRef = useRef(null);
   const audioRef = useRef(null);
@@ -153,6 +153,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
   async function playSpotifyTrack(trackUri) {
     if (playDisable) return;
+    // console.log("playerTrack関数発火");
+    console.time("playDisable");
     setPlayDisable(true);
     const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
     if (!validDeviceId) {
@@ -192,7 +194,12 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       console.error("通信エラー:", error);
       showMessage("networkError");
     } finally {
-      setTimeout(() => setPlayDisable(false), TRACK_CHANGE_COOLDOWN);
+      // setTimeout(() => setPlayDisable(false), TRACK_CHANGE_COOLDOWN);
+      // setTimeout(() => setPlayDisable(false), 2000);
+      setTimeout(() => {
+        setPlayDisable(false);
+        console.timeEnd("playDisable");
+      }, TRACK_CHANGE_COOLDOWN);
     }
   }
 
