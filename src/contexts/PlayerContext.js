@@ -32,10 +32,9 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const [trackOrigin, setTrackOrigin] = useState(null);
   const [isLocalReady, setIsLocalReady] = useState(false);
   const [playDisable, setPlayDisable] = useState(false);
-  const TRACK_CHANGE_COOLDOWN = 1000;
-
   const trackIdRef = useRef(null);
   const audioRef = useRef(null);
+  const TRACK_CHANGE_COOLDOWN = 700;
   const FADE_DURATION = 3000;
 
   useEffect(() => {
@@ -116,21 +115,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     }
   }
 
-  async function stopPlayback() {
-    if (isSpotifyPlaying && player) {
-      await player.pause();
-      setIsSpotifyPlaying(false);
-      setIsPlaying(false);
-      return;
-    }
-
-    if (isLocalPlaying && audioRef.current) {
-      audioRef.current.pause();
-      setIsLocalPlaying(false);
-      setIsPlaying(false);
-    }
-  }
-
   function handleCanPlay() {
     const audio = audioRef.current;
     if (!audio) return;
@@ -162,14 +146,9 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     }
   }
 
-  useEffect(() => {
-    console.log(playDisable);
-  }, [playDisable]);
-
   async function playSpotifyTrack(trackUri) {
     if (playDisable) return;
-    // console.log("playerTrack関数発火");
-    console.time("playDisable");
+
     setPlayDisable(true);
     const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
     if (!validDeviceId) {
@@ -209,11 +188,12 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       console.error("通信エラー:", error);
       showMessage("networkError");
     } finally {
-      // setTimeout(() => setPlayDisable(false), TRACK_CHANGE_COOLDOWN);
-      // setTimeout(() => setPlayDisable(false), 2000);
-      setTimeout(() => {
+      setTimeout(async () => {
+        setPosition(0);
+        await player.seek(0);
+        await player.setVolume(0.2);
+
         setPlayDisable(false);
-        console.timeEnd("playDisable");
       }, TRACK_CHANGE_COOLDOWN);
     }
   }
@@ -319,7 +299,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
         isPlaying,
         setIsPlaying,
         togglePlayPause,
-        stopPlayback,
         player,
         playerReady,
         playerTrack,
