@@ -1,4 +1,4 @@
-import { useEffect, useContext, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
@@ -7,56 +7,50 @@ import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import { isFallback } from "../../utils/isFallback";
+import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 
-function useDelayByTrackOrigin(value, trackOrigin, defaultDelay, searchResultsDelay) {
-  const [delayedValue, setDelayedValue] = useState(value);
-
-  useEffect(() => {
-    const delay = trackOrigin === "searchResults" ? searchResultsDelay : defaultDelay;
-
-    if (value === delayedValue) return;
-    if (delay === 0) return setDelayedValue(value);
-
-    const timeout = setTimeout(() => setDelayedValue(value), delay);
-    return () => clearTimeout(timeout);
-  }, [value, delayedValue, trackOrigin, defaultDelay, searchResultsDelay]);
-
-  return delayedValue;
-}
-
-const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date, query, parentRef }) => {
-  const { updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
+const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentRef }) => {
+  const { setCurrentIndex, updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
-  const { setIsTrackSet, trackOrigin, togglePlayPause } = usePlayerContext();
+  const { setIsTrackSet, togglePlayPause, stopPlayback, playDisable, isPlaying } = usePlayerContext();
   const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
+  const { showMessage } = useContext(ActionSuccessMessageContext);
+  const [pendingTrackId, setPendingTrackId] = useState(null);
 
   const buttonRef = useRef(null);
-
   const isCurrentTrack = currentTrackId === track.id;
-
   const isUsedFallbackImage = isFallback(track.albumImage);
-
-  const delayedIsClicked = useDelayByTrackOrigin(isCurrentTrack, trackOrigin, 0, 350);
-  const delayedIsTrackPlaying = useDelayByTrackOrigin(isTrackPlaying, trackOrigin, 0, 0);
-
   const positionOffsetY = -60;
   const isSearchPage = window.location.pathname === "/search-result";
+  const isActiveTrack = (currentTrackId === track.id && isPlaying) || pendingTrackId === track.id;
 
   function handleClickTrackItem() {
-    if (isCurrentTrack) return togglePlayPause();
+    if (playDisable) {
+      showMessage("tooFrequent");
+      return;
+    }
+
+    if (isCurrentTrack) {
+      togglePlayPause();
+      return;
+    }
+    setPendingTrackId(track.id);
     playNewTrack();
   }
 
   function playNewTrack() {
+    stopPlayback();
+
     const uri = track.trackUri || track.uri || track.audioURL;
 
     if (!uri) return console.warn("再生不可");
 
     setIsTrackSet(true);
-    updateCurrentIndex(index);
+    setCurrentIndex(index);
     setCurrentTrackId(track.id);
     setCurrentPlayedAt(date);
+    setPendingTrackId(null);
     playerTrack(uri, track.source);
   }
 
@@ -71,13 +65,13 @@ const TrackItem = ({ track, index, isTrackPlaying, playerTrack, formatTime, date
   }
 
   return (
-    <li className={`track-item ${delayedIsTrackPlaying ? "playing" : ""} ${delayedIsClicked ? "clicked" : ""} `} onClick={handleClickTrackItem}>
+    <li className={`track-item ${isActiveTrack ? "playing" : ""} ${isCurrentTrack ? "clicked" : ""} `} onClick={handleClickTrackItem}>
       <div className="track-item__left">
         <button className="track-item__left-play-pause-button">
-          <img src={delayedIsTrackPlaying ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
+          <img src={isActiveTrack ? pauseIcon : playIcon} className="track-item__left-play-pause-icon" alt="再生/一時停止" />
         </button>
 
-        <div className={`equalizer ${delayedIsTrackPlaying ? "" : "hidden"}`}>
+        <div className={`equalizer ${isActiveTrack ? "" : "hidden"}`}>
           <div className="bar"></div>
           <div className="bar"></div>
           <div className="bar"></div>

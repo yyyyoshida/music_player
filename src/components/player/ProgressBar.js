@@ -6,9 +6,21 @@ import useBarHandler from "../../hooks/useBarHandler";
 
 const ProgressBar = ({ initialValue }) => {
   const barRef = useRef(null);
+  const [visibleLoading, setVisibleLoading] = useState(false);
 
-  const { currentTime, isTrackSet, isLocalReady, seekToSpotify, duration, position, isPlaying, setIsPlaying, isLocalPlaying, audioRef } =
-    usePlayerContext();
+  const {
+    togglePlayPause,
+    currentTime,
+    isTrackSet,
+    isLocalReady,
+    seekToSpotify,
+    duration,
+    position,
+    isPlaying,
+    setIsPlaying,
+    isLocalPlaying,
+    audioRef,
+  } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { goToNextTrack, currentIndex } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
@@ -18,6 +30,7 @@ const ProgressBar = ({ initialValue }) => {
   });
 
   const LOADING_DELAY = 200;
+  const [hasHandledEnd, setHasHandledEnd] = useState(false);
 
   //備忘録　 Spotifyの曲が再生中に再生バーを自動更新する
   useEffect(() => {
@@ -91,21 +104,28 @@ const ProgressBar = ({ initialValue }) => {
 
   // Spotifyの曲の再生が終わった後の処理
   useEffect(() => {
-    if (isLocalPlaying || !isTrackSet) return;
+    async function checkTrackEnd() {
+      if (isLocalPlaying || !isTrackSet) return;
 
-    const isTrackFinished = currentTime !== 0 && duration - currentTime <= 200;
+      const isTrackFinished = currentTime !== 0 && duration - currentTime <= 500;
 
-    if (isTrackFinished && isRepeat) return seekToSpotify(0);
+      if (isTrackFinished && !hasHandledEnd) {
+        setHasHandledEnd(true);
 
-    if (isTrackFinished) setIsPlaying(false);
-    if (isTrackFinished && !isRepeat && !isPlaying) {
-      seekToSpotify(0);
-      goToNextTrack();
+        if (isRepeat) {
+          seekToSpotify(0);
+        } else {
+          await togglePlayPause();
+          setIsPlaying(false);
+          goToNextTrack();
+        }
+      }
+
+      if (!isTrackFinished) setHasHandledEnd(false);
     }
-    // }, [currentTime, duration]);
-  }, [currentTime, duration, isRepeat, isPlaying]);
 
-  const [visibleLoading, setVisibleLoading] = useState(false);
+    checkTrackEnd();
+  }, [currentTime, duration, isRepeat, isPlaying]);
 
   useEffect(() => {
     setVisibleLoading(true);

@@ -34,8 +34,10 @@ const VolumeBar = ({ initialValue }) => {
 
   function applyVolume(value) {
     if (!audioRef?.current) return;
-    audioRef.current.volume = value;
-    updateVolume(value);
+    const clampValue = Math.max(Math.min(value, 1), 0);
+
+    audioRef.current.volume = clampValue;
+    updateVolume(clampValue);
   }
 
   function handleVolumeChange(newPercentage) {
