@@ -116,6 +116,21 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     }
   }
 
+  async function stopPlayback() {
+    if (isSpotifyPlaying && player) {
+      await player.pause();
+      setIsSpotifyPlaying(false);
+      setIsPlaying(false);
+      return;
+    }
+
+    if (isLocalPlaying && audioRef.current) {
+      audioRef.current.pause();
+      setIsLocalPlaying(false);
+      setIsPlaying(false);
+    }
+  }
+
   function handleCanPlay() {
     const audio = audioRef.current;
     if (!audio) return;
@@ -304,6 +319,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
         isPlaying,
         setIsPlaying,
         togglePlayPause,
+        stopPlayback,
         player,
         playerReady,
         playerTrack,
