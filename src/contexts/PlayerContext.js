@@ -31,6 +31,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const [isSpotifyPlaying, setIsSpotifyPlaying] = useState(false);
   const [trackOrigin, setTrackOrigin] = useState(null);
   const [isLocalReady, setIsLocalReady] = useState(false);
+  const [playDisable, setPlayDisable] = useState(false);
+  const TRACK_CHANGE_COOLDOWN = 1000;
 
   const trackIdRef = useRef(null);
   const audioRef = useRef(null);
@@ -43,7 +45,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
     const setup = async () => {
       try {
-        const Spotify = await loadSpotifySDK(); // ここを置き換え
+        const Spotify = await loadSpotifySDK();
         playerInstance = createSpotifyPlayer({
           getOAuthToken: (cb) => getOAuthTokenFromStorage(cb, setToken),
         });
@@ -85,37 +87,49 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     };
   }, [isPlaying, isTrackSet]);
 
-  const togglePlayPause = (isRepeat) => {
+  async function togglePlayPause() {
     if (isPlayPauseCooldown) return;
 
     if (isSpotifyPlaying && player) {
-      if (!isRepeat) {
-        player.togglePlay().then(() => setIsPlaying((prev) => !prev));
-        // player.togglePlay();
-
-        return;
+      const state = await player.getCurrentState();
+      if (!state) return;
+      if (state.paused) {
+        await player.resume();
+        setIsPlaying(true);
+      } else {
+        await player.pause();
+        setIsPlaying(false);
       }
-
-      if (isPlaying === true) {
-        player.resume().then(() => {});
-      }
-
       return;
     }
 
     if (isLocalPlaying && audioRef.current) {
       const audio = audioRef.current;
-
       if (audio.paused) {
-        audio.play().then(() => setIsPlaying(true));
+        await audio.play();
+        setIsPlaying(true);
       } else {
         audio.pause();
         setIsPlaying(false);
       }
-
       return;
     }
-  };
+  }
+
+  async function stopPlayback() {
+    if (isSpotifyPlaying && player) {
+      await player.pause();
+      setIsSpotifyPlaying(false);
+      setIsPlaying(false);
+      return;
+    }
+
+    if (isLocalPlaying && audioRef.current) {
+      audioRef.current.pause();
+      setIsLocalPlaying(false);
+      setIsPlaying(false);
+    }
+  }
 
   function handleCanPlay() {
     const audio = audioRef.current;
@@ -148,7 +162,15 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     }
   }
 
+  useEffect(() => {
+    console.log(playDisable);
+  }, [playDisable]);
+
   async function playSpotifyTrack(trackUri) {
+    if (playDisable) return;
+    // console.log("playerTrack関数発火");
+    console.time("playDisable");
+    setPlayDisable(true);
     const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
     if (!validDeviceId) {
       console.error("有効なデバイスIDが取得できない");
@@ -181,11 +203,18 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       if (error.message === "TOKEN_REFRESH_FAILED") {
         console.error("トークン再取得失敗");
         showMessage("tokenExpired");
-      } else {
-        console.error("通信エラー:", error);
-        showMessage("networkError");
+        return;
       }
-      // setIsSpotifyPlaying(false);
+
+      console.error("通信エラー:", error);
+      showMessage("networkError");
+    } finally {
+      // setTimeout(() => setPlayDisable(false), TRACK_CHANGE_COOLDOWN);
+      // setTimeout(() => setPlayDisable(false), 2000);
+      setTimeout(() => {
+        setPlayDisable(false);
+        console.timeEnd("playDisable");
+      }, TRACK_CHANGE_COOLDOWN);
     }
   }
 
@@ -290,6 +319,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
         isPlaying,
         setIsPlaying,
         togglePlayPause,
+        stopPlayback,
         player,
         playerReady,
         playerTrack,
@@ -315,6 +345,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
         setTrackOrigin,
 
         isLocalReady,
+        playDisable,
       }}
     >
       {children}
