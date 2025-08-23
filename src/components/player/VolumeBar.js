@@ -4,27 +4,18 @@ import { TooltipContext } from "../../contexts/TooltipContext";
 import useDelayedText from "../../hooks/useDelayText";
 import useBarHandler from "../../hooks/useBarHandler";
 import VolumeIcon from "./VolumeIcon";
+import useTooltipStore from "../../store/tooltipStore";
 
 const VolumeBar = ({ initialValue }) => {
   const [isMuted, setIsMuted] = useState(() => {
     const savedMute = localStorage.getItem("isMuted");
     return savedMute ? JSON.parse(savedMute) : false;
   });
-
   const barRef = useRef(null);
-
   useDelayedText(isMuted, "ミュート：解除", "ミュート");
-  const {
-    handleButtonPress,
-    handleMouseEnter,
-
-    handleMouseLeave,
-
-    setTooltipText,
-  } = useContext(TooltipContext);
-
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
   const { playerReady, updateVolume, audioRef } = usePlayerContext();
-
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const { percentage, setPercentage, handleMouseDown } = useBarHandler({
     type: "volume",
     initialVolume: initialValue,
