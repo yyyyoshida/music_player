@@ -11,27 +11,33 @@ import {
   validateDeviceId,
 } from "../utils/spotifyAuth";
 import { TokenContext } from "./TokenContext";
+import usePlayerStore from "../store/playerStore";
 
 const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const setIsPlaying = usePlayerStore((state) => state.setIsPlaying);
+  const setCurrentTime = usePlayerStore((state) => state.setCurrentTime);
+  const setPosition = usePlayerStore((state) => state.setPosition);
+  const setDuration = usePlayerStore((state) => state.setDuration);
+  const setPlayDisable = usePlayerStore((state) => state.setPlayDisable);
+  const trackId = usePlayerStore((state) => state.trackId);
+  const setTrackId = usePlayerStore((state) => state.setTrackId);
+  const isSpotifyPlaying = usePlayerStore((state) => state.isSpotifyPlaying);
+  const setIsSpotifyPlaying = usePlayerStore((state) => state.setIsSpotifyPlaying);
+  const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
+  const setIsLocalPlaying = usePlayerStore((state) => state.setIsLocalPlaying);
+  const setIsLocalReady = usePlayerStore((state) => state.setIsLocalReady);
+
   const [player, setPlayer] = useState(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
-  const [position, setPosition] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [trackId, setTrackId] = useState(null);
   const { isRepeat } = useRepeatContext();
   const { token, setToken } = useContext(TokenContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
-  const [isLocalPlaying, setIsLocalPlaying] = useState(false);
-  const [isSpotifyPlaying, setIsSpotifyPlaying] = useState(false);
   const [trackOrigin, setTrackOrigin] = useState(null);
-  const [isLocalReady, setIsLocalReady] = useState(false);
-  const [playDisable, setPlayDisable] = useState(false);
   const trackIdRef = useRef(null);
   const audioRef = useRef(null);
   const TRACK_CHANGE_COOLDOWN = 700;
@@ -310,35 +316,22 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   return (
     <PlayerContext.Provider
       value={{
-        isPlaying,
-        setIsPlaying,
-        togglePlayPause,
         player,
         playerReady,
         playerTrack,
+        audioRef,
+
+        togglePlayPause,
         updateVolume,
         seekToSpotify,
-        duration,
-        setDuration,
-        position,
-        currentTime,
-        setCurrentTime,
         formatTime,
-        trackId,
 
         isTrackSet,
         setIsTrackSet,
         isPlayPauseCooldown,
 
-        audioRef,
-
-        isLocalPlaying,
-
         trackOrigin,
         setTrackOrigin,
-
-        isLocalReady,
-        playDisable,
       }}
     >
       {children}
