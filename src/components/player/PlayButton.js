@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import { TooltipContext } from "../../contexts/TooltipContext";
 
@@ -16,22 +16,22 @@ const PlayButton = () => {
     handleButtonPress();
   }
 
+  function handlePlayPauseMouseEnter(e) {
+    setTooltipText(isPlaying ? "一時停止" : "再生");
+    handleMouseEnter(e);
+  }
+
   return (
     <button
       onClick={handlePlayPause}
       className="player-controls__button player-controls__play-pause-button"
-      onMouseEnter={(e) => {
-        setTooltipText(isPlaying ? "一時停止" : "再生");
-        handleMouseEnter(e);
-      }}
-      onMouseLeave={() => {
-        handleMouseLeave();
-      }}
+      onMouseEnter={handlePlayPauseMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <img
         src={isPlaying ? pauseIcon : playIcon}
         className={`player-controls__play-pause-button-icon player-controls__${isPlaying ? "pause" : "play"}-icon`}
-      ></img>
+      />
     </button>
   );
 };
