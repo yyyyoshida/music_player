@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
-import { usePlayerContext } from "../../contexts/PlayerContext";
+import usePlayerStore from "../../store/playerStore";
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
 import useDelayedText from "../../hooks/useDelayText";
 import { TooltipContext } from "../../contexts/TooltipContext";
@@ -11,7 +11,8 @@ const TrackInfo = () => {
   const [isHidden, setIsHidden] = useState(false);
   const [width, setWidth] = useState(85);
 
-  const { isPlaying } = usePlayerContext();
+  const isPlaying = usePlayerStore((state) => state.isPlaying);
+
   const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
 
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
