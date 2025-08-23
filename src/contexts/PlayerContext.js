@@ -32,10 +32,9 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const [trackOrigin, setTrackOrigin] = useState(null);
   const [isLocalReady, setIsLocalReady] = useState(false);
   const [playDisable, setPlayDisable] = useState(false);
-  const TRACK_CHANGE_COOLDOWN = 1000;
-
   const trackIdRef = useRef(null);
   const audioRef = useRef(null);
+  const TRACK_CHANGE_COOLDOWN = 700;
   const FADE_DURATION = 3000;
 
   useEffect(() => {
@@ -116,26 +115,12 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     }
   }
 
-  async function stopPlayback() {
-    if (isSpotifyPlaying && player) {
-      await player.pause();
-      setIsSpotifyPlaying(false);
-      setIsPlaying(false);
-      return;
-    }
-
-    if (isLocalPlaying && audioRef.current) {
-      audioRef.current.pause();
-      setIsLocalPlaying(false);
-      setIsPlaying(false);
-    }
-  }
-
   function handleCanPlay() {
     const audio = audioRef.current;
     if (!audio) return;
 
     setIsLocalPlaying(true);
+    setPlayDisable(false);
 
     audio
       .play()
@@ -151,6 +136,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
   function playerTrack(trackUri, source = "spotify") {
     setIsPlayPauseCooldown(false);
+    setPlayDisable(true);
 
     if (source === "spotify") {
       playSpotifyTrack(trackUri);
@@ -162,15 +148,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     }
   }
 
-  useEffect(() => {
-    console.log(playDisable);
-  }, [playDisable]);
-
   async function playSpotifyTrack(trackUri) {
-    if (playDisable) return;
-    // console.log("playerTrack関数発火");
-    console.time("playDisable");
-    setPlayDisable(true);
+    // 再生時にデバイスIDが切れてても再取得してエラー落ちを防ぐため
     const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
     if (!validDeviceId) {
       console.error("有効なデバイスIDが取得できない");
@@ -209,13 +188,27 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       console.error("通信エラー:", error);
       showMessage("networkError");
     } finally {
-      // setTimeout(() => setPlayDisable(false), TRACK_CHANGE_COOLDOWN);
-      // setTimeout(() => setPlayDisable(false), 2000);
-      setTimeout(() => {
-        setPlayDisable(false);
-        console.timeEnd("playDisable");
-      }, TRACK_CHANGE_COOLDOWN);
+      // Spotify限定で429エラーを防ぐために遅延
+      setTimeout(resetSpotifyPlayerState, TRACK_CHANGE_COOLDOWN);
     }
+  }
+
+  async function resetSpotifyPlayerState() {
+    // 曲切り替え中もSpotify曲は再生し続けるため、クールダウンが終わった時に
+    // バーが少し進んだ状態になるのを防ぐ↓
+    setPosition(0);
+    await seekToSpotify(0);
+
+    // 曲切り替え時に一瞬前の曲の冒頭再生を防ぐため、一時的に音量を0にして復元↓
+    const savedVolume = parseFloat(localStorage.getItem("player_volume")) || 30;
+    const clampedVolume = clampVolume(savedVolume);
+    await updateVolume(clampedVolume);
+
+    setPlayDisable(false);
+  }
+
+  function clampVolume(volume) {
+    return Math.max(Math.min(volume / 100, 1), 0);
   }
 
   function playLocalTrack(trackUri) {
@@ -223,23 +216,24 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       player.pause();
       setIsSpotifyPlaying(false);
     }
+
     if (!audioRef.current) return;
 
     setIsLocalReady(false);
-    setIsLocalPlaying(true);
+
     const audio = audioRef.current;
     audio.src = trackUri;
     audio.addEventListener("canplay", handleCanPlay);
   }
 
-  function updateVolume(volume) {
+  async function updateVolume(volume) {
     if (!player) return;
-    player.setVolume(volume);
+    await player.setVolume(volume);
   }
 
-  function seekToSpotify(seekTime) {
+  async function seekToSpotify(seekTime) {
     if (!player) return;
-    player.seek(seekTime);
+    await player.seek(seekTime);
   }
 
   useEffect(() => {
@@ -319,7 +313,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
         isPlaying,
         setIsPlaying,
         togglePlayPause,
-        stopPlayback,
         player,
         playerReady,
         playerTrack,

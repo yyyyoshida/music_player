@@ -6,7 +6,6 @@ import useBarHandler from "../../hooks/useBarHandler";
 
 const ProgressBar = ({ initialValue }) => {
   const barRef = useRef(null);
-  const [visibleLoading, setVisibleLoading] = useState(false);
 
   const {
     togglePlayPause,
@@ -20,6 +19,8 @@ const ProgressBar = ({ initialValue }) => {
     setIsPlaying,
     isLocalPlaying,
     audioRef,
+    playDisable,
+    updateVolume,
   } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { goToNextTrack, currentIndex } = useContext(PlaybackContext);
@@ -128,26 +129,16 @@ const ProgressBar = ({ initialValue }) => {
   }, [currentTime, duration, isRepeat, isPlaying]);
 
   useEffect(() => {
-    setVisibleLoading(true);
-
-    const timer = setTimeout(() => {
-      if (!isLocalReady) return;
-      setVisibleLoading(false);
-    }, LOADING_DELAY);
-
-    return () => clearTimeout(timer);
-  }, [isLocalReady]);
-
-  useEffect(() => {
     const audio = audioRef.current;
     audio.currentTime = 0;
     seekToSpotify(0);
+    updateVolume(0);
   }, [currentIndex]);
 
   return (
     <>
       <div ref={barRef} className="player-controls__progress-bar--wrapper" onMouseDown={handleMouseDown}>
-        {isLocalPlaying && visibleLoading ? (
+        {playDisable ? (
           <div className="progress-bar-loading"></div>
         ) : (
           <div className="player-controls__progress-bar">
