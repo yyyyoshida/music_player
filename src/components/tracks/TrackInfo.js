@@ -5,6 +5,7 @@ import useDelayedText from "../../hooks/useDelayText";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { isFallback } from "../../utils/isFallback";
+import useTooltipStore from "../../store/tooltipStore";
 
 const TrackInfo = () => {
   const imgRef = useRef(null);
@@ -12,17 +13,15 @@ const TrackInfo = () => {
   const [width, setWidth] = useState(85);
 
   const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
-  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
-
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
   const { currentTrackId, currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
   const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
-
-  // トラックの抜粋機能↓↓
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
 
