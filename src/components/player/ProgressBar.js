@@ -3,25 +3,21 @@ import { usePlayerContext } from "../../contexts/PlayerContext";
 import { useRepeatContext } from "../../contexts/RepeatContext";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import useBarHandler from "../../hooks/useBarHandler";
+import usePlayerStore from "../../store/playerStore";
 
 const ProgressBar = ({ initialValue }) => {
   const barRef = useRef(null);
 
-  const {
-    togglePlayPause,
-    currentTime,
-    isTrackSet,
-    isLocalReady,
-    seekToSpotify,
-    duration,
-    position,
-    isPlaying,
-    setIsPlaying,
-    isLocalPlaying,
-    audioRef,
-    playDisable,
-    updateVolume,
-  } = usePlayerContext();
+  const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const setIsPlaying = usePlayerStore((state) => state.setIsPlaying);
+  const currentTime = usePlayerStore((state) => state.currentTime);
+  const position = usePlayerStore((state) => state.position);
+  const duration = usePlayerStore((state) => state.duration);
+  const playDisable = usePlayerStore((state) => state.playDisable);
+  const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
+  const isLocalReady = usePlayerStore((state) => state.isLocalReady);
+
+  const { togglePlayPause, isTrackSet, seekToSpotify, audioRef, updateVolume } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { goToNextTrack, currentIndex } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
