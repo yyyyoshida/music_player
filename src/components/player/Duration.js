@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import usePlayerStore from "../../store/playerStore";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 
 const Duration = () => {
   const [SongDuration, setSongDuration] = useState("0:00");
-  const { duration, formatTime } = usePlayerContext();
+  const duration = usePlayerStore((state) => state.duration);
+  const { formatTime } = usePlayerContext();
 
   useEffect(() => {
     setSongDuration(formatTime(duration));
