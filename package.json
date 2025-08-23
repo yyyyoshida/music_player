@@ -31,7 +31,7 @@
     "react-spotify-web-playback-sdk": "^3.0.2",
     "sharp": "^0.34.3",
     "web-vitals": "^2.1.4",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.8"
   },
   "scripts": {
     "start": "cross-env BROWSER=chrome react-scripts start",
