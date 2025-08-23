@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import usePlayerStore from "../store/playerStore";
 import { usePlayerContext } from "./PlayerContext";
 import { TokenContext } from "./TokenContext";
 
@@ -12,8 +13,11 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
   const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
   const [currentCoverImage, setCurrentCoverImage] = useState("/img/fallback-cover.png");
+  const setCurrentTime = usePlayerStore((state) => state.setCurrentTime);
+  const setDuration = usePlayerStore((state) => state.setDuration);
+  const playDisable = usePlayerStore((state) => state.playDisable);
   const { isToken } = useContext(TokenContext);
-  const { playerTrack, setCurrentTime, setDuration, playDisable } = usePlayerContext();
+  const { playerTrack } = usePlayerContext();
 
   useEffect(() => {
     if (!isToken) return;
