@@ -13,7 +13,7 @@ const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentR
   const { setCurrentIndex, updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
-  const { setIsTrackSet, togglePlayPause, stopPlayback, playDisable, isPlaying } = usePlayerContext();
+  const { setIsTrackSet, togglePlayPause, playDisable, isPlaying } = usePlayerContext();
   const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [pendingTrackId, setPendingTrackId] = useState(null);
@@ -40,8 +40,6 @@ const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentR
   }
 
   function playNewTrack() {
-    stopPlayback();
-
     const uri = track.trackUri || track.uri || track.audioURL;
 
     if (!uri) return console.warn("再生不可");
