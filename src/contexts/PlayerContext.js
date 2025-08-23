@@ -120,6 +120,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     if (!audio) return;
 
     setIsLocalPlaying(true);
+    setPlayDisable(false);
 
     audio
       .play()
@@ -135,6 +136,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
   function playerTrack(trackUri, source = "spotify") {
     setIsPlayPauseCooldown(false);
+    setPlayDisable(true);
 
     if (source === "spotify") {
       playSpotifyTrack(trackUri);
@@ -147,9 +149,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   }
 
   async function playSpotifyTrack(trackUri) {
-    if (playDisable) return;
-
-    setPlayDisable(true);
+    // 再生時にデバイスIDが切れてても再取得してエラー落ちを防ぐため
     const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
     if (!validDeviceId) {
       console.error("有効なデバイスIDが取得できない");
@@ -188,14 +188,27 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       console.error("通信エラー:", error);
       showMessage("networkError");
     } finally {
-      setTimeout(async () => {
-        setPosition(0);
-        await player.seek(0);
-        await player.setVolume(0.2);
-
-        setPlayDisable(false);
-      }, TRACK_CHANGE_COOLDOWN);
+      // Spotify限定で429エラーを防ぐために遅延
+      setTimeout(resetSpotifyPlayerState, TRACK_CHANGE_COOLDOWN);
     }
+  }
+
+  async function resetSpotifyPlayerState() {
+    // 曲切り替え中もSpotify曲は再生し続けるため、クールダウンが終わった時に
+    // バーが少し進んだ状態になるのを防ぐ↓
+    setPosition(0);
+    await seekToSpotify(0);
+
+    // 曲切り替え時に一瞬前の曲の冒頭再生を防ぐため、一時的に音量を0にして復元↓
+    const savedVolume = parseFloat(localStorage.getItem("player_volume")) || 30;
+    const clampedVolume = clampVolume(savedVolume);
+    await updateVolume(clampedVolume);
+
+    setPlayDisable(false);
+  }
+
+  function clampVolume(volume) {
+    return Math.max(Math.min(volume / 100, 1), 0);
   }
 
   function playLocalTrack(trackUri) {
@@ -203,23 +216,24 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       player.pause();
       setIsSpotifyPlaying(false);
     }
+
     if (!audioRef.current) return;
 
     setIsLocalReady(false);
-    setIsLocalPlaying(true);
+
     const audio = audioRef.current;
     audio.src = trackUri;
     audio.addEventListener("canplay", handleCanPlay);
   }
 
-  function updateVolume(volume) {
+  async function updateVolume(volume) {
     if (!player) return;
-    player.setVolume(volume);
+    await player.setVolume(volume);
   }
 
-  function seekToSpotify(seekTime) {
+  async function seekToSpotify(seekTime) {
     if (!player) return;
-    player.seek(seekTime);
+    await player.seek(seekTime);
   }
 
   useEffect(() => {
