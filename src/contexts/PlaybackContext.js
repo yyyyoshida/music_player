@@ -1,18 +1,25 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import usePlayerStore from "../store/playerStore";
+import usePlaybackStore from "../store/playbackStore";
 import { usePlayerContext } from "./PlayerContext";
 import { TokenContext } from "./TokenContext";
 
 export const PlaybackContext = createContext();
 
-export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, currentIndex, setCurrentIndex }) => {
+export const PlaybackProvider = ({ children, isTrackSet }) => {
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
   const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
-  const [currentTrackId, setCurrentTrackId] = useState(null);
-  const [currentTitle, setCurrentTitle] = useState("曲のタイトル");
-  const [currentArtistName, setCurrentArtistName] = useState("アーティスト・作者名");
-  const [currentCoverImage, setCurrentCoverImage] = useState("/img/fallback-cover.png");
+
+  const queue = usePlaybackStore((state) => state.queue);
+  const currentIndex = usePlaybackStore((state) => state.currentIndex);
+  const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
+  const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
+  const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
+  const setCurrentTitle = usePlaybackStore((state) => state.setCurrentTitle);
+  const setCurrentArtistName = usePlaybackStore((state) => state.setCurrentArtistName);
+  const setCurrentCoverImage = usePlaybackStore((state) => state.setCurrentCoverImage);
+
   const setCurrentTime = usePlayerStore((state) => state.setCurrentTime);
   const setDuration = usePlayerStore((state) => state.setDuration);
   const playDisable = usePlayerStore((state) => state.playDisable);
@@ -94,11 +101,6 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
   return (
     <PlaybackContext.Provider
       value={{
-        queue,
-        setQueue,
-        currentIndex,
-        setCurrentIndex,
-
         updateCurrentIndex,
         goToNextTrack,
         goToPreviousTrack,
@@ -107,13 +109,6 @@ export const PlaybackProvider = ({ children, isTrackSet, queue, setQueue, curren
 
         currentPlayedAt,
         setCurrentPlayedAt,
-
-        currentTrackId,
-        setCurrentTrackId,
-
-        currentTitle,
-        currentArtistName,
-        currentCoverImage,
       }}
     >
       {children}

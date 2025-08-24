@@ -20,8 +20,6 @@ function App() {
   const [profile, setProfile] = useState(null);
   const [isTrackSet, setIsTrackSet] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  const [queue, setQueue] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const { setToken, setIsToken } = useContext(TokenContext);
 
@@ -103,8 +101,8 @@ function App() {
     <BrowserRouter>
       <ActionSuccessMessageProvider>
         <RepeatProvider>
-          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet} queue={queue} currentIndex={currentIndex}>
-            <PlaybackProvider isTrackSet={isTrackSet} queue={queue} setQueue={setQueue} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
+          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+            <PlaybackProvider isTrackSet={isTrackSet}>
               <SearchProvider>
                 <PlaylistProvider>
                   <UploadModalProvider>
