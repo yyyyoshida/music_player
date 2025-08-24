@@ -7,7 +7,6 @@ import { TokenContext } from "./contexts/TokenContext";
 import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
-import { PlaybackProvider } from "./contexts/PlaybackContext";
 import { PlaylistProvider } from "./contexts/PlaylistContext";
 import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
 import { UploadModalProvider } from "./contexts/UploadModalContext";
@@ -101,20 +100,18 @@ function App() {
     <BrowserRouter>
       <ActionSuccessMessageProvider>
         <RepeatProvider>
-          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
-            <PlaybackProvider isTrackSet={isTrackSet}>
-              <SearchProvider>
-                <PlaylistProvider>
-                  <UploadModalProvider>
-                    <PlaylistSelectionProvider>
-                      <Header onSearchResults={handleSearchResults} profile={profile} />
-                      <Main searchResults={searchResults} setProfile={setProfile} />
-                    </PlaylistSelectionProvider>
-                  </UploadModalProvider>
-                </PlaylistProvider>
-              </SearchProvider>
-            </PlaybackProvider>
-          </PlayerProvider>
+          <SearchProvider>
+            <PlaylistProvider>
+              <UploadModalProvider>
+                <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+                  <PlaylistSelectionProvider>
+                    <Header onSearchResults={handleSearchResults} profile={profile} />
+                    <Main searchResults={searchResults} setProfile={setProfile} />
+                  </PlaylistSelectionProvider>
+                </PlayerProvider>
+              </UploadModalProvider>
+            </PlaylistProvider>
+          </SearchProvider>
         </RepeatProvider>
       </ActionSuccessMessageProvider>
     </BrowserRouter>
