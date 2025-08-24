@@ -1,16 +1,14 @@
-import { createContext, useState, useRef, useEffect } from "react";
+import { createContext, useRef, useEffect } from "react";
+import useTooltipStore from "../store/tooltipStore";
 
 export const TooltipContext = createContext();
 
 export const TooltipProvider = ({ children }) => {
-  const [tooltipText, setTooltipText] = useState("");
-  const [isButtonPressed, setIsButtonPressed] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState(null);
-
+  const setIsButtonPressed = useTooltipStore((state) => state.setIsButtonPressed);
+  const setIsHovered = useTooltipStore((state) => state.setIsHovered);
+  const setTooltipPosition = useTooltipStore((state) => state.setTooltipPosition);
   const hoverTimeout = useRef(null);
   const mousePositionRef = useRef({ x: 0, y: 0 });
-
   const delay = 600;
 
   function handleButtonPress() {
@@ -51,11 +49,6 @@ export const TooltipProvider = ({ children }) => {
   return (
     <TooltipContext.Provider
       value={{
-        tooltipText,
-        setTooltipText,
-        isButtonPressed,
-        isHovered,
-        tooltipPosition,
         handleButtonPress,
         handleMouseEnter,
         handleMouseLeave,

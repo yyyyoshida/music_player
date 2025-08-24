@@ -1,12 +1,14 @@
 import { useState, useContext } from "react";
+import useTooltipStore from "../../store/tooltipStore";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TooltipContext } from "../../contexts/TooltipContext";
 
 const PrevNextButton = ({ type }) => {
-  const { goToPreviousTrack, goToNextTrack, isPrevDisabled, isNextDisabled } = useContext(PlaybackContext);
+  const CLICK_DELAY = 350;
   const [isClickable, setIsClickable] = useState(true);
-  const clickDelay = 350;
-  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
+  const { goToPreviousTrack, goToNextTrack, isPrevDisabled, isNextDisabled } = useContext(PlaybackContext);
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
 
   function handlePrevNextClick() {
     if ((type === "prev" && isPrevDisabled) || (type === "next" && isNextDisabled)) return;
@@ -23,7 +25,7 @@ const PrevNextButton = ({ type }) => {
 
     setTimeout(() => {
       setIsClickable(true);
-    }, clickDelay);
+    }, CLICK_DELAY);
   }
 
   return (

@@ -2,12 +2,14 @@ import { useState, useContext } from "react";
 import useDelayedText from "../../hooks/useDelayText";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
+import useTooltipStore from "../../store/tooltipStore";
 
 const ShuffleButton = () => {
   const [isShuffle, setIsShuffle] = useState(false);
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
   useDelayedText(isShuffle, "シャッフル：オン", "シャッフル：オフ");
-  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
+  const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
   function toggleShuffle() {
