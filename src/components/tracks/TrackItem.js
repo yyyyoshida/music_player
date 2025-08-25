@@ -3,7 +3,6 @@ import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../
 import usePlayerStore from "../../store/playerStore";
 import useTooltipStore from "../../store/tooltipStore";
 import usePlaybackStore from "../../store/playbackStore";
-import { PlaybackContext } from "../../contexts/PlaybackContext";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
@@ -20,8 +19,8 @@ const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentR
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
   const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
   const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
+  const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
 
-  const { setCurrentPlayedAt } = useContext(PlaybackContext);
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet, togglePlayPause } = usePlayerContext();
