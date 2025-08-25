@@ -1,26 +1,26 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
-import TrackListHead from "../tracks/TrackListHead";
 import { usePlayerContext } from "../../contexts/PlayerContext";
-import TrackItem from "../tracks/TrackItem";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
-import { PlaybackContext } from "../../contexts/PlaybackContext";
+import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
+import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
+import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import usePlaybackStore from "../../store/playbackStore";
+import TrackListHead from "../tracks/TrackListHead";
+import TrackItem from "../tracks/TrackItem";
 import RenamePlaylist from "./RenamePlaylist";
 import DeletePlaylistModal from "./DeletePlaylistModal";
-import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 import TrackListSkeleton from "../skeletonUI/TrackListSkeleton";
-import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
-import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import { getPlaylistInfo } from "../../utils/playlistUtils";
+import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
-  const { playerTrack, formatTime, isPlaying, setIsTrackSet, setTrackOrigin } = usePlayerContext();
+  const { playerTrack, formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
   const {
     showDeletePlaylistModal,
     deletePlaylist,
@@ -36,9 +36,17 @@ const PlaylistDetail = ({ containerRef }) => {
     playlistInfo,
     setPlaylistInfo,
   } = useContext(PlaylistContext);
-  const { setCurrentTrackId, currentTrackId, setQueue, queue, currentPlayedAt, setCurrentPlayedAt, currentIndex, setCurrentIndex } =
-    useContext(PlaybackContext);
+
   const { showMessage } = useContext(ActionSuccessMessageContext);
+
+  const queue = usePlaybackStore((state) => state.queue);
+  const setQueue = usePlaybackStore((state) => state.setQueue);
+  const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
+  const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
+  const currentIndex = usePlaybackStore((state) => state.currentIndex);
+  const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
+  const currentPlayedAt = usePlaybackStore((state) => state.currentPlayedAt);
+  const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
 
   const LOADING_DELAY = 200;
 

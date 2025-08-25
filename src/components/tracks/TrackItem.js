@@ -1,7 +1,8 @@
 import { useContext, useRef, useState } from "react";
 import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
 import usePlayerStore from "../../store/playerStore";
-import { PlaybackContext } from "../../contexts/PlaybackContext";
+import useTooltipStore from "../../store/tooltipStore";
+import usePlaybackStore from "../../store/playbackStore";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
@@ -9,14 +10,17 @@ import TrackSourceIcon from "../TrackSourceIcon";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import { isFallback } from "../../utils/isFallback";
 import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
-import useTooltipStore from "../../store/tooltipStore";
 
 const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentRef }) => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playDisable = usePlayerStore((state) => state.playDisable);
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
-  const { setCurrentIndex, updateCurrentIndex, setCurrentPlayedAt, currentTrackId, setCurrentTrackId } = useContext(PlaybackContext);
+  const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
+  const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
+  const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
+  const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
+
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet, togglePlayPause } = usePlayerContext();

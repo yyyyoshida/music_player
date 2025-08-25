@@ -7,6 +7,7 @@ import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 import { TrackMoreMenuProvider } from "../contexts/TrackMoreMenuContext";
 import { TooltipProvider } from "../contexts/TooltipContext";
+import { PlaybackProvider } from "../contexts/PlaybackContext";
 
 import Home from "../react-router-dom/Home";
 import SearchResult from "./SearchResult";
@@ -86,13 +87,15 @@ const Main = ({ setProfile }) => {
                 {isSelectVisible && <PlaylistSelection />}
                 <UploadStatusModal />
                 <CreatePlaylist />
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
-                  <Route path="/playlist" element={<Playlist />} />
-                  <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
-                </Routes>
-                <PlayerControls />
+                <PlaybackProvider>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
+                    <Route path="/playlist" element={<Playlist />} />
+                    <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
+                  </Routes>
+                  <PlayerControls />
+                </PlaybackProvider>
                 <ActionSuccessMessage />
               </TrackMoreMenuProvider>
             </TrackInfoProvider>

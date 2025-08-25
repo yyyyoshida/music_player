@@ -1,11 +1,11 @@
 import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
-import usePlayerStore from "../../store/playerStore";
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
-import useDelayedText from "../../hooks/useDelayText";
 import { TooltipContext } from "../../contexts/TooltipContext";
-import { PlaybackContext } from "../../contexts/PlaybackContext";
-import { isFallback } from "../../utils/isFallback";
+import useDelayedText from "../../hooks/useDelayText";
+import usePlayerStore from "../../store/playerStore";
+import usePlaybackStore from "../../store/playbackStore";
 import useTooltipStore from "../../store/tooltipStore";
+import { isFallback } from "../../utils/isFallback";
 
 const TrackInfo = () => {
   const imgRef = useRef(null);
@@ -15,9 +15,13 @@ const TrackInfo = () => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
+  const currentTitle = usePlaybackStore((state) => state.currentTitle);
+  const currentArtistName = usePlaybackStore((state) => state.currentArtistName);
+  const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
+  const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
+
   const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
-  const { currentTrackId, currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
   const isFirstRender = useRef(true);
@@ -45,7 +49,7 @@ const TrackInfo = () => {
         setWidth(newWidth);
       }
     }, 0);
-  }, [isPlaying, isVisible, currentTitle]);
+  }, [isVisible, currentTitle]);
 
   function fadeTransition() {
     const transitionElement = transitionRef.current;

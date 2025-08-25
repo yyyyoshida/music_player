@@ -1,5 +1,5 @@
-import { createContext, useState, useContext, useEffect } from "react";
-import { PlaybackContext } from "../contexts/PlaybackContext";
+import { createContext, useState, useEffect } from "react";
+import usePlaybackStore from "../store/playbackStore";
 import { useLocation } from "react-router-dom";
 
 export const SearchContext = createContext();
@@ -8,8 +8,7 @@ export const SearchProvider = ({ children }) => {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearchError, setHasSearchError] = useState(false);
-
-  const { setQueue, queue } = useContext(PlaybackContext);
+  const setQueue = usePlaybackStore((state) => state.setQueue);
   const location = useLocation();
 
   useEffect(() => {
