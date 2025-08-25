@@ -2,7 +2,6 @@ import { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
-import { PlaybackContext } from "../../contexts/PlaybackContext";
 import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
@@ -37,7 +36,7 @@ const PlaylistDetail = ({ containerRef }) => {
     playlistInfo,
     setPlaylistInfo,
   } = useContext(PlaylistContext);
-  const { currentPlayedAt, setCurrentPlayedAt } = useContext(PlaybackContext);
+
   const { showMessage } = useContext(ActionSuccessMessageContext);
 
   const queue = usePlaybackStore((state) => state.queue);
@@ -46,6 +45,8 @@ const PlaylistDetail = ({ containerRef }) => {
   const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
   const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
+  const currentPlayedAt = usePlaybackStore((state) => state.currentPlayedAt);
+  const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
 
   const LOADING_DELAY = 200;
 
