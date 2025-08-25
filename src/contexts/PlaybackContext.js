@@ -9,7 +9,6 @@ export const PlaybackContext = createContext();
 export const PlaybackProvider = ({ children }) => {
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
-  const [currentPlayedAt, setCurrentPlayedAt] = useState(null);
 
   const queue = usePlaybackStore((state) => state.queue);
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
@@ -106,9 +105,6 @@ export const PlaybackProvider = ({ children }) => {
         goToPreviousTrack,
         isPrevDisabled,
         isNextDisabled,
-
-        currentPlayedAt,
-        setCurrentPlayedAt,
       }}
     >
       {children}
