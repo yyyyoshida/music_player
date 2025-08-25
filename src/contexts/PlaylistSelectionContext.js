@@ -1,15 +1,17 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
 import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { PlaylistContext } from "../contexts/PlaylistContext";
-import { PlaybackContext } from "../contexts/PlaybackContext";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 import UploadModalContext from "./UploadModalContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
+import usePlaybackStore from "../store/playbackStore";
 
 export const PlaylistSelectionContext = createContext();
 
 export const PlaylistSelectionProvider = ({ children }) => {
+  const setQueue = usePlaybackStore((state) => state.setQueue);
+
   const [isSelectVisible, setIsSelectVisible] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [localCoverImageUrl, setLocalCoverImageUrl] = useState(null);
@@ -20,7 +22,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
     useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
   const { trackOrigin } = usePlayerContext();
-  const { setQueue } = useContext(PlaybackContext);
+
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const playlistNameRef = useRef("");
