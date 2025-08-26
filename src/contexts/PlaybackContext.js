@@ -7,9 +7,6 @@ import { TokenContext } from "./TokenContext";
 export const PlaybackContext = createContext();
 
 export const PlaybackProvider = ({ children }) => {
-  const [isPrevDisabled, setIsPrevDisabled] = useState(true);
-  const [isNextDisabled, setIsNextDisabled] = useState(true);
-
   const queue = usePlaybackStore((state) => state.queue);
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
   const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
@@ -22,8 +19,11 @@ export const PlaybackProvider = ({ children }) => {
   const setCurrentTime = usePlayerStore((state) => state.setCurrentTime);
   const setDuration = usePlayerStore((state) => state.setDuration);
   const playDisable = usePlayerStore((state) => state.playDisable);
+  const playerTrack = usePlayerStore((state) => state.playerTrack);
+  const [isPrevDisabled, setIsPrevDisabled] = useState(true);
+  const [isNextDisabled, setIsNextDisabled] = useState(true);
   const { isToken } = useContext(TokenContext);
-  const { playerTrack, isTrackSet } = usePlayerContext();
+  const { isTrackSet } = usePlayerContext();
 
   useEffect(() => {
     if (!isToken) return;
