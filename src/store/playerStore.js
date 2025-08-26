@@ -1,6 +1,9 @@
 import { create } from "zustand";
+import { validateDeviceId, fetchWithRefresh } from "../utils/spotifyAuth";
 
 const usePlayerStore = create((set, get) => ({
+  TRACK_CHANGE_COOLDOWN: 700,
+
   isPlaying: false,
   currentTime: 0,
   position: 0,
@@ -12,6 +15,8 @@ const usePlayerStore = create((set, get) => ({
   isLocalReady: false,
   audioRef: null,
   player: null,
+  isPlayPauseCooldown: false,
+  deviceId: null,
 
   setIsPlaying: (isPlaying) => set({ isPlaying }),
   setCurrentTime: (currentTime) => set({ currentTime }),
@@ -24,6 +29,8 @@ const usePlayerStore = create((set, get) => ({
   setIsLocalReady: (isLocalReady) => set({ isLocalReady }),
   setAudioRef: (audioRef) => set({ audioRef }),
   setPlayer: (playerInstance) => set({ player: playerInstance }),
+  setIsPlayPauseCooldown: (isPlayPauseCooldown) => set({ isPlayPauseCooldown }),
+  setDeviceId: (deviceId) => set({ deviceId }),
 
   togglePlayPause: async () => {
     const { isSpotifyPlaying, isLocalPlaying, player, audioRef, setIsPlaying } = get();
@@ -61,6 +68,141 @@ const usePlayerStore = create((set, get) => ({
         return;
       }
     }
+  },
+
+  playerTrack: async (trackUri, source = "spotify") => {
+    const { setPlayDisable, setIsPlayPauseCooldown, playSpotifyTrack, playLocalTrack } = get();
+
+    setIsPlayPauseCooldown(false);
+    setPlayDisable(true);
+
+    if (source === "spotify") {
+      playSpotifyTrack(trackUri);
+      return;
+    }
+
+    if (source === "local") {
+      playLocalTrack(trackUri);
+    }
+  },
+
+  playSpotifyTrack: async (trackUri) => {
+    const {
+      deviceId,
+      player,
+      setDeviceId,
+      isLocalPlaying,
+      setIsLocalPlaying,
+      audioRef,
+      setIsSpotifyPlaying,
+      setIsPlaying,
+      resetSpotifyPlayerState,
+      TRACK_CHANGE_COOLDOWN,
+    } = get();
+    // 再生時にデバイスIDが切れてても再取得してエラー落ちを防ぐため ↓
+    const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
+
+    if (!validDeviceId) {
+      console.error("有効なデバイスIDが取得できない");
+      // showMessage("deviceNotFound");
+      // 今後ActionMessageContextをZustandに移行してそこからshowMessage()を使う
+      return;
+    }
+
+    if (isLocalPlaying) {
+      audioRef.current.pause();
+      setIsLocalPlaying(false);
+    }
+
+    const data = {
+      uris: [trackUri],
+      offset: { position: 0 },
+      position_ms: 0,
+    };
+
+    setIsSpotifyPlaying(true);
+
+    try {
+      await fetchWithRefresh(`https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      setIsPlaying(true);
+    } catch (error) {
+      if (error.message === "TOKEN_REFRESH_FAILED") {
+        console.error("トークン再取得失敗");
+        // showMessage("tokenExpired");
+        // 今後ActionMessageContextをZustandに移行してそこからshowMessage()を使う
+        return;
+      }
+
+      console.error("通信エラー:", error);
+      // showMessage("networkError");
+      // 今後ActionMessageContextをZustandに移行してそこからshowMessage()を使う
+    } finally {
+      // Spotify限定で429エラーを防ぐために遅延
+      setTimeout(resetSpotifyPlayerState, TRACK_CHANGE_COOLDOWN);
+    }
+  },
+
+  resetSpotifyPlayerState: async () => {
+    // 曲切り替え中もSpotify曲は再生し続けるため、クールダウンが終わった時に
+    // バーが少し進んだ状態になるのを防ぐ↓
+    const { setPosition, player, setPlayDisable, clampVolume, updateVolume } = get();
+
+    setPosition(0);
+    // await seekToSpotify(0);
+    if (!player) return;
+    await player.seek(0);
+
+    const savedVolume = parseFloat(localStorage.getItem("player_volume")) || 30;
+    const clampedVolume = clampVolume(savedVolume);
+    await player.setVolume(clampedVolume);
+    // await updateVolume(clampedVolume);
+
+    setPlayDisable(false);
+  },
+
+  clampVolume: (volume) => {
+    return Math.max(Math.min(volume / 100, 1), 0);
+  },
+
+  playLocalTrack: (trackUri) => {
+    const { isSpotifyPlaying, setIsSpotifyPlaying, player, setIsLocalReady, audioRef, handleLocalCanPlay } = get();
+
+    if (isSpotifyPlaying) {
+      player.pause();
+      setIsSpotifyPlaying(false);
+    }
+
+    if (!audioRef.current) return;
+
+    setIsLocalReady(false);
+
+    const audio = audioRef.current;
+    audio.removeEventListener("canplay", handleLocalCanPlay);
+    audio.src = trackUri;
+    audio.addEventListener("canplay", handleLocalCanPlay, { once: true });
+  },
+
+  handleLocalCanPlay: () => {
+    const { audioRef, setIsLocalPlaying, setPlayDisable, setIsPlaying, setIsLocalReady } = get();
+
+    if (!audioRef.current) return;
+
+    setIsLocalPlaying(true);
+    setPlayDisable(false);
+
+    audioRef.current
+      .play()
+
+      .then(() => {
+        setIsPlaying(true);
+
+        setIsLocalReady(true);
+      });
   },
 }));
 
