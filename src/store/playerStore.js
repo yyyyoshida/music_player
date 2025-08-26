@@ -17,6 +17,7 @@ const usePlayerStore = create((set, get) => ({
   player: null,
   isPlayPauseCooldown: false,
   deviceId: null,
+  playerReady: false,
 
   setIsPlaying: (isPlaying) => set({ isPlaying }),
   setCurrentTime: (currentTime) => set({ currentTime }),
@@ -31,6 +32,7 @@ const usePlayerStore = create((set, get) => ({
   setPlayer: (playerInstance) => set({ player: playerInstance }),
   setIsPlayPauseCooldown: (isPlayPauseCooldown) => set({ isPlayPauseCooldown }),
   setDeviceId: (deviceId) => set({ deviceId }),
+  setPlayerReady: (playerReady) => set({ playerReady }),
 
   togglePlayPause: async () => {
     const { isSpotifyPlaying, isLocalPlaying, player, audioRef, setIsPlaying } = get();

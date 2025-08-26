@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { usePlayerContext } from "../../contexts/PlayerContext";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import useDelayedText from "../../hooks/useDelayText";
 import useBarHandler from "../../hooks/useBarHandler";
@@ -15,8 +14,9 @@ const VolumeBar = ({ initialValue }) => {
   const barRef = useRef(null);
   useDelayedText(isMuted, "ミュート：解除", "ミュート");
   const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
-  const { playerReady, updateVolume } = usePlayerContext();
   const audioRef = usePlayerStore((state) => state.audioRef);
+  const updateVolume = usePlayerStore((state) => state.updateVolume);
+  const playerReady = usePlayerStore((state) => state.playerReady);
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const { percentage, setPercentage, handleMouseDown } = useBarHandler({
     type: "volume",

@@ -12,7 +12,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const setCurrentTime = usePlayerStore((state) => state.setCurrentTime);
   const setPosition = usePlayerStore((state) => state.setPosition);
   const setDuration = usePlayerStore((state) => state.setDuration);
-  const trackId = usePlayerStore((state) => state.trackId);
   const setTrackId = usePlayerStore((state) => state.setTrackId);
   const isSpotifyPlaying = usePlayerStore((state) => state.isSpotifyPlaying);
   const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
@@ -21,15 +20,14 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const setPlayer = usePlayerStore((state) => state.setPlayer);
   const setIsPlayPauseCooldown = usePlayerStore((state) => state.setIsPlayPauseCooldown);
   const setDeviceId = usePlayerStore((state) => state.setDeviceId);
+  const setPlayerReady = usePlayerStore((state) => state.setPlayerReady);
 
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
 
-  const [playerReady, setPlayerReady] = useState(false);
   const { isRepeat } = useRepeatContext();
   const { token, setToken } = useContext(TokenContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [trackOrigin, setTrackOrigin] = useState(null);
-  const trackIdRef = useRef(null);
   const FADE_DURATION = 3000;
 
   useEffect(() => {
@@ -80,10 +78,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       clearTimeout(timeoutId);
     };
   }, [isPlaying, isTrackSet]);
-
-  useEffect(() => {
-    trackIdRef.current = trackId;
-  }, [trackId]);
 
   useEffect(() => {
     if (!player || !isSpotifyPlaying) return;
@@ -155,7 +149,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   return (
     <PlayerContext.Provider
       value={{
-        playerReady,
         formatTime,
 
         isTrackSet,
