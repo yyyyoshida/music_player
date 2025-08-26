@@ -81,16 +81,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     };
   }, [isPlaying, isTrackSet]);
 
-  async function updateVolume(volume) {
-    if (!player) return;
-    await player.setVolume(volume);
-  }
-
-  async function seekToSpotify(seekTime) {
-    if (!player) return;
-    await player.seek(seekTime);
-  }
-
   useEffect(() => {
     trackIdRef.current = trackId;
   }, [trackId]);
@@ -166,8 +156,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     <PlayerContext.Provider
       value={{
         playerReady,
-        updateVolume,
-        seekToSpotify,
         formatTime,
 
         isTrackSet,
