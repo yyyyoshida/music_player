@@ -5,6 +5,7 @@ import useDelayedText from "../../hooks/useDelayText";
 import useBarHandler from "../../hooks/useBarHandler";
 import VolumeIcon from "./VolumeIcon";
 import useTooltipStore from "../../store/tooltipStore";
+import usePlayerStore from "../../store/playerStore";
 
 const VolumeBar = ({ initialValue }) => {
   const [isMuted, setIsMuted] = useState(() => {
@@ -14,7 +15,8 @@ const VolumeBar = ({ initialValue }) => {
   const barRef = useRef(null);
   useDelayedText(isMuted, "ミュート：解除", "ミュート");
   const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
-  const { playerReady, updateVolume, audioRef } = usePlayerContext();
+  const { playerReady, updateVolume } = usePlayerContext();
+  const audioRef = usePlayerStore((state) => state.audioRef);
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const { percentage, setPercentage, handleMouseDown } = useBarHandler({
     type: "volume",

@@ -14,6 +14,8 @@ import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageCont
 const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentRef }) => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playDisable = usePlayerStore((state) => state.playDisable);
+  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
@@ -23,7 +25,7 @@ const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentR
 
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
-  const { setIsTrackSet, togglePlayPause } = usePlayerContext();
+  const { setIsTrackSet } = usePlayerContext();
   const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [pendingTrackId, setPendingTrackId] = useState(null);
