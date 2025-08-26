@@ -204,6 +204,20 @@ const usePlayerStore = create((set, get) => ({
         setIsLocalReady(true);
       });
   },
+
+  updateVolume: async (volume) => {
+    const { player } = get();
+
+    if (!player) return;
+    await player.setVolume(volume);
+  },
+
+  seekToSpotify: async (seekTime) => {
+    const { player } = get();
+
+    if (!player) return;
+    await player.seek(seekTime);
+  },
 }));
 
 export default usePlayerStore;
