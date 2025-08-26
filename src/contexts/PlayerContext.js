@@ -29,8 +29,13 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
   const setIsLocalPlaying = usePlayerStore((state) => state.setIsLocalPlaying);
   const setIsLocalReady = usePlayerStore((state) => state.setIsLocalReady);
+  const audioRef = usePlayerStore((state) => state.audioRef);
+  const player = usePlayerStore((state) => state.player);
+  const setPlayer = usePlayerStore((state) => state.setPlayer);
 
-  const [player, setPlayer] = useState(null);
+  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+
+  // const [player, setPlayer] = useState(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
   const { isRepeat } = useRepeatContext();
@@ -39,7 +44,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const [isPlayPauseCooldown, setIsPlayPauseCooldown] = useState(false);
   const [trackOrigin, setTrackOrigin] = useState(null);
   const trackIdRef = useRef(null);
-  const audioRef = useRef(null);
+  // const audioRef = useRef(null);
   const TRACK_CHANGE_COOLDOWN = 700;
   const FADE_DURATION = 3000;
 
@@ -91,35 +96,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
       clearTimeout(timeoutId);
     };
   }, [isPlaying, isTrackSet]);
-
-  async function togglePlayPause() {
-    if (isPlayPauseCooldown) return;
-
-    if (isSpotifyPlaying && player) {
-      const state = await player.getCurrentState();
-      if (!state) return;
-      if (state.paused) {
-        await player.resume();
-        setIsPlaying(true);
-      } else {
-        await player.pause();
-        setIsPlaying(false);
-      }
-      return;
-    }
-
-    if (isLocalPlaying && audioRef.current) {
-      const audio = audioRef.current;
-      if (audio.paused) {
-        await audio.play();
-        setIsPlaying(true);
-      } else {
-        audio.pause();
-        setIsPlaying(false);
-      }
-      return;
-    }
-  }
 
   function handleCanPlay() {
     const audio = audioRef.current;
@@ -284,7 +260,7 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   }, [player, isRepeat, isSpotifyPlaying]);
 
   useEffect(() => {
-    if (!audioRef.current || !isLocalPlaying) return;
+    if (!audioRef?.current || !isLocalPlaying) return;
 
     const audio = audioRef.current;
 
@@ -316,12 +292,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   return (
     <PlayerContext.Provider
       value={{
-        player,
         playerReady,
         playerTrack,
-        audioRef,
-
-        togglePlayPause,
         updateVolume,
         seekToSpotify,
         formatTime,
