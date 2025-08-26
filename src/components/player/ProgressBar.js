@@ -19,10 +19,12 @@ const ProgressBar = ({ initialValue }) => {
   const isLocalReady = usePlayerStore((state) => state.isLocalReady);
   const audioRef = usePlayerStore((state) => state.audioRef);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+  const seekToSpotify = usePlayerStore((state) => state.seekToSpotify);
+  const updateVolume = usePlayerStore((state) => state.updateVolume);
 
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
 
-  const { isTrackSet, seekToSpotify, updateVolume } = usePlayerContext();
+  const { isTrackSet } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
   const { goToNextTrack } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
