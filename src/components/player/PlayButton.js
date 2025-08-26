@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import usePlayerStore from "../../store/playerStore";
-import { usePlayerContext } from "../../contexts/PlayerContext";
 import { TooltipContext } from "../../contexts/TooltipContext";
 import useTooltipStore from "../../store/tooltipStore";
 
@@ -10,9 +9,9 @@ import { playIcon, pauseIcon } from "../../assets/icons";
 const PlayButton = () => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+  const isPlayPauseCooldown = usePlayerStore((state) => state.isPlayPauseCooldown);
 
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const { isPlayPauseCooldown } = usePlayerContext();
   const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
   useDelayedText(isPlaying, "一時停止", "再生");
 

@@ -11,10 +11,11 @@ import { TooltipContext } from "../../contexts/TooltipContext";
 import { isFallback } from "../../utils/isFallback";
 import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 
-const TrackItem = ({ track, index, playerTrack, formatTime, date, query, parentRef }) => {
+const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playDisable = usePlayerStore((state) => state.playDisable);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+  const playerTrack = usePlayerStore((state) => state.playerTrack);
 
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
