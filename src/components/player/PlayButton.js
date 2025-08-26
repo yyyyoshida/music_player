@@ -9,8 +9,10 @@ import { playIcon, pauseIcon } from "../../assets/icons";
 
 const PlayButton = () => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const { isPlayPauseCooldown, togglePlayPause } = usePlayerContext();
+  const { isPlayPauseCooldown } = usePlayerContext();
   const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
   useDelayedText(isPlaying, "一時停止", "再生");
 
