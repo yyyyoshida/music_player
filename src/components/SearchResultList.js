@@ -1,6 +1,7 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { usePlayerContext } from "../contexts/PlayerContext";
 import { SearchContext } from "../contexts/SearchContext";
+import usePlaybackStore from "../store/playbackStore";
 import TrackItem from "./tracks/TrackItem";
 import TrackListSkeleton from "./skeletonUI/TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
@@ -8,7 +9,8 @@ import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 
 const TrackList = ({ containerRef }) => {
   const { searchResults, query } = useContext(SearchContext);
-  const { playerTrack, formatTime, isPlaying, trackId, setTrackOrigin } = usePlayerContext();
+  const { formatTime, setTrackOrigin } = usePlayerContext();
+  const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
 
   const IMAGES_LOADED_COUNT = 10;
   const LOADING_DELAY = 100;
@@ -31,8 +33,7 @@ const TrackList = ({ containerRef }) => {
           <li>検索結果がありません</li>
         ) : (
           searchResults.map((track, index) => {
-            const isCurrentTrack = trackId === track.id;
-            const isTrackPlaying = isCurrentTrack && isPlaying;
+            const isCurrentTrack = currentTrackId === track.id;
             const isClicked = isCurrentTrack;
 
             return (
@@ -41,9 +42,7 @@ const TrackList = ({ containerRef }) => {
                 track={track}
                 index={index}
                 isCurrentTrack={isCurrentTrack}
-                isTrackPlaying={isTrackPlaying}
                 isClicked={isClicked}
-                playerTrack={playerTrack}
                 formatTime={formatTime}
                 query={query}
               />

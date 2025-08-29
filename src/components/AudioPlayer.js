@@ -1,7 +1,14 @@
-import { usePlayerContext } from "../contexts/PlayerContext";
+import { useEffect, useRef } from "react"; // ←ここ必須
+import usePlayerStore from "../store/playerStore";
 
 function AudioPlayer() {
-  const { audioRef } = usePlayerContext();
+  const setAudioRef = usePlayerStore((state) => state.setAudioRef);
+
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    setAudioRef(audioRef);
+  }, []);
 
   return (
     <div style={{ visibility: "hidden" }}>
