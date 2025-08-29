@@ -9,7 +9,7 @@ import usePlaybackStore from "../store/playbackStore";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ThumbnailPreview = () => {
-  const { isPlaying, togglePlayPause, isTrackSet } = usePlayerContext();
+  const { isTrackSet } = usePlayerContext();
   const { isVisible, setIsVisible } = useContext(TrackInfoContext);
   // const { isTrackSet } = useContext(SearchContext);
 

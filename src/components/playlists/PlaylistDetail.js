@@ -6,6 +6,7 @@ import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageCont
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaybackStore from "../../store/playbackStore";
+import usePlayerStore from "../../store/playerStore";
 import TrackListHead from "../tracks/TrackListHead";
 import TrackItem from "../tracks/TrackItem";
 import RenamePlaylist from "./RenamePlaylist";
@@ -20,7 +21,7 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
-  const { playerTrack, formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
+  const { formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
   const {
     showDeletePlaylistModal,
     deletePlaylist,
@@ -45,8 +46,8 @@ const PlaylistDetail = ({ containerRef }) => {
   const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
   const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
-  const currentPlayedAt = usePlaybackStore((state) => state.currentPlayedAt);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
+  const playerTrack = usePlayerStore((state) => state.playerTrack);
 
   const LOADING_DELAY = 200;
 
@@ -195,12 +196,8 @@ const PlaylistDetail = ({ containerRef }) => {
                 index={index}
                 isCurrentTrack={isCurrentTrack}
                 isClicked={isClicked}
-                playerTrack={playerTrack}
-                formatTime={formatTime}
-                addedAt={track.addedAt}
                 date={date.toLocaleString()}
-                currentPlayedAt={currentPlayedAt}
-                setCurrentPlayedAt={setCurrentPlayedAt}
+                formatTime={formatTime}
                 parentRef={playlistDetailRef}
               />
             );
