@@ -7,7 +7,6 @@ import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
-import { TooltipContext } from "../../contexts/TooltipContext";
 import { isFallback } from "../../utils/isFallback";
 import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 
@@ -18,6 +17,9 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
   const playerTrack = usePlayerStore((state) => state.playerTrack);
 
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
+  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
+  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
+  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
 
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
   const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
@@ -27,7 +29,6 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet } = usePlayerContext();
-  const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
   const { showMessage } = useContext(ActionSuccessMessageContext);
   const [pendingTrackId, setPendingTrackId] = useState(null);
 

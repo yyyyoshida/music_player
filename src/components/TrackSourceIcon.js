@@ -1,11 +1,11 @@
-import { useContext } from "react";
 import { FaCompactDisc, FaSpotify } from "react-icons/fa";
 import useTooltipStore from "../store/tooltipStore";
-import { TooltipContext } from "../contexts/TooltipContext";
 
 const TrackSourceIcon = ({ source }) => {
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const { handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
+
+  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
+  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
 
   return (
     <div
