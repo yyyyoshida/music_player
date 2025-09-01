@@ -12,10 +12,10 @@ const useTooltipStore = create((set) => {
     isHovered: false,
     tooltipPosition: null,
 
-    setTooltipText: (tooltipText) => set({ tooltipText: tooltipText }),
-    setIsButtonPressed: (isButtonPressed) => set({ isButtonPressed: isButtonPressed }),
-    setIsHovered: (isHovered) => set({ isHovered: isHovered }),
-    setTooltipPosition: (tooltipPosition) => set({ tooltipPosition: tooltipPosition }),
+    setTooltipText: (tooltipText) => set({ tooltipText }),
+    setIsButtonPressed: (isButtonPressed) => set({ isButtonPressed }),
+    setIsHovered: (isHovered) => set({ isHovered }),
+    setTooltipPosition: (tooltipPosition) => set({ tooltipPosition }),
 
     handleButtonPress: () => {
       set({ isButtonPressed: true });
