@@ -1,8 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
-import { TooltipContext } from "../../contexts/TooltipContext";
 import useDelayedText from "../../hooks/useDelayText";
-import usePlayerStore from "../../store/playerStore";
 import usePlaybackStore from "../../store/playbackStore";
 import useTooltipStore from "../../store/tooltipStore";
 import { isFallback } from "../../utils/isFallback";
@@ -12,7 +10,6 @@ const TrackInfo = () => {
   const [isHidden, setIsHidden] = useState(false);
   const [width, setWidth] = useState(85);
 
-  const isPlaying = usePlayerStore((state) => state.isPlaying);
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
   const currentTitle = usePlaybackStore((state) => state.currentTitle);
@@ -20,7 +17,10 @@ const TrackInfo = () => {
   const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
 
-  const { handleButtonPress, handleMouseEnter, handleMouseLeave } = useContext(TooltipContext);
+  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
+  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
+  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
+
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
