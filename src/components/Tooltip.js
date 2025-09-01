@@ -10,6 +10,7 @@ const Tooltip = () => {
   const tooltipText = useTooltipStore((state) => state.tooltipText);
   const isHovered = useTooltipStore((state) => state.isHovered);
   const tooltipPosition = useTooltipStore((state) => state.tooltipPosition);
+  const trackMousePosition = useTooltipStore((state) => state.trackMousePosition);
 
   const tooltipRef = useRef(null);
 
@@ -49,6 +50,13 @@ const Tooltip = () => {
       setTooltipVisibility("hidden");
     }
   }, [isHovered, isButtonPressed]);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", trackMousePosition);
+    return () => {
+      window.removeEventListener("mousemove", trackMousePosition);
+    };
+  }, []);
 
   return (
     <span
