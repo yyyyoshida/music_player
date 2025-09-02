@@ -1,5 +1,5 @@
-import { createContext, useState, useContext, useRef, useEffect } from "react";
-import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
+import { createContext, useState, useRef, useEffect } from "react";
+import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import { useNavigate } from "react-router-dom";
 import { clearPlaylistsCache } from "../utils/clearPlaylistCache";
 import { getPlaylistInfo } from "../utils/playlistUtils";
@@ -9,24 +9,25 @@ export const PlaylistContext = createContext();
 export const PlaylistProvider = ({ children }) => {
   const [isCreateVisible, setIsCreateVisible] = useState(false);
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
-  const playlistNameRef = useRef("");
   const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
   const [playlistName, setPlaylistName] = useState(playlistInfo.name);
   const [playlists, setPlaylists] = useState([]);
-  const { showMessage } = useContext(ActionSuccessMessageContext);
   const [currentPlaylistId, setCurrentPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [deletedTrackDuration, setDeletedTrackDuration] = useState(0);
   const [addedTrackDuration, setAddedTrackDuration] = useState(0);
   const navigate = useNavigate();
-  const MAX_NAME_LENGTH = 10;
   const [errorMessage, setErrorMessage] = useState("");
   const [isShaking, setIsShaking] = useState(false);
   const [preselectedTrack, setPreselectedTrack] = useState(null);
   const [isCoverImageFading, setIsCoverImageFading] = useState(false);
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const SHAKE_DURATION_MS = 600;
+
+  const playlistNameRef = useRef("");
   const addSelectedTrackToPlaylistRef = useRef(() => {});
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const MAX_NAME_LENGTH = 10;
+  const SHAKE_DURATION_MS = 600;
 
   useEffect(() => {
     setErrorMessage("");

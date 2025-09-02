@@ -1,9 +1,9 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
-import { ActionSuccessMessageContext } from "./ActionSuccessMessageContext";
 import { getNewAccessToken, loadSpotifySDK, createSpotifyPlayer, getOAuthTokenFromStorage, connectSpotifyPlayer } from "../utils/spotifyAuth";
 import { TokenContext } from "./TokenContext";
 import usePlayerStore from "../store/playerStore";
+import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 const PlayerContext = createContext();
 
@@ -21,12 +21,12 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const setIsPlayPauseCooldown = usePlayerStore((state) => state.setIsPlayPauseCooldown);
   const setDeviceId = usePlayerStore((state) => state.setDeviceId);
   const setPlayerReady = usePlayerStore((state) => state.setPlayerReady);
-
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const { isRepeat } = useRepeatContext();
   const { token, setToken } = useContext(TokenContext);
-  const { showMessage } = useContext(ActionSuccessMessageContext);
   const [trackOrigin, setTrackOrigin] = useState(null);
   const FADE_DURATION = 3000;
 

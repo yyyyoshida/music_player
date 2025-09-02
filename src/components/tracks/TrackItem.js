@@ -3,12 +3,12 @@ import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../
 import usePlayerStore from "../../store/playerStore";
 import useTooltipStore from "../../store/tooltipStore";
 import usePlaybackStore from "../../store/playbackStore";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 import { isFallback } from "../../utils/isFallback";
-import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 
 const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
@@ -26,10 +26,11 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
   const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
 
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+
   const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet } = usePlayerContext();
-  const { showMessage } = useContext(ActionSuccessMessageContext);
   const [pendingTrackId, setPendingTrackId] = useState(null);
 
   const buttonRef = useRef(null);

@@ -3,13 +3,13 @@ import { FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
 import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
-import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 
 const TrackMoreMenu = () => {
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const { trackId, isButtonHovered, menuPositionTop, isMenuVisible, setIsMenuVisible, openMenu, closeMenu } = useContext(TrackMoreMenuContext);
   const { toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { deleteTrack } = useContext(PlaylistContext);
-  const { showMessage } = useContext(ActionSuccessMessageContext);
   const menuRef = useRef(null);
   const isButtonHoveredRef = useRef(null);
   const isNotSearchPage = window.location.pathname !== "/search-result";
