@@ -2,9 +2,7 @@ import { useContext, useRef, useState, useEffect } from "react";
 import { TrackInfoContext } from "../contexts/TrackInfoContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
 
-// import { SearchContext } from "../contexts/SearchContext";
 import { isFallback } from "../utils/isFallback";
-import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import usePlaybackStore from "../store/playbackStore";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 

@@ -1,6 +1,6 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import useTooltipStore from "../../store/tooltipStore";
-import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import VolumeBar from "./VolumeBar";
 
 const PlayerOptions = () => {
@@ -9,7 +9,8 @@ const PlayerOptions = () => {
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
   const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
-  const { showMessage } = useContext(ActionSuccessMessageContext);
+
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   function toggleOpenMenu() {
     handleButtonPress();

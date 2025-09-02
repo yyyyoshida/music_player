@@ -1,7 +1,7 @@
 import { useEffect, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
-import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
@@ -10,8 +10,8 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const { id } = useParams();
   const { setPlaylists, setPlaylistInfo, playlistInfo, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
     useContext(PlaylistContext);
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
-  const { showMessage } = useContext(ActionSuccessMessageContext);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${id}Info`);

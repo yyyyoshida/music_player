@@ -10,7 +10,6 @@ import { RepeatProvider } from "./contexts/RepeatContext";
 import { PlaylistProvider } from "./contexts/PlaylistContext";
 import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
 import { UploadModalProvider } from "./contexts/UploadModalContext";
-import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageContext";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
@@ -98,22 +97,20 @@ function App() {
 
   return (
     <BrowserRouter>
-      <ActionSuccessMessageProvider>
-        <RepeatProvider>
-          <SearchProvider>
-            <PlaylistProvider>
-              <UploadModalProvider>
-                <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
-                  <PlaylistSelectionProvider>
-                    <Header onSearchResults={handleSearchResults} profile={profile} />
-                    <Main searchResults={searchResults} setProfile={setProfile} />
-                  </PlaylistSelectionProvider>
-                </PlayerProvider>
-              </UploadModalProvider>
-            </PlaylistProvider>
-          </SearchProvider>
-        </RepeatProvider>
-      </ActionSuccessMessageProvider>
+      <RepeatProvider>
+        <SearchProvider>
+          <PlaylistProvider>
+            <UploadModalProvider>
+              <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+                <PlaylistSelectionProvider>
+                  <Header onSearchResults={handleSearchResults} profile={profile} />
+                  <Main searchResults={searchResults} setProfile={setProfile} />
+                </PlaylistSelectionProvider>
+              </PlayerProvider>
+            </UploadModalProvider>
+          </PlaylistProvider>
+        </SearchProvider>
+      </RepeatProvider>
     </BrowserRouter>
   );
 }
