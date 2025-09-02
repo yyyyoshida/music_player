@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
-import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import PlaylistContext from "../contexts/PlaylistContext";
+import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 const useFetchPlaylists = () => {
-  const { playlists, setPlaylists } = useContext(PlaylistContext);
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
-  const { showMessage } = useContext(ActionSuccessMessageContext);
+  const { playlists, setPlaylists } = useContext(PlaylistContext);
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+
   const FETCH_PLAYLISTS_ERROR_DELAY = 1000;
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
