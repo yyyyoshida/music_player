@@ -1,23 +1,23 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
-import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
 import { PlaylistContext } from "../contexts/PlaylistContext";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 import UploadModalContext from "./UploadModalContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import usePlaybackStore from "../store/playbackStore";
+import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 export const PlaylistSelectionContext = createContext();
 
 export const PlaylistSelectionProvider = ({ children }) => {
   const setQueue = usePlaybackStore((state) => state.setQueue);
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const [isSelectVisible, setIsSelectVisible] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [localCoverImageUrl, setLocalCoverImageUrl] = useState(null);
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
 
-  const { showMessage } = useContext(ActionSuccessMessageContext);
   const { fadeCoverImages, currentPlaylistId, setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } =
     useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);

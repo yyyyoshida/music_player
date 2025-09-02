@@ -2,11 +2,11 @@ import { useEffect, useState, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
-import ActionSuccessMessageContext from "../../contexts/ActionSuccessMessageContext";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaybackStore from "../../store/playbackStore";
 import usePlayerStore from "../../store/playerStore";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import TrackListHead from "../tracks/TrackListHead";
 import TrackItem from "../tracks/TrackItem";
 import RenamePlaylist from "./RenamePlaylist";
@@ -38,8 +38,6 @@ const PlaylistDetail = ({ containerRef }) => {
     setPlaylistInfo,
   } = useContext(PlaylistContext);
 
-  const { showMessage } = useContext(ActionSuccessMessageContext);
-
   const queue = usePlaybackStore((state) => state.queue);
   const setQueue = usePlaybackStore((state) => state.setQueue);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
@@ -47,7 +45,9 @@ const PlaylistDetail = ({ containerRef }) => {
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
   const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
+
   const playerTrack = usePlayerStore((state) => state.playerTrack);
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const LOADING_DELAY = 200;
 
