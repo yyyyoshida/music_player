@@ -5,7 +5,6 @@ import { getNewAccessToken } from "../utils/spotifyAuth";
 import { TokenContext } from "../contexts/TokenContext";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { TrackInfoProvider } from "../contexts/TrackInfoContext";
-import { TrackMoreMenuProvider } from "../contexts/TrackMoreMenuContext";
 import { PlaybackProvider } from "../contexts/PlaybackContext";
 
 import Home from "../react-router-dom/Home";
@@ -78,24 +77,22 @@ const Main = ({ setProfile }) => {
       <div className="container" ref={containerRef}>
         <main>
           <TrackInfoProvider>
-            <TrackMoreMenuProvider>
-              <ThumbnailPreview />
-              <TrackMoreMenu />
-              <Tooltip />
-              {isSelectVisible && <PlaylistSelection />}
-              <UploadStatusModal />
-              <CreatePlaylist />
-              <PlaybackProvider>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
-                  <Route path="/playlist" element={<Playlist />} />
-                  <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
-                </Routes>
-                <PlayerControls />
-              </PlaybackProvider>
-              <ActionSuccessMessage />
-            </TrackMoreMenuProvider>
+            <ThumbnailPreview />
+            <TrackMoreMenu />
+            <Tooltip />
+            {isSelectVisible && <PlaylistSelection />}
+            <UploadStatusModal />
+            <CreatePlaylist />
+            <PlaybackProvider>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
+                <Route path="/playlist" element={<Playlist />} />
+                <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
+              </Routes>
+              <PlayerControls />
+            </PlaybackProvider>
+            <ActionSuccessMessage />
           </TrackInfoProvider>
         </main>
         {/* <Footer /> */}
