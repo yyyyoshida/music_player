@@ -3,8 +3,8 @@ import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../
 import usePlayerStore from "../../store/playerStore";
 import useTooltipStore from "../../store/tooltipStore";
 import usePlaybackStore from "../../store/playbackStore";
+import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
-import { TrackMoreMenuContext } from "../../contexts/TrackMoreMenuContext";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
@@ -26,9 +26,12 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
   const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
 
+  const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
+  const setTrackMenuPositionTop = useTrackMoreMenuStore((state) => state.setTrackMenuPositionTop);
+  const toggleTrackMenu = useTrackMoreMenuStore((state) => state.toggleTrackMenu);
+
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
-  const { setIsButtonHovered, setMenuPositionTop, toggleMenu, setTrackId, setTrackIndex } = useContext(TrackMoreMenuContext);
   const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet } = usePlayerContext();
   const [pendingTrackId, setPendingTrackId] = useState(null);
@@ -74,7 +77,7 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
     const parentRect = parentRef.current.getBoundingClientRect();
 
     const offset = buttonRect.top - parentRect.top + window.scrollY + positionOffsetY;
-    setMenuPositionTop(offset);
+    setTrackMenuPositionTop(offset);
   }
 
   return (
@@ -160,10 +163,9 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
               e.stopPropagation();
               setButtonPosition();
               handleTrackSelect(track, false);
-              toggleMenu(index);
+              toggleTrackMenu(index);
               handleButtonPress();
-              setTrackIndex(index);
-              setTrackId(track.id);
+              setMenuTrackId(track.id);
             }}
           >
             <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
