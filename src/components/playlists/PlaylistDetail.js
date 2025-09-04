@@ -6,6 +6,7 @@ import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaybackStore from "../../store/playbackStore";
 import usePlayerStore from "../../store/playerStore";
+import usePlaylistStore from "../../store/playlistStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import TrackListHead from "../tracks/TrackListHead";
 import TrackItem from "../tracks/TrackItem";
@@ -22,21 +23,18 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
   const { formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
-  const {
-    showDeletePlaylistModal,
-    deletePlaylist,
-    tracks,
-    setTracks,
-    formatTimeHours,
-    setCurrentPlaylistId,
-    deletedTrackDuration,
-    setDeletedTrackDuration,
-    addedTrackDuration,
-    setAddedTrackDuration,
-    isCoverImageFading,
-    playlistInfo,
-    setPlaylistInfo,
-  } = useContext(PlaylistContext);
+  const { showDeletePlaylistModal, deletePlaylist, tracks, setTracks, formatTimeHours } = useContext(PlaylistContext);
+
+  const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
+  // const tracks = usePlaylistStore((state) => state.tracks);
+  // const setTracks = usePlaylistStore((state) => state.setTracks);
+  const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
+  const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
+  const addedTrackDuration = usePlaylistStore((state) => state.addedTrackDuration);
+  const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
+  const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
+  const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
+  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
 
   const queue = usePlaybackStore((state) => state.queue);
   const setQueue = usePlaybackStore((state) => state.setQueue);

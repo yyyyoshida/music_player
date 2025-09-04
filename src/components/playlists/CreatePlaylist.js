@@ -1,11 +1,15 @@
 import { useEffect, useContext } from "react";
 import { FALLBACK_COVER_IMAGE, warningIcon } from "../../assets/icons";
+import usePlaylistStore from "../../store/playlistStore";
 
 import { PlaylistContext } from "../../contexts/PlaylistContext";
 import PlaylistSelectionContext from "../../contexts/PlaylistSelectionContext";
 
 const CreatePlaylist = () => {
-  const { isShaking, errorMessage, hideCreatePlaylistModal, handleCreatePlaylist, isCreateVisible, playlistNameRef, tracks } = useContext(PlaylistContext);
+  const { hideCreatePlaylistModal, handleCreatePlaylist, playlistNameRef } = useContext(PlaylistContext);
+  const isCreateVisible = usePlaylistStore((state) => state.isCreateVisible);
+  const errorMessage = usePlaylistStore((state) => state.errorMessage);
+  const isShaking = usePlaylistStore((state) => state.isShaking);
 
   const { selectedTrack } = useContext(PlaylistSelectionContext);
 
@@ -45,10 +49,16 @@ const CreatePlaylist = () => {
             )}
           </div>
           <div className="playlist-page__create-playlist-modal-actions modal-actions">
-            <button className="playlist-page__create-playlist-modal-cancel modal-cancel-submit-button modal-cancel-button" onClick={hideCreatePlaylistModal}>
+            <button
+              className="playlist-page__create-playlist-modal-cancel modal-cancel-submit-button modal-cancel-button"
+              onClick={hideCreatePlaylistModal}
+            >
               キャンセル
             </button>
-            <button className="playlist-page__create-playlist-modal-create modal-cancel-submit-button modal-submit-button" onClick={handleCreatePlaylist}>
+            <button
+              className="playlist-page__create-playlist-modal-create modal-cancel-submit-button modal-submit-button"
+              onClick={handleCreatePlaylist}
+            >
               作成
             </button>
           </div>
