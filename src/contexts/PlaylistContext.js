@@ -13,7 +13,6 @@ export const PlaylistProvider = ({ children }) => {
   const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
   const setErrorMessage = usePlaylistStore((state) => state.setErrorMessage);
-  const isShaking = usePlaylistStore((state) => state.isShaking);
   const setIsShaking = usePlaylistStore((state) => state.setIsShaking);
   const setPreselectedTrack = usePlaylistStore((state) => state.setPreselectedTrack);
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
@@ -28,17 +27,6 @@ export const PlaylistProvider = ({ children }) => {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const MAX_NAME_LENGTH = 10;
-  const SHAKE_DURATION_MS = 600;
-
-  useEffect(() => {
-    if (!isShaking) return;
-
-    const timer = setTimeout(() => {
-      setIsShaking(false);
-    }, SHAKE_DURATION_MS);
-
-    return () => clearTimeout(timer);
-  }, [isShaking]);
 
   const fadeCoverImages = () => setIsCoverImageFading(true);
 
