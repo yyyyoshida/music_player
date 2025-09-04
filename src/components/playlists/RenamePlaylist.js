@@ -1,6 +1,7 @@
 import { useEffect, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
+import usePlaylistStore from "../../store/playlistStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
@@ -8,9 +9,15 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
   const { id } = useParams();
-  const { setPlaylists, setPlaylistInfo, playlistInfo, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
-    useContext(PlaylistContext);
+  const { MAX_NAME_LENGTH, countNameLength, triggerError } = useContext(PlaylistContext);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+
+  const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
+  const errorMessage = usePlaylistStore((state) => state.errorMessage);
+  const setErrorMessage = usePlaylistStore((state) => state.setErrorMessage);
+  const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
+  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
+  const isShaking = usePlaylistStore((state) => state.isShaking);
 
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -72,7 +79,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       const cachedPlaylists = JSON.parse(localStorage.getItem("playlists") || "[]");
       const updatedPlaylists = cachedPlaylists.map((playlist) => (playlist.id === id ? { ...playlist, name: newName } : playlist));
 
-      setPlaylistInfo((prev) => ({ ...prev, name: newName }));
+      setPlaylistInfo(updatedInfoData);
       setPlaylists(updatedPlaylists);
 
       localStorage.setItem(`playlistDetail:${id}Info`, JSON.stringify(updatedInfoData));

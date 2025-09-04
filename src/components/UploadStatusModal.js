@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import UploadModalContext from "../contexts/UploadModalContext";
-import PlaylistContext from "../contexts/PlaylistContext";
+import usePlaylistStore from "../store/playlistStore";
 
 const UploadStatusModal = () => {
   const { isVisible, hideUploadModal } = useContext(UploadModalContext);
-  const { preselectedTrack } = useContext(PlaylistContext);
+  const preselectedTrack = usePlaylistStore((state) => state.preselectedTrack);
   // let trackCoverImage;
   const isUsedFallbackImage = preselectedTrack?.albumImage === "/img/fallback-cover.png";
 

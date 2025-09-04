@@ -1,9 +1,12 @@
 import { useContext } from "react";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import { PlaylistContext } from "../../contexts/PlaylistContext";
+import usePlaylistStore from "../../store/playlistStore";
 
 const DeletePlaylistModal = ({ tracks, deletePlaylist, id }) => {
-  const { hideDeletePlaylistModal, isDeleteVisible } = useContext(PlaylistContext);
+  const isDeleteVisible = usePlaylistStore((state) => state.isDeleteVisible);
+  const { hideDeletePlaylistModal } = useContext(PlaylistContext);
+
   return (
     <div className="delete-playlist-modal modal" style={{ visibility: isDeleteVisible ? "visible" : "hidden" }}>
       <div className="delete-playlist-modal__smoke modal-smoke">
