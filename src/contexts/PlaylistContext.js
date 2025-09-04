@@ -10,9 +10,6 @@ export const PlaylistContext = createContext();
 export const PlaylistProvider = ({ children }) => {
   const [tracks, setTracks] = useState([]);
   // const setTracks = usePlaylistStore((state) => state.setTracks);
-  const isCreateVisible = usePlaylistStore((state) => state.isCreateVisible);
-  const setIsCreateVisible = usePlaylistStore((state) => state.setIsCreateVisible);
-  const setIsDeleteVisible = usePlaylistStore((state) => state.setIsDeleteVisible);
   const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
   const setErrorMessage = usePlaylistStore((state) => state.setErrorMessage);
@@ -22,16 +19,16 @@ export const PlaylistProvider = ({ children }) => {
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
   const setIsCoverImageFading = usePlaylistStore((state) => state.setIsCoverImageFading);
 
+  const hideCreatePlaylistModal = usePlaylistStore((state) => state.hideCreatePlaylistModal);
+  const hideDeletePlaylistModal = usePlaylistStore((state) => state.hideDeletePlaylistModal);
+
   const navigate = useNavigate();
-  const playlistNameRef = useRef("");
+  // const playlistNameRef = useRef("");
+  const playlistNameRef = usePlaylistStore((state) => state.playlistNameRef);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const MAX_NAME_LENGTH = 10;
   const SHAKE_DURATION_MS = 600;
-
-  useEffect(() => {
-    setErrorMessage("");
-  }, [isCreateVisible]);
 
   useEffect(() => {
     if (!isShaking) return;
@@ -42,14 +39,6 @@ export const PlaylistProvider = ({ children }) => {
 
     return () => clearTimeout(timer);
   }, [isShaking]);
-
-  function showCreatePlaylistModal() {
-    setIsCreateVisible(true);
-    playlistNameRef.current.value = "";
-  }
-  const hideCreatePlaylistModal = () => setIsCreateVisible(false);
-  const showDeletePlaylistModal = () => setIsDeleteVisible(true);
-  const hideDeletePlaylistModal = () => setIsDeleteVisible(false);
 
   const fadeCoverImages = () => setIsCoverImageFading(true);
 
@@ -76,12 +65,6 @@ export const PlaylistProvider = ({ children }) => {
     setErrorMessage(message);
     setIsShaking(true);
   }
-
-  useEffect(() => {
-    if (isCreateVisible && playlistNameRef.current) {
-      playlistNameRef.current.focus();
-    }
-  }, [isCreateVisible]);
 
   const handleCreatePlaylist = async () => {
     const newName = playlistNameRef.current.value;
@@ -192,10 +175,6 @@ export const PlaylistProvider = ({ children }) => {
     <PlaylistContext.Provider
       value={{
         handleCreatePlaylist,
-        showCreatePlaylistModal,
-        hideCreatePlaylistModal,
-        showDeletePlaylistModal,
-        hideDeletePlaylistModal,
 
         playlistNameRef,
         formatTimeHours,
