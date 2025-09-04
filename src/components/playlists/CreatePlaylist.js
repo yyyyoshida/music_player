@@ -10,6 +10,7 @@ const CreatePlaylist = () => {
   const isCreateVisible = usePlaylistStore((state) => state.isCreateVisible);
   const errorMessage = usePlaylistStore((state) => state.errorMessage);
   const isShaking = usePlaylistStore((state) => state.isShaking);
+  const setIsShaking = usePlaylistStore((state) => state.setIsShaking);
   const setPlaylistNameRef = usePlaylistStore((state) => state.setPlaylistNameRef);
   const hideCreatePlaylistModal = usePlaylistStore((state) => state.hideCreatePlaylistModal);
   const { selectedTrack } = useContext(PlaylistSelectionContext);
@@ -18,6 +19,7 @@ const CreatePlaylist = () => {
   const playlistNameRef = useRef(null);
 
   const isFallbackCoverImage = !selectedTrack?.albumImage || selectedTrack?.albumImage === "/img/fallback-cover.png";
+  const SHAKE_DURATION_MS = 600;
 
   useEffect(() => {
     setPlaylistNameRef(playlistNameRef);
@@ -28,6 +30,16 @@ const CreatePlaylist = () => {
       playlistNameRef.current.focus();
     }
   }, [isCreateVisible]);
+
+  useEffect(() => {
+    if (!isShaking) return;
+
+    const timer = setTimeout(() => {
+      setIsShaking(false);
+    }, SHAKE_DURATION_MS);
+
+    return () => clearTimeout(timer);
+  }, [isShaking]);
 
   return (
     <div className="playlist-page__create-playlist-modal modal" style={{ visibility: isCreateVisible ? "visible" : "hidden" }}>

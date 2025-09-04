@@ -2,7 +2,6 @@ import { create } from "zustand";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const MAX_NAME_LENGTH = 10;
-const SHAKE_DURATION_MS = 600;
 
 const usePlaylistStore = create((set, get) => ({
   isCreateVisible: false,
