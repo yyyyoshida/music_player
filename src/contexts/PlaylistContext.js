@@ -1,5 +1,6 @@
 import { createContext, useState, useRef, useEffect } from "react";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
+import usePlaylistStore from "../store/playlistStore";
 import { useNavigate } from "react-router-dom";
 import { clearPlaylistsCache } from "../utils/clearPlaylistCache";
 import { getPlaylistInfo } from "../utils/playlistUtils";
@@ -7,23 +8,22 @@ import { getPlaylistInfo } from "../utils/playlistUtils";
 export const PlaylistContext = createContext();
 
 export const PlaylistProvider = ({ children }) => {
-  const [isCreateVisible, setIsCreateVisible] = useState(false);
-  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
-  const [playlistInfo, setPlaylistInfo] = useState({ title: "", duration: 0 });
-  const [playlistName, setPlaylistName] = useState(playlistInfo.name);
-  const [playlists, setPlaylists] = useState([]);
-  const [currentPlaylistId, setCurrentPlaylistId] = useState(null);
   const [tracks, setTracks] = useState([]);
-  const [deletedTrackDuration, setDeletedTrackDuration] = useState(0);
-  const [addedTrackDuration, setAddedTrackDuration] = useState(0);
-  const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isShaking, setIsShaking] = useState(false);
-  const [preselectedTrack, setPreselectedTrack] = useState(null);
-  const [isCoverImageFading, setIsCoverImageFading] = useState(false);
+  // const setTracks = usePlaylistStore((state) => state.setTracks);
+  const isCreateVisible = usePlaylistStore((state) => state.isCreateVisible);
+  const setIsCreateVisible = usePlaylistStore((state) => state.setIsCreateVisible);
+  const setIsDeleteVisible = usePlaylistStore((state) => state.setIsDeleteVisible);
+  const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
+  const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
+  const setErrorMessage = usePlaylistStore((state) => state.setErrorMessage);
+  const isShaking = usePlaylistStore((state) => state.isShaking);
+  const setIsShaking = usePlaylistStore((state) => state.setIsShaking);
+  const setPreselectedTrack = usePlaylistStore((state) => state.setPreselectedTrack);
+  const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
+  const setIsCoverImageFading = usePlaylistStore((state) => state.setIsCoverImageFading);
 
+  const navigate = useNavigate();
   const playlistNameRef = useRef("");
-  const addSelectedTrackToPlaylistRef = useRef(() => {});
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const MAX_NAME_LENGTH = 10;
@@ -194,46 +194,20 @@ export const PlaylistProvider = ({ children }) => {
         handleCreatePlaylist,
         showCreatePlaylistModal,
         hideCreatePlaylistModal,
-        isCreateVisible,
         showDeletePlaylistModal,
         hideDeletePlaylistModal,
-        isDeleteVisible,
 
         playlistNameRef,
         formatTimeHours,
-        playlistName,
-        setPlaylistName,
-        playlists,
-        setPlaylists,
-        playlistInfo,
-        setPlaylistInfo,
         deleteTrack,
         deletePlaylist,
-
-        currentPlaylistId,
-        setCurrentPlaylistId,
-
         tracks,
         setTracks,
 
-        deletedTrackDuration,
-        setDeletedTrackDuration,
-        addedTrackDuration,
-        setAddedTrackDuration,
-
-        errorMessage,
-        setErrorMessage,
         MAX_NAME_LENGTH,
         countNameLength,
-        isShaking,
         triggerError,
 
-        preselectedTrack,
-        setPreselectedTrack,
-
-        isCoverImageFading,
-
-        addSelectedTrackToPlaylistRef,
         fadeCoverImages,
       }}
     >
