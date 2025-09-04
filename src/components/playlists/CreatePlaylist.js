@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { FALLBACK_COVER_IMAGE, warningIcon } from "../../assets/icons";
 import usePlaylistStore from "../../store/playlistStore";
 
@@ -6,16 +6,28 @@ import { PlaylistContext } from "../../contexts/PlaylistContext";
 import PlaylistSelectionContext from "../../contexts/PlaylistSelectionContext";
 
 const CreatePlaylist = () => {
-  const { hideCreatePlaylistModal, handleCreatePlaylist, playlistNameRef } = useContext(PlaylistContext);
+  const { handleCreatePlaylist } = useContext(PlaylistContext);
   const isCreateVisible = usePlaylistStore((state) => state.isCreateVisible);
   const errorMessage = usePlaylistStore((state) => state.errorMessage);
   const isShaking = usePlaylistStore((state) => state.isShaking);
-
+  const setPlaylistNameRef = usePlaylistStore((state) => state.setPlaylistNameRef);
+  const hideCreatePlaylistModal = usePlaylistStore((state) => state.hideCreatePlaylistModal);
   const { selectedTrack } = useContext(PlaylistSelectionContext);
 
   const playlistCover = selectedTrack?.albumImage;
+  const playlistNameRef = useRef(null);
 
   const isFallbackCoverImage = !selectedTrack?.albumImage || selectedTrack?.albumImage === "/img/fallback-cover.png";
+
+  useEffect(() => {
+    setPlaylistNameRef(playlistNameRef);
+  }, [playlistNameRef]);
+
+  useEffect(() => {
+    if (isCreateVisible && playlistNameRef.current) {
+      playlistNameRef.current.focus();
+    }
+  }, [isCreateVisible]);
 
   return (
     <div className="playlist-page__create-playlist-modal modal" style={{ visibility: isCreateVisible ? "visible" : "hidden" }}>
