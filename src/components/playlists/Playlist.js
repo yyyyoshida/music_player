@@ -8,9 +8,11 @@ import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import CardListSkeleton from "../skeletonUI/CardListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import usePlaylistStore from "../../store/playlistStore";
 
 const Playlist = () => {
-  const { showCreatePlaylistModal, formatTimeHours } = useContext(PlaylistContext);
+  const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
+  const { formatTimeHours } = useContext(PlaylistContext);
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
 
