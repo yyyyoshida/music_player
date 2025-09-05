@@ -12,13 +12,8 @@ export const PlaylistProvider = ({ children }) => {
   // const setTracks = usePlaylistStore((state) => state.setTracks);
   const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
-  const setErrorMessage = usePlaylistStore((state) => state.setErrorMessage);
-  const setIsShaking = usePlaylistStore((state) => state.setIsShaking);
-  const setPreselectedTrack = usePlaylistStore((state) => state.setPreselectedTrack);
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
   const setIsCoverImageFading = usePlaylistStore((state) => state.setIsCoverImageFading);
-
-  const hideCreatePlaylistModal = usePlaylistStore((state) => state.hideCreatePlaylistModal);
   const hideDeletePlaylistModal = usePlaylistStore((state) => state.hideDeletePlaylistModal);
 
   const navigate = useNavigate();
@@ -39,54 +34,6 @@ export const PlaylistProvider = ({ children }) => {
 
     return () => clearTimeout(timeoutId);
   }, [isCoverImageFading]);
-
-  function countNameLength(string) {
-    let nameLength = 0;
-    for (let i = 0; i < string.length; i++) {
-      const code = string.charCodeAt(i);
-      nameLength += code <= 0x007f ? 0.5 : 1;
-    }
-    return nameLength;
-  }
-
-  function triggerError(message) {
-    setErrorMessage(message);
-    setIsShaking(true);
-  }
-
-  const handleCreatePlaylist = async () => {
-    const newName = playlistNameRef.current.value;
-
-    const nameLength = countNameLength(newName.trim());
-
-    if (!newName.trim()) return triggerError("名前を入力してください");
-
-    if (nameLength > MAX_NAME_LENGTH) return triggerError(`文字数オーバーです`);
-
-    try {
-      const response = await fetch(`${BASE_URL}/api/playlists`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: newName,
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        triggerError(data.error);
-        return;
-      }
-
-      const data = await response.json();
-      showMessage("newPlaylist");
-      playlistNameRef.current.value = "";
-      setPreselectedTrack(null);
-      hideCreatePlaylistModal();
-    } catch {}
-  };
 
   function formatTimeHours(time) {
     if (!time) return "0分";
@@ -162,8 +109,6 @@ export const PlaylistProvider = ({ children }) => {
   return (
     <PlaylistContext.Provider
       value={{
-        handleCreatePlaylist,
-
         playlistNameRef,
         formatTimeHours,
         deleteTrack,
@@ -172,8 +117,6 @@ export const PlaylistProvider = ({ children }) => {
         setTracks,
 
         MAX_NAME_LENGTH,
-        countNameLength,
-        triggerError,
 
         fadeCoverImages,
       }}

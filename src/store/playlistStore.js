@@ -57,6 +57,61 @@ const usePlaylistStore = create((set, get) => ({
   hideDeletePlaylistModal: () => {
     set({ isDeleteVisible: false });
   },
+
+  countNameLength: (string) => {
+    let nameLength = 0;
+    for (let i = 0; i < string.length; i++) {
+      const code = string.charCodeAt(i);
+      nameLength += code <= 0x007f ? 0.5 : 1;
+    }
+    return nameLength;
+  },
+
+  triggerError: (message) => {
+    set({ errorMessage: message, isShaking: true });
+  },
+
+  handleCreatePlaylist: async () => {
+    const { playlistNameRef, countNameLength, hideCreatePlaylistModal, triggerError } = get();
+
+    const newName = playlistNameRef.current.value;
+    const nameLength = countNameLength(newName.trim());
+
+    if (!newName.trim()) {
+      triggerError("名前を入力してください");
+      return;
+    }
+
+    if (nameLength > MAX_NAME_LENGTH) {
+      triggerError("文字数オーバーです");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/playlists`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newName,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        triggerError(data.error);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+      // showMessage("newPlaylist");
+      playlistNameRef.current.value = "";
+      set({ preselectedTrack: null });
+      hideCreatePlaylistModal();
+    } catch {}
+  },
 }));
 
 export default usePlaylistStore;
