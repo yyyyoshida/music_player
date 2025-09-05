@@ -23,7 +23,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
   const { formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
-  const { showDeletePlaylistModal, deletePlaylist, tracks, setTracks, formatTimeHours } = useContext(PlaylistContext);
+  const { deletePlaylist, tracks, setTracks, formatTimeHours } = useContext(PlaylistContext);
 
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   // const tracks = usePlaylistStore((state) => state.tracks);
@@ -35,6 +35,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
   const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
+  const showDeletePlaylistModal = usePlaylistStore((state) => state.showDeletePlaylistModal);
 
   const queue = usePlaybackStore((state) => state.queue);
   const setQueue = usePlaybackStore((state) => state.setQueue);
