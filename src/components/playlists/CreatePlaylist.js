@@ -2,17 +2,17 @@ import { useEffect, useContext, useRef } from "react";
 import { FALLBACK_COVER_IMAGE, warningIcon } from "../../assets/icons";
 import usePlaylistStore from "../../store/playlistStore";
 
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import PlaylistSelectionContext from "../../contexts/PlaylistSelectionContext";
 
 const CreatePlaylist = () => {
-  const { handleCreatePlaylist } = useContext(PlaylistContext);
   const isCreateVisible = usePlaylistStore((state) => state.isCreateVisible);
   const errorMessage = usePlaylistStore((state) => state.errorMessage);
   const isShaking = usePlaylistStore((state) => state.isShaking);
   const setIsShaking = usePlaylistStore((state) => state.setIsShaking);
   const setPlaylistNameRef = usePlaylistStore((state) => state.setPlaylistNameRef);
   const hideCreatePlaylistModal = usePlaylistStore((state) => state.hideCreatePlaylistModal);
+  const handleCreatePlaylist = usePlaylistStore((state) => state.handleCreatePlaylist);
+
   const { selectedTrack } = useContext(PlaylistSelectionContext);
 
   const playlistCover = selectedTrack?.albumImage;

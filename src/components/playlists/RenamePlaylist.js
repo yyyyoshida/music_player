@@ -1,6 +1,5 @@
-import { useEffect, useRef, useContext } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import usePlaylistStore from "../../store/playlistStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import { warningIcon } from "../../assets/icons";
@@ -9,7 +8,6 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
   const { id } = useParams();
-  const { MAX_NAME_LENGTH, countNameLength, triggerError } = useContext(PlaylistContext);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
@@ -18,6 +16,9 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
   const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const isShaking = usePlaylistStore((state) => state.isShaking);
+  const countNameLength = usePlaylistStore((state) => state.countNameLength);
+  const triggerError = usePlaylistStore((state) => state.triggerError);
+  const MAX_NAME_LENGTH = usePlaylistStore((state) => state.MAX_NAME_LENGTH);
 
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
