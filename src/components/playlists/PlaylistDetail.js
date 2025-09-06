@@ -15,6 +15,7 @@ import DeletePlaylistModal from "./DeletePlaylistModal";
 import TrackListSkeleton from "../skeletonUI/TrackListSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import { getPlaylistInfo } from "../../utils/playlistUtils";
+import { formatTimeHours } from "../../utils/formatTime";
 import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistDetail = ({ containerRef }) => {
@@ -23,7 +24,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
   const { formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
-  const { tracks, setTracks, formatTimeHours } = useContext(PlaylistContext);
+  const { tracks, setTracks } = useContext(PlaylistContext);
 
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   // const tracks = usePlaylistStore((state) => state.tracks);

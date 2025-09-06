@@ -9,10 +9,11 @@ import CardListSkeleton from "../skeletonUI/CardListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaylistStore from "../../store/playlistStore";
+import { formatTimeHours } from "../../utils/formatTime";
 
 const Playlist = () => {
   const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
-  const { formatTimeHours } = useContext(PlaylistContext);
+  // const { formatTimeHours } = useContext(PlaylistContext);
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
 
