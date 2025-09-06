@@ -2,9 +2,10 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import usePlaylistStore from "../../store/playlistStore";
 import { useNavigate } from "react-router-dom";
 
-const DeletePlaylistModal = ({ tracks, deletePlaylist, id }) => {
+const DeletePlaylistModal = ({ tracks, id }) => {
   const isDeleteVisible = usePlaylistStore((state) => state.isDeleteVisible);
   const hideDeletePlaylistModal = usePlaylistStore((state) => state.hideDeletePlaylistModal);
+  const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
   const navigate = useNavigate();
 
   return (

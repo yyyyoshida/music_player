@@ -36,7 +36,6 @@ const PlaylistDetail = ({ containerRef }) => {
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
   const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const showDeletePlaylistModal = usePlaylistStore((state) => state.showDeletePlaylistModal);
-  const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
 
   const queue = usePlaybackStore((state) => state.queue);
   const setQueue = usePlaybackStore((state) => state.setQueue);
@@ -205,7 +204,7 @@ const PlaylistDetail = ({ containerRef }) => {
         </ul>
       </>
 
-      <DeletePlaylistModal tracks={tracks} deletePlaylist={deletePlaylist} id={id} />
+      <DeletePlaylistModal tracks={tracks} id={id} />
       <RenamePlaylist isRenameVisible={isRenameVisible} setIsRenameVisible={setIsRenameVisible} tracks={tracks} />
     </div>
   );
