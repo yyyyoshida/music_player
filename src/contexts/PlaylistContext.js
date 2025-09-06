@@ -1,4 +1,4 @@
-import { createContext, useState, useRef, useEffect } from "react";
+import { createContext, useState } from "react";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import usePlaylistStore from "../store/playlistStore";
 import { clearPlaylistsCache } from "../utils/clearPlaylistCache";
@@ -11,7 +11,6 @@ export const PlaylistProvider = ({ children }) => {
   // const setTracks = usePlaylistStore((state) => state.setTracks);
   const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
-  const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
   const setIsCoverImageFading = usePlaylistStore((state) => state.setIsCoverImageFading);
   const playlistNameRef = usePlaylistStore((state) => state.playlistNameRef);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
@@ -19,16 +18,6 @@ export const PlaylistProvider = ({ children }) => {
   const MAX_NAME_LENGTH = 10;
 
   const fadeCoverImages = () => setIsCoverImageFading(true);
-
-  useEffect(() => {
-    let timeoutId;
-
-    if (isCoverImageFading) {
-      timeoutId = setTimeout(() => setIsCoverImageFading(false), 400);
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [isCoverImageFading]);
 
   function formatTimeHours(time) {
     if (!time) return "0分";
