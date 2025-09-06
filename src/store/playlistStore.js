@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { clearPlaylistCache } from "../utils/clearPlaylistCache";
+import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const MAX_NAME_LENGTH = 10;
@@ -111,6 +113,27 @@ const usePlaylistStore = create((set, get) => ({
       set({ preselectedTrack: null });
       hideCreatePlaylistModal();
     } catch {}
+  },
+
+  deletePlaylist: async (playlistId, navigate) => {
+    const { hideCreatePlaylistModal } = get();
+    const showMessage = useActionSuccessMessageStore.getState().showMessage;
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("プレイリスト削除失敗");
+
+      clearPlaylistCache();
+      navigate("/playlist");
+      showMessage("deletePlaylist");
+    } catch {
+      showMessage("deletePlaylistFailed");
+    } finally {
+      hideCreatePlaylistModal();
+    }
   },
 }));
 

@@ -1,7 +1,6 @@
 import { createContext, useState, useRef, useEffect } from "react";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import usePlaylistStore from "../store/playlistStore";
-import { useNavigate } from "react-router-dom";
 import { clearPlaylistsCache } from "../utils/clearPlaylistCache";
 import { getPlaylistInfo } from "../utils/playlistUtils";
 
@@ -14,10 +13,6 @@ export const PlaylistProvider = ({ children }) => {
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
   const setIsCoverImageFading = usePlaylistStore((state) => state.setIsCoverImageFading);
-  const hideDeletePlaylistModal = usePlaylistStore((state) => state.hideDeletePlaylistModal);
-
-  const navigate = useNavigate();
-  // const playlistNameRef = useRef("");
   const playlistNameRef = usePlaylistStore((state) => state.playlistNameRef);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -88,31 +83,12 @@ export const PlaylistProvider = ({ children }) => {
     }
   }
 
-  async function deletePlaylist(playlistId) {
-    try {
-      const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("プレイリスト削除失敗");
-
-      clearPlaylistsCache();
-      navigate("/playlist");
-      showMessage("deletePlaylist");
-    } catch {
-      showMessage("deletePlaylistFailed");
-    } finally {
-      hideDeletePlaylistModal();
-    }
-  }
-
   return (
     <PlaylistContext.Provider
       value={{
         playlistNameRef,
         formatTimeHours,
         deleteTrack,
-        deletePlaylist,
         tracks,
         setTracks,
 
