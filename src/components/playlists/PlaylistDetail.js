@@ -23,7 +23,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
   const { formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
-  const { deletePlaylist, tracks, setTracks, formatTimeHours } = useContext(PlaylistContext);
+  const { tracks, setTracks, formatTimeHours } = useContext(PlaylistContext);
 
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   // const tracks = usePlaylistStore((state) => state.tracks);
@@ -36,6 +36,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
   const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const showDeletePlaylistModal = usePlaylistStore((state) => state.showDeletePlaylistModal);
+  const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
 
   const queue = usePlaybackStore((state) => state.queue);
   const setQueue = usePlaybackStore((state) => state.setQueue);
@@ -143,9 +144,9 @@ const PlaylistDetail = ({ containerRef }) => {
           </div>
         </div>
         <div className={`playlist-detail__header-info fade-on-loaded ${showSkeleton ? "" : "fade-in"}`}>
-          <h2 className="playlist-detail__header-title">{playlistInfo.name}</h2>
+          <h2 className="playlist-detail__header-title">{playlistInfo?.name}</h2>
 
-          <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration + addedTrackDuration - deletedTrackDuration)}`}</p>
+          <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo?.totalDuration + addedTrackDuration - deletedTrackDuration)}`}</p>
         </div>
 
         <div className="playlist-detail__header-actions-buttons">

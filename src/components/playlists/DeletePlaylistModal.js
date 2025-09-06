@@ -1,9 +1,11 @@
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import usePlaylistStore from "../../store/playlistStore";
+import { useNavigate } from "react-router-dom";
 
 const DeletePlaylistModal = ({ tracks, deletePlaylist, id }) => {
   const isDeleteVisible = usePlaylistStore((state) => state.isDeleteVisible);
   const hideDeletePlaylistModal = usePlaylistStore((state) => state.hideDeletePlaylistModal);
+  const navigate = useNavigate();
 
   return (
     <div className="delete-playlist-modal modal" style={{ visibility: isDeleteVisible ? "visible" : "hidden" }}>
@@ -26,7 +28,7 @@ const DeletePlaylistModal = ({ tracks, deletePlaylist, id }) => {
             <button
               className="delete-playlist-modal__delete modal-cancel-submit-button modal-submit-button"
               onClick={() => {
-                deletePlaylist(id);
+                deletePlaylist(id, navigate);
               }}
             >
               決定

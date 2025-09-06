@@ -94,7 +94,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   }
 
   useEffect(() => {
-    RenameRef.current.value = playlistInfo.name;
+    RenameRef.current.value = playlistInfo?.name;
     RenameRef.current.select();
   }, [isRenameVisible, playlistInfo]);
 
