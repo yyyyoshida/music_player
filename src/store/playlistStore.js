@@ -26,11 +26,17 @@ const usePlaylistStore = create((set, get) => ({
   setPlaylistInfo: (playlistInfo) => set({ playlistInfo }),
   setPlaylists: (playlists) => set({ playlists }),
   setCurrentPlaylistId: (currentPlaylistId) => set({ currentPlaylistId }),
-  setTracks: (tracks) => set({ tracks }),
-  // setTracks: (tracks) =>
-  //   set((state) => ({
-  //     tracks: Array.isArray(tracks) ? tracks : [tracks],
-  //   })),
+
+  // 関数型更新(prev => [...prev, addedTrack])を渡してtracksを更新できるように↓↓
+  setTracks: (value) =>
+    set((state) => {
+      const isArray = Array.isArray(value);
+
+      if (isArray) return { tracks: value };
+
+      if (!isArray) return { tracks: value(state.tracks) };
+    }),
+
   setDeletedTrackDuration: (deletedTrackDuration) => set({ deletedTrackDuration }),
   setAddedTrackDuration: (addedTrackDuration) => set({ addedTrackDuration }),
   setErrorMessage: (errorMessage) => set({ errorMessage }),
