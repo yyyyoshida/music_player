@@ -1,20 +1,20 @@
 import { useContext, useRef, useEffect } from "react";
 import { FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
+import usePlaylistStore from "../../store/playlistStore";
 
 const TrackMoreMenu = () => {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const menuTrackId = useTrackMoreMenuStore((state) => state.menuTrackId);
+  const deleteTrack = usePlaylistStore((state) => state.deleteTrack);
   const isTrackMenuButtonHovered = useTrackMoreMenuStore((state) => state.isTrackMenuButtonHovered);
   const trackMenuPositionTop = useTrackMoreMenuStore((state) => state.trackMenuPositionTop);
   const isTrackMenuVisible = useTrackMoreMenuStore((state) => state.isTrackMenuVisible);
   const closeTrackMenu = useTrackMoreMenuStore((state) => state.closeTrackMenu);
 
   const { toggleSelectVisible } = useContext(PlaylistSelectionContext);
-  const { deleteTrack } = useContext(PlaylistContext);
   const menuRef = useRef(null);
   const isButtonHoveredRef = useRef(null);
   const isNotSearchPage = window.location.pathname !== "/search-result";

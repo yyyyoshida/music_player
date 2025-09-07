@@ -32,7 +32,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const addedTrackDuration = usePlaylistStore((state) => state.addedTrackDuration);
   const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
-  const setIsCoverImageFading = usePlaylistStore((state) => state.setIsCoverImageFading);
+  const showCoverImages = usePlaylistStore((state) => state.showCoverImages);
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
   const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const showDeletePlaylistModal = usePlaylistStore((state) => state.showDeletePlaylistModal);
@@ -117,7 +117,7 @@ const PlaylistDetail = ({ containerRef }) => {
     let timeoutId;
 
     if (isCoverImageFading) {
-      timeoutId = setTimeout(() => setIsCoverImageFading(false), COVER_IMAGE_FADE_DURATION);
+      timeoutId = setTimeout(() => showCoverImages(), COVER_IMAGE_FADE_DURATION);
     }
 
     return () => clearTimeout(timeoutId);
