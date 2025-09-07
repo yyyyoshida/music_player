@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext } from "react";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import usePlaylistStore from "../store/playlistStore";
 import { clearPlaylistsCache } from "../utils/clearPlaylistCache";
@@ -7,8 +7,7 @@ import { getPlaylistInfo } from "../utils/playlistUtils";
 export const PlaylistContext = createContext();
 
 export const PlaylistProvider = ({ children }) => {
-  const [tracks, setTracks] = useState([]);
-  // const setTracks = usePlaylistStore((state) => state.setTracks);
+  const setTracks = usePlaylistStore((state) => state.setTracks);
   const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
   const setIsCoverImageFading = usePlaylistStore((state) => state.setIsCoverImageFading);
@@ -61,8 +60,6 @@ export const PlaylistProvider = ({ children }) => {
       value={{
         playlistNameRef,
         deleteTrack,
-        tracks,
-        setTracks,
 
         MAX_NAME_LENGTH,
 
