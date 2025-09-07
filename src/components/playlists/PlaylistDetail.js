@@ -1,11 +1,11 @@
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { usePlayerContext } from "../../contexts/PlayerContext";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaybackStore from "../../store/playbackStore";
 import usePlayerStore from "../../store/playerStore";
+import usePlaylistStore from "../../store/playlistStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import TrackListHead from "../tracks/TrackListHead";
 import TrackItem from "../tracks/TrackItem";
@@ -14,6 +14,7 @@ import DeletePlaylistModal from "./DeletePlaylistModal";
 import TrackListSkeleton from "../skeletonUI/TrackListSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import { getPlaylistInfo } from "../../utils/playlistUtils";
+import { formatTimeHours } from "../../utils/formatTime";
 import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistDetail = ({ containerRef }) => {
@@ -22,21 +23,19 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
   const { formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
-  const {
-    showDeletePlaylistModal,
-    deletePlaylist,
-    tracks,
-    setTracks,
-    formatTimeHours,
-    setCurrentPlaylistId,
-    deletedTrackDuration,
-    setDeletedTrackDuration,
-    addedTrackDuration,
-    setAddedTrackDuration,
-    isCoverImageFading,
-    playlistInfo,
-    setPlaylistInfo,
-  } = useContext(PlaylistContext);
+
+  const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
+  const tracks = usePlaylistStore((state) => state.tracks);
+  const setTracks = usePlaylistStore((state) => state.setTracks);
+  const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
+  const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
+  const addedTrackDuration = usePlaylistStore((state) => state.addedTrackDuration);
+  const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
+  const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
+  const showCoverImages = usePlaylistStore((state) => state.showCoverImages);
+  const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
+  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
+  const showDeletePlaylistModal = usePlaylistStore((state) => state.showDeletePlaylistModal);
 
   const queue = usePlaybackStore((state) => state.queue);
   const setQueue = usePlaybackStore((state) => state.setQueue);
@@ -50,6 +49,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const LOADING_DELAY = 200;
+  const COVER_IMAGE_FADE_DURATION = 400;
 
   const isEmptyPlaylist = tracks.length === 0;
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -113,6 +113,16 @@ const PlaylistDetail = ({ containerRef }) => {
     setCurrentPlayedAt(date.toLocaleString());
   }, [currentIndex]);
 
+  useEffect(() => {
+    let timeoutId;
+
+    if (isCoverImageFading) {
+      timeoutId = setTimeout(() => showCoverImages(), COVER_IMAGE_FADE_DURATION);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [isCoverImageFading]);
+
   function playFirstTrack() {
     const firstTrack = queue?.[0];
     if (!firstTrack?.trackUri && !firstTrack?.audioURL) {
@@ -144,9 +154,9 @@ const PlaylistDetail = ({ containerRef }) => {
           </div>
         </div>
         <div className={`playlist-detail__header-info fade-on-loaded ${showSkeleton ? "" : "fade-in"}`}>
-          <h2 className="playlist-detail__header-title">{playlistInfo.name}</h2>
+          <h2 className="playlist-detail__header-title">{playlistInfo?.name}</h2>
 
-          <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo.totalDuration + addedTrackDuration - deletedTrackDuration)}`}</p>
+          <p className="playlist-detail__header-status">{`${tracks.length}曲, ${formatTimeHours(playlistInfo?.totalDuration + addedTrackDuration - deletedTrackDuration)}`}</p>
         </div>
 
         <div className="playlist-detail__header-actions-buttons">
@@ -205,7 +215,7 @@ const PlaylistDetail = ({ containerRef }) => {
         </ul>
       </>
 
-      <DeletePlaylistModal tracks={tracks} deletePlaylist={deletePlaylist} id={id} />
+      <DeletePlaylistModal tracks={tracks} id={id} />
       <RenamePlaylist isRenameVisible={isRenameVisible} setIsRenameVisible={setIsRenameVisible} tracks={tracks} />
     </div>
   );
