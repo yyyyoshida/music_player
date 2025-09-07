@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
+import { getPlaylistInfo } from "../utils/playlistUtils";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const MAX_NAME_LENGTH = 10;
@@ -122,7 +123,7 @@ const usePlaylistStore = create((set, get) => ({
   },
 
   deletePlaylist: async (playlistId, navigate) => {
-    const { hideCreatePlaylistModal } = get();
+    const { hideDeletePlaylistModal } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
     try {
@@ -138,7 +139,47 @@ const usePlaylistStore = create((set, get) => ({
     } catch {
       showMessage("deletePlaylistFailed");
     } finally {
-      hideCreatePlaylistModal();
+      hideDeletePlaylistModal();
+    }
+  },
+
+  showCoverImages: () => set({ isCoverImageFading: false }),
+  fadeCoverImages: () => set({ isCoverImageFading: true }),
+
+  deleteTrack: async (trackId) => {
+    const { currentPlaylistId, deletedTrackDuration, tracks, fadeCoverImages, clearPlaylistCache } = get();
+    const showMessage = useActionSuccessMessageStore.getState().showMessage;
+
+    try {
+      const playlistInfoData = await getPlaylistInfo(currentPlaylistId);
+      const totalDuration = playlistInfoData.totalDuration;
+
+      const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("楽曲削除失敗");
+
+      const { deletedTrack } = await response.json();
+
+      const newDeletedTrackDuration = deletedTrackDuration + deletedTrack.duration_ms;
+      const resultTotalDuration = totalDuration - newDeletedTrackDuration;
+      const updatedInfoData = { ...playlistInfoData, totalDuration: resultTotalDuration };
+      localStorage.setItem(`playlistDetail:${currentPlaylistId}Info`, JSON.stringify(updatedInfoData));
+
+      const updatedTracks = tracks.filter((track) => track.id !== trackId);
+      localStorage.setItem(`playlistDetail:${currentPlaylistId}Tracks`, JSON.stringify(updatedTracks));
+
+      set({
+        deletedTrackDuration: newDeletedTrackDuration,
+        tracks: updatedTracks,
+      });
+
+      fadeCoverImages();
+      showMessage("deleteTrack");
+      clearPlaylistCache();
+    } catch (error) {
+      showMessage("deleteTrackFailed");
     }
   },
 }));
