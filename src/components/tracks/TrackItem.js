@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from "react";
-import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
+import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import usePlayerStore from "../../store/playerStore";
 import useTooltipStore from "../../store/tooltipStore";
 import usePlaybackStore from "../../store/playbackStore";

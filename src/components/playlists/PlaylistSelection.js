@@ -1,17 +1,17 @@
 import { useContext } from "react";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import PlaylistSelectSkeleton from "../skeletonUI/PlaylistSelectSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import usePlaylistStore from "../../store/playlistStore";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistSelection = () => {
+  const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
   const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
-  const { showCreatePlaylistModal } = useContext(PlaylistContext);
 
   const LOADING_DELAY = 200;
 
