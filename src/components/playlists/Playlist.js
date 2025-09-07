@@ -1,6 +1,4 @@
-import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
@@ -13,7 +11,6 @@ import { formatTimeHours } from "../../utils/formatTime";
 
 const Playlist = () => {
   const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
-  // const { formatTimeHours } = useContext(PlaylistContext);
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
 
