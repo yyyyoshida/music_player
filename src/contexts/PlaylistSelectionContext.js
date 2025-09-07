@@ -17,14 +17,14 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
   const setPreselectedTrack = usePlaylistStore((state) => state.setPreselectedTrack);
   const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
-  // const setTracks = usePlaylistStore((state) => state.setTracks);
+  const setTracks = usePlaylistStore((state) => state.setTracks);
 
   const [isSelectVisible, setIsSelectVisible] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [localCoverImageUrl, setLocalCoverImageUrl] = useState(null);
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
 
-  const { fadeCoverImages, addedTrackDuration, tracks, setTracks } = useContext(PlaylistContext);
+  const { fadeCoverImages, addedTrackDuration } = useContext(PlaylistContext);
   const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
   const { trackOrigin } = usePlayerContext();
 

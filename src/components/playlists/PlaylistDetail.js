@@ -1,7 +1,6 @@
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { usePlayerContext } from "../../contexts/PlayerContext";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaybackStore from "../../store/playbackStore";
@@ -24,11 +23,10 @@ const PlaylistDetail = ({ containerRef }) => {
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
   const { formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
-  const { tracks, setTracks } = useContext(PlaylistContext);
 
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
-  // const tracks = usePlaylistStore((state) => state.tracks);
-  // const setTracks = usePlaylistStore((state) => state.setTracks);
+  const tracks = usePlaylistStore((state) => state.tracks);
+  const setTracks = usePlaylistStore((state) => state.setTracks);
   const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
   const addedTrackDuration = usePlaylistStore((state) => state.addedTrackDuration);
