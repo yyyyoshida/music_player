@@ -5,6 +5,7 @@ import useTooltipStore from "../../store/tooltipStore";
 import usePlaybackStore from "../../store/playbackStore";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
+import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
@@ -30,9 +31,10 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
   const setTrackMenuPositionTop = useTrackMoreMenuStore((state) => state.setTrackMenuPositionTop);
   const toggleTrackMenu = useTrackMoreMenuStore((state) => state.toggleTrackMenu);
 
+  const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
-  const { handleTrackSelect, toggleSelectVisible } = useContext(PlaylistSelectionContext);
+  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet } = usePlayerContext();
   const [pendingTrackId, setPendingTrackId] = useState(null);
 
@@ -135,7 +137,7 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
               onClick={(e) => {
                 e.stopPropagation();
                 handleTrackSelect(track, false);
-                toggleSelectVisible();
+                openPlaylistSelectModal();
               }}
               onMouseEnter={(e) => {
                 setTooltipText("プレイリストに追加");
