@@ -10,10 +10,12 @@ const usePlaylistSelectionStore = create((set, get) => ({
   localCoverImageUrl: null,
   uploadTrackFile: null,
 
-  setIsSelectVisible: (isSelectVisible) => set({ isSelectVisible }),
   setSelectedTrack: (selectedTrack) => set({ selectedTrack }),
   setLocalCoverImageUrl: (localCoverImageUrl) => set({ localCoverImageUrl }),
   setUploadTrackFile: (uploadTrackFile) => set({ uploadTrackFile }),
+
+  openPlaylistSelectModal: () => set({ isSelectVisible: true }),
+  closePlaylistSelectModal: () => set({ isSelectVisible: false }),
 
   addTrackToList: (playlistId, addedTrack) => {
     const { currentPlaylistId, setTracks, setAddedTrackDuration } = usePlaylistStore.getState();
