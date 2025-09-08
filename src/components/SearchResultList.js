@@ -9,8 +9,9 @@ import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 
 const TrackList = ({ containerRef }) => {
   const { searchResults, query } = useContext(SearchContext);
-  const { formatTime, setTrackOrigin } = usePlayerContext();
+  const { formatTime } = usePlayerContext();
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
+  const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
 
   const IMAGES_LOADED_COUNT = 10;
   const LOADING_DELAY = 100;
