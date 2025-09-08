@@ -10,27 +10,21 @@ import usePlaylistSelectionStore from "../store/playlistSelectionStore";
 export const PlaylistSelectionContext = createContext();
 
 export const PlaylistSelectionProvider = ({ children }) => {
-  const setQueue = usePlaybackStore((state) => state.setQueue);
   const trackOrigin = usePlaybackStore((state) => state.trackOrigin);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const showUploadModal = useUploadModalStore((state) => state.showUploadModal);
-  const hideUploadModal = useUploadModalStore((state) => state.hideSelectPlaylistModal);
-
-  const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
+  const hideUploadModal = useUploadModalStore((state) => state.hideUploadModal);
   const setPreselectedTrack = usePlaylistStore((state) => state.setPreselectedTrack);
-  const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
-  const setTracks = usePlaylistStore((state) => state.setTracks);
   const fadeCoverImages = usePlaylistStore((state) => state.fadeCoverImages);
 
   const setIsSelectVisible = usePlaylistSelectionStore((state) => state.setIsSelectVisible);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
   const setSelectedTrack = usePlaylistSelectionStore((state) => state.setSelectedTrack);
-  const localCoverImageUrl = usePlaylistSelectionStore((state) => state.localCoverImageUrl);
   const setLocalCoverImageUrl = usePlaylistSelectionStore((state) => state.setLocalCoverImageUrl);
-  const uploadTrackFile = usePlaylistSelectionStore((state) => state.uploadTrackFile);
   const setUploadTrackFile = usePlaylistSelectionStore((state) => state.setUploadTrackFile);
-
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const saveTrackToFirestore = usePlaylistSelectionStore((state) => state.saveTrackToFirestore);
+  const saveUploadedLocalTrack = usePlaylistSelectionStore((state) => state.saveUploadedLocalTrack);
+  const saveUploadAndNewTrack = usePlaylistSelectionStore((state) => state.saveUploadAndNewTrack);
 
   const playlistNameRef = useRef("");
 
@@ -42,77 +36,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const showSelectModal = () => setIsSelectVisible(true);
 
   const hideSelectPlaylistModal = () => setIsSelectVisible(false);
-
-  function addTrackToList(playlistId, addedTrack) {
-    if (currentPlaylistId !== playlistId) return;
-    setTracks((prev) => [...prev, addedTrack]);
-    setQueue((prev) => [...prev, addedTrack]);
-    setAddedTrackDuration((prev) => prev + addedTrack.duration_ms);
-  }
-
-  // executeTrackSave関数でtry-catchをラップしてるから不要↓
-  async function saveTrackToFirestore(playlistId) {
-    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/spotify-tracks`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedTrack),
-    });
-
-    if (!response.ok) throw new Error("addFailedSpotify");
-
-    const { addedTrack } = await response.json();
-    addTrackToList(playlistId, addedTrack);
-  }
-
-  async function saveUploadedLocalTrack(playlistId) {
-    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/local-tracks`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedTrack),
-    });
-
-    if (!response.ok) throw new Error("addFailedLocal");
-
-    const { addedTrack } = await response.json();
-    addTrackToList(playlistId, addedTrack);
-  }
-
-  async function blobUrlToFile(blobUrl, filename) {
-    const res = await fetch(blobUrl);
-    if (!res.ok) throw new Error("Blob取得失敗");
-    const blob = await res.blob();
-    return new File([blob], filename, { type: blob.type });
-  }
-
-  async function saveUploadAndNewTrack(playlistId) {
-    const formData = new FormData();
-
-    let coverImageFile;
-
-    try {
-      coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
-    } catch {
-      coverImageFile = null;
-    }
-
-    if (coverImageFile) formData.append("cover", coverImageFile);
-    formData.append("audio", uploadTrackFile);
-    formData.append("track", JSON.stringify(selectedTrack));
-
-    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/local-tracks/new`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) throw new Error("addFailedNewLocal");
-
-    const { addedTrack } = await response.json();
-    addTrackToList(playlistId, addedTrack);
-  }
 
   async function executeTrackSave(actionFunction, id) {
     try {
