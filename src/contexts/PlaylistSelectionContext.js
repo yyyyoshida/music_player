@@ -17,7 +17,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const setPreselectedTrack = usePlaylistStore((state) => state.setPreselectedTrack);
   const fadeCoverImages = usePlaylistStore((state) => state.fadeCoverImages);
 
-  const setIsSelectVisible = usePlaylistSelectionStore((state) => state.setIsSelectVisible);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
   const setSelectedTrack = usePlaylistSelectionStore((state) => state.setSelectedTrack);
   const setLocalCoverImageUrl = usePlaylistSelectionStore((state) => state.setLocalCoverImageUrl);
@@ -25,30 +24,26 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const saveTrackToFirestore = usePlaylistSelectionStore((state) => state.saveTrackToFirestore);
   const saveUploadedLocalTrack = usePlaylistSelectionStore((state) => state.saveUploadedLocalTrack);
   const saveUploadAndNewTrack = usePlaylistSelectionStore((state) => state.saveUploadAndNewTrack);
+  const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
+  const closePlaylistSelectModal = usePlaylistSelectionStore((state) => state.closePlaylistSelectModal);
 
   const playlistNameRef = useRef("");
 
   // コンポーネントの関数と簡単な処理は可読性重視のためアロー関数で書く↓
   // それ以外はfunction宣言
 
-  const toggleSelectVisible = () => setIsSelectVisible((prev) => !prev);
-
-  const showSelectModal = () => setIsSelectVisible(true);
-
-  const hideSelectPlaylistModal = () => setIsSelectVisible(false);
-
   async function executeTrackSave(actionFunction, id) {
     try {
       await actionFunction();
       fadeCoverImages();
       showMessage("add");
-      hideSelectPlaylistModal();
+      closePlaylistSelectModal();
       hideUploadModal();
       clearPlaylistCache(id);
       console.log(id);
     } catch (error) {
       hideUploadModal();
-      hideSelectPlaylistModal();
+      closePlaylistSelectModal();
       showMessage(error.message);
       console.log(error.message);
     }
@@ -62,7 +57,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
     const isUploadedLocalTrack = selectedTrack.audioURL;
 
     if (isNewLocalTrack) {
-      hideSelectPlaylistModal();
+      closePlaylistSelectModal();
       showUploadModal();
     }
     // elseを使わず、returnで区切ったほうが個人的に読みやすかったのだが、
@@ -128,7 +123,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
       });
     }
 
-    if (shouldToggle) showSelectModal();
+    if (shouldToggle) openPlaylistSelectModal();
   }
 
   useEffect(() => {
@@ -138,7 +133,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
   return (
     <PlaylistSelectionContext.Provider
       value={{
-        toggleSelectVisible,
         playlistNameRef,
         addTrackToPlaylist,
 
