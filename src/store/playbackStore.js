@@ -8,6 +8,7 @@ const usePlaybackStore = create((set) => ({
   currentTitle: "曲のタイトル",
   currentArtistName: "アーティスト・作者",
   currentCoverImage: "/img/fallback-cover.png",
+  trackOrigin: null,
 
   setQueue: (queue) => set({ queue }),
   setCurrentIndex: (currentIndex) => set({ currentIndex }),
@@ -16,6 +17,7 @@ const usePlaybackStore = create((set) => ({
   setCurrentTitle: (currentTitle) => set({ currentTitle }),
   setCurrentArtistName: (currentArtistName) => set({ currentArtistName }),
   setCurrentCoverImage: (currentCoverImage) => set({ currentCoverImage }),
+  setTrackOrigin: (trackOrigin) => set({ trackOrigin }),
 }));
 
 export default usePlaybackStore;
