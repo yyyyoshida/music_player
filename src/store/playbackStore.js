@@ -10,7 +10,11 @@ const usePlaybackStore = create((set) => ({
   currentCoverImage: "/img/fallback-cover.png",
   trackOrigin: null,
 
-  setQueue: (queue) => set({ queue }),
+  // setQueue: (queue) => set({ queue }),
+  setQueue: (updater) =>
+    set((state) => ({
+      queue: typeof updater === "function" ? updater(state.queue) : updater,
+    })),
   setCurrentIndex: (currentIndex) => set({ currentIndex }),
   setCurrentTrackId: (currentTrackId) => set({ currentTrackId }),
   setCurrentPlayedAt: (currentPlayedAt) => set({ currentPlayedAt }),
