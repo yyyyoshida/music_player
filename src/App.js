@@ -8,7 +8,6 @@ import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
 import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
-import { UploadModalProvider } from "./contexts/UploadModalContext";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
@@ -98,14 +97,12 @@ function App() {
     <BrowserRouter>
       <RepeatProvider>
         <SearchProvider>
-          <UploadModalProvider>
-            <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
-              <PlaylistSelectionProvider>
-                <Header onSearchResults={handleSearchResults} profile={profile} />
-                <Main searchResults={searchResults} setProfile={setProfile} />
-              </PlaylistSelectionProvider>
-            </PlayerProvider>
-          </UploadModalProvider>
+          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+            <PlaylistSelectionProvider>
+              <Header onSearchResults={handleSearchResults} profile={profile} />
+              <Main searchResults={searchResults} setProfile={setProfile} />
+            </PlaylistSelectionProvider>
+          </PlayerProvider>
         </SearchProvider>
       </RepeatProvider>
     </BrowserRouter>
