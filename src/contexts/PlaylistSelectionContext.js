@@ -1,10 +1,11 @@
-import { createContext, useState, useRef, useEffect } from "react";
+import { createContext, useRef, useEffect } from "react";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import usePlaybackStore from "../store/playbackStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import usePlaylistStore from "../store/playlistStore";
 import useUploadModalStore from "../store/uploadModalStore";
+import usePlaylistSelectionStore from "../store/playlistSelectionStore";
 
 export const PlaylistSelectionContext = createContext();
 
@@ -21,10 +22,13 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const setTracks = usePlaylistStore((state) => state.setTracks);
   const fadeCoverImages = usePlaylistStore((state) => state.fadeCoverImages);
 
-  const [isSelectVisible, setIsSelectVisible] = useState(false);
-  const [selectedTrack, setSelectedTrack] = useState(null);
-  const [localCoverImageUrl, setLocalCoverImageUrl] = useState(null);
-  const [uploadTrackFile, setUploadTrackFile] = useState(null);
+  const setIsSelectVisible = usePlaylistSelectionStore((state) => state.setIsSelectVisible);
+  const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
+  const setSelectedTrack = usePlaylistSelectionStore((state) => state.setSelectedTrack);
+  const localCoverImageUrl = usePlaylistSelectionStore((state) => state.localCoverImageUrl);
+  const setLocalCoverImageUrl = usePlaylistSelectionStore((state) => state.setLocalCoverImageUrl);
+  const uploadTrackFile = usePlaylistSelectionStore((state) => state.uploadTrackFile);
+  const setUploadTrackFile = usePlaylistSelectionStore((state) => state.setUploadTrackFile);
 
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -212,13 +216,9 @@ export const PlaylistSelectionProvider = ({ children }) => {
     <PlaylistSelectionContext.Provider
       value={{
         toggleSelectVisible,
-        isSelectVisible,
-        setIsSelectVisible,
         playlistNameRef,
         addTrackToPlaylist,
 
-        selectedTrack,
-        setSelectedTrack,
         handleTrackSelect,
       }}
     >

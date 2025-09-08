@@ -6,12 +6,14 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import usePlaylistStore from "../../store/playlistStore";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistSelection = () => {
   const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
-  const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
+  const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
+  const { toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
 
   const LOADING_DELAY = 200;
 
