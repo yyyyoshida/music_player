@@ -27,7 +27,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
   const { isRepeat } = useRepeatContext();
   const { token, setToken } = useContext(TokenContext);
-  const [trackOrigin, setTrackOrigin] = useState(null);
   const FADE_DURATION = 3000;
 
   useEffect(() => {
@@ -153,9 +152,6 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
 
         isTrackSet,
         setIsTrackSet,
-
-        trackOrigin,
-        setTrackOrigin,
       }}
     >
       {children}

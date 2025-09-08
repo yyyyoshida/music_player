@@ -2,7 +2,7 @@ import { useEffect, useState, useContext, useRef } from "react";
 import jsmediatags from "jsmediatags/dist/jsmediatags.min.js";
 import LocalAudioDuration from "./LocalAudioDuration";
 import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
-import { usePlayerContext } from "../contexts/PlayerContext";
+import usePlaybackStore from "../store/playbackStore";
 
 const LocalFileImportNav = () => {
   const fileInputRef = useRef(null);
@@ -13,7 +13,7 @@ const LocalFileImportNav = () => {
   const [tags, setTags] = useState(null);
 
   const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  const { setTrackOrigin } = usePlayerContext();
+  const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
 
   function handleClick() {
     setTrackOrigin("local");

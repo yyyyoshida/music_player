@@ -22,7 +22,7 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
-  const { formatTime, setIsTrackSet, setTrackOrigin } = usePlayerContext();
+  const { formatTime, setIsTrackSet } = usePlayerContext();
 
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   const tracks = usePlaylistStore((state) => state.tracks);
@@ -44,6 +44,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
   const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
+  const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
 
   const playerTrack = usePlayerStore((state) => state.playerTrack);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);

@@ -1,17 +1,19 @@
-import { createContext, useState, useRef, useContext, useEffect } from "react";
+import { createContext, useState, useRef, useEffect } from "react";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
-import UploadModalContext from "./UploadModalContext";
-import { usePlayerContext } from "../contexts/PlayerContext";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import usePlaybackStore from "../store/playbackStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import usePlaylistStore from "../store/playlistStore";
+import useUploadModalStore from "../store/uploadModalStore";
 
 export const PlaylistSelectionContext = createContext();
 
 export const PlaylistSelectionProvider = ({ children }) => {
   const setQueue = usePlaybackStore((state) => state.setQueue);
+  const trackOrigin = usePlaybackStore((state) => state.trackOrigin);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const showUploadModal = useUploadModalStore((state) => state.showUploadModal);
+  const hideUploadModal = useUploadModalStore((state) => state.hideSelectPlaylistModal);
 
   const currentPlaylistId = usePlaylistStore((state) => state.currentPlaylistId);
   const setPreselectedTrack = usePlaylistStore((state) => state.setPreselectedTrack);
@@ -23,9 +25,6 @@ export const PlaylistSelectionProvider = ({ children }) => {
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [localCoverImageUrl, setLocalCoverImageUrl] = useState(null);
   const [uploadTrackFile, setUploadTrackFile] = useState(null);
-
-  const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
-  const { trackOrigin } = usePlayerContext();
 
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
