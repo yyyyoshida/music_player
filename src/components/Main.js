@@ -3,9 +3,9 @@ import { Routes, Route } from "react-router-dom";
 import { getNewAccessToken } from "../utils/spotifyAuth";
 
 import { TokenContext } from "../contexts/TokenContext";
-import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 import { PlaybackProvider } from "../contexts/PlaybackContext";
+import usePlaylistSelectionStore from "../store/playlistSelectionStore";
 
 import Home from "../react-router-dom/Home";
 import SearchResult from "./SearchResult";
@@ -25,7 +25,7 @@ import Tooltip from "./Tooltip";
 
 const Main = ({ setProfile }) => {
   const { token, setToken, setIsToken } = useContext(TokenContext);
-  const { isSelectVisible } = useContext(PlaylistSelectionContext);
+  const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
 
   const containerRef = useRef(null);
   const localRefreshToken = localStorage.getItem("refresh_token");
