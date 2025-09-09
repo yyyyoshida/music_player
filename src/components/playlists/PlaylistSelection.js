@@ -1,5 +1,3 @@
-import { useContext } from "react";
-import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import PlaylistSelectSkeleton from "../skeletonUI/PlaylistSelectSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
@@ -15,8 +13,7 @@ const PlaylistSelection = () => {
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
   const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
   const closePlaylistSelectModal = usePlaylistSelectionStore((state) => state.closePlaylistSelectModal);
-
-  const { addTrackToPlaylist } = useContext(PlaylistSelectionContext);
+  const addTrackToPlaylist = usePlaylistSelectionStore((state) => state.addTrackToPlaylist);
 
   const LOADING_DELAY = 200;
 

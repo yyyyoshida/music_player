@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import usePlaylistStore from "./playlistStore";
 import usePlaybackStore from "./playbackStore";
+import useActionSuccessMessageStore from "./actionSuccessMessageStore";
+import useUploadModalStore from "./uploadModalStore";
+import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -95,6 +98,57 @@ const usePlaylistSelectionStore = create((set, get) => ({
 
     const { addedTrack } = await response.json();
     addTrackToList(playlistId, addedTrack);
+  },
+
+  executeTrackSave: async (actionFunction, playlistId) => {
+    const { closePlaylistSelectModal } = get();
+    const { fadeCoverImages } = usePlaylistStore.getState();
+    const { showMessage } = useActionSuccessMessageStore.getState();
+    const { hideUploadModal } = useUploadModalStore.getState();
+
+    try {
+      await actionFunction();
+      fadeCoverImages();
+      showMessage("add");
+      closePlaylistSelectModal();
+      hideUploadModal();
+      clearPlaylistCache(playlistId);
+    } catch (error) {
+      hideUploadModal();
+      closePlaylistSelectModal();
+      showMessage(error.message);
+    }
+  },
+
+  addTrackToPlaylist: async (playlistId) => {
+    const { selectedTrack, closePlaylistSelectModal, executeTrackSave, saveTrackToFirestore, saveUploadedLocalTrack, saveUploadAndNewTrack } = get();
+    const { showUploadModal } = useUploadModalStore.getState();
+
+    if (!selectedTrack) return;
+
+    const isNewLocalTrack = selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
+    const isSpotifyTrack = selectedTrack.trackUri;
+    const isUploadedLocalTrack = selectedTrack.audioURL;
+
+    if (isNewLocalTrack) {
+      closePlaylistSelectModal();
+      showUploadModal();
+    }
+    // elseを使わず、returnで区切ったほうが個人的に読みやすかったのだが、
+    // それ以降の共通処理 catch()とかが実行されないので
+    // try-catch関数でラップして共通処理を走らせるようにした ↓↓↓
+
+    if (isSpotifyTrack) {
+      await executeTrackSave(() => saveTrackToFirestore(playlistId), playlistId);
+      return;
+    }
+
+    if (isUploadedLocalTrack) {
+      await executeTrackSave(() => saveUploadedLocalTrack(playlistId), playlistId);
+      return;
+    }
+
+    await executeTrackSave(() => saveUploadAndNewTrack(playlistId), playlistId);
   },
 }));
 
