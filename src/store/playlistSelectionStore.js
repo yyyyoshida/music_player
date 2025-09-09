@@ -150,6 +150,58 @@ const usePlaylistSelectionStore = create((set, get) => ({
 
     await executeTrackSave(() => saveUploadAndNewTrack(playlistId), playlistId);
   },
+
+  handleTrackSelect: (track, shouldToggle = true, file = null, imageUrl = null) => {
+    const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } = get();
+    const { trackOrigin } = usePlaybackStore.getState();
+
+    if (trackOrigin === "searchResults") {
+      setSelectedTrack({
+        trackId: track.id,
+        trackUri: track.uri,
+        albumImage: track.album.images[1]?.url,
+        title: track.name,
+        artist: track.artists[0]?.name,
+        duration_ms: track.duration_ms,
+        source: "spotify",
+      });
+    } else if (trackOrigin === "firebase" && track.source === "spotify") {
+      setSelectedTrack({
+        trackId: track.trackId,
+        trackUri: track.trackUri,
+        albumImage: track.albumImage,
+        title: track.title,
+        artist: track.artist,
+        duration_ms: track.duration_ms,
+        source: "spotify",
+      });
+    } else if (trackOrigin === "local" || track.source === "local") {
+      setSelectedTrack({
+        title: track.title,
+        artist: track.artist,
+        duration_ms: track.duration_ms,
+        albumImage: track.albumImage,
+        albumImagePath: track.albumImagePath,
+        audioPath: track.audioPath,
+        audioURL: track.audioURL,
+        source: "local",
+      });
+      if (file) setUploadTrackFile(file);
+      if (imageUrl) setLocalCoverImageUrl(imageUrl);
+    } else {
+      setSelectedTrack({
+        trackId: track.track.id,
+        trackUri: track.track.uri,
+        albumImage: track.track.album.images[1].url,
+        title: track.track.name,
+        artist: track.track.artists[0].name,
+        duration: track.track.duration_ms,
+        source: "spotify",
+      });
+    }
+
+    if (shouldToggle) openPlaylistSelectModal();
+  },
 }));
 
 export default usePlaylistSelectionStore;
