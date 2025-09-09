@@ -1,12 +1,13 @@
-import usePlaylistStore from "../store/playlistStore";
 import useUploadModalStore from "../store/uploadModalStore";
+import usePlaylistSelectionStore from "../store/playlistSelectionStore";
 
 const UploadStatusModal = () => {
-  const preselectedTrack = usePlaylistStore((state) => state.preselectedTrack);
+  const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
+
   const isUploadModalVisible = useUploadModalStore((state) => state.isUploadModalVisible);
   const hideUploadModal = useUploadModalStore((state) => state.hideUploadModal);
   // let trackCoverImage;
-  const isUsedFallbackImage = preselectedTrack?.albumImage === "/img/fallback-cover.png";
+  const isUsedFallbackImage = selectedTrack?.albumImage === "/img/fallback-cover.png";
 
   return (
     <div className="upload-modal modal" style={{ visibility: isUploadModalVisible ? "visible" : "hidden" }}>
@@ -16,14 +17,14 @@ const UploadStatusModal = () => {
           <div className="upload-modal__track">
             <div className="upload-modal__track-cover-img-wrapper">
               <img
-                src={preselectedTrack?.albumImage}
+                src={selectedTrack?.albumImage}
                 className={`upload-modal__track-cover-img ${isUsedFallbackImage ? "fallback-cover" : ""}`}
                 alt="アップロード中の曲のカバー画像"
               />
             </div>
             <div className="upload-modal__track-info">
-              <p className="upload-modal__track-title">{preselectedTrack?.title ?? "タイトル不明"}</p>
-              <p className="upload-modal__track-artist">{preselectedTrack?.artist ?? "アーティスト不明"}</p>
+              <p className="upload-modal__track-title">{selectedTrack?.title ?? "タイトル不明"}</p>
+              <p className="upload-modal__track-artist">{selectedTrack?.artist ?? "アーティスト不明"}</p>
             </div>
             <div className={`loader ${isUploadModalVisible ? "animate" : ""}`}></div>
           </div>
