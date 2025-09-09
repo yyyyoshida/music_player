@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import usePlayerStore from "../../store/playerStore";
 import useTooltipStore from "../../store/tooltipStore";
@@ -6,7 +6,6 @@ import usePlaybackStore from "../../store/playbackStore";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
-import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 import { isFallback } from "../../utils/isFallback";
@@ -32,9 +31,10 @@ const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
   const toggleTrackMenu = useTrackMoreMenuStore((state) => state.toggleTrackMenu);
 
   const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
+  const handleTrackSelect = usePlaylistSelectionStore((state) => state.handleTrackSelect);
+
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
-  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setIsTrackSet } = usePlayerContext();
   const [pendingTrackId, setPendingTrackId] = useState(null);
 
