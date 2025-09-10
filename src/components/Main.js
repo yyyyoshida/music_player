@@ -3,10 +3,9 @@ import { Routes, Route } from "react-router-dom";
 import { getNewAccessToken } from "../utils/spotifyAuth";
 
 import { TokenContext } from "../contexts/TokenContext";
-import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { TrackInfoProvider } from "../contexts/TrackInfoContext";
-import { TrackMoreMenuProvider } from "../contexts/TrackMoreMenuContext";
-import { TooltipProvider } from "../contexts/TooltipContext";
+import { PlaybackProvider } from "../contexts/PlaybackContext";
+import usePlaylistSelectionStore from "../store/playlistSelectionStore";
 
 import Home from "../react-router-dom/Home";
 import SearchResult from "./SearchResult";
@@ -26,7 +25,7 @@ import Tooltip from "./Tooltip";
 
 const Main = ({ setProfile }) => {
   const { token, setToken, setIsToken } = useContext(TokenContext);
-  const { isSelectVisible } = useContext(PlaylistSelectionContext);
+  const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
 
   const containerRef = useRef(null);
   const localRefreshToken = localStorage.getItem("refresh_token");
@@ -77,26 +76,24 @@ const Main = ({ setProfile }) => {
 
       <div className="container" ref={containerRef}>
         <main>
-          <TooltipProvider>
-            <TrackInfoProvider>
-              <TrackMoreMenuProvider>
-                <ThumbnailPreview />
-                <TrackMoreMenu />
-                <Tooltip />
-                {isSelectVisible && <PlaylistSelection />}
-                <UploadStatusModal />
-                <CreatePlaylist />
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
-                  <Route path="/playlist" element={<Playlist />} />
-                  <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
-                </Routes>
-                <PlayerControls />
-                <ActionSuccessMessage />
-              </TrackMoreMenuProvider>
-            </TrackInfoProvider>
-          </TooltipProvider>
+          <TrackInfoProvider>
+            <ThumbnailPreview />
+            <TrackMoreMenu />
+            <Tooltip />
+            {isSelectVisible && <PlaylistSelection />}
+            <UploadStatusModal />
+            <CreatePlaylist />
+            <PlaybackProvider>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
+                <Route path="/playlist" element={<Playlist />} />
+                <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
+              </Routes>
+              <PlayerControls />
+            </PlaybackProvider>
+            <ActionSuccessMessage />
+          </TrackInfoProvider>
         </main>
         {/* <Footer /> */}
       </div>

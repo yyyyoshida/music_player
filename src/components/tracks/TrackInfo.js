@@ -1,9 +1,8 @@
 import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
-import { usePlayerContext } from "../../contexts/PlayerContext";
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
 import useDelayedText from "../../hooks/useDelayText";
-import { TooltipContext } from "../../contexts/TooltipContext";
-import { PlaybackContext } from "../../contexts/PlaybackContext";
+import usePlaybackStore from "../../store/playbackStore";
+import useTooltipStore from "../../store/tooltipStore";
 import { isFallback } from "../../utils/isFallback";
 
 const TrackInfo = () => {
@@ -11,17 +10,22 @@ const TrackInfo = () => {
   const [isHidden, setIsHidden] = useState(false);
   const [width, setWidth] = useState(85);
 
-  const { isPlaying } = usePlayerContext();
-  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
+
+  const currentTitle = usePlaybackStore((state) => state.currentTitle);
+  const currentArtistName = usePlaybackStore((state) => state.currentArtistName);
+  const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
+  const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
+
+  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
+  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
+  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
 
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
-  const { currentTrackId, currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
   const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
-
-  // トラックの抜粋機能↓↓
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
 
@@ -45,7 +49,7 @@ const TrackInfo = () => {
         setWidth(newWidth);
       }
     }, 0);
-  }, [isPlaying, isVisible, currentTitle]);
+  }, [isVisible, currentTitle]);
 
   function fadeTransition() {
     const transitionElement = transitionRef.current;

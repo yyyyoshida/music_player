@@ -1,10 +1,9 @@
-import { useContext } from "react";
 import SearchBar from "./SearchBar";
 import LocalFileImportNav from "./LocalFileImportNav";
-import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
+import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 function Header({ onSearchResults, profile }) {
-  const { showMessage } = useContext(ActionSuccessMessageContext);
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const userIcon = profile?.images[1].url || "/img/dummy-user.jpg";
   const userName = profile?.display_name || "A A";

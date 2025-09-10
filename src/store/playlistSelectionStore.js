@@ -1,48 +1,40 @@
-import { createContext, useState, useRef, useContext, useEffect } from "react";
-import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
-import { PlaylistContext } from "../contexts/PlaylistContext";
-import { PlaybackContext } from "../contexts/PlaybackContext";
-import { FALLBACK_COVER_IMAGE } from "../assets/icons";
-import UploadModalContext from "./UploadModalContext";
-import { usePlayerContext } from "../contexts/PlayerContext";
+import { create } from "zustand";
+import usePlaylistStore from "./playlistStore";
+import usePlaybackStore from "./playbackStore";
+import useActionSuccessMessageStore from "./actionSuccessMessageStore";
+import useUploadModalStore from "./uploadModalStore";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 
-export const PlaylistSelectionContext = createContext();
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-export const PlaylistSelectionProvider = ({ children }) => {
-  const [isSelectVisible, setIsSelectVisible] = useState(false);
-  const [selectedTrack, setSelectedTrack] = useState(null);
-  const [localCoverImageUrl, setLocalCoverImageUrl] = useState(null);
-  const [uploadTrackFile, setUploadTrackFile] = useState(null);
+const usePlaylistSelectionStore = create((set, get) => ({
+  isSelectVisible: false,
+  selectedTrack: null,
+  localCoverImageUrl: null,
+  uploadTrackFile: null,
 
-  const { showMessage } = useContext(ActionSuccessMessageContext);
-  const { fadeCoverImages, currentPlaylistId, setPreselectedTrack, setAddedTrackDuration, addedTrackDuration, setTracks, tracks } =
-    useContext(PlaylistContext);
-  const { showUploadModal, hideUploadModal } = useContext(UploadModalContext);
-  const { trackOrigin } = usePlayerContext();
-  const { setQueue } = useContext(PlaybackContext);
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  setSelectedTrack: (selectedTrack) => set({ selectedTrack }),
+  setLocalCoverImageUrl: (localCoverImageUrl) => set({ localCoverImageUrl }),
+  setUploadTrackFile: (uploadTrackFile) => set({ uploadTrackFile }),
 
-  const playlistNameRef = useRef("");
+  openPlaylistSelectModal: () => set({ isSelectVisible: true }),
+  closePlaylistSelectModal: () => set({ isSelectVisible: false }),
 
-  // コンポーネントの関数と簡単な処理は可読性重視のためアロー関数で書く↓
-  // それ以外はfunction宣言
+  addTrackToList: (playlistId, addedTrack) => {
+    const { currentPlaylistId, setTracks, setAddedTrackDuration } = usePlaylistStore.getState();
+    const { setQueue } = usePlaybackStore.getState();
 
-  const toggleSelectVisible = () => setIsSelectVisible((prev) => !prev);
-
-  const showSelectModal = () => setIsSelectVisible(true);
-
-  const hideSelectPlaylistModal = () => setIsSelectVisible(false);
-
-  function addTrackToList(playlistId, addedTrack) {
     if (currentPlaylistId !== playlistId) return;
+
     setTracks((prev) => [...prev, addedTrack]);
     setQueue((prev) => [...prev, addedTrack]);
     setAddedTrackDuration((prev) => prev + addedTrack.duration_ms);
-  }
+  },
 
   // executeTrackSave関数でtry-catchをラップしてるから不要↓
-  async function saveTrackToFirestore(playlistId) {
+  saveTrackToFirestore: async (playlistId) => {
+    const { addTrackToList, selectedTrack } = get();
+
     const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/spotify-tracks`, {
       method: "POST",
       headers: {
@@ -55,9 +47,11 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
     const { addedTrack } = await response.json();
     addTrackToList(playlistId, addedTrack);
-  }
+  },
 
-  async function saveUploadedLocalTrack(playlistId) {
+  saveUploadedLocalTrack: async (playlistId) => {
+    const { addTrackToList, selectedTrack } = get();
+
     const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/local-tracks`, {
       method: "POST",
       headers: {
@@ -70,16 +64,17 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
     const { addedTrack } = await response.json();
     addTrackToList(playlistId, addedTrack);
-  }
+  },
 
-  async function blobUrlToFile(blobUrl, filename) {
+  blobUrlToFile: async (blobUrl, filename) => {
     const res = await fetch(blobUrl);
     if (!res.ok) throw new Error("Blob取得失敗");
     const blob = await res.blob();
     return new File([blob], filename, { type: blob.type });
-  }
+  },
 
-  async function saveUploadAndNewTrack(playlistId) {
+  saveUploadAndNewTrack: async (playlistId) => {
+    const { blobUrlToFile, localCoverImageUrl, uploadTrackFile, selectedTrack, addTrackToList } = get();
     const formData = new FormData();
 
     let coverImageFile;
@@ -103,26 +98,32 @@ export const PlaylistSelectionProvider = ({ children }) => {
 
     const { addedTrack } = await response.json();
     addTrackToList(playlistId, addedTrack);
-  }
+  },
 
-  async function executeTrackSave(actionFunction, id) {
+  executeTrackSave: async (actionFunction, playlistId) => {
+    const { closePlaylistSelectModal } = get();
+    const { fadeCoverImages } = usePlaylistStore.getState();
+    const { showMessage } = useActionSuccessMessageStore.getState();
+    const { hideUploadModal } = useUploadModalStore.getState();
+
     try {
       await actionFunction();
       fadeCoverImages();
       showMessage("add");
-      hideSelectPlaylistModal();
+      closePlaylistSelectModal();
       hideUploadModal();
-      clearPlaylistCache(id);
-      console.log(id);
+      clearPlaylistCache(playlistId);
     } catch (error) {
       hideUploadModal();
-      hideSelectPlaylistModal();
+      closePlaylistSelectModal();
       showMessage(error.message);
-      console.log(error.message);
     }
-  }
+  },
 
-  async function addTrackToPlaylist(playlistId) {
+  addTrackToPlaylist: async (playlistId) => {
+    const { selectedTrack, closePlaylistSelectModal, executeTrackSave, saveTrackToFirestore, saveUploadedLocalTrack, saveUploadAndNewTrack } = get();
+    const { showUploadModal } = useUploadModalStore.getState();
+
     if (!selectedTrack) return;
 
     const isNewLocalTrack = selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
@@ -130,7 +131,7 @@ export const PlaylistSelectionProvider = ({ children }) => {
     const isUploadedLocalTrack = selectedTrack.audioURL;
 
     if (isNewLocalTrack) {
-      hideSelectPlaylistModal();
+      closePlaylistSelectModal();
       showUploadModal();
     }
     // elseを使わず、returnで区切ったほうが個人的に読みやすかったのだが、
@@ -148,9 +149,12 @@ export const PlaylistSelectionProvider = ({ children }) => {
     }
 
     await executeTrackSave(() => saveUploadAndNewTrack(playlistId), playlistId);
-  }
+  },
 
-  function handleTrackSelect(track, shouldToggle = true, file = null, imageUrl = null) {
+  handleTrackSelect: (track, shouldToggle = true, file = null, imageUrl = null) => {
+    const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } = get();
+    const { trackOrigin } = usePlaybackStore.getState();
+
     if (trackOrigin === "searchResults") {
       setSelectedTrack({
         trackId: track.id,
@@ -196,30 +200,8 @@ export const PlaylistSelectionProvider = ({ children }) => {
       });
     }
 
-    if (shouldToggle) showSelectModal();
-  }
+    if (shouldToggle) openPlaylistSelectModal();
+  },
+}));
 
-  useEffect(() => {
-    setPreselectedTrack(selectedTrack);
-  }, [selectedTrack]);
-
-  return (
-    <PlaylistSelectionContext.Provider
-      value={{
-        toggleSelectVisible,
-        isSelectVisible,
-        setIsSelectVisible,
-        playlistNameRef,
-        addTrackToPlaylist,
-
-        selectedTrack,
-        setSelectedTrack,
-        handleTrackSelect,
-      }}
-    >
-      {children}
-    </PlaylistSelectionContext.Provider>
-  );
-};
-
-export default PlaylistSelectionContext;
+export default usePlaylistSelectionStore;

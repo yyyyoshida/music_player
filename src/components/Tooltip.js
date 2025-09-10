@@ -1,12 +1,17 @@
-import { useState, useEffect, useContext, useRef } from "react";
-import { TooltipContext } from "../contexts/TooltipContext";
+import { useState, useEffect, useRef } from "react";
+import useTooltipStore from "../store/tooltipStore";
 
 const Tooltip = () => {
   const [correctedPosition, setCorrectedPosition] = useState({ x: 0, y: 0 });
   const [tooltipOpacity, setTooltipOpacity] = useState(0);
   const [tooltipVisibility, setTooltipVisibility] = useState("hidden");
 
-  const { isHovered, isButtonPressed, className, isOpenMenu, tooltipPosition, tooltipText } = useContext(TooltipContext);
+  const isButtonPressed = useTooltipStore((state) => state.isButtonPressed);
+  const tooltipText = useTooltipStore((state) => state.tooltipText);
+  const isHovered = useTooltipStore((state) => state.isHovered);
+  const tooltipPosition = useTooltipStore((state) => state.tooltipPosition);
+  const trackMousePosition = useTooltipStore((state) => state.trackMousePosition);
+
   const tooltipRef = useRef(null);
 
   useEffect(() => {
@@ -46,21 +51,27 @@ const Tooltip = () => {
     }
   }, [isHovered, isButtonPressed]);
 
+  useEffect(() => {
+    window.addEventListener("mousemove", trackMousePosition);
+    return () => {
+      window.removeEventListener("mousemove", trackMousePosition);
+    };
+  }, []);
+
   return (
-    <>
-      <span
-        ref={tooltipRef}
-        className={`tooltip ${className}`}
-        style={{
-          opacity: isOpenMenu ? 0 : tooltipOpacity,
-          visibility: tooltipVisibility,
-          top: correctedPosition.y,
-          left: correctedPosition.x,
-        }}
-      >
-        {tooltipText}
-      </span>
-    </>
+    <span
+      ref={tooltipRef}
+      className="tooltip"
+      style={{
+        // opacity: isOpenMenu ? 0 : tooltipOpacity,
+        opacity: tooltipOpacity,
+        visibility: tooltipVisibility,
+        top: correctedPosition.y,
+        left: correctedPosition.x,
+      }}
+    >
+      {tooltipText}
+    </span>
   );
 };
 

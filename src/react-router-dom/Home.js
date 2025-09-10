@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import { usePlayerContext } from "../contexts/PlayerContext";
-import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
+// import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { playIcon, pauseIcon } from "../assets/icons";
 import { PlaybackContext } from "../contexts/PlaybackContext";
 import { TokenContext } from "../contexts/TokenContext";
@@ -14,7 +14,7 @@ const Home = () => {
   const [initialLoaded, setInitialLoaded] = useState(false);
 
   const { playerTrack, isPlaying, trackId, setIsTrackSet } = usePlayerContext();
-  const { handleTrackSelect } = useContext(PlaylistSelectionContext);
+  // const { handleTrackSelect } = useContext(PlaylistSelectionContext);
   const { setQueue } = useContext(PlaybackContext);
   const { token } = useContext(TokenContext);
 

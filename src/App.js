@@ -7,11 +7,6 @@ import { TokenContext } from "./contexts/TokenContext";
 import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
-import { PlaybackProvider } from "./contexts/PlaybackContext";
-import { PlaylistProvider } from "./contexts/PlaylistContext";
-import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
-import { UploadModalProvider } from "./contexts/UploadModalContext";
-import { ActionSuccessMessageProvider } from "./contexts/ActionSuccessMessageContext";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
@@ -20,8 +15,6 @@ function App() {
   const [profile, setProfile] = useState(null);
   const [isTrackSet, setIsTrackSet] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  const [queue, setQueue] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const { setToken, setIsToken } = useContext(TokenContext);
 
@@ -101,24 +94,14 @@ function App() {
 
   return (
     <BrowserRouter>
-      <ActionSuccessMessageProvider>
-        <RepeatProvider>
-          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet} queue={queue} currentIndex={currentIndex}>
-            <PlaybackProvider isTrackSet={isTrackSet} queue={queue} setQueue={setQueue} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
-              <SearchProvider>
-                <PlaylistProvider>
-                  <UploadModalProvider>
-                    <PlaylistSelectionProvider>
-                      <Header onSearchResults={handleSearchResults} profile={profile} />
-                      <Main searchResults={searchResults} setProfile={setProfile} />
-                    </PlaylistSelectionProvider>
-                  </UploadModalProvider>
-                </PlaylistProvider>
-              </SearchProvider>
-            </PlaybackProvider>
+      <RepeatProvider>
+        <SearchProvider>
+          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+            <Header onSearchResults={handleSearchResults} profile={profile} />
+            <Main searchResults={searchResults} setProfile={setProfile} />
           </PlayerProvider>
-        </RepeatProvider>
-      </ActionSuccessMessageProvider>
+        </SearchProvider>
+      </RepeatProvider>
     </BrowserRouter>
   );
 }
