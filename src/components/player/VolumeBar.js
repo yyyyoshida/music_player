@@ -1,30 +1,25 @@
-import { useState, useEffect, useRef, useContext } from "react";
-import { usePlayerContext } from "../../contexts/PlayerContext";
-import { TooltipContext } from "../../contexts/TooltipContext";
+import { useState, useEffect, useRef } from "react";
 import useDelayedText from "../../hooks/useDelayText";
 import useBarHandler from "../../hooks/useBarHandler";
 import VolumeIcon from "./VolumeIcon";
+import useTooltipStore from "../../store/tooltipStore";
+import usePlayerStore from "../../store/playerStore";
 
 const VolumeBar = ({ initialValue }) => {
   const [isMuted, setIsMuted] = useState(() => {
     const savedMute = localStorage.getItem("isMuted");
     return savedMute ? JSON.parse(savedMute) : false;
   });
-
   const barRef = useRef(null);
-
   useDelayedText(isMuted, "ミュート：解除", "ミュート");
-  const {
-    handleButtonPress,
-    handleMouseEnter,
+  const audioRef = usePlayerStore((state) => state.audioRef);
+  const updateVolume = usePlayerStore((state) => state.updateVolume);
+  const playerReady = usePlayerStore((state) => state.playerReady);
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
-    handleMouseLeave,
-
-    setTooltipText,
-  } = useContext(TooltipContext);
-
-  const { playerReady, updateVolume, audioRef } = usePlayerContext();
-
+  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
+  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
+  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
   const { percentage, setPercentage, handleMouseDown } = useBarHandler({
     type: "volume",
     initialVolume: initialValue,

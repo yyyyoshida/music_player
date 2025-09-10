@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from "react";
-
-import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
+import { useEffect, useState } from "react";
+import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 const ActionSuccessMessage = () => {
-  const { isMessageVisible, actionType } = useContext(ActionSuccessMessageContext);
+  const isMessageVisible = useActionSuccessMessageStore((state) => state.isMessageVisible);
+  const actionType = useActionSuccessMessageStore((state) => state.actionType);
+
   const [style, setStyle] = useState({ opacity: 0, right: -350 });
 
   useEffect(() => {
@@ -13,6 +14,14 @@ const ActionSuccessMessage = () => {
       setStyle({ opacity: 0, right: -350 });
     }
   }, [isMessageVisible]);
+
+  useEffect(() => {
+    return () => {
+      const { timerId } = useActionSuccessMessageStore.getState();
+      console.log(timerId);
+      if (timerId) clearTimeout(timerId);
+    };
+  }, []);
 
   function getMessage() {
     const message = messages[actionType];

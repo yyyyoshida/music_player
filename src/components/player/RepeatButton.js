@@ -1,20 +1,17 @@
-import { useEffect, useContext } from "react";
+import useTooltipStore from "../../store/tooltipStore";
 import { useRepeatContext } from "../../contexts/RepeatContext";
-import { TooltipContext } from "../../contexts/TooltipContext";
 import useDelayedText from "../../hooks/useDelayText";
 import { repeatOnIcon, repeatOffIcon } from "../../assets/icons";
 
 const RepeatButton = () => {
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
+
+  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
+  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
+  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
+
   const { isRepeat, toggleRepeat } = useRepeatContext();
   useDelayedText(isRepeat, "リピート：オン", "リピート：オフ");
-
-  const {
-    handleButtonPress,
-    handleMouseEnter,
-
-    handleMouseLeave,
-    setTooltipText,
-  } = useContext(TooltipContext);
 
   return (
     <button

@@ -1,6 +1,4 @@
-import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
@@ -8,9 +6,11 @@ import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import CardListSkeleton from "../skeletonUI/CardListSkeleton";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import usePlaylistStore from "../../store/playlistStore";
+import { formatTimeHours } from "../../utils/formatTime";
 
 const Playlist = () => {
-  const { showCreatePlaylistModal, formatTimeHours } = useContext(PlaylistContext);
+  const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
 

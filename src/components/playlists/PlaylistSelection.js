@@ -1,17 +1,19 @@
-import { useContext } from "react";
-import { PlaylistSelectionContext } from "../../contexts/PlaylistSelectionContext";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
 import PlaylistSelectSkeleton from "../skeletonUI/PlaylistSelectSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
+import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
+import usePlaylistStore from "../../store/playlistStore";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistSelection = () => {
-  const { isSelectVisible, toggleSelectVisible, addTrackToPlaylist } = useContext(PlaylistSelectionContext);
-  const { showCreatePlaylistModal } = useContext(PlaylistContext);
+  const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
+  const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
+  const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
+  const closePlaylistSelectModal = usePlaylistSelectionStore((state) => state.closePlaylistSelectModal);
+  const addTrackToPlaylist = usePlaylistSelectionStore((state) => state.addTrackToPlaylist);
 
   const LOADING_DELAY = 200;
 
@@ -24,7 +26,7 @@ const PlaylistSelection = () => {
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>
       <div className="playlist-selection__smoke modal-smoke">
         <div className="playlist-selection__content modal-content">
-          <button className="playlist-selection__close-button" onClick={toggleSelectVisible}>
+          <button className="playlist-selection__close-button" onClick={closePlaylistSelectModal}>
             <img src="/img/x.png" className="playlist-selection__close-icon button"></img>
           </button>
           <h2 className="playlist-selection__title modal-title">プレイリスト選択</h2>
@@ -32,7 +34,7 @@ const PlaylistSelection = () => {
             className="playlist-selection__create-button playlist-create-button"
             onClick={() => {
               showCreatePlaylistModal();
-              toggleSelectVisible();
+              openPlaylistSelectModal();
             }}
           >
             ＋ 新しいプレイリスト作成

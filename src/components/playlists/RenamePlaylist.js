@@ -1,17 +1,25 @@
-import { useEffect, useRef, useContext } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { PlaylistContext } from "../../contexts/PlaylistContext";
-import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
+import usePlaylistStore from "../../store/playlistStore";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const RenameRef = useRef("");
   const { id } = useParams();
-  const { setPlaylists, setPlaylistInfo, playlistInfo, errorMessage, setErrorMessage, MAX_NAME_LENGTH, countNameLength, isShaking, triggerError } =
-    useContext(PlaylistContext);
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
-  const { showMessage } = useContext(ActionSuccessMessageContext);
+  const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
+  const errorMessage = usePlaylistStore((state) => state.errorMessage);
+  const setErrorMessage = usePlaylistStore((state) => state.setErrorMessage);
+  const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
+  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
+  const isShaking = usePlaylistStore((state) => state.isShaking);
+  const countNameLength = usePlaylistStore((state) => state.countNameLength);
+  const triggerError = usePlaylistStore((state) => state.triggerError);
+  const MAX_NAME_LENGTH = usePlaylistStore((state) => state.MAX_NAME_LENGTH);
+
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${id}Info`);
@@ -72,7 +80,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
       const cachedPlaylists = JSON.parse(localStorage.getItem("playlists") || "[]");
       const updatedPlaylists = cachedPlaylists.map((playlist) => (playlist.id === id ? { ...playlist, name: newName } : playlist));
 
-      setPlaylistInfo((prev) => ({ ...prev, name: newName }));
+      setPlaylistInfo(updatedInfoData);
       setPlaylists(updatedPlaylists);
 
       localStorage.setItem(`playlistDetail:${id}Info`, JSON.stringify(updatedInfoData));
@@ -86,7 +94,7 @@ const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   }
 
   useEffect(() => {
-    RenameRef.current.value = playlistInfo.name;
+    RenameRef.current.value = playlistInfo?.name;
     RenameRef.current.select();
   }, [isRenameVisible, playlistInfo]);
 

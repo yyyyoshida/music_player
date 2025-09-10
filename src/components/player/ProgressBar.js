@@ -1,29 +1,32 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import { useRepeatContext } from "../../contexts/RepeatContext";
+import usePlaybackStore from "../../store/playbackStore";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import useBarHandler from "../../hooks/useBarHandler";
+import usePlayerStore from "../../store/playerStore";
 
 const ProgressBar = ({ initialValue }) => {
   const barRef = useRef(null);
 
-  const {
-    togglePlayPause,
-    currentTime,
-    isTrackSet,
-    isLocalReady,
-    seekToSpotify,
-    duration,
-    position,
-    isPlaying,
-    setIsPlaying,
-    isLocalPlaying,
-    audioRef,
-    playDisable,
-    updateVolume,
-  } = usePlayerContext();
+  const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const setIsPlaying = usePlayerStore((state) => state.setIsPlaying);
+  const currentTime = usePlayerStore((state) => state.currentTime);
+  const position = usePlayerStore((state) => state.position);
+  const duration = usePlayerStore((state) => state.duration);
+  const playDisable = usePlayerStore((state) => state.playDisable);
+  const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
+  const isLocalReady = usePlayerStore((state) => state.isLocalReady);
+  const audioRef = usePlayerStore((state) => state.audioRef);
+  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+  const seekToSpotify = usePlayerStore((state) => state.seekToSpotify);
+  const updateVolume = usePlayerStore((state) => state.updateVolume);
+
+  const currentIndex = usePlaybackStore((state) => state.currentIndex);
+
+  const { isTrackSet } = usePlayerContext();
   const { isRepeat } = useRepeatContext();
-  const { goToNextTrack, currentIndex } = useContext(PlaybackContext);
+  const { goToNextTrack } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
     type: "progress",
     value: initialValue,
@@ -129,6 +132,7 @@ const ProgressBar = ({ initialValue }) => {
   }, [currentTime, duration, isRepeat, isPlaying]);
 
   useEffect(() => {
+    if (!audioRef?.current) return;
     const audio = audioRef.current;
     audio.currentTime = 0;
     seekToSpotify(0);

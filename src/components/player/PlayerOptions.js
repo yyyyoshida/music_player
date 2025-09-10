@@ -1,12 +1,16 @@
-import { useState, useContext } from "react";
-import { TooltipContext } from "../../contexts/TooltipContext";
+import { useState } from "react";
+import useTooltipStore from "../../store/tooltipStore";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import VolumeBar from "./VolumeBar";
-import { ActionSuccessMessageContext } from "../../contexts/ActionSuccessMessageContext";
 
 const PlayerOptions = () => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
-  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
-  const { showMessage } = useContext(ActionSuccessMessageContext);
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
+  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
+  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
+  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
+
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   function toggleOpenMenu() {
     handleButtonPress();

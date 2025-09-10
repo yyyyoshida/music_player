@@ -1,13 +1,19 @@
-import { useContext } from "react";
-import { usePlayerContext } from "../../contexts/PlayerContext";
-import { TooltipContext } from "../../contexts/TooltipContext";
+import usePlayerStore from "../../store/playerStore";
+import useTooltipStore from "../../store/tooltipStore";
 
 import useDelayedText from "../../hooks/useDelayText";
 import { playIcon, pauseIcon } from "../../assets/icons";
 
 const PlayButton = () => {
-  const { isPlayPauseCooldown, isPlaying, togglePlayPause } = usePlayerContext();
-  const { handleButtonPress, handleMouseEnter, handleMouseLeave, setTooltipText } = useContext(TooltipContext);
+  const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
+  const isPlayPauseCooldown = usePlayerStore((state) => state.isPlayPauseCooldown);
+
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
+  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
+  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
+  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
+
   useDelayedText(isPlaying, "一時停止", "再生");
 
   function handlePlayPause() {

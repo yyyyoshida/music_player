@@ -1,14 +1,13 @@
 import { useContext, useRef, useState, useEffect } from "react";
 import { TrackInfoContext } from "../contexts/TrackInfoContext";
 import { usePlayerContext } from "../contexts/PlayerContext";
-import { PlaybackContext } from "../contexts/PlaybackContext";
-// import { SearchContext } from "../contexts/SearchContext";
+
 import { isFallback } from "../utils/isFallback";
-import { ActionSuccessMessageContext } from "../contexts/ActionSuccessMessageContext";
+import usePlaybackStore from "../store/playbackStore";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ThumbnailPreview = () => {
-  const { isPlaying, togglePlayPause, isTrackSet } = usePlayerContext();
+  const { isTrackSet } = usePlayerContext();
   const { isVisible, setIsVisible } = useContext(TrackInfoContext);
   // const { isTrackSet } = useContext(SearchContext);
 
@@ -18,7 +17,9 @@ export const ThumbnailPreview = () => {
   const coverArtRef = useRef(null);
   const transitionRef = useRef(null);
 
-  const { currentTitle, currentArtistName, currentCoverImage } = useContext(PlaybackContext);
+  const currentTitle = usePlaybackStore((state) => state.currentTitle);
+  const currentArtistName = usePlaybackStore((state) => state.currentArtistName);
+  const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
 
   const isUsedFallbackImage = isFallback(currentCoverImage);
 
