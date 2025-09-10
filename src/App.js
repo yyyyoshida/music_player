@@ -7,7 +7,6 @@ import { TokenContext } from "./contexts/TokenContext";
 import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
-import { PlaylistSelectionProvider } from "./contexts/PlaylistSelectionContext";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
@@ -98,10 +97,8 @@ function App() {
       <RepeatProvider>
         <SearchProvider>
           <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
-            <PlaylistSelectionProvider>
-              <Header onSearchResults={handleSearchResults} profile={profile} />
-              <Main searchResults={searchResults} setProfile={setProfile} />
-            </PlaylistSelectionProvider>
+            <Header onSearchResults={handleSearchResults} profile={profile} />
+            <Main searchResults={searchResults} setProfile={setProfile} />
           </PlayerProvider>
         </SearchProvider>
       </RepeatProvider>
