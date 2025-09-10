@@ -39,7 +39,10 @@ const usePlaylistStore = create((set, get) => ({
     }),
 
   setDeletedTrackDuration: (deletedTrackDuration) => set({ deletedTrackDuration }),
-  setAddedTrackDuration: (addedTrackDuration) => set({ addedTrackDuration }),
+  setAddedTrackDuration: (updater) =>
+    set((state) => ({
+      addedTrackDuration: typeof updater === "function" ? updater(state.addedTrackDuration) : updater,
+    })),
   setErrorMessage: (errorMessage) => set({ errorMessage }),
   setIsShaking: (isShaking) => set({ isShaking }),
   setPreselectedTrack: (preselectedTrack) => set({ preselectedTrack }),

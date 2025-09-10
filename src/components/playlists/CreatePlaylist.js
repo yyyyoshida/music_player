@@ -1,8 +1,7 @@
-import { useEffect, useContext, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { FALLBACK_COVER_IMAGE, warningIcon } from "../../assets/icons";
 import usePlaylistStore from "../../store/playlistStore";
-
-import PlaylistSelectionContext from "../../contexts/PlaylistSelectionContext";
+import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 
 const CreatePlaylist = () => {
   const isCreateVisible = usePlaylistStore((state) => state.isCreateVisible);
@@ -13,7 +12,7 @@ const CreatePlaylist = () => {
   const hideCreatePlaylistModal = usePlaylistStore((state) => state.hideCreatePlaylistModal);
   const handleCreatePlaylist = usePlaylistStore((state) => state.handleCreatePlaylist);
 
-  const { selectedTrack } = useContext(PlaylistSelectionContext);
+  const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
 
   const playlistCover = selectedTrack?.albumImage;
   const playlistNameRef = useRef(null);
