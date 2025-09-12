@@ -1,12 +1,12 @@
 import { useContext, useRef, useEffect } from "react";
 import { SearchContext } from "../contexts/SearchContext";
-import { TokenContext } from "../contexts/TokenContext";
+import useTokenStore from "../store/tokenStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { fetchWithRefresh } from "../utils/spotifyAuth";
 
 const SearchBar = () => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useContext(SearchContext);
-  const { token } = useContext(TokenContext);
+  const token = useTokenStore((state) => state.token);
   const queryRef = useRef("");
   const navigate = useNavigate();
   const location = useLocation();

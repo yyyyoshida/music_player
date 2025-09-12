@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Routes, Route } from "react-router-dom";
 import { getNewAccessToken } from "../utils/spotifyAuth";
 
-import { TokenContext } from "../contexts/TokenContext";
+import useTokenStore from "../store/tokenStore";
 import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 import { PlaybackProvider } from "../contexts/PlaybackContext";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
@@ -24,7 +24,9 @@ import ActionSuccessMessage from "./ActionSuccessMessage";
 import Tooltip from "./Tooltip";
 
 const Main = ({ setProfile }) => {
-  const { token, setToken, setIsToken } = useContext(TokenContext);
+  const token = useTokenStore((state) => state.token);
+  const setToken = useTokenStore((state) => state.setToken);
+  const setIsToken = useTokenStore((state) => state.setIsToken);
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
 
   const containerRef = useRef(null);

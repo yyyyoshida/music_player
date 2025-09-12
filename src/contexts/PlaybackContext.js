@@ -2,7 +2,7 @@ import { createContext, useState, useContext, useEffect } from "react";
 import usePlayerStore from "../store/playerStore";
 import usePlaybackStore from "../store/playbackStore";
 import { usePlayerContext } from "./PlayerContext";
-import { TokenContext } from "./TokenContext";
+import useTokenStore from "../store/tokenStore";
 
 export const PlaybackContext = createContext();
 
@@ -22,7 +22,7 @@ export const PlaybackProvider = ({ children }) => {
   const playerTrack = usePlayerStore((state) => state.playerTrack);
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
-  const { isToken } = useContext(TokenContext);
+  const isToken = useTokenStore((state) => state.isToken);
   const { isTrackSet } = usePlayerContext();
 
   useEffect(() => {

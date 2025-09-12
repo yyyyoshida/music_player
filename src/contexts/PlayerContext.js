@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import { getNewAccessToken, loadSpotifySDK, createSpotifyPlayer, getOAuthTokenFromStorage, connectSpotifyPlayer } from "../utils/spotifyAuth";
-import { TokenContext } from "./TokenContext";
+import useTokenStore from "../store/tokenStore";
 import usePlayerStore from "../store/playerStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
@@ -26,7 +26,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const { isRepeat } = useRepeatContext();
-  const { token, setToken } = useContext(TokenContext);
+  const setToken = useTokenStore((state) => state.setToken);
+  const token = useTokenStore((state) => state.token);
   const FADE_DURATION = 3000;
 
   useEffect(() => {
@@ -58,7 +59,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
     return () => {
       if (playerInstance) playerInstance.disconnect();
     };
-  }, [token]);
+    // }, [token]);
+  }, []);
 
   useEffect(() => {
     let timeoutId;
