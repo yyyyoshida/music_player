@@ -1,12 +1,12 @@
 import { useContext, useRef, useEffect } from "react";
 import { SearchContext } from "../contexts/SearchContext";
-import { TokenContext } from "../contexts/TokenContext";
+import useTokenStore from "../store/tokenStore";
 import { useNavigate, useLocation } from "react-router-dom";
-import { fetchWithRefresh } from "../utils/spotifyAuth";
+import { fetchSpotifyAPI } from "../utils/spotifyAuth";
 
 const SearchBar = () => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useContext(SearchContext);
-  const { token } = useContext(TokenContext);
+  const token = useTokenStore((state) => state.token);
   const queryRef = useRef("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,7 +75,7 @@ const SearchBar = () => {
 
     try {
       const encodedQuery = encodeURIComponent(queryText);
-      const response = await fetchWithRefresh(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
+      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
         method: "GET",
       });
 

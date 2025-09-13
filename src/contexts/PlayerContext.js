@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
-import { getNewAccessToken, loadSpotifySDK, createSpotifyPlayer, getOAuthTokenFromStorage, connectSpotifyPlayer } from "../utils/spotifyAuth";
-import { TokenContext } from "./TokenContext";
+import { initSpotifyPlayer } from "../utils/spotifyAuth";
+import useTokenStore from "../store/tokenStore";
 import usePlayerStore from "../store/playerStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
@@ -26,39 +26,27 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const { isRepeat } = useRepeatContext();
-  const { token, setToken } = useContext(TokenContext);
+  const setToken = useTokenStore((state) => state.setToken);
   const FADE_DURATION = 3000;
 
   useEffect(() => {
-    if (!token) return;
+    let instance;
 
-    let playerInstance;
-
-    const setup = async () => {
+    (async () => {
       try {
-        const Spotify = await loadSpotifySDK();
-        playerInstance = createSpotifyPlayer({
-          getOAuthToken: (cb) => getOAuthTokenFromStorage(cb, setToken),
-        });
+        const { playerInstance } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
+        instance = playerInstance;
 
-        playerInstance.addListener("ready", ({ device_id }) => {
-          setDeviceId(device_id);
-          setPlayerReady(true);
-        });
-
-        await playerInstance.connect();
-        setPlayer(playerInstance);
-      } catch (err) {
-        console.error("Spotify Player初期化失敗:", err);
+        setPlayerReady(true);
+      } catch (error) {
+        console.error("Spotify Player初期化失敗:", error);
       }
-    };
-
-    setup();
+    })();
 
     return () => {
-      if (playerInstance) playerInstance.disconnect();
+      if (instance?.disconnect) instance.disconnect();
     };
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     let timeoutId;

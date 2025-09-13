@@ -1,9 +1,9 @@
-import React, { useEffect, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import LOGIN_URL from "../config/spotifyConfig";
-import { TokenContext } from "../contexts/TokenContext";
+import useTokenStore from "../store/tokenStore";
 
 const Login = () => {
-  const { isToken } = useContext(TokenContext);
+  const isToken = useTokenStore((state) => state.isToken);
   const [newIsToken, setNewIsToken] = useState(true);
 
   const handleLogin = () => {

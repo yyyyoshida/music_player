@@ -3,10 +3,10 @@ import { useState, useEffect, useContext } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { getNewAccessToken, saveRefreshToken, getRefreshToken, isValidToken } from "./utils/spotifyAuth";
 
-import { TokenContext } from "./contexts/TokenContext";
 import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
+import useTokenStore from "./store/tokenStore";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
@@ -16,7 +16,8 @@ function App() {
   const [isTrackSet, setIsTrackSet] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
 
-  const { setToken, setIsToken } = useContext(TokenContext);
+  const setToken = useTokenStore((state) => state.setToken);
+  const setIsToken = useTokenStore((state) => state.setIsToken);
 
   useEffect(() => {
     async function init() {
