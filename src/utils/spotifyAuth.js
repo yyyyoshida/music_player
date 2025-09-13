@@ -20,6 +20,48 @@ async function getNewAccessToken(refreshToken = null) {
   return data.access_token;
 }
 
+async function saveRefreshToken(refreshToken) {
+  const res = await fetch("http://localhost:4000/api/save_refresh_token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh_token: refreshToken }),
+  });
+
+  if (!res.ok) {
+    throw new Error("リフレッシュトークン保存に失敗");
+  }
+  return await res.json();
+}
+
+async function getRefreshToken() {
+  const res = await fetch("http://localhost:4000/api/get_refresh_token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+  if (!res.ok) {
+    throw new Error("リフレッシュトークン取得に失敗");
+  }
+  const data = await res.json();
+  return data.refresh_token;
+}
+
+async function isValidToken(localAccessToken) {
+  try {
+    const response = await fetch("https://api.spotify.com/v1/me", {
+      headers: { Authorization: `Bearer ${localAccessToken}` },
+    });
+
+    if (response.ok) {
+      return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 async function fetchWithRefresh(url, options = {}, retry = true) {
   const accessToken = window.localStorage.getItem("access_token");
 
@@ -54,30 +96,21 @@ async function fetchWithRefresh(url, options = {}, retry = true) {
   return res;
 }
 
-async function saveRefreshToken(refreshToken) {
-  const res = await fetch("http://localhost:4000/api/save_refresh_token", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  });
+export function loadSpotifySDK() {
+  return new Promise((resolve, reject) => {
+    if (window.Spotify) return resolve(window.Spotify);
 
-  if (!res.ok) {
-    throw new Error("リフレッシュトークン保存に失敗");
-  }
-  return await res.json();
-}
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      resolve(window.Spotify);
+    };
 
-async function getRefreshToken() {
-  const res = await fetch("http://localhost:4000/api/get_refresh_token", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({}),
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.onerror = () => reject(new Error("Spotify SDK の読み込みに失敗"));
+    document.body.appendChild(script);
   });
-  if (!res.ok) {
-    throw new Error("リフレッシュトークン取得に失敗");
-  }
-  const data = await res.json();
-  return data.refresh_token;
 }
 
 export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
@@ -103,39 +136,6 @@ export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
 
     playerInstance.connect();
     setPlayer(playerInstance);
-  });
-}
-
-async function isValidToken(localAccessToken) {
-  try {
-    const response = await fetch("https://api.spotify.com/v1/me", {
-      headers: { Authorization: `Bearer ${localAccessToken}` },
-    });
-
-    if (response.ok) {
-      return true;
-    }
-
-    return false;
-  } catch {
-    return false;
-  }
-}
-
-export function loadSpotifySDK() {
-  return new Promise((resolve, reject) => {
-    if (window.Spotify) return resolve(window.Spotify);
-
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      resolve(window.Spotify);
-    };
-
-    const script = document.createElement("script");
-    script.src = "https://sdk.scdn.co/spotify-player.js";
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    script.onerror = () => reject(new Error("Spotify SDK の読み込みに失敗"));
-    document.body.appendChild(script);
   });
 }
 
