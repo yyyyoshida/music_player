@@ -80,17 +80,27 @@ async function getRefreshToken() {
   return data.refresh_token;
 }
 
-export async function initSpotifyPlayer() {
+export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
+  const DEFAULT_VOLUME = 0.3;
+  const newToken = await getNewAccessToken();
+  setToken(newToken);
+
   function setupPlayer(resolve) {
     const playerInstance = new window.Spotify.Player({
       name: "MyMusicPlayer",
-      getOAuthToken: (cb) => cb(localStorage.getItem("access_token")),
-      volume: 0.3,
+      getOAuthToken: (cb) => {
+        cb(newToken);
+      },
+      volume: DEFAULT_VOLUME,
     });
 
-    playerInstance.addListener("ready", ({ device_id }) => resolve({ playerInstance, deviceId: device_id }));
+    playerInstance.addListener("ready", ({ device_id }) => {
+      setDeviceId(device_id);
+      resolve({ playerInstance, deviceId: device_id });
+    });
 
     playerInstance.connect();
+    setPlayer(playerInstance);
   }
 
   return new Promise((resolve) => {
