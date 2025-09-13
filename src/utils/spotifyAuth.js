@@ -195,21 +195,17 @@ export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, 
 export async function getOAuthTokenFromStorage(cb, setToken) {
   const currentToken = localStorage.getItem("access_token");
   const localRefreshToken = localStorage.getItem("refresh_token");
+  const canUseToken = await isValidToken(currentToken);
 
-  if (currentToken) {
+  if (canUseToken) {
     cb(currentToken);
-    return;
-  }
-
-  if (!localRefreshToken) {
-    console.error("リフレッシュトークンがないよ");
-    cb("");
     return;
   }
 
   try {
     const newToken = await getNewAccessToken(localRefreshToken);
     localStorage.setItem("access_token", newToken);
+
     setToken(newToken);
     cb(newToken);
   } catch (err) {
