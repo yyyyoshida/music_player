@@ -171,35 +171,14 @@ export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, 
   }
   // デバイスIDが無効だった場合の処理↓↓
   try {
-    const result = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
-    const newDeviceId = result.deviceId;
-    console.log(newDeviceId);
+    const { deviceId } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
 
-    return newDeviceId;
+    console.log(deviceId);
+
+    return deviceId;
   } catch (err) {
     console.error("Spotify Player接続失敗:", err);
     return null;
-  }
-}
-
-export async function getOAuthTokenFromStorage(cb, setToken) {
-  const currentToken = localStorage.getItem("access_token");
-  const localRefreshToken = localStorage.getItem("refresh_token");
-  const canUseToken = await isValidToken(currentToken);
-
-  if (canUseToken) {
-    cb(currentToken);
-    return;
-  }
-
-  try {
-    const newToken = await getNewAccessToken(localRefreshToken);
-    localStorage.setItem("access_token", newToken);
-
-    setToken(newToken);
-    cb(newToken);
-  } catch (err) {
-    console.error("getOAuthToken失敗:", err);
   }
 }
 
