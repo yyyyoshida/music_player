@@ -139,14 +139,6 @@ export function loadSpotifySDK() {
   });
 }
 
-export function createSpotifyPlayer({ getOAuthToken }) {
-  return new window.Spotify.Player({
-    name: "MyMusicPlayer",
-    getOAuthToken,
-    volume: 0.3,
-  });
-}
-
 let lastDeviceCheckTime = 0;
 let cachedDeviceId = null;
 const DEVICE_CHECK_INTERVAL = 30 * 1000;
