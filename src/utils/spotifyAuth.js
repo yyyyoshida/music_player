@@ -1,4 +1,4 @@
-async function getNewAccessToken(refreshToken = null) {
+export async function getNewAccessToken(refreshToken = null) {
   const tokenToUse = refreshToken || window.localStorage.getItem("refresh_token");
 
   const response = await fetch("http://localhost:4000/api/refresh_token", {
@@ -20,7 +20,7 @@ async function getNewAccessToken(refreshToken = null) {
   return data.access_token;
 }
 
-async function saveRefreshToken(refreshToken) {
+export async function saveRefreshToken(refreshToken) {
   const res = await fetch("http://localhost:4000/api/save_refresh_token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -33,7 +33,7 @@ async function saveRefreshToken(refreshToken) {
   return await res.json();
 }
 
-async function getRefreshToken() {
+export async function getRefreshToken() {
   const res = await fetch("http://localhost:4000/api/get_refresh_token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -46,7 +46,7 @@ async function getRefreshToken() {
   return data.refresh_token;
 }
 
-async function isValidToken(localAccessToken) {
+export async function isValidToken(localAccessToken) {
   try {
     const response = await fetch("https://api.spotify.com/v1/me", {
       headers: { Authorization: `Bearer ${localAccessToken}` },
@@ -62,7 +62,7 @@ async function isValidToken(localAccessToken) {
   }
 }
 
-async function fetchWithRefresh(url, options = {}, retry = true) {
+export async function fetchWithRefresh(url, options = {}, retry = true) {
   const accessToken = window.localStorage.getItem("access_token");
 
   const res = await fetch(url, {
@@ -96,7 +96,7 @@ async function fetchWithRefresh(url, options = {}, retry = true) {
   return res;
 }
 
-export function loadSpotifySDK() {
+function loadSpotifySDK() {
   return new Promise((resolve, reject) => {
     if (window.Spotify) return resolve(window.Spotify);
 
@@ -172,5 +172,3 @@ export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, 
     return null;
   }
 }
-
-export { getNewAccessToken, fetchWithRefresh, saveRefreshToken, getRefreshToken, isValidToken };
