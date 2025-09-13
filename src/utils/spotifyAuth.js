@@ -147,13 +147,14 @@ export function createSpotifyPlayer({ getOAuthToken }) {
   });
 }
 
-let lastDeviceCheck = 0;
+let lastDeviceCheckTime = 0;
 let cachedDeviceId = null;
+const DEVICE_CHECK_INTERVAL = 30 * 1000;
 
 export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, setToken) {
   const now = Date.now();
 
-  if (cachedDeviceId && now - lastDeviceCheck < 30000) {
+  if (cachedDeviceId && now - lastDeviceCheckTime < DEVICE_CHECK_INTERVAL) {
     return cachedDeviceId;
   }
 
@@ -163,7 +164,7 @@ export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, 
   const data = await response.json();
   const isStillAlive = data.devices.some((d) => d.id === currentDeviceId);
 
-  lastDeviceCheck = now;
+  lastDeviceCheckTime = now;
   cachedDeviceId = isStillAlive ? currentDeviceId : null;
 
   if (isStillAlive) {
@@ -172,8 +173,6 @@ export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, 
   // デバイスIDが無効だった場合の処理↓↓
   try {
     const { deviceId } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
-
-    console.log(deviceId);
 
     return deviceId;
   } catch (err) {
