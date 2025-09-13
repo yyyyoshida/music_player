@@ -160,7 +160,7 @@ export function createSpotifyPlayer({ getOAuthToken }) {
 let lastDeviceCheck = 0;
 let cachedDeviceId = null;
 
-export async function validateDeviceId(currentDeviceId, player, setDeviceId) {
+export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, setToken) {
   const now = Date.now();
 
   if (cachedDeviceId && now - lastDeviceCheck < 30000) {
@@ -179,14 +179,17 @@ export async function validateDeviceId(currentDeviceId, player, setDeviceId) {
   if (isStillAlive) {
     return currentDeviceId;
   }
+  // デバイスIDが無効だった場合の処理↓↓
+  try {
+    const result = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
+    const newDeviceId = result.deviceId;
+    console.log(newDeviceId);
 
-  return new Promise(async (resolve) => {
-    await connectSpotifyPlayer(player, (newId) => {
-      setDeviceId(newId);
-      cachedDeviceId = newId;
-      resolve(newId);
-    });
-  });
+    return newDeviceId;
+  } catch (err) {
+    console.error("Spotify Player接続失敗:", err);
+    return null;
+  }
 }
 
 export async function getOAuthTokenFromStorage(cb, setToken) {
@@ -211,43 +214,7 @@ export async function getOAuthTokenFromStorage(cb, setToken) {
     cb(newToken);
   } catch (err) {
     console.error("getOAuthToken失敗:", err);
-    cb("");
   }
-}
-//
-export async function connectSpotifyPlayer(player, setDeviceId) {
-  if (!player) {
-    console.warn("player が null なので新規作成します");
-    await initSpotifyPlayer();
-  }
-
-  if (!player) {
-    console.error("player が存在せず接続できない");
-    return null;
-  }
-
-  const connected = await player.connect();
-  if (!connected) {
-    console.error("Spotify Player 接続失敗");
-    return null;
-  }
-
-  // すでに deviceId がセットされてる場合は即返す
-  if (player._options && player._options.id) {
-    console.log(`既存 deviceId を返す: ${player._options.id}`);
-    setDeviceId(player._options.id);
-    return player._options.id;
-  }
-
-  // ready イベント待ち（古いリスナ削除してから追加）
-  player.removeListener("ready");
-  return new Promise((resolve) => {
-    player.addListener("ready", ({ device_id }) => {
-      console.log(`新しい deviceId を取得: ${device_id}`);
-      setDeviceId(device_id);
-      resolve(device_id);
-    });
-  });
 }
 
 export { getNewAccessToken, fetchWithRefresh, saveRefreshToken, getRefreshToken, isValidToken };
