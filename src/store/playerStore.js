@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { validateDeviceId, fetchWithRefresh } from "../utils/spotifyAuth";
+import { validateDeviceId, fetchSpotifyAPI } from "../utils/spotifyAuth";
 import useTokenStore from "./tokenStore";
 
 const usePlayerStore = create((set, get) => ({
@@ -128,7 +128,7 @@ const usePlayerStore = create((set, get) => ({
     setIsSpotifyPlaying(true);
 
     try {
-      await fetchWithRefresh(`https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`, {
+      await fetchSpotifyAPI(`https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
