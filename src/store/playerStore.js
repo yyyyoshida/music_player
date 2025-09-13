@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { validateDeviceId, fetchWithRefresh } from "../utils/spotifyAuth";
+import { validateDeviceId, fetchSpotifyAPI } from "../utils/spotifyAuth";
+import useTokenStore from "./tokenStore";
 
 const usePlayerStore = create((set, get) => ({
   TRACK_CHANGE_COOLDOWN: 700,
@@ -92,6 +93,7 @@ const usePlayerStore = create((set, get) => ({
     const {
       deviceId,
       player,
+      setPlayer,
       setDeviceId,
       isLocalPlaying,
       setIsLocalPlaying,
@@ -101,8 +103,9 @@ const usePlayerStore = create((set, get) => ({
       resetSpotifyPlayerState,
       TRACK_CHANGE_COOLDOWN,
     } = get();
+    const { setToken } = useTokenStore.getState();
     // 再生時にデバイスIDが切れてても再取得してエラー落ちを防ぐため ↓
-    const validDeviceId = await validateDeviceId(deviceId, player, setDeviceId);
+    const validDeviceId = await validateDeviceId(deviceId, setPlayer, setDeviceId, setToken);
 
     if (!validDeviceId) {
       console.error("有効なデバイスIDが取得できない");
@@ -125,7 +128,7 @@ const usePlayerStore = create((set, get) => ({
     setIsSpotifyPlaying(true);
 
     try {
-      await fetchWithRefresh(`https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`, {
+      await fetchSpotifyAPI(`https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
