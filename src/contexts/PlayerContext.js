@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
-import { getNewAccessToken, loadSpotifySDK, createSpotifyPlayer, getOAuthTokenFromStorage, connectSpotifyPlayer } from "../utils/spotifyAuth";
+import { getNewAccessToken, loadSpotifySDK, createSpotifyPlayer, getOAuthTokenFromStorage } from "../utils/spotifyAuth";
 import useTokenStore from "../store/tokenStore";
 import usePlayerStore from "../store/playerStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
