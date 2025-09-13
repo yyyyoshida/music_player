@@ -62,38 +62,33 @@ export async function isValidToken(localAccessToken) {
   }
 }
 
-export async function fetchWithRefresh(url, options = {}, retry = true) {
-  const accessToken = window.localStorage.getItem("access_token");
+export async function fetchWithRefresh(url, options = {}) {
+  let token = window.localStorage.getItem("access_token");
+  const canUseToken = await isValidToken(token);
 
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  // トークンが切れてるとき
-  if (res.status === 401 && retry) {
-    console.warn("トークン切れ検知 → 再取得して再実行");
-
+  if (!canUseToken) {
     try {
-      const newToken = await getNewAccessToken();
-      if (!newToken) throw new Error("トークン再取得できなかった");
-
-      // 再試行（1回限り）
-      return fetchWithRefresh(url, options, false);
-    } catch (err) {
-      console.error("トークン再取得失敗:", err);
+      token = await getNewAccessToken();
+      if (!token) throw new Error("トークン再取得できなかった");
+    } catch (error) {
+      console.error("トークン再取得失敗:", error);
       throw new Error("TOKEN_REFRESH_FAILED");
     }
   }
 
-  if (!res.ok) {
-    console.error(`Fetch失敗: ${res.status} ${res.statusText}`);
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error(`Fetch失敗: ${response.status} ${response.statusText}`);
   }
 
-  return res;
+  return response;
 }
 
 function loadSpotifySDK() {
