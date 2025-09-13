@@ -62,7 +62,8 @@ export async function isValidToken(localAccessToken) {
   }
 }
 
-export async function fetchWithRefresh(url, options = {}) {
+// Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
+export async function fetchSpotifyAPI(url, options = {}) {
   let token = window.localStorage.getItem("access_token");
   const canUseToken = await isValidToken(token);
 
@@ -145,7 +146,7 @@ export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, 
     return cachedDeviceId;
   }
 
-  const response = await fetchWithRefresh("https://api.spotify.com/v1/me/player/devices");
+  const response = await fetchSpotifyAPI("https://api.spotify.com/v1/me/player/devices");
   if (!response.ok) return null;
 
   const data = await response.json();
