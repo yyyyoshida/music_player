@@ -85,7 +85,9 @@ export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
   const newToken = await getNewAccessToken();
   setToken(newToken);
 
-  function setupPlayer(resolve) {
+  await loadSpotifySDK();
+
+  return new Promise((resolve) => {
     const playerInstance = new window.Spotify.Player({
       name: "MyMusicPlayer",
       getOAuthToken: (cb) => {
@@ -101,18 +103,6 @@ export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
 
     playerInstance.connect();
     setPlayer(playerInstance);
-  }
-
-  return new Promise((resolve) => {
-    if (!window.Spotify) {
-      const script = document.createElement("script");
-      script.src = "https://sdk.scdn.co/spotify-player.js";
-      script.async = true;
-      script.onload = () => setupPlayer(resolve);
-      document.body.appendChild(script);
-    } else {
-      setupPlayer(resolve);
-    }
   });
 }
 
