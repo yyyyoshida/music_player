@@ -21,7 +21,9 @@ function App() {
   const initPlayer = usePlayerStore((state) => state.initPlayer);
   const player = usePlayerStore((state) => state.player);
   const isSpotifyPlaying = usePlayerStore((state) => state.isSpotifyPlaying);
+  const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
   const syncSpotifyPlayerState = usePlayerStore((state) => state.syncSpotifyPlayerState);
+  const syncLocalAudioState = usePlayerStore((state) => state.syncLocalAudioState);
 
   useEffect(() => {
     async function init() {
@@ -108,6 +110,11 @@ function App() {
     const cleanup = syncSpotifyPlayerState();
     return () => cleanup?.();
   }, [player, isSpotifyPlaying]);
+
+  useEffect(() => {
+    const cleanup = syncLocalAudioState();
+    return () => cleanup?.();
+  }, [isLocalPlaying]);
 
   function handleSearchResults(results) {
     setSearchResults(results);

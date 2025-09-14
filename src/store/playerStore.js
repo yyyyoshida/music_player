@@ -272,6 +272,31 @@ const usePlayerStore = create((set, get) => ({
       player.removeListener("player_state_changed", listener);
     };
   },
+
+  syncLocalAudioState: () => {
+    const { audioRef, isLocalPlaying } = get();
+    if (!audioRef?.current || !isLocalPlaying) return;
+
+    const audio = audioRef.current;
+    const MS_IN_SECOND = 1000;
+    const PERCENT = 100;
+
+    const handleAudioTimeUpdate = () => {
+      if (!audio.duration || isNaN(audio.duration)) return;
+
+      set({
+        position: (audio.currentTime / audio.duration) * PERCENT,
+        duration: audio.duration * MS_IN_SECOND,
+        currentTime: audio.currentTime * MS_IN_SECOND,
+      });
+    };
+
+    audio.addEventListener("timeupdate", handleAudioTimeUpdate);
+
+    return () => {
+      audio.removeEventListener("timeupdate", handleAudioTimeUpdate);
+    };
+  },
 }));
 
 export default usePlayerStore;
