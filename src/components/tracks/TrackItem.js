@@ -9,8 +9,9 @@ import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 import { isFallback } from "../../utils/isFallback";
+import { formatTime } from "../../utils/formatTime";
 
-const TrackItem = ({ track, index, formatTime, date, query, parentRef }) => {
+const TrackItem = ({ track, index, date, query, parentRef }) => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playDisable = usePlayerStore((state) => state.playDisable);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);

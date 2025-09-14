@@ -22,7 +22,7 @@ const PlaylistDetail = ({ containerRef }) => {
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
-  const { formatTime, setIsTrackSet } = usePlayerContext();
+  const { setIsTrackSet } = usePlayerContext();
 
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   const tracks = usePlaylistStore((state) => state.tracks);
@@ -208,7 +208,6 @@ const PlaylistDetail = ({ containerRef }) => {
                 isCurrentTrack={isCurrentTrack}
                 isClicked={isClicked}
                 date={date.toLocaleString()}
-                formatTime={formatTime}
                 parentRef={playlistDetailRef}
               />
             );
