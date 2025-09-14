@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { usePlayerContext } from "../../contexts/PlayerContext";
-import { useRepeatContext } from "../../contexts/RepeatContext";
+import useRepeatStore from "../../store/repeatStore";
 import usePlaybackStore from "../../store/playbackStore";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import useBarHandler from "../../hooks/useBarHandler";
@@ -23,9 +23,9 @@ const ProgressBar = ({ initialValue }) => {
   const updateVolume = usePlayerStore((state) => state.updateVolume);
 
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
+  const isRepeat = useRepeatStore((state) => state.isRepeat);
 
   const { isTrackSet } = usePlayerContext();
-  const { isRepeat } = useRepeatContext();
   const { goToNextTrack } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
     type: "progress",
