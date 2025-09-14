@@ -13,3 +13,12 @@ export function formatTimeHours(time) {
     return `${minutes}分`;
   }
 }
+
+export function formatTime(time) {
+  const MS_MINUTE = 60000;
+  const MS_SECOND = 1000;
+
+  const minutes = Math.floor(time / MS_MINUTE);
+  const seconds = Math.floor((time % MS_MINUTE) / MS_SECOND);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
