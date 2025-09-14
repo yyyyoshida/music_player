@@ -5,7 +5,6 @@ import { getNewAccessToken, saveRefreshToken, getRefreshToken, isValidToken } fr
 
 import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
-import { RepeatProvider } from "./contexts/RepeatContext";
 import useTokenStore from "./store/tokenStore";
 import usePlayerStore from "./store/playerStore";
 
@@ -108,14 +107,12 @@ function App() {
 
   return (
     <BrowserRouter>
-      <RepeatProvider>
-        <SearchProvider>
-          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
-            <Header onSearchResults={handleSearchResults} profile={profile} />
-            <Main searchResults={searchResults} setProfile={setProfile} />
-          </PlayerProvider>
-        </SearchProvider>
-      </RepeatProvider>
+      <SearchProvider>
+        <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+          <Header onSearchResults={handleSearchResults} profile={profile} />
+          <Main searchResults={searchResults} setProfile={setProfile} />
+        </PlayerProvider>
+      </SearchProvider>
     </BrowserRouter>
   );
 }
