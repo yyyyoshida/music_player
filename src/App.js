@@ -7,6 +7,7 @@ import { SearchProvider } from "./contexts/SearchContext";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { RepeatProvider } from "./contexts/RepeatContext";
 import useTokenStore from "./store/tokenStore";
+import usePlayerStore from "./store/playerStore";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
@@ -18,6 +19,7 @@ function App() {
 
   const setToken = useTokenStore((state) => state.setToken);
   const setIsToken = useTokenStore((state) => state.setIsToken);
+  const initPlayer = usePlayerStore((state) => state.initPlayer);
 
   useEffect(() => {
     async function init() {
@@ -87,6 +89,17 @@ function App() {
       }
     }
     init();
+  }, []);
+
+  useEffect(() => {
+    let instance;
+    (async () => {
+      instance = await initPlayer();
+    })();
+
+    return () => {
+      if (instance?.disconnect) instance.disconnect();
+    };
   }, []);
 
   function handleSearchResults(results) {

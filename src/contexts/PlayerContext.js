@@ -1,13 +1,11 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
-import { initSpotifyPlayer } from "../utils/spotifyAuth";
-import useTokenStore from "../store/tokenStore";
 import usePlayerStore from "../store/playerStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 const PlayerContext = createContext();
 
-export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) => {
+export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet }) => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const setCurrentTime = usePlayerStore((state) => state.setCurrentTime);
   const setPosition = usePlayerStore((state) => state.setPosition);
@@ -17,36 +15,14 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet, queue }) =
   const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
   const audioRef = usePlayerStore((state) => state.audioRef);
   const player = usePlayerStore((state) => state.player);
-  const setPlayer = usePlayerStore((state) => state.setPlayer);
   const setIsPlayPauseCooldown = usePlayerStore((state) => state.setIsPlayPauseCooldown);
-  const setDeviceId = usePlayerStore((state) => state.setDeviceId);
-  const setPlayerReady = usePlayerStore((state) => state.setPlayerReady);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
 
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const { isRepeat } = useRepeatContext();
-  const setToken = useTokenStore((state) => state.setToken);
+
   const FADE_DURATION = 3000;
-
-  useEffect(() => {
-    let instance;
-
-    (async () => {
-      try {
-        const { playerInstance } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
-        instance = playerInstance;
-
-        setPlayerReady(true);
-      } catch (error) {
-        console.error("Spotify Player初期化失敗:", error);
-      }
-    })();
-
-    return () => {
-      if (instance?.disconnect) instance.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     let timeoutId;

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { validateDeviceId, fetchSpotifyAPI } from "../utils/spotifyAuth";
+import { validateDeviceId, fetchSpotifyAPI, initSpotifyPlayer } from "../utils/spotifyAuth";
 import useTokenStore from "./tokenStore";
 
 const usePlayerStore = create((set, get) => ({
@@ -222,6 +222,20 @@ const usePlayerStore = create((set, get) => ({
 
     if (!player) return;
     await player.seek(seekTime);
+  },
+
+  initPlayer: async () => {
+    const { setPlayer, setDeviceId } = get();
+    const { setToken } = useTokenStore.getState();
+
+    try {
+      const { playerInstance } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
+      set({ setPlayerReady: true });
+      return playerInstance;
+    } catch (error) {
+      console.error("Spotify Player初期化失敗:", error);
+      throw error;
+    }
   },
 }));
 
