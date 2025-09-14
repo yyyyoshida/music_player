@@ -7,7 +7,6 @@ import { playIcon, pauseIcon } from "../../assets/icons";
 const PlayButton = () => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
-  const isPlayPauseCooldown = usePlayerStore((state) => state.isPlayPauseCooldown);
 
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
@@ -17,7 +16,6 @@ const PlayButton = () => {
   useDelayedText(isPlaying, "一時停止", "再生");
 
   function handlePlayPause() {
-    if (isPlayPauseCooldown) return;
     togglePlayPause();
     handleButtonPress();
   }
