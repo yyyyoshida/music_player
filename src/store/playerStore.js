@@ -16,7 +16,6 @@ const usePlayerStore = create((set, get) => ({
   isLocalReady: false,
   audioRef: null,
   player: null,
-  isPlayPauseCooldown: false,
   deviceId: null,
   playerReady: false,
 
@@ -31,7 +30,6 @@ const usePlayerStore = create((set, get) => ({
   setIsLocalReady: (isLocalReady) => set({ isLocalReady }),
   setAudioRef: (audioRef) => set({ audioRef }),
   setPlayer: (playerInstance) => set({ player: playerInstance }),
-  setIsPlayPauseCooldown: (isPlayPauseCooldown) => set({ isPlayPauseCooldown }),
   setDeviceId: (deviceId) => set({ deviceId }),
   setPlayerReady: (playerReady) => set({ playerReady }),
 
@@ -74,9 +72,8 @@ const usePlayerStore = create((set, get) => ({
   },
 
   playerTrack: async (trackUri, source = "spotify") => {
-    const { setPlayDisable, setIsPlayPauseCooldown, playSpotifyTrack, playLocalTrack } = get();
+    const { setPlayDisable, playSpotifyTrack, playLocalTrack } = get();
 
-    setIsPlayPauseCooldown(false);
     setPlayDisable(true);
 
     if (source === "spotify") {
