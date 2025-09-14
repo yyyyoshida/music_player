@@ -99,21 +99,9 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet }) => {
     };
   }, [isLocalPlaying]);
 
-  function formatTime(time) {
-    // useMemoとかで無駄な再レンダリングを回避しろ
-    const MS_MINUTE = 60000; // １分
-    const MS_SECOND = 1000; // １秒
-
-    const minutes = Math.floor(time / MS_MINUTE);
-    const seconds = Math.floor((time % MS_MINUTE) / MS_SECOND);
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  }
-
   return (
     <PlayerContext.Provider
       value={{
-        formatTime,
-
         isTrackSet,
         setIsTrackSet,
       }}
