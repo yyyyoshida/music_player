@@ -55,14 +55,13 @@ const ProgressBar = ({ initialValue }) => {
 
     const updateProgress = () => {
       if (isDragging) return;
-      // console.log(audio.currentTime);
       const newTime = roundToTwoDecimals((audio.currentTime / audio.duration) * 100);
       setPercentage(newTime || 0);
     };
 
     audio.addEventListener("timeupdate", updateProgress);
     return () => audio.removeEventListener("timeupdate", updateProgress);
-  }, [position, isLocalPlaying, isDragging]);
+  }, [isDragging]);
 
   // 曲のソースが変わったとき
   useEffect(() => {
