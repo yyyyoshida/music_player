@@ -230,7 +230,7 @@ const usePlayerStore = create((set, get) => ({
 
     try {
       const { playerInstance } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
-      set({ setPlayerReady: true });
+      set({ playerReady: true });
       return playerInstance;
     } catch (error) {
       console.error("Spotify Player初期化失敗:", error);
