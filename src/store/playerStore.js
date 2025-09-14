@@ -234,6 +234,44 @@ const usePlayerStore = create((set, get) => ({
       throw error;
     }
   },
+
+  syncSpotifyPlayerState: () => {
+    const { player, isSpotifyPlaying } = get();
+    if (!player || !isSpotifyPlaying) return;
+
+    const UPDATE_PROGRESS_BAR_INTERVAL_MS = 200;
+    const PERCENT = 100;
+
+    const listener = (state) => {
+      if (!state || !state.track_window?.current_track) return;
+
+      const {
+        position,
+        duration,
+        track_window: { current_track },
+      } = state;
+
+      set({ position: (position / duration) * PERCENT, duration: duration, trackId: current_track.id });
+    };
+
+    player.addListener("player_state_changed", listener);
+
+    const interval = setInterval(() => {
+      player.getCurrentState().then((state) => {
+        if (!state) return;
+
+        const { position, duration } = state;
+        if (typeof position === "number" && typeof duration === "number") {
+          set({ position: (position / duration) * PERCENT, currentTime: position });
+        }
+      });
+    }, UPDATE_PROGRESS_BAR_INTERVAL_MS);
+
+    return () => {
+      clearInterval(interval);
+      player.removeListener("player_state_changed", listener);
+    };
+  },
 }));
 
 export default usePlayerStore;

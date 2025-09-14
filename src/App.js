@@ -19,6 +19,9 @@ function App() {
   const setToken = useTokenStore((state) => state.setToken);
   const setIsToken = useTokenStore((state) => state.setIsToken);
   const initPlayer = usePlayerStore((state) => state.initPlayer);
+  const player = usePlayerStore((state) => state.player);
+  const isSpotifyPlaying = usePlayerStore((state) => state.isSpotifyPlaying);
+  const syncSpotifyPlayerState = usePlayerStore((state) => state.syncSpotifyPlayerState);
 
   useEffect(() => {
     async function init() {
@@ -100,6 +103,11 @@ function App() {
       if (instance?.disconnect) instance.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    const cleanup = syncSpotifyPlayerState();
+    return () => cleanup?.();
+  }, [player, isSpotifyPlaying]);
 
   function handleSearchResults(results) {
     setSearchResults(results);
