@@ -1,12 +1,10 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useRepeatContext } from "./RepeatContext";
 import usePlayerStore from "../store/playerStore";
-import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet }) => {
-  const isPlaying = usePlayerStore((state) => state.isPlaying);
   const setCurrentTime = usePlayerStore((state) => state.setCurrentTime);
   const setPosition = usePlayerStore((state) => state.setPosition);
   const setDuration = usePlayerStore((state) => state.setDuration);
@@ -15,32 +13,8 @@ export const PlayerProvider = ({ children, isTrackSet, setIsTrackSet }) => {
   const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
   const audioRef = usePlayerStore((state) => state.audioRef);
   const player = usePlayerStore((state) => state.player);
-  const setIsPlayPauseCooldown = usePlayerStore((state) => state.setIsPlayPauseCooldown);
-  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
-
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const { isRepeat } = useRepeatContext();
-
-  const FADE_DURATION = 3000;
-
-  useEffect(() => {
-    let timeoutId;
-
-    if (!isTrackSet && isPlaying) {
-      showMessage("unselected");
-      setIsPlayPauseCooldown(true);
-
-      timeoutId = setTimeout(() => {
-        setIsPlayPauseCooldown(false);
-        togglePlayPause();
-      }, FADE_DURATION);
-    }
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [isPlaying, isTrackSet]);
 
   useEffect(() => {
     if (!player || !isSpotifyPlaying) return;
