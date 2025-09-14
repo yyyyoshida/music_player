@@ -61,7 +61,7 @@ const ProgressBar = ({ initialValue }) => {
 
     audio.addEventListener("timeupdate", updateProgress);
     return () => audio.removeEventListener("timeupdate", updateProgress);
-  }, [isDragging]);
+  }, [isLocalPlaying, isDragging]);
 
   // 曲のソースが変わったとき
   useEffect(() => {
