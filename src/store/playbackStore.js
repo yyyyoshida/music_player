@@ -60,7 +60,7 @@ const usePlaybackStore = create((set, get) => ({
   },
 
   playTrackAtIndex: (index) => {
-    const { currentIndex, queue, syncTrackInfo, playTrack, setTrackIndex } = get();
+    const { currentIndex, queue, syncTrackInfo, playTrack, setTrackIndex, setIsPrevDisabled, setIsNextDisabled } = get();
 
     const track = queue[index];
     const isSameTrack = index === currentIndex;
@@ -72,6 +72,9 @@ const usePlaybackStore = create((set, get) => ({
     syncTrackInfo(track);
     playTrack(track);
     setTrackIndex(index);
+
+    setIsPrevDisabled(index <= 0);
+    setIsNextDisabled(index >= queue.length - 1);
   },
 
   goToNextTrack: () => {
