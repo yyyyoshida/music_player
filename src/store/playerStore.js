@@ -1,11 +1,12 @@
 import { create } from "zustand";
-import { validateDeviceId, fetchSpotifyAPI } from "../utils/spotifyAuth";
+import { validateDeviceId, fetchSpotifyAPI, initSpotifyPlayer } from "../utils/spotifyAuth";
 import useTokenStore from "./tokenStore";
 
 const usePlayerStore = create((set, get) => ({
   TRACK_CHANGE_COOLDOWN: 700,
 
   isPlaying: false,
+  isTrackSet: false,
   currentTime: 0,
   position: 0,
   duration: 0,
@@ -16,11 +17,11 @@ const usePlayerStore = create((set, get) => ({
   isLocalReady: false,
   audioRef: null,
   player: null,
-  isPlayPauseCooldown: false,
   deviceId: null,
   playerReady: false,
 
   setIsPlaying: (isPlaying) => set({ isPlaying }),
+  setIsTrackSet: (isTrackSet) => set({ isTrackSet }),
   setCurrentTime: (currentTime) => set({ currentTime }),
   setPosition: (position) => set({ position }),
   setDuration: (duration) => set({ duration }),
@@ -31,7 +32,6 @@ const usePlayerStore = create((set, get) => ({
   setIsLocalReady: (isLocalReady) => set({ isLocalReady }),
   setAudioRef: (audioRef) => set({ audioRef }),
   setPlayer: (playerInstance) => set({ player: playerInstance }),
-  setIsPlayPauseCooldown: (isPlayPauseCooldown) => set({ isPlayPauseCooldown }),
   setDeviceId: (deviceId) => set({ deviceId }),
   setPlayerReady: (playerReady) => set({ playerReady }),
 
@@ -74,9 +74,8 @@ const usePlayerStore = create((set, get) => ({
   },
 
   playerTrack: async (trackUri, source = "spotify") => {
-    const { setPlayDisable, setIsPlayPauseCooldown, playSpotifyTrack, playLocalTrack } = get();
+    const { setPlayDisable, playSpotifyTrack, playLocalTrack } = get();
 
-    setIsPlayPauseCooldown(false);
     setPlayDisable(true);
 
     if (source === "spotify") {
@@ -222,6 +221,90 @@ const usePlayerStore = create((set, get) => ({
 
     if (!player) return;
     await player.seek(seekTime);
+  },
+
+  initPlayer: async () => {
+    const { setPlayer, setDeviceId } = get();
+    const { setToken } = useTokenStore.getState();
+
+    try {
+      const { playerInstance } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
+      set({ playerReady: true });
+      return playerInstance;
+    } catch (error) {
+      console.error("Spotify Player初期化失敗:", error);
+      throw error;
+    }
+  },
+
+  syncSpotifyPlayerState: () => {
+    const { player, isSpotifyPlaying } = get();
+    if (!player || !isSpotifyPlaying) return;
+
+    const UPDATE_PROGRESS_BAR_INTERVAL_MS = 200;
+    const PERCENT = 100;
+
+    const handleSpotifyStateChange = (state) => {
+      if (!state || !state.track_window?.current_track) return;
+      const {
+        position,
+        duration,
+        track_window: { current_track },
+      } = state;
+
+      set({
+        position: (position / duration) * PERCENT,
+        duration: duration,
+        trackId: current_track.id,
+      });
+    };
+
+    player.addListener("player_state_changed", handleSpotifyStateChange);
+    /////////////////////////////////////////////////////////////////////////
+    const updateSpotifyProgress = async () => {
+      const state = await player.getCurrentState();
+      if (!state) return;
+      const isValidPosition = typeof state.position === "number";
+      const isValidDuration = typeof state.duration === "number";
+      if (!isValidPosition || !isValidDuration) return;
+
+      const { position, duration } = state;
+      set({
+        currentTime: position,
+        position: (position / duration) * PERCENT,
+      });
+    };
+    const progressInterval = setInterval(updateSpotifyProgress, UPDATE_PROGRESS_BAR_INTERVAL_MS);
+
+    return () => {
+      clearInterval(progressInterval);
+      player.removeListener("player_state_changed", handleSpotifyStateChange);
+    };
+  },
+
+  syncLocalAudioState: () => {
+    const { audioRef, isLocalPlaying } = get();
+    if (!audioRef?.current || !isLocalPlaying) return;
+
+    const audio = audioRef.current;
+    const MS_IN_SECOND = 1000;
+    const PERCENT = 100;
+
+    const handleAudioTimeUpdate = () => {
+      if (!audio.duration || isNaN(audio.duration)) return;
+
+      set({
+        position: (audio.currentTime / audio.duration) * PERCENT,
+        duration: audio.duration * MS_IN_SECOND,
+        currentTime: audio.currentTime * MS_IN_SECOND,
+      });
+    };
+
+    audio.addEventListener("timeupdate", handleAudioTimeUpdate);
+
+    return () => {
+      audio.removeEventListener("timeupdate", handleAudioTimeUpdate);
+    };
   },
 }));
 

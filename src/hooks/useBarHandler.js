@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { usePlayerContext } from "../contexts/PlayerContext";
+import usePlayerStore from "../store/playerStore";
 
 export default function useBarHandler({ type, initialVolume = 0, barRef, handleVolumeChange }) {
   const isVolumeType = type === "volume";
   const isProgressType = type === "progress";
 
-  const { isLocalReady, isLocalPlaying } = usePlayerContext();
+  const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
+  const isLocalReady = usePlayerStore((state) => state.isLocalReady);
 
   const [percentage, setPercentage] = useState(() => {
     const saved = localStorage.getItem("player_volume");
