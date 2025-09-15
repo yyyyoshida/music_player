@@ -37,13 +37,11 @@ const PlaylistDetail = ({ containerRef }) => {
   const queue = usePlaybackStore((state) => state.queue);
   const setQueue = usePlaybackStore((state) => state.setQueue);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
-  const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
-  const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
   const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
+  const updateCurrentIndex = usePlaybackStore((state) => state.updateCurrentIndex);
 
-  const playerTrack = usePlayerStore((state) => state.playerTrack);
   const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
@@ -128,13 +126,8 @@ const PlaylistDetail = ({ containerRef }) => {
       return showMessage("unselected");
     }
 
-    const audioSrc = firstTrack.trackUri || firstTrack.audioURL;
-    const trackSource = firstTrack.source;
-
     setIsTrackSet(true);
-    setCurrentIndex(0);
-    setCurrentTrackId(firstTrack.id);
-    playerTrack(audioSrc, trackSource);
+    updateCurrentIndex(0);
   }
 
   return (

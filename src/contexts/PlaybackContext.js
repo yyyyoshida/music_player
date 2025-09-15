@@ -30,16 +30,6 @@ export const PlaybackProvider = ({ children }) => {
     setIsNextDisabled(currentIndex >= queue.length - 1);
   }, [queue, currentIndex, isTrackSet]);
 
-  useEffect(() => {
-    const track = queue[currentIndex];
-    if (!track) return;
-
-    const isClickedTrack = track.id === currentTrackId;
-    if (!isClickedTrack) return;
-
-    updateTrackInfo(track);
-  }, [queue, currentIndex, currentTrackId]);
-
   return <PlaybackContext.Provider value={{}}>{children}</PlaybackContext.Provider>;
 };
 
