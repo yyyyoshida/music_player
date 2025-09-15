@@ -10,6 +10,8 @@ const usePlaybackStore = create((set, get) => ({
   currentArtistName: "アーティスト・作者",
   currentCoverImage: "/img/fallback-cover.png",
   trackOrigin: null,
+  isPrevDisabled: true,
+  isNextDisabled: true,
 
   // setQueue: (queue) => set({ queue }),
   setQueue: (updater) =>
@@ -23,6 +25,8 @@ const usePlaybackStore = create((set, get) => ({
   setCurrentArtistName: (currentArtistName) => set({ currentArtistName }),
   setCurrentCoverImage: (currentCoverImage) => set({ currentCoverImage }),
   setTrackOrigin: (trackOrigin) => set({ trackOrigin }),
+  setIsPrevDisabled: (isPrevDisabled) => set({ isPrevDisabled }),
+  setIsNextDisabled: (isNextDisabled) => set({ isNextDisabled }),
 
   setTrackIndex: (index) => {
     const { queue, currentIndex, setCurrentIndex } = get();
