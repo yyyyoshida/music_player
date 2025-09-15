@@ -111,15 +111,16 @@ function loadSpotifySDK() {
 
 export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
   const DEFAULT_VOLUME = 0.3;
-  const newToken = await getNewAccessToken();
-  setToken(newToken);
 
   await loadSpotifySDK();
 
   return new Promise((resolve) => {
     const playerInstance = new window.Spotify.Player({
       name: "MyMusicPlayer",
-      getOAuthToken: (cb) => {
+      getOAuthToken: async (cb) => {
+        const newToken = await getNewAccessToken();
+        setToken(newToken);
+
         cb(newToken);
       },
       volume: DEFAULT_VOLUME,
