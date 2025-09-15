@@ -17,6 +17,11 @@ export async function getNewAccessToken(refreshToken = null) {
   if (data.refresh_token) {
     window.localStorage.setItem("refresh_token", data.refresh_token);
   }
+
+  if (data.expires_in) {
+    const expiryTime = Date.now() + data.expires_in * 1000;
+    window.localStorage.setItem("access_token_expiry", expiryTime);
+  }
   return data.access_token;
 }
 
@@ -46,28 +51,21 @@ export async function getRefreshToken() {
   return data.refresh_token;
 }
 
-export async function isValidToken(localAccessToken) {
-  try {
-    const response = await fetch("https://api.spotify.com/v1/me", {
-      headers: { Authorization: `Bearer ${localAccessToken}` },
-    });
+const FIVE_MINUTES_MS = 5 * 60 * 1000;
+export function isValidToken() {
+  const expiry = window.localStorage.getItem("access_token_expiry");
 
-    if (response.ok) {
-      return true;
-    }
+  if (!expiry) return false;
 
-    return false;
-  } catch {
-    return false;
-  }
+  return Date.now() < expiry - FIVE_MINUTES_MS;
 }
 
 // Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
 export async function fetchSpotifyAPI(url, options = {}) {
   let token = window.localStorage.getItem("access_token");
-  const canUseToken = await isValidToken(token);
+  console.log("トークンは有効かどうか：", isValidToken());
 
-  if (!canUseToken) {
+  if (!isValidToken()) {
     try {
       token = await getNewAccessToken();
       if (!token) throw new Error("トークン再取得できなかった");
@@ -87,6 +85,7 @@ export async function fetchSpotifyAPI(url, options = {}) {
 
   if (!response.ok) {
     console.error(`Fetch失敗: ${response.status} ${response.statusText}`);
+    throw new Error(response.status);
   }
 
   return response;
@@ -111,15 +110,16 @@ function loadSpotifySDK() {
 
 export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
   const DEFAULT_VOLUME = 0.3;
-  const newToken = await getNewAccessToken();
-  setToken(newToken);
 
   await loadSpotifySDK();
 
   return new Promise((resolve) => {
     const playerInstance = new window.Spotify.Player({
       name: "MyMusicPlayer",
-      getOAuthToken: (cb) => {
+      getOAuthToken: async (cb) => {
+        const newToken = await getNewAccessToken();
+        setToken(newToken);
+
         cb(newToken);
       },
       volume: DEFAULT_VOLUME,
@@ -127,44 +127,10 @@ export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
 
     playerInstance.addListener("ready", ({ device_id }) => {
       setDeviceId(device_id);
-      resolve({ playerInstance, deviceId: device_id });
+      resolve({ playerInstance, newDeviceId: device_id });
     });
 
     playerInstance.connect();
     setPlayer(playerInstance);
   });
-}
-
-let lastDeviceCheckTime = 0;
-let cachedDeviceId = null;
-const DEVICE_CHECK_INTERVAL = 30 * 1000;
-
-export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, setToken) {
-  const now = Date.now();
-
-  if (cachedDeviceId && now - lastDeviceCheckTime < DEVICE_CHECK_INTERVAL) {
-    return cachedDeviceId;
-  }
-
-  const response = await fetchSpotifyAPI("https://api.spotify.com/v1/me/player/devices");
-  if (!response.ok) return null;
-
-  const data = await response.json();
-  const isStillAlive = data.devices.some((d) => d.id === currentDeviceId);
-
-  lastDeviceCheckTime = now;
-  cachedDeviceId = isStillAlive ? currentDeviceId : null;
-
-  if (isStillAlive) {
-    return currentDeviceId;
-  }
-  // デバイスIDが無効だった場合の処理↓↓
-  try {
-    const { deviceId } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
-
-    return deviceId;
-  } catch (err) {
-    console.error("Spotify Player接続失敗:", err);
-    return null;
-  }
 }
