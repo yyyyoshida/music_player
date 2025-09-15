@@ -6,6 +6,7 @@ const usePlayerStore = create((set, get) => ({
   TRACK_CHANGE_COOLDOWN: 700,
 
   isPlaying: false,
+  isTrackSet: false,
   currentTime: 0,
   position: 0,
   duration: 0,
@@ -20,6 +21,7 @@ const usePlayerStore = create((set, get) => ({
   playerReady: false,
 
   setIsPlaying: (isPlaying) => set({ isPlaying }),
+  setIsTrackSet: (isTrackSet) => set({ isTrackSet }),
   setCurrentTime: (currentTime) => set({ currentTime }),
   setPosition: (position) => set({ position }),
   setDuration: (duration) => set({ duration }),
