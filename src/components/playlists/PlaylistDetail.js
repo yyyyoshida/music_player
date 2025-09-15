@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { usePlayerContext } from "../../contexts/PlayerContext";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaybackStore from "../../store/playbackStore";
@@ -21,8 +20,6 @@ const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();
 
   const [isRenameVisible, setIsRenameVisible] = useState(false);
-
-  const { formatTime, setIsTrackSet } = usePlayerContext();
 
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   const tracks = usePlaylistStore((state) => state.tracks);
@@ -47,6 +44,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
 
   const playerTrack = usePlayerStore((state) => state.playerTrack);
+  const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const LOADING_DELAY = 200;
@@ -208,7 +206,6 @@ const PlaylistDetail = ({ containerRef }) => {
                 isCurrentTrack={isCurrentTrack}
                 isClicked={isClicked}
                 date={date.toLocaleString()}
-                formatTime={formatTime}
                 parentRef={playlistDetailRef}
               />
             );
