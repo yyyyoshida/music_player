@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 import usePlayerStore from "../store/playerStore";
 import usePlaybackStore from "../store/playbackStore";
 import useTokenStore from "../store/tokenStore";
@@ -10,11 +10,11 @@ export const PlaybackProvider = ({ children }) => {
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
   const updateTrackInfo = usePlaybackStore((state) => state.updateTrackInfo);
+  const setIsPrevDisabled = usePlaybackStore((state) => state.setIsPrevDisabled);
+  const setIsNextDisabled = usePlaybackStore((state) => state.setIsNextDisabled);
 
   const isTrackSet = usePlayerStore((state) => state.isTrackSet);
 
-  const [isPrevDisabled, setIsPrevDisabled] = useState(true);
-  const [isNextDisabled, setIsNextDisabled] = useState(true);
   const isToken = useTokenStore((state) => state.isToken);
 
   useEffect(() => {
@@ -40,16 +40,7 @@ export const PlaybackProvider = ({ children }) => {
     updateTrackInfo(track);
   }, [queue, currentIndex, currentTrackId]);
 
-  return (
-    <PlaybackContext.Provider
-      value={{
-        isPrevDisabled,
-        isNextDisabled,
-      }}
-    >
-      {children}
-    </PlaybackContext.Provider>
-  );
+  return <PlaybackContext.Provider value={{}}>{children}</PlaybackContext.Provider>;
 };
 
 export const usePlayback = () => useContext(PlaybackContext);
