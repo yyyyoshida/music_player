@@ -17,18 +17,18 @@ export const PlaybackProvider = ({ children }) => {
 
   const isToken = useTokenStore((state) => state.isToken);
 
-  useEffect(() => {
-    if (!isToken) return;
+  // useEffect(() => {
+  //   if (!isToken) return;
 
-    if (!isTrackSet) {
-      setIsPrevDisabled(!isTrackSet);
-      setIsNextDisabled(!isTrackSet);
-      return;
-    }
+  //   if (!isTrackSet) {
+  //     setIsPrevDisabled(!isTrackSet);
+  //     setIsNextDisabled(!isTrackSet);
+  //     return;
+  //   }
 
-    setIsPrevDisabled(currentIndex <= 0);
-    setIsNextDisabled(currentIndex >= queue.length - 1);
-  }, [queue, currentIndex, isTrackSet]);
+  //   setIsPrevDisabled(currentIndex <= 0);
+  //   setIsNextDisabled(currentIndex >= queue.length - 1);
+  // }, [queue, currentIndex, isTrackSet]);
 
   return <PlaybackContext.Provider value={{}}>{children}</PlaybackContext.Provider>;
 };
