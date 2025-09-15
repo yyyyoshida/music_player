@@ -13,7 +13,6 @@ import Main from "./components/Main";
 
 function App() {
   const [profile, setProfile] = useState(null);
-  const [isTrackSet, setIsTrackSet] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
 
   const setToken = useTokenStore((state) => state.setToken);
@@ -123,7 +122,7 @@ function App() {
   return (
     <BrowserRouter>
       <SearchProvider>
-        <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
+        <PlayerProvider>
           <Header onSearchResults={handleSearchResults} profile={profile} />
           <Main searchResults={searchResults} setProfile={setProfile} />
         </PlayerProvider>
