@@ -263,9 +263,10 @@ const usePlayerStore = create((set, get) => ({
     /////////////////////////////////////////////////////////////////////////
     const updateSpotifyProgress = async () => {
       const state = await player.getCurrentState();
+      if (!state) return;
       const isValidPosition = typeof state.position === "number";
       const isValidDuration = typeof state.duration === "number";
-      if (!state || !isValidPosition || !isValidDuration) return;
+      if (!isValidPosition || !isValidDuration) return;
 
       const { position, duration } = state;
       set({
