@@ -4,20 +4,24 @@ import { BrowserRouter } from "react-router-dom";
 import { getNewAccessToken, saveRefreshToken, getRefreshToken, isValidToken } from "./utils/spotifyAuth";
 
 import { SearchProvider } from "./contexts/SearchContext";
-import { PlayerProvider } from "./contexts/PlayerContext";
-import { RepeatProvider } from "./contexts/RepeatContext";
 import useTokenStore from "./store/tokenStore";
+import usePlayerStore from "./store/playerStore";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
 
 function App() {
   const [profile, setProfile] = useState(null);
-  const [isTrackSet, setIsTrackSet] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
 
   const setToken = useTokenStore((state) => state.setToken);
   const setIsToken = useTokenStore((state) => state.setIsToken);
+  const initPlayer = usePlayerStore((state) => state.initPlayer);
+  const player = usePlayerStore((state) => state.player);
+  const isSpotifyPlaying = usePlayerStore((state) => state.isSpotifyPlaying);
+  const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
+  const syncSpotifyPlayerState = usePlayerStore((state) => state.syncSpotifyPlayerState);
+  const syncLocalAudioState = usePlayerStore((state) => state.syncLocalAudioState);
 
   useEffect(() => {
     async function init() {
@@ -89,20 +93,37 @@ function App() {
     init();
   }, []);
 
+  useEffect(() => {
+    let instance;
+    (async () => {
+      instance = await initPlayer();
+    })();
+
+    return () => {
+      if (instance?.disconnect) instance.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const cleanup = syncSpotifyPlayerState();
+    return () => cleanup?.();
+  }, [player, isSpotifyPlaying]);
+
+  useEffect(() => {
+    const cleanup = syncLocalAudioState();
+    return () => cleanup?.();
+  }, [isLocalPlaying]);
+
   function handleSearchResults(results) {
     setSearchResults(results);
   }
 
   return (
     <BrowserRouter>
-      <RepeatProvider>
-        <SearchProvider>
-          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet}>
-            <Header onSearchResults={handleSearchResults} profile={profile} />
-            <Main searchResults={searchResults} setProfile={setProfile} />
-          </PlayerProvider>
-        </SearchProvider>
-      </RepeatProvider>
+      <SearchProvider>
+        <Header onSearchResults={handleSearchResults} profile={profile} />
+        <Main searchResults={searchResults} setProfile={setProfile} />
+      </SearchProvider>
     </BrowserRouter>
   );
 }
