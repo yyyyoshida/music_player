@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { usePlayerContext } from "../../contexts/PlayerContext";
-import { useRepeatContext } from "../../contexts/RepeatContext";
+import useRepeatStore from "../../store/repeatStore";
 import usePlaybackStore from "../../store/playbackStore";
 import { PlaybackContext } from "../../contexts/PlaybackContext";
 import useBarHandler from "../../hooks/useBarHandler";
@@ -21,11 +20,11 @@ const ProgressBar = ({ initialValue }) => {
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
   const seekToSpotify = usePlayerStore((state) => state.seekToSpotify);
   const updateVolume = usePlayerStore((state) => state.updateVolume);
+  const isTrackSet = usePlayerStore((state) => state.isTrackSet);
 
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
+  const isRepeat = useRepeatStore((state) => state.isRepeat);
 
-  const { isTrackSet } = usePlayerContext();
-  const { isRepeat } = useRepeatContext();
   const { goToNextTrack } = useContext(PlaybackContext);
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
     type: "progress",
@@ -55,14 +54,13 @@ const ProgressBar = ({ initialValue }) => {
 
     const updateProgress = () => {
       if (isDragging) return;
-      // console.log(audio.currentTime);
       const newTime = roundToTwoDecimals((audio.currentTime / audio.duration) * 100);
       setPercentage(newTime || 0);
     };
 
     audio.addEventListener("timeupdate", updateProgress);
     return () => audio.removeEventListener("timeupdate", updateProgress);
-  }, [position, isLocalPlaying, isDragging]);
+  }, [isLocalPlaying, isDragging]);
 
   // 曲のソースが変わったとき
   useEffect(() => {

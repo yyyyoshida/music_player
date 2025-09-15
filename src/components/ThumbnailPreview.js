@@ -1,15 +1,13 @@
 import { useContext, useRef, useState, useEffect } from "react";
 import { TrackInfoContext } from "../contexts/TrackInfoContext";
-import { usePlayerContext } from "../contexts/PlayerContext";
 
 import { isFallback } from "../utils/isFallback";
 import usePlaybackStore from "../store/playbackStore";
+import usePlayerStore from "../store/playerStore";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ThumbnailPreview = () => {
-  const { isTrackSet } = usePlayerContext();
   const { isVisible, setIsVisible } = useContext(TrackInfoContext);
-  // const { isTrackSet } = useContext(SearchContext);
 
   const [delayedVisibility, setDelayedVisibility] = useState("hidden");
   const [scale, setScale] = useState(1);
@@ -20,6 +18,7 @@ export const ThumbnailPreview = () => {
   const currentTitle = usePlaybackStore((state) => state.currentTitle);
   const currentArtistName = usePlaybackStore((state) => state.currentArtistName);
   const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
+  const isTrackSet = usePlayerStore((state) => state.isTrackSet);
 
   const isUsedFallbackImage = isFallback(currentCoverImage);
 
