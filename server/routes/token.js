@@ -66,6 +66,7 @@ router.post("/refresh_token", async (req, res) => {
     });
 
     const data = await response.json();
+    console.log(data);
 
     if (!response.ok) {
       console.error("リフレッシュ失敗:", data);
@@ -73,7 +74,11 @@ router.post("/refresh_token", async (req, res) => {
     }
 
     console.log("localStorageのリフレッシュトークンを使って更新");
-    return res.json({ access_token: data.access_token });
+    // return res.json({ access_token: data.access_token });
+    return res.json({
+      access_token: data.access_token,
+      expires_in: data.expires_in,
+    });
   } catch (error) {
     console.error("内部エラー:", error);
     return res.status(500).json({ error: "Internal server error" });
