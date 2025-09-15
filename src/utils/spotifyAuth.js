@@ -17,6 +17,11 @@ export async function getNewAccessToken(refreshToken = null) {
   if (data.refresh_token) {
     window.localStorage.setItem("refresh_token", data.refresh_token);
   }
+
+  if (data.expires_in) {
+    const expiryTime = Date.now() + data.expires_in * 1000;
+    window.localStorage.setItem("access_token_expiry", expiryTime);
+  }
   return data.access_token;
 }
 
@@ -46,28 +51,21 @@ export async function getRefreshToken() {
   return data.refresh_token;
 }
 
-export async function isValidToken(localAccessToken) {
-  try {
-    const response = await fetch("https://api.spotify.com/v1/me", {
-      headers: { Authorization: `Bearer ${localAccessToken}` },
-    });
+const FIVE_MINUTES_MS = 5 * 60 * 1000;
+export function isValidToken() {
+  const expiry = window.localStorage.getItem("access_token_expiry");
 
-    if (response.ok) {
-      return true;
-    }
+  if (!expiry) return false;
 
-    return false;
-  } catch {
-    return false;
-  }
+  return Date.now() < expiry - FIVE_MINUTES_MS;
 }
 
 // Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
 export async function fetchSpotifyAPI(url, options = {}) {
   let token = window.localStorage.getItem("access_token");
-  const canUseToken = await isValidToken(token);
+  console.log("トークンは有効かどうか：", isValidToken());
 
-  if (!canUseToken) {
+  if (!isValidToken()) {
     try {
       token = await getNewAccessToken();
       if (!token) throw new Error("トークン再取得できなかった");
