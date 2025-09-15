@@ -23,7 +23,7 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
 
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
-  const updateCurrentIndex = usePlaybackStore((state) => state.updateCurrentIndex);
+  const playTrackAtIndex = usePlaybackStore((state) => state.playTrackAtIndex);
 
   const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
   const setTrackMenuPositionTop = useTrackMoreMenuStore((state) => state.setTrackMenuPositionTop);
@@ -65,7 +65,7 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
     setIsTrackSet(true);
     setCurrentPlayedAt(date);
     setPendingTrackId(null);
-    updateCurrentIndex(index);
+    playTrackAtIndex(index);
   }
 
   function setButtonPosition() {
