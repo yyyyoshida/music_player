@@ -59,11 +59,15 @@ const usePlaybackStore = create((set, get) => ({
     playerTrack(uriToPlay, track.source);
   },
 
-  updateCurrentIndex: (index) => {
+  playTrackAtIndex: (index) => {
     const { currentIndex, queue, updateTrackInfo, playTrack, setTrackIndex } = get();
 
     const track = queue[index];
-    if (!track || index === currentIndex) return;
+    const isSameTrack = index === currentIndex;
+    const isFirstTrackNotPlayed = currentIndex === 0;
+    // 同じトラックはスキップすることで再生・停止で切り替えてる
+    // indexの初期値がゼロだから、まだ未再生の状態で一番上のトラックを押すと再生できない対策
+    if (!track || (isSameTrack && !isFirstTrackNotPlayed)) return;
 
     updateTrackInfo(track);
     playTrack(track);
@@ -71,24 +75,24 @@ const usePlaybackStore = create((set, get) => ({
   },
 
   goToNextTrack: () => {
-    const { currentIndex, queue, updateCurrentIndex } = get();
+    const { currentIndex, queue, playTrackAtIndex } = get();
     const { playDisable } = usePlayerStore.getState();
 
     if (playDisable) return;
     const nextIndex = Math.min(currentIndex + 1, queue.length - 1);
     if (nextIndex !== currentIndex) {
-      updateCurrentIndex(nextIndex);
+      playTrackAtIndex(nextIndex);
     }
   },
 
   goToPreviousTrack: () => {
-    const { currentIndex, updateCurrentIndex } = get();
+    const { currentIndex, playTrackAtIndex } = get();
     const { playDisable } = usePlayerStore.getState();
 
     if (playDisable) return;
     const prevIndex = Math.max(currentIndex - 1, 0);
     if (prevIndex !== currentIndex) {
-      updateCurrentIndex(prevIndex);
+      playTrackAtIndex(prevIndex);
     }
   },
 }));

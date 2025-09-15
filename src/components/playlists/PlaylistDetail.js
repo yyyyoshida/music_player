@@ -40,7 +40,7 @@ const PlaylistDetail = ({ containerRef }) => {
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
   const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
-  const updateCurrentIndex = usePlaybackStore((state) => state.updateCurrentIndex);
+  const playTrackAtIndex = usePlaybackStore((state) => state.playTrackAtIndex);
 
   const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
@@ -127,7 +127,7 @@ const PlaylistDetail = ({ containerRef }) => {
     }
 
     setIsTrackSet(true);
-    updateCurrentIndex(0);
+    playTrackAtIndex(0);
   }
 
   return (
