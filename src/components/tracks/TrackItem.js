@@ -14,7 +14,6 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playDisable = usePlayerStore((state) => state.playDisable);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
-  const playerTrack = usePlayerStore((state) => state.playerTrack);
   const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
 
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
@@ -23,9 +22,8 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
 
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
-  const setCurrentTrackId = usePlaybackStore((state) => state.setCurrentTrackId);
-  const setCurrentIndex = usePlaybackStore((state) => state.setCurrentIndex);
   const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
+  const updateCurrentIndex = usePlaybackStore((state) => state.updateCurrentIndex);
 
   const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
   const setTrackMenuPositionTop = useTrackMoreMenuStore((state) => state.setTrackMenuPositionTop);
@@ -65,11 +63,9 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
     if (!uri) return console.warn("再生不可");
 
     setIsTrackSet(true);
-    setCurrentIndex(index);
-    setCurrentTrackId(track.id);
     setCurrentPlayedAt(date);
     setPendingTrackId(null);
-    playerTrack(uri, track.source);
+    updateCurrentIndex(index);
   }
 
   function setButtonPosition() {
