@@ -37,7 +37,7 @@ const usePlaybackStore = create((set, get) => ({
     }
   },
 
-  updateTrackInfo: (track) => {
+  syncTrackInfo: (track) => {
     const { setCurrentTrackId, setCurrentArtistName, setCurrentTitle, setCurrentCoverImage } = get();
     const { setCurrentTime, setDuration } = usePlayerStore.getState();
 
@@ -60,7 +60,7 @@ const usePlaybackStore = create((set, get) => ({
   },
 
   playTrackAtIndex: (index) => {
-    const { currentIndex, queue, updateTrackInfo, playTrack, setTrackIndex } = get();
+    const { currentIndex, queue, syncTrackInfo, playTrack, setTrackIndex } = get();
 
     const track = queue[index];
     const isSameTrack = index === currentIndex;
@@ -69,7 +69,7 @@ const usePlaybackStore = create((set, get) => ({
     // indexの初期値がゼロだから、まだ未再生の状態で一番上のトラックを押すと再生できない対策
     if (!track || (isSameTrack && !isFirstTrackNotPlayed)) return;
 
-    updateTrackInfo(track);
+    syncTrackInfo(track);
     playTrack(track);
     setTrackIndex(index);
   },
