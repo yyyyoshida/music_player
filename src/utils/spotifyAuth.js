@@ -85,6 +85,7 @@ export async function fetchSpotifyAPI(url, options = {}) {
 
   if (!response.ok) {
     console.error(`Fetch失敗: ${response.status} ${response.statusText}`);
+    throw new Error(response.status);
   }
 
   return response;
@@ -126,44 +127,10 @@ export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
 
     playerInstance.addListener("ready", ({ device_id }) => {
       setDeviceId(device_id);
-      resolve({ playerInstance, deviceId: device_id });
+      resolve({ playerInstance, newDeviceId: device_id });
     });
 
     playerInstance.connect();
     setPlayer(playerInstance);
   });
-}
-
-let lastDeviceCheckTime = 0;
-let cachedDeviceId = null;
-const DEVICE_CHECK_INTERVAL = 30 * 1000;
-
-export async function validateDeviceId(currentDeviceId, setPlayer, setDeviceId, setToken) {
-  const now = Date.now();
-
-  if (cachedDeviceId && now - lastDeviceCheckTime < DEVICE_CHECK_INTERVAL) {
-    return cachedDeviceId;
-  }
-
-  const response = await fetchSpotifyAPI("https://api.spotify.com/v1/me/player/devices");
-  if (!response.ok) return null;
-
-  const data = await response.json();
-  const isStillAlive = data.devices.some((d) => d.id === currentDeviceId);
-
-  lastDeviceCheckTime = now;
-  cachedDeviceId = isStillAlive ? currentDeviceId : null;
-
-  if (isStillAlive) {
-    return currentDeviceId;
-  }
-  // デバイスIDが無効だった場合の処理↓↓
-  try {
-    const { deviceId } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
-
-    return deviceId;
-  } catch (err) {
-    console.error("Spotify Player接続失敗:", err);
-    return null;
-  }
 }

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { validateDeviceId, fetchSpotifyAPI } from "../utils/spotifyAuth";
+import { fetchSpotifyAPI, initSpotifyPlayer } from "../utils/spotifyAuth";
 import useTokenStore from "./tokenStore";
 
 const usePlayerStore = create((set, get) => ({
@@ -80,7 +80,7 @@ const usePlayerStore = create((set, get) => ({
     setPlayDisable(true);
 
     if (source === "spotify") {
-      playSpotifyTrack(trackUri);
+      await playSpotifyTrack(trackUri);
       return;
     }
 
@@ -92,7 +92,6 @@ const usePlayerStore = create((set, get) => ({
   playSpotifyTrack: async (trackUri) => {
     const {
       deviceId,
-      player,
       setPlayer,
       setDeviceId,
       isLocalPlaying,
@@ -104,15 +103,6 @@ const usePlayerStore = create((set, get) => ({
       TRACK_CHANGE_COOLDOWN,
     } = get();
     const { setToken } = useTokenStore.getState();
-    // 再生時にデバイスIDが切れてても再取得してエラー落ちを防ぐため ↓
-    const validDeviceId = await validateDeviceId(deviceId, setPlayer, setDeviceId, setToken);
-
-    if (!validDeviceId) {
-      console.error("有効なデバイスIDが取得できない");
-      // showMessage("deviceNotFound");
-      // 今後ActionMessageContextをZustandに移行してそこからshowMessage()を使う
-      return;
-    }
 
     if (isLocalPlaying) {
       audioRef.current.pause();
@@ -127,25 +117,30 @@ const usePlayerStore = create((set, get) => ({
 
     setIsSpotifyPlaying(true);
 
-    try {
-      await fetchSpotifyAPI(`https://api.spotify.com/v1/me/player/play?device_id=${validDeviceId}`, {
+    async function playSpotifyOnDevice(deviceId) {
+      await fetchSpotifyAPI(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
       setIsPlaying(true);
-    } catch (error) {
-      if (error.message === "TOKEN_REFRESH_FAILED") {
-        console.error("トークン再取得失敗");
-        // showMessage("tokenExpired");
-        // 今後ActionMessageContextをZustandに移行してそこからshowMessage()を使う
-        return;
-      }
+    }
 
-      console.error("通信エラー:", error);
-      // showMessage("networkError");
-      // 今後ActionMessageContextをZustandに移行してそこからshowMessage()を使う
+    try {
+      // 通常再生
+      await playSpotifyOnDevice(deviceId);
+    } catch (error) {
+      // デバイスIDが無効だった場合
+      if (error.message === "404") {
+        try {
+          const { newDeviceId } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
+          await playSpotifyOnDevice(newDeviceId);
+        } catch (error) {
+          console.log("再試行でも失敗:", error);
+        }
+      } else {
+        console.error("通信エラー:", error);
+      }
     } finally {
       // Spotify限定で429エラーを防ぐために遅延
       setTimeout(resetSpotifyPlayerState, TRACK_CHANGE_COOLDOWN);
