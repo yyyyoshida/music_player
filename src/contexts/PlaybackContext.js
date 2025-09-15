@@ -20,10 +20,11 @@ export const PlaybackProvider = ({ children }) => {
   const setDuration = usePlayerStore((state) => state.setDuration);
   const playDisable = usePlayerStore((state) => state.playDisable);
   const playerTrack = usePlayerStore((state) => state.playerTrack);
+  const isTrackSet = usePlayerStore((state) => state.isTrackSet);
+
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
   const isToken = useTokenStore((state) => state.isToken);
-  const { isTrackSet } = usePlayerContext();
 
   useEffect(() => {
     if (!isToken) return;

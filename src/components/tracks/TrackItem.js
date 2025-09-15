@@ -6,7 +6,6 @@ import usePlaybackStore from "../../store/playbackStore";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
-import { usePlayerContext } from "../../contexts/PlayerContext";
 import TrackSourceIcon from "../TrackSourceIcon";
 import { isFallback } from "../../utils/isFallback";
 import { formatTime } from "../../utils/formatTime";
@@ -16,6 +15,7 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
   const playDisable = usePlayerStore((state) => state.playDisable);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
   const playerTrack = usePlayerStore((state) => state.playerTrack);
+  const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
 
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
@@ -36,7 +36,6 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
 
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
-  const { setIsTrackSet } = usePlayerContext();
   const [pendingTrackId, setPendingTrackId] = useState(null);
 
   const buttonRef = useRef(null);
