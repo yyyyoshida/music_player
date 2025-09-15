@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import { getNewAccessToken, saveRefreshToken, getRefreshToken, isValidToken } from "./utils/spotifyAuth";
 
 import { SearchProvider } from "./contexts/SearchContext";
-import { PlayerProvider } from "./contexts/PlayerContext";
 import useTokenStore from "./store/tokenStore";
 import usePlayerStore from "./store/playerStore";
 
@@ -122,10 +121,8 @@ function App() {
   return (
     <BrowserRouter>
       <SearchProvider>
-        <PlayerProvider>
-          <Header onSearchResults={handleSearchResults} profile={profile} />
-          <Main searchResults={searchResults} setProfile={setProfile} />
-        </PlayerProvider>
+        <Header onSearchResults={handleSearchResults} profile={profile} />
+        <Main searchResults={searchResults} setProfile={setProfile} />
       </SearchProvider>
     </BrowserRouter>
   );
