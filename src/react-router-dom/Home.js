@@ -2,7 +2,7 @@ import { useEffect, useState, useContext, useRef } from "react";
 // import { usePlayerContext } from "../contexts/PlayerContext";
 // import { PlaylistSelectionContext } from "../contexts/PlaylistSelectionContext";
 import { playIcon, pauseIcon } from "../assets/icons";
-import { PlaybackContext } from "../contexts/PlaybackContext";
+// import { PlaybackContext } from "../contexts/PlaybackContext";
 import useTokenStore from "../store/tokenStore";
 
 import CardListSkeleton from "../components/skeletonUI/CardListSkeleton";
@@ -15,7 +15,7 @@ const Home = () => {
 
   // const { playerTrack, isPlaying, trackId, setIsTrackSet } = usePlayerContext();
   // const { handleTrackSelect } = useContext(PlaylistSelectionContext);
-  const { setQueue } = useContext(PlaybackContext);
+  // const { setQueue } = useContext(PlaybackContext);
   const token = useTokenStore((state) => state.token);
 
   const changeCountRef = useRef(0);
