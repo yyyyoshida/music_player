@@ -1,6 +1,6 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import useTooltipStore from "../../store/tooltipStore";
-import { PlaybackContext } from "../../contexts/PlaybackContext";
+import usePlaybackStore from "../../store/playbackStore";
 
 const PrevNextButton = ({ type }) => {
   const CLICK_DELAY = 350;
@@ -9,7 +9,10 @@ const PrevNextButton = ({ type }) => {
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
   const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
-  const { goToPreviousTrack, goToNextTrack, isPrevDisabled, isNextDisabled } = useContext(PlaybackContext);
+  const goToNextTrack = usePlaybackStore((state) => state.goToNextTrack);
+  const goToPreviousTrack = usePlaybackStore((state) => state.goToPreviousTrack);
+  const isPrevDisabled = usePlaybackStore((state) => state.isPrevDisabled);
+  const isNextDisabled = usePlaybackStore((state) => state.isNextDisabled);
 
   function handlePrevNextClick() {
     if ((type === "prev" && isPrevDisabled) || (type === "next" && isNextDisabled)) return;
