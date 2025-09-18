@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON, FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
 import useTooltipStore from "../../store/tooltipStore";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
@@ -15,28 +14,14 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
 
   const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
-  const setTrackMenuPositionTop = useTrackMoreMenuStore((state) => state.setTrackMenuPositionTop);
   const toggleTrackMenu = useTrackMoreMenuStore((state) => state.toggleTrackMenu);
 
   const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
   const handleTrackSelect = usePlaylistSelectionStore((state) => state.handleTrackSelect);
 
-  const buttonRef = useRef(null);
   const isUsedFallbackImage = isFallback(track.albumImage);
-  const positionOffsetY = -60;
   const isSearchPage = window.location.pathname === "/search-result";
-
-  const { isCurrentTrack, isActiveTrack, handleClickTrackItem } = useTrackItem(track, index, date, parentRef);
-
-  function setButtonPosition() {
-    if (!buttonRef.current || !parentRef.current) return;
-
-    const buttonRect = buttonRef.current.getBoundingClientRect();
-    const parentRect = parentRef.current.getBoundingClientRect();
-
-    const offset = buttonRect.top - parentRect.top + window.scrollY + positionOffsetY;
-    setTrackMenuPositionTop(offset);
-  }
+  const { buttonRef, isCurrentTrack, isActiveTrack, handleClickTrackItem, setButtonPosition } = useTrackItem(track, index, date, parentRef);
 
   return (
     <li className={`track-item ${isActiveTrack ? "playing" : ""} ${isCurrentTrack ? "clicked" : ""} `} onClick={handleClickTrackItem}>
