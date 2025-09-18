@@ -16,3 +16,4 @@ export const warningIcon =
 export const FALLBACK_COVER_IMAGE = "/img/fallback-cover.png";
 export const FAVORITE_ICON = "/img/heart.png";
 export const ADD_TO_PLAYLIST_ICON = "/img/plus.png";
+export const TRACK_MORE_ICON = "/img/more.png";
