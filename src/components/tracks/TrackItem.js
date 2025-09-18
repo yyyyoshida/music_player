@@ -1,21 +1,18 @@
-import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
-import useTooltipStore from "../../store/tooltipStore";
+import { playIcon, pauseIcon } from "../../assets/icons";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import TrackSourceIcon from "../TrackSourceIcon";
+import TrackActionButton from "./TrackActionButton";
 import { isFallback } from "../../utils/isFallback";
 import { formatTime } from "../../utils/formatTime";
 import useTrackItem from "../../hooks/useTrackItem";
 
 const TrackItem = ({ track, index, date, query, parentRef }) => {
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
-  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
-  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
-
   const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
   const toggleTrackMenu = useTrackMoreMenuStore((state) => state.toggleTrackMenu);
 
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
   const handleTrackSelect = usePlaylistSelectionStore((state) => state.handleTrackSelect);
 
@@ -57,62 +54,32 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
         {track.source && <TrackSourceIcon source={track.source} />}
         {isSearchPage ? (
           <>
-            <button
-              className="track-item__button track-item__favorite-button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleButtonPress();
+            <TrackActionButton
+              type={"favorite"}
+              clickAction={() => {
+                showMessage("未実装");
               }}
-              onMouseEnter={(e) => {
-                setTooltipText("お気入りに追加");
-                handleMouseEnter(e);
-              }}
-              onMouseLeave={() => {
-                handleMouseLeave();
-              }}
-            >
-              <img src={FAVORITE_ICON} />
-            </button>
-            <button
-              className="track-item__button track-item__add-playlist-button"
-              onClick={(e) => {
-                e.stopPropagation();
+            />
+
+            <TrackActionButton
+              type={"add-playlist"}
+              clickAction={() => {
                 handleTrackSelect(track, false);
                 openPlaylistSelectModal();
               }}
-              onMouseEnter={(e) => {
-                setTooltipText("プレイリストに追加");
-                handleMouseEnter(e);
-              }}
-              onMouseLeave={() => {
-                handleMouseLeave();
-              }}
-            >
-              <img src={ADD_TO_PLAYLIST_ICON} />
-            </button>
+            />
           </>
         ) : (
-          <button
-            className="track-item__button track-item__more-button "
-            ref={buttonRef}
-            onMouseEnter={(e) => {
-              setTooltipText("プレイリストに追加");
-              handleMouseEnter(e);
-            }}
-            onMouseLeave={() => {
-              handleMouseLeave();
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
+          <TrackActionButton
+            type={"more"}
+            clickAction={() => {
               setButtonPosition();
               handleTrackSelect(track, false);
               toggleTrackMenu(index);
-              handleButtonPress();
               setMenuTrackId(track.id);
             }}
-          >
-            <img className="track-item__more-icon track-menu-button-icon" src="/img/more.png" />
-          </button>
+            buttonRef={buttonRef}
+          />
         )}
         <div className="track-item__track-duration">{formatTime(track.duration_ms)}</div>
       </div>
