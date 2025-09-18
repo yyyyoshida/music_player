@@ -29,7 +29,6 @@ const PlaylistDetail = ({ containerRef }) => {
   const addedTrackDuration = usePlaylistStore((state) => state.addedTrackDuration);
   const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
-  const showCoverImages = usePlaylistStore((state) => state.showCoverImages);
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
   const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const showDeletePlaylistModal = usePlaylistStore((state) => state.showDeletePlaylistModal);
@@ -37,8 +36,6 @@ const PlaylistDetail = ({ containerRef }) => {
   const queue = usePlaybackStore((state) => state.queue);
   const setQueue = usePlaybackStore((state) => state.setQueue);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
-  const currentIndex = usePlaybackStore((state) => state.currentIndex);
-  const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
   const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
   const playTrackAtIndex = usePlaybackStore((state) => state.playTrackAtIndex);
 
@@ -46,8 +43,6 @@ const PlaylistDetail = ({ containerRef }) => {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const LOADING_DELAY = 200;
-  const COVER_IMAGE_FADE_DURATION = 400;
-
   const isEmptyPlaylist = tracks.length === 0;
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -99,26 +94,6 @@ const PlaylistDetail = ({ containerRef }) => {
       }
     })();
   }, [id]);
-
-  useEffect(() => {
-    const track = queue[currentIndex];
-    if (!track) return;
-
-    const addedAt = track.addedAt;
-    const date = addedAt instanceof Date ? addedAt : new Date(addedAt);
-
-    setCurrentPlayedAt(date.toLocaleString());
-  }, [currentIndex]);
-
-  useEffect(() => {
-    let timeoutId;
-
-    if (isCoverImageFading) {
-      timeoutId = setTimeout(() => showCoverImages(), COVER_IMAGE_FADE_DURATION);
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [isCoverImageFading]);
 
   function playFirstTrack() {
     const firstTrack = queue?.[0];
