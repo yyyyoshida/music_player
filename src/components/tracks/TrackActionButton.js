@@ -1,5 +1,5 @@
 import useTooltipStore from "../../store/tooltipStore";
-import { FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
+import { FAVORITE_ICON, ADD_TO_PLAYLIST_ICON, TRACK_MORE_ICON } from "../../assets/icons";
 
 const TrackActionButton = ({ type, clickAction, buttonRef }) => {
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
@@ -28,7 +28,7 @@ const TrackActionButton = ({ type, clickAction, buttonRef }) => {
 
       {type === "add-playlist" && <img src={ADD_TO_PLAYLIST_ICON} />}
 
-      {type === "more" && <img src={"/img/more.png"} />}
+      {type === "more" && <img src={TRACK_MORE_ICON} />}
     </button>
   );
 };
