@@ -1,29 +1,18 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { playIcon, pauseIcon, FAVORITE_ICON, ADD_TO_PLAYLIST_ICON, FALLBACK_COVER_IMAGE } from "../../assets/icons";
-import usePlayerStore from "../../store/playerStore";
 import useTooltipStore from "../../store/tooltipStore";
-import usePlaybackStore from "../../store/playbackStore";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
-import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import TrackSourceIcon from "../TrackSourceIcon";
 import { isFallback } from "../../utils/isFallback";
 import { formatTime } from "../../utils/formatTime";
+import useTrackItem from "../../hooks/useTrackItem";
 
 const TrackItem = ({ track, index, date, query, parentRef }) => {
-  const isPlaying = usePlayerStore((state) => state.isPlaying);
-  const playDisable = usePlayerStore((state) => state.playDisable);
-  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
-  const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
-
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
   const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
-
-  const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
-  const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
-  const playTrackAtIndex = usePlaybackStore((state) => state.playTrackAtIndex);
 
   const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
   const setTrackMenuPositionTop = useTrackMoreMenuStore((state) => state.setTrackMenuPositionTop);
@@ -32,41 +21,12 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
   const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
   const handleTrackSelect = usePlaylistSelectionStore((state) => state.handleTrackSelect);
 
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
-
-  const [pendingTrackId, setPendingTrackId] = useState(null);
-
   const buttonRef = useRef(null);
-  const isCurrentTrack = currentTrackId === track.id;
   const isUsedFallbackImage = isFallback(track.albumImage);
   const positionOffsetY = -60;
   const isSearchPage = window.location.pathname === "/search-result";
-  const isActiveTrack = (currentTrackId === track.id && isPlaying) || pendingTrackId === track.id;
 
-  function handleClickTrackItem() {
-    if (playDisable) {
-      showMessage("tooFrequent");
-      return;
-    }
-
-    if (isCurrentTrack) {
-      togglePlayPause();
-      return;
-    }
-    setPendingTrackId(track.id);
-    playNewTrack();
-  }
-
-  function playNewTrack() {
-    const uri = track.trackUri || track.uri || track.audioURL;
-
-    if (!uri) return console.warn("再生不可");
-
-    setIsTrackSet(true);
-    setCurrentPlayedAt(date);
-    setPendingTrackId(null);
-    playTrackAtIndex(index);
-  }
+  const { isCurrentTrack, isActiveTrack, handleClickTrackItem } = useTrackItem(track, index, date, parentRef);
 
   function setButtonPosition() {
     if (!buttonRef.current || !parentRef.current) return;
