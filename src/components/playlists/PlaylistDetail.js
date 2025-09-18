@@ -1,5 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import usePlaylistDetail from "../../hooks/usePlaylistDetail";
 import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaybackStore from "../../store/playbackStore";
@@ -12,113 +13,33 @@ import RenamePlaylist from "./RenamePlaylist";
 import DeletePlaylistModal from "./DeletePlaylistModal";
 import TrackListSkeleton from "../skeletonUI/TrackListSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
-import { getPlaylistInfo } from "../../utils/playlistUtils";
 import { formatTimeHours } from "../../utils/formatTime";
 import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistDetail = ({ containerRef }) => {
   const { id } = useParams();
-
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
-  const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   const tracks = usePlaylistStore((state) => state.tracks);
-  const setTracks = usePlaylistStore((state) => state.setTracks);
   const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
-  const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
   const addedTrackDuration = usePlaylistStore((state) => state.addedTrackDuration);
-  const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
-  const showCoverImages = usePlaylistStore((state) => state.showCoverImages);
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
-  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const showDeletePlaylistModal = usePlaylistStore((state) => state.showDeletePlaylistModal);
 
   const queue = usePlaybackStore((state) => state.queue);
-  const setQueue = usePlaybackStore((state) => state.setQueue);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
-  const currentIndex = usePlaybackStore((state) => state.currentIndex);
-  const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
-  const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
   const playTrackAtIndex = usePlaybackStore((state) => state.playTrackAtIndex);
 
   const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const LOADING_DELAY = 200;
-  const COVER_IMAGE_FADE_DURATION = 400;
-
   const isEmptyPlaylist = tracks.length === 0;
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
   const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("trackList", tracks, [tracks], LOADING_DELAY);
   const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
+  usePlaylistDetail(id, containerRef);
   const playlistDetailRef = useRef(null);
-
-  useEffect(() => {
-    containerRef.current.scrollTo(0, 0);
-    setDeletedTrackDuration(0);
-    setAddedTrackDuration(0);
-    setTrackOrigin("firebase");
-    setCurrentPlaylistId(id);
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const playlistInfoData = await getPlaylistInfo(id);
-        setPlaylistInfo(playlistInfoData);
-      } catch (error) {
-        console.error(error);
-        showMessage("fetchPlaylistInfoFailed");
-      }
-    })();
-  }, [id]);
-
-  useEffect(() => {
-    const cachedTracks = localStorage.getItem(`playlistDetail:${id}Tracks`);
-
-    if (cachedTracks) {
-      setTracks(JSON.parse(cachedTracks));
-      setQueue(JSON.parse(cachedTracks));
-      return;
-    }
-
-    (async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/api/playlists/${id}/tracks`);
-
-        if (!response.ok) throw new Error("Failed to fetch playlists");
-
-        const data = await response.json();
-        localStorage.setItem(`playlistDetail:${id}Tracks`, JSON.stringify(data));
-        setTracks(data);
-        setQueue(data);
-      } catch {
-        showMessage("fetchPlaylistDetailFailed");
-      }
-    })();
-  }, [id]);
-
-  useEffect(() => {
-    const track = queue[currentIndex];
-    if (!track) return;
-
-    const addedAt = track.addedAt;
-    const date = addedAt instanceof Date ? addedAt : new Date(addedAt);
-
-    setCurrentPlayedAt(date.toLocaleString());
-  }, [currentIndex]);
-
-  useEffect(() => {
-    let timeoutId;
-
-    if (isCoverImageFading) {
-      timeoutId = setTimeout(() => showCoverImages(), COVER_IMAGE_FADE_DURATION);
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [isCoverImageFading]);
 
   function playFirstTrack() {
     const firstTrack = queue?.[0];
