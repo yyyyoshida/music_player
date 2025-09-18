@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { playIcon, pauseIcon } from "../../assets/icons";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
@@ -17,7 +18,8 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
   const handleTrackSelect = usePlaylistSelectionStore((state) => state.handleTrackSelect);
 
   const isUsedFallbackImage = isFallback(track.albumImage);
-  const isSearchPage = window.location.pathname === "/search-result";
+  const location = useLocation();
+  const isSearchPage = location.pathname === "/search-result";
   const { buttonRef, isCurrentTrack, isActiveTrack, handleClickTrackItem, setButtonPosition } = useTrackItem(track, index, date, parentRef);
 
   return (
