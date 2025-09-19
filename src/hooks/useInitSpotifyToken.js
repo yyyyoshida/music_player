@@ -10,8 +10,8 @@ const useInitSpotifyToken = () => {
     const localAccessToken = localStorage.getItem("access_token");
     const localRefreshToken = localStorage.getItem("refresh_token");
 
-    // ローカルのトークンでログイン
-    if (localAccessToken && (await isValidToken(localAccessToken))) {
+    // ローカルのトークンでログイン;
+    if (localAccessToken && isValidToken()) {
       setToken(localAccessToken);
       console.log("ローカルToken");
       return true;
