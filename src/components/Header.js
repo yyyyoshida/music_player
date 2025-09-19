@@ -2,7 +2,7 @@ import SearchBar from "./SearchBar";
 import LocalFileImportNav from "./LocalFileImportNav";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
-function Header({ onSearchResults, profile }) {
+function Header({ profile }) {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const userIcon = profile?.images[1].url || "/img/dummy-user.jpg";
@@ -17,7 +17,7 @@ function Header({ onSearchResults, profile }) {
         <img src={userIcon} alt="" className="sidebar-header__user-icon" />
         <p className="sidebar-header__user-name">{userName}</p>
       </div>
-      <SearchBar onSearchResults={onSearchResults} />
+      <SearchBar />
       <nav className="sidebar-header__nav">
         <ul className="sidebar-header__list">
           <li className="sidebar-header__item">

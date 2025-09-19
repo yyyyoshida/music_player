@@ -10,8 +10,6 @@ import Main from "./components/Main";
 
 function App() {
   const [profile, setProfile] = useState(null);
-  const [searchResults, setSearchResults] = useState([]);
-
   const initPlayer = usePlayerStore((state) => state.initPlayer);
   const player = usePlayerStore((state) => state.player);
   const isSpotifyPlaying = usePlayerStore((state) => state.isSpotifyPlaying);
@@ -43,15 +41,11 @@ function App() {
     return () => cleanup?.();
   }, [isLocalPlaying]);
 
-  function handleSearchResults(results) {
-    setSearchResults(results);
-  }
-
   return (
     <BrowserRouter>
       <SearchProvider>
-        <Header onSearchResults={handleSearchResults} profile={profile} />
-        <Main searchResults={searchResults} setProfile={setProfile} />
+        <Header profile={profile} />
+        <Main setProfile={setProfile} />
       </SearchProvider>
     </BrowserRouter>
   );
