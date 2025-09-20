@@ -9,9 +9,7 @@ const useTooltip = (tooltipRef) => {
   const tooltipPosition = useTooltipStore((state) => state.tooltipPosition);
   const trackMousePosition = useTooltipStore((state) => state.trackMousePosition);
 
-  const isTooltipVisible = isHovered && !isButtonPressed;
-  const tooltipOpacity = isTooltipVisible ? 1 : 0;
-  const tooltipVisibility = isTooltipVisible ? "visible" : "hidden";
+  const isTooltipVisible = isHovered && !isButtonPressed ? "visible" : "hidden";
 
   const OFFSET_X = 12;
   const OFFSET_Y = 18;
@@ -38,7 +36,6 @@ const useTooltip = (tooltipRef) => {
   }, [tooltipPosition]);
 
   useEffect(() => {
-    console.log("✅✅✅✅✅✅");
     window.addEventListener("mousemove", trackMousePosition);
     return () => {
       window.removeEventListener("mousemove", trackMousePosition);
@@ -47,8 +44,7 @@ const useTooltip = (tooltipRef) => {
 
   return {
     correctedPosition,
-    tooltipOpacity,
-    tooltipVisibility,
+    isTooltipVisible,
   };
 };
 
