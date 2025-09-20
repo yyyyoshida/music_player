@@ -1,10 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Routes, Route } from "react-router-dom";
-import { getNewAccessToken } from "../utils/spotifyAuth";
 
-import useTokenStore from "../store/tokenStore";
-import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
+import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 
 import Home from "../react-router-dom/Home";
 import SearchResult from "./SearchResult";
@@ -22,54 +20,10 @@ import UploadStatusModal from "./UploadStatusModal";
 import ActionSuccessMessage from "./ActionSuccessMessage";
 import Tooltip from "./Tooltip";
 
-const Main = ({ setProfile }) => {
-  const token = useTokenStore((state) => state.token);
-  const setToken = useTokenStore((state) => state.setToken);
-  const setIsToken = useTokenStore((state) => state.setIsToken);
+const Main = () => {
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
 
   const containerRef = useRef(null);
-  const localRefreshToken = localStorage.getItem("refresh_token");
-
-  useEffect(() => {
-    if (!token) return;
-
-    const fetchProfile = async () => {
-      try {
-        const res = await fetch("https://api.spotify.com/v1/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          console.error("❌ /me 取得失敗。token 無効かも");
-          setIsToken(false);
-          localStorage.removeItem("access_token");
-
-          if (localRefreshToken) {
-            async function loginWithLocalRefreshToken() {
-              try {
-                const newToken = await getNewAccessToken(localRefreshToken);
-                setToken(newToken);
-                localStorage.setItem("access_token", newToken);
-              } catch {}
-            }
-            loginWithLocalRefreshToken();
-            return;
-          }
-          return;
-        }
-
-        const data = await res.json();
-        setProfile(data);
-        setIsToken(true);
-      } catch (err) {
-        console.error("❌ プロフィール取得エラー:", err);
-        setIsToken(false);
-      }
-    };
-
-    fetchProfile();
-  }, [token]);
 
   return (
     <>
