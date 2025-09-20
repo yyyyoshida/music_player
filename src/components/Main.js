@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { Routes, Route } from "react-router-dom";
 import { getNewAccessToken } from "../utils/spotifyAuth";
 
 import useTokenStore from "../store/tokenStore";
-import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
+import { TrackInfoProvider } from "../contexts/TrackInfoContext";
+import { UserContext } from "../contexts/UserContext";
 
 import Home from "../react-router-dom/Home";
 import SearchResult from "./SearchResult";
@@ -22,11 +23,12 @@ import UploadStatusModal from "./UploadStatusModal";
 import ActionSuccessMessage from "./ActionSuccessMessage";
 import Tooltip from "./Tooltip";
 
-const Main = ({ setProfile }) => {
+const Main = () => {
   const token = useTokenStore((state) => state.token);
   const setToken = useTokenStore((state) => state.setToken);
   const setIsToken = useTokenStore((state) => state.setIsToken);
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
+  const { setProfile } = useContext(UserContext);
 
   const containerRef = useRef(null);
   const localRefreshToken = localStorage.getItem("refresh_token");
