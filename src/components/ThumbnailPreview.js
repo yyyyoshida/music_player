@@ -4,6 +4,7 @@ import { TrackInfoContext } from "../contexts/TrackInfoContext";
 import { isFallback } from "../utils/isFallback";
 import usePlaybackStore from "../store/playbackStore";
 import usePlayerStore from "../store/playerStore";
+import useFadeTransition from "../hooks/useFadeTransition";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ThumbnailPreview = () => {
@@ -33,22 +34,6 @@ export const ThumbnailPreview = () => {
     }, hideDelay);
     return () => clearTimeout(timer);
   }
-  // TrackInfoの中のfadeTransition関数も同じだから今後使い回せるようにする。↓↓
-  function fadeTransition() {
-    // const transitionDelay = 500; // たまにtransitionのアニメーションが途切れる
-    const transitionDelay = 50;
-    const transitionElement = transitionRef.current;
-    transitionElement.style.visibility = "visible";
-    transitionElement.style.opacity = 1;
-    function handleTransitionEnd() {
-      transitionElement.style.visibility = "hidden";
-      transitionElement.style.opacity = 1;
-    }
-    setTimeout(() => {
-      transitionElement.style.opacity = 0;
-      transitionElement.addEventListener("transitionend", handleTransitionEnd);
-    }, transitionDelay);
-  }
 
   useEffect(() => {
     if (isVisible) {
@@ -58,11 +43,7 @@ export const ThumbnailPreview = () => {
     }
   }, [isVisible]);
 
-  useEffect(() => {
-    fadeTransition();
-  }, [currentTitle]);
-
-  // const FADE_DURATION = 2500;
+  useFadeTransition(transitionRef, currentTitle);
 
   return (
     <>
