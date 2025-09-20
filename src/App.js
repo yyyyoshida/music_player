@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
 
 import { SearchProvider } from "./contexts/SearchContext";
+import { UserProvider } from "./contexts/UserContext";
 import usePlayerStore from "./store/playerStore";
 import useInitSpotifyToken from "./hooks/useInitSpotifyToken";
 import useInitSpotifyPlayer from "./hooks/useInitSpotifyPlayer";
@@ -10,7 +11,6 @@ import Header from "./components/Header";
 import Main from "./components/Main";
 
 function App() {
-  const [profile, setProfile] = useState(null);
   const player = usePlayerStore((state) => state.player);
   const isSpotifyPlaying = usePlayerStore((state) => state.isSpotifyPlaying);
   const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
@@ -34,8 +34,10 @@ function App() {
   return (
     <BrowserRouter>
       <SearchProvider>
-        <Header profile={profile} />
-        <Main setProfile={setProfile} />
+        <UserProvider>
+          <Header />
+          <Main />
+        </UserProvider>
       </SearchProvider>
     </BrowserRouter>
   );
