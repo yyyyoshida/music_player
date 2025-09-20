@@ -5,16 +5,13 @@ import useTooltip from "../hooks/useTooltip";
 const Tooltip = () => {
   const tooltipText = useTooltipStore((state) => state.tooltipText);
   const tooltipRef = useRef(null);
-  const { correctedPosition, tooltipOpacity, tooltipVisibility } = useTooltip(tooltipRef);
+  const { correctedPosition, isTooltipVisible } = useTooltip(tooltipRef);
 
   return (
     <span
       ref={tooltipRef}
-      className="tooltip"
+      className={`tooltip tooltip--${isTooltipVisible}`}
       style={{
-        // opacity: isOpenMenu ? 0 : tooltipOpacity,
-        opacity: tooltipOpacity,
-        visibility: tooltipVisibility,
         top: correctedPosition.y,
         left: correctedPosition.x,
       }}
