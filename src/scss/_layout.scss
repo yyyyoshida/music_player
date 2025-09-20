@@ -708,8 +708,6 @@ footer {
 }
 
 .tooltip {
-  visibility: hidden;
-  opacity: 0;
   border: 1px solid #141414;
   padding: 6px 10px;
   line-height: 1;
@@ -725,6 +723,16 @@ footer {
     right 1s,
     opacity 0.2s ease-in;
   z-index: 3001;
+}
+
+.tooltip--hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.tooltip--visible {
+  visibility: visible;
+  opacity: 1;
 }
 
 .thumbnail-expanded {
