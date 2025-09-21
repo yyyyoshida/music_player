@@ -7,8 +7,10 @@ import { isFallback } from "../../utils/isFallback";
 import useFadeTransition from "../../hooks/useFadeTransition";
 
 const TrackInfo = () => {
-  const imgRef = useRef(null);
-  const [width, setWidth] = useState(85);
+  const MIN_WIDTH = 150;
+  const DEFAULT_WIDTH = 85;
+
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
 
   const currentTitle = usePlaybackStore((state) => state.currentTitle);
   const currentArtistName = usePlaybackStore((state) => state.currentArtistName);
@@ -23,6 +25,7 @@ const TrackInfo = () => {
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
+  const imgRef = useRef(null);
   const transitionRef = useRef(null);
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
@@ -32,17 +35,18 @@ const TrackInfo = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!trackInfoRef.current || !trackMetaRef.current) return;
-      const offsetValue = 35;
+      const OFFSET_VALUE = 35;
+
       const coverArtWidth = imgRef.current.clientWidth;
       const trackMetaWidth = trackMetaRef.current.clientWidth;
       let newWidth;
       if (isVisible) {
-        newWidth = trackMetaWidth + offsetValue;
+        newWidth = trackMetaWidth + OFFSET_VALUE;
       } else {
-        newWidth = coverArtWidth + trackMetaWidth + offsetValue;
+        newWidth = coverArtWidth + trackMetaWidth + OFFSET_VALUE;
       }
-      if (newWidth < 150) {
-        setWidth(150);
+      if (newWidth < MIN_WIDTH) {
+        setWidth(MIN_WIDTH);
       } else {
         setWidth(newWidth);
       }
