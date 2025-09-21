@@ -23,26 +23,26 @@ export const ExpandedTrackCoverView = () => {
   return (
     <>
       <div
-        className={`thumbnail-preview ${isVisible ? "is-visible" : ""}`}
+        className={`expanded-cover-view ${isVisible ? "is-visible" : ""}`}
         style={{
           opacity: isVisible ? 1 : 0,
         }}
       >
-        {isTrackSet && !isUsedFallbackImage && <img className="thumbnail-preview__background-image" src={currentCoverImage} />}
+        {isTrackSet && !isUsedFallbackImage && <img className="expanded-cover-view__background-image" src={currentCoverImage} />}
 
-        <figure className="thumbnail-preview__content">
-          <div className="thumbnail-preview__image-wrapper">
+        <figure className="expanded-cover-view__content">
+          <div className="expanded-cover-view__image-wrapper">
             <img
               ref={coverArtRef}
-              className={`thumbnail-preview__image ${isUsedFallbackImage ? "thumbnail-preview__image-fallback" : ""}`}
+              className={`expanded-cover-view__image ${isUsedFallbackImage ? "expanded-cover-view__image-fallback" : ""}`}
               src={isTrackSet ? currentCoverImage : FALLBACK_COVER_IMAGE}
               alt={`${currentArtistName} の ${currentTitle} のカバー画像`}
             />
-            <div ref={transitionRef} className="thumbnail-preview__image-transition"></div>
+            <div ref={transitionRef} className="expanded-cover-view__image-transition"></div>
           </div>
-          <figcaption className="thumbnail-preview__info">
-            <p className="thumbnail-preview__title">{isTrackSet ? currentTitle : "曲がセットされていません"}</p>
-            <p className="thumbnail-preview__artist">{isTrackSet ? currentArtistName : ""}</p>
+          <figcaption className="expanded-cover-view__info">
+            <p className="expanded-cover-view__title">{isTrackSet ? currentTitle : "曲がセットされていません"}</p>
+            <p className="expanded-cover-view__artist">{isTrackSet ? currentArtistName : ""}</p>
           </figcaption>
         </figure>
       </div>
