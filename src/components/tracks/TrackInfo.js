@@ -1,22 +1,23 @@
-import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
 import useDelayedText from "../../hooks/useDelayText";
 import usePlaybackStore from "../../store/playbackStore";
 import useTooltipStore from "../../store/tooltipStore";
 import { isFallback } from "../../utils/isFallback";
+import useFadeTransition from "../../hooks/useFadeTransition";
 
 const TrackInfo = () => {
-  const imgRef = useRef(null);
-  const [isHidden, setIsHidden] = useState(false);
-  const [width, setWidth] = useState(85);
+  const MIN_WIDTH = 150;
+  const DEFAULT_WIDTH = 85;
 
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
 
   const currentTitle = usePlaybackStore((state) => state.currentTitle);
   const currentArtistName = usePlaybackStore((state) => state.currentArtistName);
   const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
 
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
   const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
@@ -24,57 +25,37 @@ const TrackInfo = () => {
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
-  const isFirstRender = useRef(true);
+  const imgRef = useRef(null);
   const transitionRef = useRef(null);
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
 
   const isUsedFallbackImage = isFallback(currentCoverImage);
 
-  useLayoutEffect(() => {
-    setTimeout(() => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
       if (!trackInfoRef.current || !trackMetaRef.current) return;
-      const offsetValue = 35;
+      const OFFSET_VALUE = 35;
+
       const coverArtWidth = imgRef.current.clientWidth;
       const trackMetaWidth = trackMetaRef.current.clientWidth;
       let newWidth;
       if (isVisible) {
-        newWidth = trackMetaWidth + offsetValue;
+        newWidth = trackMetaWidth + OFFSET_VALUE;
       } else {
-        newWidth = coverArtWidth + trackMetaWidth + offsetValue;
+        newWidth = coverArtWidth + trackMetaWidth + OFFSET_VALUE;
       }
-      if (newWidth < 150) {
-        setWidth(150);
+      if (newWidth < MIN_WIDTH) {
+        setWidth(MIN_WIDTH);
       } else {
         setWidth(newWidth);
       }
     }, 0);
+
+    return () => clearTimeout(timer);
   }, [isVisible, currentTitle]);
 
-  function fadeTransition() {
-    const transitionElement = transitionRef.current;
-    transitionElement.style.visibility = "visible";
-    transitionElement.style.opacity = 1;
-    function handleTransitionEnd() {
-      transitionElement.style.visibility = "hidden";
-      transitionElement.style.opacity = 1;
-    }
-    setTimeout(() => {
-      transitionElement.style.opacity = 0;
-      transitionElement.addEventListener("transitionend", handleTransitionEnd);
-    }, 50);
-    // }, 100);
-  }
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    fadeTransition();
-
-    setIsHidden(true);
-  }, [currentTrackId]);
+  useFadeTransition(transitionRef, currentTrackId);
 
   return (
     <>
@@ -103,11 +84,7 @@ const TrackInfo = () => {
               className={`player-controls__track-thumbnail ${isUsedFallbackImage ? "track-info-fallback-cover" : ""}`}
             />
 
-            <div
-              ref={transitionRef}
-              className="player-controls__track-thumbnail-transition"
-              style={{ visibility: isHidden ? "hidden" : "visible" }}
-            ></div>
+            <div ref={transitionRef} className="player-controls__track-thumbnail-transition"></div>
           </div>
           <figcaption ref={trackMetaRef} className="player-controls__track-meta">
             <p className="player-controls__title">{currentTitle}</p>
