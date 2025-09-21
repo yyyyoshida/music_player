@@ -1,9 +1,10 @@
-import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
+import { useState, useLayoutEffect, useRef, useContext } from "react";
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
 import useDelayedText from "../../hooks/useDelayText";
 import usePlaybackStore from "../../store/playbackStore";
 import useTooltipStore from "../../store/tooltipStore";
 import { isFallback } from "../../utils/isFallback";
+import useFadeTransition from "../../hooks/useFadeTransition";
 
 const TrackInfo = () => {
   const imgRef = useRef(null);
@@ -24,7 +25,6 @@ const TrackInfo = () => {
   const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
-  const isFirstRender = useRef(true);
   const transitionRef = useRef(null);
   const trackInfoRef = useRef(null);
   const trackMetaRef = useRef(null);
@@ -51,30 +51,7 @@ const TrackInfo = () => {
     }, 0);
   }, [isVisible, currentTitle]);
 
-  function fadeTransition() {
-    const transitionElement = transitionRef.current;
-    transitionElement.style.visibility = "visible";
-    transitionElement.style.opacity = 1;
-    function handleTransitionEnd() {
-      transitionElement.style.visibility = "hidden";
-      transitionElement.style.opacity = 1;
-    }
-    setTimeout(() => {
-      transitionElement.style.opacity = 0;
-      transitionElement.addEventListener("transitionend", handleTransitionEnd);
-    }, 50);
-    // }, 100);
-  }
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    fadeTransition();
-
-    setIsHidden(true);
-  }, [currentTrackId]);
+  useFadeTransition(transitionRef, currentTrackId);
 
   return (
     <>
