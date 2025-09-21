@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { TrackInfoContext } from "../../contexts/TrackInfoContext";
 import useDelayedText from "../../hooks/useDelayText";
 import usePlaybackStore from "../../store/playbackStore";
@@ -11,13 +11,12 @@ const TrackInfo = () => {
   const [isHidden, setIsHidden] = useState(false);
   const [width, setWidth] = useState(85);
 
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-
   const currentTitle = usePlaybackStore((state) => state.currentTitle);
   const currentArtistName = usePlaybackStore((state) => state.currentArtistName);
   const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
 
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
   const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
@@ -31,7 +30,7 @@ const TrackInfo = () => {
 
   const isUsedFallbackImage = isFallback(currentCoverImage);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setTimeout(() => {
       if (!trackInfoRef.current || !trackMetaRef.current) return;
       const offsetValue = 35;
