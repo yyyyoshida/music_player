@@ -12,7 +12,7 @@ import CreatePlaylist from "./playlists/CreatePlaylist";
 // import Footer from './Footer';
 
 import Login from "./Login";
-import ThumbnailPreview from "./ThumbnailPreview";
+import ExpandedTrackCoverView from "./ExpandedTrackCoverView";
 import PlayerControls from "./player/PlayerControls";
 import PlaylistSelection from "./playlists/PlaylistSelection";
 import TrackMoreMenu from "./tracks/TrackMoreMenu";
@@ -32,7 +32,7 @@ const Main = () => {
       <div className="container" ref={containerRef}>
         <main>
           <TrackInfoProvider>
-            <ThumbnailPreview />
+            <ExpandedTrackCoverView />
             <TrackMoreMenu />
             <Tooltip />
             {isSelectVisible && <PlaylistSelection />}

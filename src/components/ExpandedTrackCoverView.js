@@ -7,7 +7,7 @@ import usePlayerStore from "../store/playerStore";
 import useFadeTransition from "../hooks/useFadeTransition";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
-export const ThumbnailPreview = () => {
+export const ExpandedTrackCoverView = () => {
   const { isVisible, setIsVisible } = useContext(TrackInfoContext);
 
   const [delayedVisibility, setDelayedVisibility] = useState("hidden");
@@ -75,4 +75,4 @@ export const ThumbnailPreview = () => {
     </>
   );
 };
-export default ThumbnailPreview;
+export default ExpandedTrackCoverView;
