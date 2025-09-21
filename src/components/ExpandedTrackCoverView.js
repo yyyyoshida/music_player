@@ -9,7 +9,6 @@ import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ExpandedTrackCoverView = () => {
   const { isVisible } = useContext(TrackInfoContext);
-  const coverArtRef = useRef(null);
   const transitionRef = useRef(null);
 
   const currentTitle = usePlaybackStore((state) => state.currentTitle);
@@ -33,7 +32,6 @@ export const ExpandedTrackCoverView = () => {
         <figure className="expanded-cover-view__content">
           <div className="expanded-cover-view__image-wrapper">
             <img
-              ref={coverArtRef}
               className={`expanded-cover-view__image ${isUsedFallbackImage ? "expanded-cover-view__image-fallback" : ""}`}
               src={isTrackSet ? currentCoverImage : FALLBACK_COVER_IMAGE}
               alt={`${currentArtistName} の ${currentTitle} のカバー画像`}
