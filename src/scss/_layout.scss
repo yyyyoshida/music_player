@@ -173,7 +173,7 @@ footer {
   }
 }
 ///////////////////////////////////////////////////////////////////////////////////
-.thumbnail-preview {
+.expanded-cover-view {
   background-color: #000000;
   position: fixed;
   width: 100vw;
@@ -239,7 +239,7 @@ footer {
     color: #eeeeee;
     font-weight: 500;
   }
-  &__image-warpper {
+  &__image-wrapper {
     position: relative;
     width: 400px;
     height: 400px;
