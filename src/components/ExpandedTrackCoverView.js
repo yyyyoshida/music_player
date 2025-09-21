@@ -1,4 +1,4 @@
-import { useContext, useRef, useState, useEffect } from "react";
+import { useContext, useRef } from "react";
 import { TrackInfoContext } from "../contexts/TrackInfoContext";
 
 import { isFallback } from "../utils/isFallback";
@@ -8,11 +8,7 @@ import useFadeTransition from "../hooks/useFadeTransition";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ExpandedTrackCoverView = () => {
-  const { isVisible, setIsVisible } = useContext(TrackInfoContext);
-
-  const [delayedVisibility, setDelayedVisibility] = useState("hidden");
-  const [scale, setScale] = useState(1);
-
+  const { isVisible } = useContext(TrackInfoContext);
   const coverArtRef = useRef(null);
   const transitionRef = useRef(null);
 
@@ -20,28 +16,7 @@ export const ExpandedTrackCoverView = () => {
   const currentArtistName = usePlaybackStore((state) => state.currentArtistName);
   const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
   const isTrackSet = usePlayerStore((state) => state.isTrackSet);
-
   const isUsedFallbackImage = isFallback(currentCoverImage);
-
-  function showThumbnail() {
-    setDelayedVisibility("visible");
-  }
-
-  function hideThumbnailDelay() {
-    const hideDelay = 300;
-    const timer = setTimeout(() => {
-      setDelayedVisibility("hidden");
-    }, hideDelay);
-    return () => clearTimeout(timer);
-  }
-
-  useEffect(() => {
-    if (isVisible) {
-      showThumbnail();
-    } else {
-      hideThumbnailDelay();
-    }
-  }, [isVisible]);
 
   useFadeTransition(transitionRef, currentTitle);
 
@@ -51,13 +26,12 @@ export const ExpandedTrackCoverView = () => {
         className={`thumbnail-preview ${isVisible ? "is-visible" : ""}`}
         style={{
           opacity: isVisible ? 1 : 0,
-          visibility: isTrackSet ? delayedVisibility : "visible",
         }}
       >
         {isTrackSet && !isUsedFallbackImage && <img className="thumbnail-preview__background-image" src={currentCoverImage} />}
 
         <figure className="thumbnail-preview__content">
-          <div className="thumbnail-preview__image-warpper" style={{ transform: `scale(${scale})` }}>
+          <div className="thumbnail-preview__image-warpper">
             <img
               ref={coverArtRef}
               className={`thumbnail-preview__image ${isUsedFallbackImage ? "thumbnail-preview__image-fallback" : ""}`}
