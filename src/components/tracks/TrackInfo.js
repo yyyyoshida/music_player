@@ -8,7 +8,6 @@ import useFadeTransition from "../../hooks/useFadeTransition";
 
 const TrackInfo = () => {
   const imgRef = useRef(null);
-  const [isHidden, setIsHidden] = useState(false);
   const [width, setWidth] = useState(85);
 
   const currentTitle = usePlaybackStore((state) => state.currentTitle);
@@ -79,11 +78,7 @@ const TrackInfo = () => {
               className={`player-controls__track-thumbnail ${isUsedFallbackImage ? "track-info-fallback-cover" : ""}`}
             />
 
-            <div
-              ref={transitionRef}
-              className="player-controls__track-thumbnail-transition"
-              style={{ visibility: isHidden ? "hidden" : "visible" }}
-            ></div>
+            <div ref={transitionRef} className="player-controls__track-thumbnail-transition"></div>
           </div>
           <figcaption ref={trackMetaRef} className="player-controls__track-meta">
             <p className="player-controls__title">{currentTitle}</p>
