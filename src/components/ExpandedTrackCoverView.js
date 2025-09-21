@@ -31,7 +31,7 @@ export const ExpandedTrackCoverView = () => {
         {isTrackSet && !isUsedFallbackImage && <img className="thumbnail-preview__background-image" src={currentCoverImage} />}
 
         <figure className="thumbnail-preview__content">
-          <div className="thumbnail-preview__image-warpper">
+          <div className="thumbnail-preview__image-wrapper">
             <img
               ref={coverArtRef}
               className={`thumbnail-preview__image ${isUsedFallbackImage ? "thumbnail-preview__image-fallback" : ""}`}
