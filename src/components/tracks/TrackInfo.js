@@ -30,7 +30,7 @@ const TrackInfo = () => {
   const isUsedFallbackImage = isFallback(currentCoverImage);
 
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       if (!trackInfoRef.current || !trackMetaRef.current) return;
       const offsetValue = 35;
       const coverArtWidth = imgRef.current.clientWidth;
@@ -47,6 +47,8 @@ const TrackInfo = () => {
         setWidth(newWidth);
       }
     }, 0);
+
+    return () => clearTimeout(timer);
   }, [isVisible, currentTitle]);
 
   useFadeTransition(transitionRef, currentTrackId);
