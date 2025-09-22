@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
-import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import { getPlaylistInfo } from "../utils/playlistUtils";
+import useActionSuccessMessageStore from "./actionSuccessMessageStore";
+import validatePlaylistName from "../utils/validatePlaylistName";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const MAX_NAME_LENGTH = 10;
 
 const usePlaylistStore = create((set, get) => ({
   isCreateVisible: false,
@@ -70,34 +70,15 @@ const usePlaylistStore = create((set, get) => ({
     set({ isDeleteVisible: false });
   },
 
-  countNameLength: (string) => {
-    let nameLength = 0;
-    for (let i = 0; i < string.length; i++) {
-      const code = string.charCodeAt(i);
-      nameLength += code <= 0x007f ? 0.5 : 1;
-    }
-    return nameLength;
-  },
-
   triggerError: (message) => {
     set({ errorMessage: message, isShaking: true });
   },
 
   handleCreatePlaylist: async () => {
-    const { playlistNameRef, countNameLength, hideCreatePlaylistModal, triggerError } = get();
-
+    const { playlistNameRef, hideCreatePlaylistModal, triggerError } = get();
     const newName = playlistNameRef.current.value;
-    const nameLength = countNameLength(newName.trim());
 
-    if (!newName.trim()) {
-      triggerError("名前を入力してください");
-      return;
-    }
-
-    if (nameLength > MAX_NAME_LENGTH) {
-      triggerError("文字数オーバーです");
-      return;
-    }
+    validatePlaylistName(newName);
 
     try {
       const response = await fetch(`${BASE_URL}/api/playlists`, {

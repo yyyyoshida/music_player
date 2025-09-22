@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import usePlaylistStore from "../store/playlistStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
+import validatePlaylistName from "../utils/validatePlaylistName";
 
-const useRenamePlaylist = (setIsRenameVisible, RenameRef, validatePlaylistName, isRenameVisible) => {
+const useRenamePlaylist = (setIsRenameVisible, RenameRef, isRenameVisible) => {
   const triggerError = usePlaylistStore((state) => state.triggerError);
   const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
