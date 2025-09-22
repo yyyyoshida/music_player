@@ -68,6 +68,13 @@ const SearchBar = () => {
   //   }
   // }
 
+  function handleSearchError(logValue) {
+    console.error("検索結果の取得に失敗: ", logValue);
+    setHasSearchError(true);
+    setSearchResults([]);
+    showMessage("searchFailed");
+  }
+
   async function handleSearch() {
     const queryText = queryRef.current.value;
     if (!queryText || queryText === query) return;
@@ -85,10 +92,7 @@ const SearchBar = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("検索結果の取得に失敗: ", response.status);
-        setHasSearchError(true);
-        setSearchResults([]);
-        showMessage("searchFailed");
+        handleSearchError(response.status);
         return;
       }
 
@@ -100,10 +104,7 @@ const SearchBar = () => {
         setHasSearchError(true);
       }
     } catch (error) {
-      console.error("検索結果の取得に失敗: ", error);
-      setHasSearchError(true);
-      setSearchResults([]);
-      showMessage("searchFailed");
+      handleSearchError(error);
     }
   }
 
