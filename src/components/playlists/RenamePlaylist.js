@@ -1,102 +1,15 @@
-import { useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useRef } from "react";
 import usePlaylistStore from "../../store/playlistStore";
-import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
+import useRenamePlaylist from "../../hooks/useRenamePlaylist";
 
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
-  const RenameRef = useRef("");
-  const { id } = useParams();
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
-
-  const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
   const errorMessage = usePlaylistStore((state) => state.errorMessage);
-  const setErrorMessage = usePlaylistStore((state) => state.setErrorMessage);
-  const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
-  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const isShaking = usePlaylistStore((state) => state.isShaking);
-  const countNameLength = usePlaylistStore((state) => state.countNameLength);
-  const triggerError = usePlaylistStore((state) => state.triggerError);
-  const MAX_NAME_LENGTH = usePlaylistStore((state) => state.MAX_NAME_LENGTH);
+  const RenameRef = useRef("");
 
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
-  const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${id}Info`);
-  const playlistInfoData = cachedPlaylistInfo ? JSON.parse(cachedPlaylistInfo) : null;
-
-  function toggleRenameVisible() {
-    setErrorMessage("");
-    setIsRenameVisible((prev) => !prev);
-  }
-
-  function validatePlaylistName(newName, beforeName) {
-    if (typeof newName !== "string") {
-      return "名前は文字列である必要があります";
-    }
-
-    if (!newName) {
-      return "名前を入力してください";
-    }
-
-    if (newName === beforeName) {
-      return "名前が同じです。違う名前にしてください";
-    }
-
-    if (countNameLength(newName) > MAX_NAME_LENGTH) {
-      return "文字数オーバーです";
-    }
-
-    return null;
-  }
-
-  async function handleSaveRename() {
-    let shouldToggle = true;
-    const playlistName = playlistInfo?.name;
-    const newName = RenameRef.current.value.trim();
-    const validationError = validatePlaylistName(newName, playlistName);
-
-    if (validationError) {
-      return triggerError(validationError);
-    }
-
-    try {
-      const response = await fetch(`${BASE_URL}/api/playlists/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newName, beforeName: playlistName }),
-      });
-
-      if (!response.ok) {
-        shouldToggle = false;
-        const data = await response.json();
-        triggerError(data.error);
-        return;
-      }
-
-      showMessage("rename");
-
-      const updatedInfoData = { ...playlistInfoData, name: newName };
-      const cachedPlaylists = JSON.parse(localStorage.getItem("playlists") || "[]");
-      const updatedPlaylists = cachedPlaylists.map((playlist) => (playlist.id === id ? { ...playlist, name: newName } : playlist));
-
-      setPlaylistInfo(updatedInfoData);
-      setPlaylists(updatedPlaylists);
-
-      localStorage.setItem(`playlistDetail:${id}Info`, JSON.stringify(updatedInfoData));
-      localStorage.setItem("playlists", JSON.stringify(updatedPlaylists));
-    } catch (error) {
-      console.error("プレイリスト名変更エラー:", error);
-      showMessage("renameFailed");
-    } finally {
-      if (shouldToggle) toggleRenameVisible();
-    }
-  }
-
-  useEffect(() => {
-    RenameRef.current.value = playlistInfo?.name;
-    RenameRef.current.select();
-  }, [isRenameVisible, playlistInfo]);
+  const { handleSaveRename, toggleRenameVisible } = useRenamePlaylist(setIsRenameVisible, RenameRef, isRenameVisible);
 
   return (
     <div className="rename-playlist-modal modal" style={{ visibility: isRenameVisible ? "visible" : "hidden" }}>
