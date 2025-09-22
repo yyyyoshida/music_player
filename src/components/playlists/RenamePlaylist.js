@@ -7,31 +7,9 @@ import useRenamePlaylist from "../../hooks/useRenamePlaylist";
 const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
   const errorMessage = usePlaylistStore((state) => state.errorMessage);
   const isShaking = usePlaylistStore((state) => state.isShaking);
-  const countNameLength = usePlaylistStore((state) => state.countNameLength);
-  const MAX_NAME_LENGTH = usePlaylistStore((state) => state.MAX_NAME_LENGTH);
-
   const RenameRef = useRef("");
-  const { handleSaveRename, toggleRenameVisible } = useRenamePlaylist(setIsRenameVisible, RenameRef, validatePlaylistName, isRenameVisible);
 
-  function validatePlaylistName(newName, beforeName) {
-    if (typeof newName !== "string") {
-      return "名前は文字列である必要があります";
-    }
-
-    if (!newName) {
-      return "名前を入力してください";
-    }
-
-    if (newName === beforeName) {
-      return "名前が同じです。違う名前にしてください";
-    }
-
-    if (countNameLength(newName) > MAX_NAME_LENGTH) {
-      return "文字数オーバーです";
-    }
-
-    return null;
-  }
+  const { handleSaveRename, toggleRenameVisible } = useRenamePlaylist(setIsRenameVisible, RenameRef, isRenameVisible);
 
   return (
     <div className="rename-playlist-modal modal" style={{ visibility: isRenameVisible ? "visible" : "hidden" }}>
