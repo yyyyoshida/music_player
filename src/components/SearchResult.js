@@ -10,7 +10,7 @@ const SearchResult = ({ containerRef }) => {
       <div className="search-result__header">
         <h2 className="search-result__title">
           <span className="search-result-highlight">{query}</span>
-          {!hasSearchError ? "の検索結果" : "の検索結果が見つかりませんでした。"}
+          {!hasSearchError ? "の検索結果" : "の検索に失敗しました。"}
         </h2>
         <TrackListHead />
       </div>
