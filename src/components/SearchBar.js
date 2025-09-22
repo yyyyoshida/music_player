@@ -78,11 +78,19 @@ const SearchBar = () => {
 
     try {
       const encodedQuery = encodeURIComponent(queryText);
-      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1d/search?q=${encodedQuery}&type=track&limit=50`, {
+      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
         method: "GET",
       });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        console.error("検索結果の取得に失敗: ", response.status);
+        setHasSearchError(true);
+        setSearchResults([]);
+        showMessage("searchFailed");
+        return;
+      }
 
       if (data.tracks?.items?.length) {
         setSearchResults(data.tracks.items);
@@ -91,7 +99,8 @@ const SearchBar = () => {
         setSearchResults([]);
         setHasSearchError(true);
       }
-    } catch (err) {
+    } catch (error) {
+      console.error("検索結果の取得に失敗: ", error);
       setHasSearchError(true);
       setSearchResults([]);
       showMessage("searchFailed");
