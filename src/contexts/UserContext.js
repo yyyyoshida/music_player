@@ -16,6 +16,13 @@ export const UserProvider = ({ children }) => {
       });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        console.error("プロフィール取得失敗: ", data);
+        setIsToken(false);
+        return;
+      }
+
       setProfile(data);
       setIsToken(true);
     } catch (error) {
