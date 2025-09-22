@@ -83,11 +83,6 @@ export async function fetchSpotifyAPI(url, options = {}) {
     },
   });
 
-  if (!response.ok) {
-    console.error(`Fetch失敗: ${response.status} ${response.statusText}`);
-    throw new Error(response.status);
-  }
-
   return response;
 }
 
