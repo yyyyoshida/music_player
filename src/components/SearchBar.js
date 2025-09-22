@@ -3,9 +3,11 @@ import { SearchContext } from "../contexts/SearchContext";
 import useTokenStore from "../store/tokenStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { fetchSpotifyAPI } from "../utils/spotifyAuth";
+import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 const SearchBar = () => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useContext(SearchContext);
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const token = useTokenStore((state) => state.token);
   const queryRef = useRef("");
   const navigate = useNavigate();
@@ -65,6 +67,7 @@ const SearchBar = () => {
   //     setSearchResults([]);
   //   }
   // }
+
   async function handleSearch() {
     const queryText = queryRef.current.value;
     if (!queryText || queryText === query) return;
@@ -75,7 +78,7 @@ const SearchBar = () => {
 
     try {
       const encodedQuery = encodeURIComponent(queryText);
-      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
+      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1d/search?q=${encodedQuery}&type=track&limit=50`, {
         method: "GET",
       });
 
@@ -91,6 +94,7 @@ const SearchBar = () => {
     } catch (err) {
       setHasSearchError(true);
       setSearchResults([]);
+      showMessage("searchFailed");
     }
   }
 
