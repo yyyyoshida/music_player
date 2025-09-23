@@ -1,18 +1,32 @@
-export async function getPlaylistInfo(currentPlaylistId) {
+export async function getPlaylistInfo(currentPlaylistId, setPlaylistInfo, showMessage) {
   const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${currentPlaylistId}Info`);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   if (cachedPlaylistInfo) {
-    return JSON.parse(cachedPlaylistInfo);
+    setPlaylistInfo(JSON.parse(cachedPlaylistInfo));
+    return;
   }
 
-  const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/info`);
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to fetch playlist info: ${response.statusText} - ${errorText}`);
+  try {
+    const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/info`);
+
+    if (!response.ok) {
+      getPlaylistInfoFailed(response.status);
+      return;
+    }
+
+    const data = await response.json();
+    localStorage.setItem(`playlistDetail:${currentPlaylistId}Info`, JSON.stringify(data));
+
+    setPlaylistInfo(data);
+  } catch (error) {
+    getPlaylistInfoFailed(error);
   }
 
-  const data = await response.json();
-  localStorage.setItem(`playlistDetail:${currentPlaylistId}Info`, JSON.stringify(data));
-  return data;
+  function getPlaylistInfoFailed(logValue) {
+    console.error("プレイリストメタ情報取得失敗: ", logValue);
+    localStorage.removeItem(`playlistDetail:${currentPlaylistId}Info`);
+    showMessage("fetchPlaylistInfoFailed");
+    setPlaylistInfo({ name: "プレイリスト", totalDuration: 0 });
+  }
 }

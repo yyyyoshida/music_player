@@ -59,12 +59,7 @@ const usePlaylistDetail = (id, containerRef) => {
 
   useEffect(() => {
     (async () => {
-      try {
-        const playlistInfoData = await getPlaylistInfo(id);
-        setPlaylistInfo(playlistInfoData);
-      } catch (error) {
-        showMessage("fetchPlaylistInfoFailed");
-      }
+      await getPlaylistInfo(id, setPlaylistInfo, showMessage);
 
       await fetchTracks();
     })();
