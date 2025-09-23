@@ -37,8 +37,8 @@ const ActionSuccessMessage = () => {
 
   const messages = {
     add: { text: "楽曲をプレイリストに追加しました", success: true },
+    addFailed: { text: "曲の追加に失敗しました", success: false },
     addFailedSpotify: { text: "Spotify曲の追加に失敗しました", success: false },
-    addFailedLocal: { text: "ローカル曲の追加に失敗しました", success: false },
     addFailedLocal: { text: "ローカル曲の追加に失敗しました", success: false },
     addFailedNewLocal: { text: "PCからの曲をプレイリストに追加失敗", success: false },
 
@@ -51,13 +51,19 @@ const ActionSuccessMessage = () => {
     fetchPlaylistsFailed: { text: "プレイリスト一覧の取得に失敗しました", success: false },
     fetchPlaylistInfoFailed: { text: "プレイリストのメタ情報取得に失敗しました", success: false },
     fetchPlaylistDetailFailed: { text: "プレイリストの詳細情報取得に失敗しました", success: false },
+    fetchProfileFailed: { text: "プロフィールの取得に失敗しました", success: false },
+
     newPlaylist: { text: "新しいプレイリストを作成しました", success: true },
+    newPlaylistFailed: { text: "プレイリストの作成に失敗しました", success: false },
     rename: { text: "プレイリストの名前を変更しました", success: true },
     renameFailed: { text: "プレイリストの名前の変更失敗しました", success: false },
 
     deviceNotFound: { text: "404 Device not found: ページをリロードしてください", success: false },
     tokenExpired: { text: "トークン再取得失敗: ページをリロードしてください", success: false },
+    playFailed: { text: "曲の再生に失敗: ページをロードしてください", success: false },
     tooFrequent: { text: "曲の切り替えの間隔が短すぎます。", success: false },
+
+    searchFailed: { text: "検索に失敗しました。ページをリロードして再試行してください", success: false },
 
     unselected: { text: "曲がセットされていません", success: false },
     未実装: { text: "この機能はまだ未実装です", success: true },
