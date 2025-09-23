@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { fetchSpotifyAPI, initSpotifyPlayer } from "../utils/spotifyAuth";
 import useTokenStore from "./tokenStore";
+import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 
 const usePlayerStore = create((set, get) => ({
   TRACK_CHANGE_COOLDOWN: 700,
@@ -102,6 +103,7 @@ const usePlayerStore = create((set, get) => ({
       TRACK_CHANGE_COOLDOWN,
     } = get();
     const { setToken } = useTokenStore.getState();
+    const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
     if (isLocalPlaying) {
       audioRef.current.pause();
@@ -117,11 +119,21 @@ const usePlayerStore = create((set, get) => ({
     setIsSpotifyPlaying(true);
 
     async function playSpotifyOnDevice(deviceId) {
-      await fetchSpotifyAPI(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+
+      console.log(response);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("SPOTIFY_DEVICE_NOT_FOUND");
+        }
+        throw new Error("SPOTIFY_PLAY_FAILED");
+      }
+
       setIsPlaying(true);
     }
 
@@ -130,15 +142,20 @@ const usePlayerStore = create((set, get) => ({
       await playSpotifyOnDevice(deviceId);
     } catch (error) {
       // デバイスIDが無効だった場合
-      if (error.message === "404") {
+      if (error.message === "SPOTIFY_DEVICE_NOT_FOUND") {
+        console.log("中間");
         try {
+          console.log("トライ");
+
           const { newDeviceId } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
           await playSpotifyOnDevice(newDeviceId);
         } catch (error) {
-          console.log("再試行でも失敗:", error);
+          console.error("再試行でも失敗:", error);
+          showMessage("playFailed");
         }
       } else {
         console.error("通信エラー:", error);
+        showMessage("playFailed");
       }
     } finally {
       // Spotify限定で429エラーを防ぐために遅延
