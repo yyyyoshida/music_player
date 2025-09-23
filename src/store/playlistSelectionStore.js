@@ -67,23 +67,24 @@ const usePlaylistSelectionStore = create((set, get) => ({
   },
 
   blobUrlToFile: async (blobUrl, filename) => {
-    const res = await fetch(blobUrl);
-    if (!res.ok) throw new Error("Blob取得失敗");
-    const blob = await res.blob();
-    return new File([blob], filename, { type: blob.type });
+    try {
+      const response = await fetch(blobUrl);
+      if (!response.ok) {
+        console.error("Blob取得失敗: ", response.status);
+        return null;
+      }
+      const blob = await response.blob();
+      return new File([blob], filename, { type: blob.type });
+    } catch {
+      return null;
+    }
   },
 
   saveUploadAndNewTrack: async (playlistId) => {
     const { blobUrlToFile, localCoverImageUrl, uploadTrackFile, selectedTrack, addTrackToList } = get();
     const formData = new FormData();
 
-    let coverImageFile;
-
-    try {
-      coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
-    } catch {
-      coverImageFile = null;
-    }
+    const coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
 
     if (coverImageFile) formData.append("cover", coverImageFile);
     formData.append("audio", uploadTrackFile);
