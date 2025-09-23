@@ -54,6 +54,7 @@ const ActionSuccessMessage = () => {
     fetchProfileFailed: { text: "プロフィールの取得に失敗しました", success: false },
 
     newPlaylist: { text: "新しいプレイリストを作成しました", success: true },
+    newPlaylistFailed: { text: "プレイリストの作成に失敗しました", success: false },
     rename: { text: "プレイリストの名前を変更しました", success: true },
     renameFailed: { text: "プレイリストの名前の変更失敗しました", success: false },
 

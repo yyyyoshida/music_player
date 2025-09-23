@@ -76,9 +76,14 @@ const usePlaylistStore = create((set, get) => ({
 
   handleCreatePlaylist: async () => {
     const { playlistNameRef, hideCreatePlaylistModal, triggerError } = get();
+    const showMessage = useActionSuccessMessageStore.getState().showMessage;
     const newName = playlistNameRef.current.value;
 
-    validatePlaylistName(newName);
+    const validationError = validatePlaylistName(newName);
+
+    if (validationError) {
+      return triggerError(validationError);
+    }
 
     try {
       const response = await fetch(`${BASE_URL}/api/playlists`, {
@@ -92,18 +97,29 @@ const usePlaylistStore = create((set, get) => ({
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        triggerError(data.error);
+        try {
+          // サーバー側のプレイリスト名のバリデーションエラーが入る
+          const data = await response.json();
+          triggerError(data.error);
+        } catch (error) {
+          // バリデーション以外のエラー
+          console.error("プレイリスト名バリデーション以外のエラー", error);
+          showMessage("newPlaylistFailed");
+          hideCreatePlaylistModal();
+        }
         return;
       }
 
       const data = await response.json();
       console.log(data);
-      // showMessage("newPlaylist");
+      showMessage("newPlaylist");
       playlistNameRef.current.value = "";
       set({ preselectedTrack: null });
       hideCreatePlaylistModal();
-    } catch {}
+    } catch {
+      showMessage("newPlaylistFailed");
+      hideCreatePlaylistModal();
+    }
   },
 
   deletePlaylist: async (playlistId, navigate) => {
