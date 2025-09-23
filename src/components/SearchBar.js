@@ -3,9 +3,11 @@ import { SearchContext } from "../contexts/SearchContext";
 import useTokenStore from "../store/tokenStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { fetchSpotifyAPI } from "../utils/spotifyAuth";
+import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
 const SearchBar = () => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useContext(SearchContext);
+  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const token = useTokenStore((state) => state.token);
   const queryRef = useRef("");
   const navigate = useNavigate();
@@ -65,6 +67,14 @@ const SearchBar = () => {
   //     setSearchResults([]);
   //   }
   // }
+
+  function handleSearchError(logValue) {
+    console.error("検索結果の取得に失敗: ", logValue);
+    setHasSearchError(true);
+    setSearchResults([]);
+    showMessage("searchFailed");
+  }
+
   async function handleSearch() {
     const queryText = queryRef.current.value;
     if (!queryText || queryText === query) return;
@@ -81,6 +91,11 @@ const SearchBar = () => {
 
       const data = await response.json();
 
+      if (!response.ok) {
+        handleSearchError(response.status);
+        return;
+      }
+
       if (data.tracks?.items?.length) {
         setSearchResults(data.tracks.items);
         setHasSearchError(false);
@@ -88,9 +103,8 @@ const SearchBar = () => {
         setSearchResults([]);
         setHasSearchError(true);
       }
-    } catch (err) {
-      setHasSearchError(true);
-      setSearchResults([]);
+    } catch (error) {
+      handleSearchError(error);
     }
   }
 
