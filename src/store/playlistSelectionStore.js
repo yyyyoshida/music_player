@@ -35,7 +35,7 @@ const usePlaylistSelectionStore = create((set, get) => ({
   saveTrackToFirestore: async (playlistId) => {
     const { addTrackToList, selectedTrack } = get();
 
-    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/spotify-tracks`, {
+    const response = await fetch(`${BASE_URL}/api/playlistss/${playlistId}/spotify-tracks`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -115,8 +115,18 @@ const usePlaylistSelectionStore = create((set, get) => ({
       hideUploadModal();
       clearPlaylistCache(playlistId);
     } catch (error) {
+      console.error(error);
       hideUploadModal();
       closePlaylistSelectModal();
+      // ※ saveUploadAndNewTrack などで throw されたエラーコード（例: "addFailedNewLocal"）を受け取る
+      // ActionSuccessMessage.js 側でユーザー向けメッセージに変換して表示している ↙
+
+      // 既知のエラー以外は汎用の "addFailed" を表示
+      if (error.message !== "addFailedSpotify" && error.message !== "addFailedLocal" && error.message !== "addFailedNewLocal") {
+        showMessage("addFailed");
+        return;
+      }
+
       showMessage(error.message);
     }
   },

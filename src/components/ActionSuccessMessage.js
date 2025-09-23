@@ -37,8 +37,8 @@ const ActionSuccessMessage = () => {
 
   const messages = {
     add: { text: "楽曲をプレイリストに追加しました", success: true },
+    addFailed: { text: "曲の追加に失敗しました", success: false },
     addFailedSpotify: { text: "Spotify曲の追加に失敗しました", success: false },
-    addFailedLocal: { text: "ローカル曲の追加に失敗しました", success: false },
     addFailedLocal: { text: "ローカル曲の追加に失敗しました", success: false },
     addFailedNewLocal: { text: "PCからの曲をプレイリストに追加失敗", success: false },
 
