@@ -16,6 +16,13 @@ const usePlaylistDetail = (id, containerRef) => {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+  function fetchTracksFailed(logValue) {
+    console.error(logValue);
+    setTracks([]);
+    setQueue([]);
+    showMessage("fetchPlaylistDetailFailed");
+  }
+
   async function fetchTracks() {
     const cachedTracks = localStorage.getItem(`playlistDetail:${id}Tracks`);
 
@@ -25,13 +32,21 @@ const usePlaylistDetail = (id, containerRef) => {
       return;
     }
 
-    const response = await fetch(`${BASE_URL}/api/playlists/${id}/tracks`);
-    if (!response.ok) throw new Error("Failed to fetch playlists");
+    try {
+      const response = await fetch(`${BASE_URL}/api/playlists/${id}/tracks`);
 
-    const data = await response.json();
-    localStorage.setItem(`playlistDetail:${id}Tracks`, JSON.stringify(data));
-    setTracks(data);
-    setQueue(data);
+      if (!response.ok) {
+        fetchTracksFailed(response.status);
+        return;
+      }
+
+      const data = await response.json();
+      localStorage.setItem(`playlistDetail:${id}Tracks`, JSON.stringify(data));
+      setTracks(data);
+      setQueue(data);
+    } catch (error) {
+      fetchTracksFailed(error);
+    }
   }
 
   useEffect(() => {
@@ -51,11 +66,7 @@ const usePlaylistDetail = (id, containerRef) => {
         showMessage("fetchPlaylistInfoFailed");
       }
 
-      try {
-        await fetchTracks();
-      } catch {
-        showMessage("fetchPlaylistDetailFailed");
-      }
+      await fetchTracks();
     })();
   }, [id]);
 };
