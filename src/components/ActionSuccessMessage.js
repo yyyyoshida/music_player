@@ -60,6 +60,7 @@ const ActionSuccessMessage = () => {
 
     deviceNotFound: { text: "404 Device not found: ページをリロードしてください", success: false },
     tokenExpired: { text: "トークン再取得失敗: ページをリロードしてください", success: false },
+    playFailed: { text: "曲の再生に失敗: ページをロードしてください", success: false },
     tooFrequent: { text: "曲の切り替えの間隔が短すぎます。", success: false },
 
     searchFailed: { text: "検索に失敗しました。ページをリロードして再試行してください", success: false },
