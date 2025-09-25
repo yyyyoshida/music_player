@@ -105,11 +105,12 @@ function loadSpotifySDK() {
 
 export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
   const DEFAULT_VOLUME = 0.3;
+  const TIMEOUT_MS = 3000;
   const currentToken = window.localStorage.getItem("access_token");
 
   await loadSpotifySDK();
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const playerInstance = new window.Spotify.Player({
       name: "MyMusicPlayer",
       getOAuthToken: async (cb) => {
@@ -128,7 +129,10 @@ export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
       volume: DEFAULT_VOLUME,
     });
 
+    const timer = setTimeout(() => reject(new Error("SPOTIFY_PLAYER_READY_TIMEOUT")), TIMEOUT_MS);
+
     playerInstance.addListener("ready", ({ device_id }) => {
+      clearTimeout(timer);
       setDeviceId(device_id);
       resolve({ playerInstance, newDeviceId: device_id });
     });
