@@ -1,4 +1,4 @@
-export function formatTimeHours(time) {
+export function formatTimeHours(time: number) {
   if (!time) return "0分";
 
   const MS_HOUR = 3600000;
@@ -14,7 +14,7 @@ export function formatTimeHours(time) {
   }
 }
 
-export function formatTime(time) {
+export function formatTime(time: number) {
   const MS_MINUTE = 60000;
   const MS_SECOND = 1000;
 
