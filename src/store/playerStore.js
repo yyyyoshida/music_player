@@ -92,8 +92,6 @@ const usePlayerStore = create((set, get) => ({
   playSpotifyTrack: async (trackUri) => {
     const {
       deviceId,
-      setPlayer,
-      setDeviceId,
       isLocalPlaying,
       setIsLocalPlaying,
       audioRef,
@@ -102,7 +100,6 @@ const usePlayerStore = create((set, get) => ({
       resetSpotifyPlayerState,
       TRACK_CHANGE_COOLDOWN,
     } = get();
-    const { setToken } = useTokenStore.getState();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
     if (isLocalPlaying) {
@@ -118,7 +115,7 @@ const usePlayerStore = create((set, get) => ({
 
     setIsSpotifyPlaying(true);
 
-    async function playSpotifyOnDevice(deviceId) {
+    try {
       const response = await fetchSpotifyAPI(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -128,35 +125,14 @@ const usePlayerStore = create((set, get) => ({
       console.log(response);
 
       if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error("SPOTIFY_DEVICE_NOT_FOUND");
-        }
-        throw new Error("SPOTIFY_PLAY_FAILED");
+        console.error("曲再生失敗: ", response.status);
+        showMessage("playFailed");
       }
 
       setIsPlaying(true);
-    }
-
-    try {
-      // 通常再生
-      await playSpotifyOnDevice(deviceId);
     } catch (error) {
-      // デバイスIDが無効だった場合
-      if (error.message === "SPOTIFY_DEVICE_NOT_FOUND") {
-        console.log("中間");
-        try {
-          console.log("トライ");
-
-          const { newDeviceId } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
-          await playSpotifyOnDevice(newDeviceId);
-        } catch (error) {
-          console.error("再試行でも失敗:", error);
-          showMessage("playFailed");
-        }
-      } else {
-        console.error("通信エラー:", error);
-        showMessage("playFailed");
-      }
+      console.error("曲再生失敗:", error);
+      showMessage("playFailed");
     } finally {
       // Spotify限定で429エラーを防ぐために遅延
       setTimeout(resetSpotifyPlayerState, TRACK_CHANGE_COOLDOWN);
