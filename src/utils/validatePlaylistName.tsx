@@ -1,7 +1,7 @@
-const validatePlaylistName = (newName, beforeName = null) => {
+const validatePlaylistName = (newName: string, beforeName = null) => {
   const MAX_NAME_LENGTH = 10;
 
-  function countNameLength(string) {
+  function countNameLength(string: string) {
     let nameLength = 0;
     for (let i = 0; i < string.length; i++) {
       const code = string.charCodeAt(i);
