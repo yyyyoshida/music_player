@@ -1,4 +1,8 @@
-export async function getPlaylistInfo(currentPlaylistId, setPlaylistInfo, showMessage) {
+export async function getPlaylistInfo(
+  currentPlaylistId: string,
+  setPlaylistInfo: (info: { name: string; totalDuration: number }) => void,
+  showMessage: (key: string) => void
+): Promise<void> {
   const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${currentPlaylistId}Info`);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -23,7 +27,7 @@ export async function getPlaylistInfo(currentPlaylistId, setPlaylistInfo, showMe
     getPlaylistInfoFailed(error);
   }
 
-  function getPlaylistInfoFailed(logValue) {
+  function getPlaylistInfoFailed(logValue: any) {
     console.error("プレイリストメタ情報取得失敗: ", logValue);
     localStorage.removeItem(`playlistDetail:${currentPlaylistId}Info`);
     showMessage("fetchPlaylistInfoFailed");
