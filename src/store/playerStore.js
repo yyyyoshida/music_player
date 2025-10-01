@@ -216,7 +216,7 @@ const usePlayerStore = create((set, get) => ({
     const { setToken } = useTokenStore.getState();
 
     try {
-      const { playerInstance } = await initSpotifyPlayer(setPlayer, setDeviceId, setToken);
+      const { playerInstance } = await initSpotifyPlayer({ setPlayer, setDeviceId, setToken });
       set({ playerReady: true });
       return playerInstance;
     } catch (error) {
