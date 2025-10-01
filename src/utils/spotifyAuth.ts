@@ -1,4 +1,6 @@
-export async function getNewAccessToken(refreshToken = null) {
+export async function getNewAccessToken(
+  refreshToken: string | null = null
+): Promise<string> {
   const tokenToUse = refreshToken || window.localStorage.getItem("refresh_token");
 
   const response = await fetch("http://localhost:4000/api/refresh_token", {
@@ -20,12 +22,12 @@ export async function getNewAccessToken(refreshToken = null) {
 
   if (data.expires_in) {
     const expiryTime = Date.now() + data.expires_in * 1000;
-    window.localStorage.setItem("access_token_expiry", expiryTime);
+    window.localStorage.setItem("access_token_expiry", expiryTime.toString());
   }
   return data.access_token;
 }
 
-export async function saveRefreshToken(refreshToken) {
+export async function saveRefreshToken(refreshToken: string): Promise<void> {
   const res = await fetch("http://localhost:4000/api/save_refresh_token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -35,10 +37,10 @@ export async function saveRefreshToken(refreshToken) {
   if (!res.ok) {
     throw new Error("リフレッシュトークン保存に失敗");
   }
-  return await res.json();
+  await res.json();
 }
 
-export async function getRefreshToken() {
+export async function getRefreshToken(): Promise<string> {
   const res = await fetch("http://localhost:4000/api/get_refresh_token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -53,15 +55,18 @@ export async function getRefreshToken() {
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
 export function isValidToken() {
-  const expiry = window.localStorage.getItem("access_token_expiry");
+  const expiryString = window.localStorage.getItem("access_token_expiry");
+  if (!expiryString) return false;
 
-  if (!expiry) return false;
-
+  const expiry = Number(expiryString);
   return Date.now() < expiry - FIVE_MINUTES_MS;
 }
 
 // Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
-export async function fetchSpotifyAPI(url, options = {}) {
+export async function fetchSpotifyAPI(
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> {
   let token = window.localStorage.getItem("access_token");
   console.log("トークンは有効かどうか：", isValidToken());
 
@@ -103,7 +108,19 @@ function loadSpotifySDK() {
   });
 }
 
-export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
+type Setter<T> = (value: T) => void;
+
+type SpotifyInitArgs = {
+  setPlayer: Setter<Spotify.Player>;
+  setDeviceId: Setter<string>;
+  setToken: Setter<string>;
+};
+
+export async function initSpotifyPlayer({
+  setPlayer,
+  setDeviceId,
+  setToken,
+}: SpotifyInitArgs): Promise<{ playerInstance: Spotify.Player }> {
   const DEFAULT_VOLUME = 0.3;
   const currentToken = window.localStorage.getItem("access_token");
 
@@ -113,7 +130,7 @@ export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
     const playerInstance = new window.Spotify.Player({
       name: "MyMusicPlayer",
       getOAuthToken: async (cb) => {
-        if (!isValidToken(currentToken)) {
+        if (!isValidToken() || !currentToken) {
           const newToken = await getNewAccessToken();
           setToken(newToken);
 
@@ -122,7 +139,6 @@ export async function initSpotifyPlayer(setPlayer, setDeviceId, setToken) {
         }
 
         setToken(currentToken);
-
         cb(currentToken);
       },
       volume: DEFAULT_VOLUME,
