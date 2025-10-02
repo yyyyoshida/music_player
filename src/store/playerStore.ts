@@ -1,9 +1,67 @@
 import { create } from "zustand";
+import type { RefObject } from "react";
 import { fetchSpotifyAPI, initSpotifyPlayer } from "../utils/spotifyAuth";
 import useTokenStore from "./tokenStore";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 
-const usePlayerStore = create((set, get) => ({
+type PlayerStore = {
+  TRACK_CHANGE_COOLDOWN: number;
+
+  isPlaying: boolean;
+  isTrackSet: boolean;
+  currentTime: number;
+  position: number;
+  duration: number;
+  playDisable: boolean;
+  trackId: string | null;
+  isLocalPlaying: boolean;
+  isSpotifyPlaying: boolean;
+  isLocalReady: boolean;
+  audioRef: RefObject<HTMLAudioElement> | null;
+  player: any;
+  deviceId: string | null;
+  playerReady: boolean;
+
+  setIsPlaying: (isPlaying: boolean) => void;
+  setIsTrackSet: (isTrackSet: boolean) => void;
+  setCurrentTime: (currentTime: number) => void;
+  setPosition: (position: number) => void;
+  setDuration: (duration: number) => void;
+  setPlayDisable: (isPlayDisable: boolean) => void;
+  setTrackId: (trackId: string | null) => void;
+  setIsLocalPlaying: (isLocalPlaying: boolean) => void;
+  setIsSpotifyPlaying: (isSpotifyPlaying: boolean) => void;
+  setIsLocalReady: (isLocalReady: boolean) => void;
+  setAudioRef: (audioRef: RefObject<HTMLAudioElement> | null) => void;
+  setPlayer: (playerInstance: any) => void;
+  setDeviceId: (deviceId: string | null) => void;
+  setPlayerReady: (playerReady: boolean) => void;
+
+  togglePlayPause: () => Promise<void>;
+  playerTrack: (trackUri: string, source: "spotify" | "local") => Promise<void>;
+  playSpotifyTrack: (trackUri: string) => Promise<void>;
+  resetSpotifyPlayerState: () => Promise<void>;
+  clampVolume: (volume: number) => number;
+  playLocalTrack: (trackUri: string) => void;
+  handleLocalCanPlay: () => void;
+  updateVolume: (volume: number) => Promise<void>;
+  seekToSpotify: (seekTime: number) => Promise<void>;
+  initPlayer: () => Promise<any>;
+  syncSpotifyPlayerState: () => void;
+  syncLocalAudioState: () => void;
+};
+
+type SpotifyPlaybackState = {
+  position: number;
+  duration: number;
+  track_window: {
+    current_track: {
+      id: string;
+    };
+  };
+};
+
+const usePlayerStore = create<PlayerStore>((set, get) => ({
   TRACK_CHANGE_COOLDOWN: 700,
 
   isPlaying: false,
@@ -103,7 +161,7 @@ const usePlayerStore = create((set, get) => ({
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
     if (isLocalPlaying) {
-      audioRef.current.pause();
+      audioRef?.current.pause();
       setIsLocalPlaying(false);
     }
 
@@ -116,11 +174,14 @@ const usePlayerStore = create((set, get) => ({
     setIsSpotifyPlaying(true);
 
     try {
-      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await fetchSpotifyAPI(
+        `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
 
       console.log(response);
 
@@ -149,7 +210,7 @@ const usePlayerStore = create((set, get) => ({
     if (!player) return;
     await player.seek(0);
 
-    const savedVolume = parseFloat(localStorage.getItem("player_volume")) || 30;
+    const savedVolume = parseFloat(localStorage.getItem("player_volume") ?? "30");
     const clampedVolume = clampVolume(savedVolume);
     await player.setVolume(clampedVolume);
     // await updateVolume(clampedVolume);
@@ -162,14 +223,21 @@ const usePlayerStore = create((set, get) => ({
   },
 
   playLocalTrack: (trackUri) => {
-    const { isSpotifyPlaying, setIsSpotifyPlaying, player, setIsLocalReady, audioRef, handleLocalCanPlay } = get();
+    const {
+      isSpotifyPlaying,
+      setIsSpotifyPlaying,
+      player,
+      setIsLocalReady,
+      audioRef,
+      handleLocalCanPlay,
+    } = get();
 
     if (isSpotifyPlaying) {
       player.pause();
       setIsSpotifyPlaying(false);
     }
 
-    if (!audioRef.current) return;
+    if (!audioRef?.current) return;
 
     setIsLocalReady(false);
 
@@ -180,9 +248,10 @@ const usePlayerStore = create((set, get) => ({
   },
 
   handleLocalCanPlay: () => {
-    const { audioRef, setIsLocalPlaying, setPlayDisable, setIsPlaying, setIsLocalReady } = get();
+    const { audioRef, setIsLocalPlaying, setPlayDisable, setIsPlaying, setIsLocalReady } =
+      get();
 
-    if (!audioRef.current) return;
+    if (!audioRef?.current) return;
 
     setIsLocalPlaying(true);
     setPlayDisable(false);
@@ -216,7 +285,11 @@ const usePlayerStore = create((set, get) => ({
     const { setToken } = useTokenStore.getState();
 
     try {
-      const { playerInstance } = await initSpotifyPlayer({ setPlayer, setDeviceId, setToken });
+      const { playerInstance } = await initSpotifyPlayer({
+        setPlayer,
+        setDeviceId,
+        setToken,
+      });
       set({ playerReady: true });
       return playerInstance;
     } catch (error) {
@@ -232,7 +305,7 @@ const usePlayerStore = create((set, get) => ({
     const UPDATE_PROGRESS_BAR_INTERVAL_MS = 200;
     const PERCENT = 100;
 
-    const handleSpotifyStateChange = (state) => {
+    const handleSpotifyStateChange = (state: SpotifyPlaybackState) => {
       if (!state || !state.track_window?.current_track) return;
       const {
         position,
@@ -262,7 +335,10 @@ const usePlayerStore = create((set, get) => ({
         position: (position / duration) * PERCENT,
       });
     };
-    const progressInterval = setInterval(updateSpotifyProgress, UPDATE_PROGRESS_BAR_INTERVAL_MS);
+    const progressInterval = setInterval(
+      updateSpotifyProgress,
+      UPDATE_PROGRESS_BAR_INTERVAL_MS
+    );
 
     return () => {
       clearInterval(progressInterval);
