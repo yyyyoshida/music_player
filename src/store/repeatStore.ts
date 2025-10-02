@@ -1,6 +1,11 @@
 import { create } from "zustand";
 
-const useRepeatStore = create((set) => ({
+type RepeatStore = {
+  isRepeat: boolean;
+  toggleRepeat: () => void;
+};
+
+const useRepeatStore = create<RepeatStore>((set) => ({
   isRepeat: false,
 
   toggleRepeat: () => {
