@@ -1,8 +1,21 @@
 import { create } from "zustand";
 
-const useTooltipStore = create((set) => {
-  const hoverTimeoutRef = { current: null };
-  const mousePositionRef = { current: { x: 0, y: 0 } };
+type TooltipStore = {
+  tooltipText: string;
+  isButtonPressed: boolean;
+  isHovered: boolean;
+  tooltipPosition: { x: number; y: number } | null;
+
+  setTooltipText: (tooltipText: string) => void;
+  setIsButtonPressed: (isButtonPressed: boolean) => void;
+  setIsHovered: (isHovered: boolean) => void;
+  setTooltipPosition: (tooltipPosition: { x: number; y: number } | null) => void;
+};
+
+let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const useTooltipStore = create<TooltipStore>((set) => {
+  let mousePosition = { x: 0, y: 0 };
   const TOOLTIP_SHOW_DELAY = 500;
   const BUTTON_PRESS_DELAY = 600;
 
@@ -25,22 +38,22 @@ const useTooltipStore = create((set) => {
     },
 
     handleMouseEnter: () => {
-      hoverTimeoutRef.current = setTimeout(() => {
-        set({ tooltipPosition: mousePositionRef.current, isHovered: true });
+      hoverTimeout = setTimeout(() => {
+        set({ tooltipPosition: mousePosition, isHovered: true });
       }, TOOLTIP_SHOW_DELAY);
     },
 
     handleMouseLeave: () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-        hoverTimeoutRef.current = null;
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+        hoverTimeout = null;
       }
 
       set({ tooltipPosition: null, isHovered: false });
     },
 
-    trackMousePosition: (e) => {
-      mousePositionRef.current = { x: e.clientX, y: e.clientY };
+    trackMousePosition: (e: MouseEvent) => {
+      mousePosition = { x: e.clientX, y: e.clientY };
     },
   };
 });
