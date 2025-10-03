@@ -23,7 +23,7 @@ interface LocalTrack extends BaseTrack {
   audioURL: string;
 }
 
-type TrackObject = SpotifyTrack | LocalTrack;
+export type TrackObject = SpotifyTrack | LocalTrack;
 
 type PlaybackStore = {
   queue: TrackObject[];
