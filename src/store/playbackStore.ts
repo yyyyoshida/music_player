@@ -1,7 +1,62 @@
 import { create } from "zustand";
 import usePlayerStore from "./playerStore";
 
-const usePlaybackStore = create((set, get) => ({
+interface BaseTrack {
+  addedAt: string;
+  albumImage: string;
+  artist: string;
+  duration_ms: string;
+  id: string;
+  title: string;
+}
+
+interface SpotifyTrack extends BaseTrack {
+  source: "spotify";
+  trackId: string;
+  trackUri: string;
+}
+
+interface LocalTrack extends BaseTrack {
+  source: "local";
+  albumImagePath: string;
+  audioPath: string;
+  audioURL: string;
+}
+
+type TrackObject = SpotifyTrack | LocalTrack;
+
+type PlaybackStore = {
+  queue: TrackObject[];
+  currentIndex: number;
+  currentTrackId: string | null;
+  currentPlayedAt: string | null;
+  currentTitle: string;
+  currentArtistName: string;
+  currentCoverImage: string;
+  trackOrigin: "searchResults" | "firebase" | "local" | null;
+  isPrevDisabled: boolean;
+  isNextDisabled: boolean;
+
+  setQueue: (updater: TrackObject[] | ((prev: TrackObject[]) => TrackObject[])) => void;
+  setCurrentIndex: (currentIndex: number) => void;
+  setCurrentTrackId: (currentTrackId: string | null) => void;
+  setCurrentPlayedAt: (currentPlayedAt: string | null) => void;
+  setCurrentTitle: (currentTitle: string) => void;
+  setCurrentArtistName: (currentArtistName: string) => void;
+  setCurrentCoverImage: (currentCoverImage: string) => void;
+  setTrackOrigin: (trackOrigin: "searchResults" | "firebase" | "local" | null) => void;
+  setIsPrevDisabled: (isPrevDisabled: boolean) => void;
+  setIsNextDisabled: (isNextDisabled: boolean) => void;
+
+  setTrackIndex: (index: number) => void;
+  syncTrackInfo: (track: any) => void; // 後でtrackの専用の型を作る
+  playTrack: (track: any) => void;
+  playTrackAtIndex: (index: number) => void;
+  goToNextTrack: () => void;
+  goToPreviousTrack: () => void;
+};
+
+const usePlaybackStore = create<PlaybackStore>((set, get) => ({
   queue: [],
   currentIndex: 0,
   currentTrackId: null,
@@ -38,7 +93,8 @@ const usePlaybackStore = create((set, get) => ({
   },
 
   syncTrackInfo: (track) => {
-    const { setCurrentTrackId, setCurrentArtistName, setCurrentTitle, setCurrentCoverImage } = get();
+    const { setCurrentTrackId, setCurrentArtistName, setCurrentTitle, setCurrentCoverImage } =
+      get();
     const { setCurrentTime, setDuration } = usePlayerStore.getState();
 
     if (!track) return;
@@ -60,7 +116,15 @@ const usePlaybackStore = create((set, get) => ({
   },
 
   playTrackAtIndex: (index) => {
-    const { currentIndex, queue, syncTrackInfo, playTrack, setTrackIndex, setIsPrevDisabled, setIsNextDisabled } = get();
+    const {
+      currentIndex,
+      queue,
+      syncTrackInfo,
+      playTrack,
+      setTrackIndex,
+      setIsPrevDisabled,
+      setIsNextDisabled,
+    } = get();
 
     const track = queue[index];
     const isSameTrack = index === currentIndex;
