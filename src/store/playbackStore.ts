@@ -5,7 +5,7 @@ interface BaseTrack {
   addedAt: string;
   albumImage: string;
   artist: string;
-  duration_ms: string;
+  duration_ms: number;
   id: string;
   title: string;
 }
