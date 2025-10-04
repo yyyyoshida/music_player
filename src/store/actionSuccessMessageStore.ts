@@ -1,6 +1,17 @@
 import { create } from "zustand";
 
-const useActionSuccessMessageStore = create((set, get) => {
+let timerId: ReturnType<typeof setTimeout>;
+
+type ActionSuccessMessageStore = {
+  isMessageVisible: boolean;
+  actionType: string;
+
+  setIsMessageVisible: (isMessageVisible: boolean) => void;
+  setActionType: (actionType: string) => void;
+  showMessage: (type: string) => void;
+};
+
+const useActionSuccessMessageStore = create<ActionSuccessMessageStore>((set, get) => {
   const MESSAGE_SHOW_DURATION = 3000;
 
   return {
@@ -12,7 +23,6 @@ const useActionSuccessMessageStore = create((set, get) => {
 
     showMessage: (type) => {
       const { isMessageVisible } = get();
-      let timerId;
 
       if (!isMessageVisible) {
         set({ actionType: type, isMessageVisible: true });
@@ -20,7 +30,6 @@ const useActionSuccessMessageStore = create((set, get) => {
         timerId = setTimeout(() => {
           set({ isMessageVisible: false });
         }, MESSAGE_SHOW_DURATION);
-      } else {
       }
     },
   };
