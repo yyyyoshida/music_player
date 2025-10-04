@@ -1,7 +1,19 @@
 import { useState, useEffect } from "react";
 import usePlayerStore from "../store/playerStore";
 
-export default function useBarHandler({ type, initialVolume = 0, barRef, handleVolumeChange }) {
+type BarHandlerProps = {
+  type: "progress" | "volume";
+  initialVolume?: number;
+  barRef: React.RefObject<HTMLElement>;
+  handleVolumeChange: (newPercentage: number) => void;
+};
+
+export default function useBarHandler({
+  type,
+  initialVolume = 0,
+  barRef,
+  handleVolumeChange,
+}: BarHandlerProps) {
   const isVolumeType = type === "volume";
   const isProgressType = type === "progress";
 
@@ -16,11 +28,11 @@ export default function useBarHandler({ type, initialVolume = 0, barRef, handleV
   });
   const [isDragging, setIsDragging] = useState(false);
 
-  function roundToTwoDecimals(value) {
+  function roundToTwoDecimals(value: number): number {
     return parseFloat(value.toFixed(2));
   }
 
-  function handleClickBar(e) {
+  function handleClickBar(e: React.MouseEvent<HTMLDivElement>): number | void {
     if (isLocalPlaying && !isLocalReady) return;
 
     const barRect = barRef?.current.getBoundingClientRect();
@@ -31,17 +43,17 @@ export default function useBarHandler({ type, initialVolume = 0, barRef, handleV
     if (isVolumeType) handleVolumeChange(newPercentage);
   }
 
-  function handleMouseDown(e) {
+  function handleMouseDown(e: React.MouseEvent<HTMLDivElement>): void {
     setIsDragging(true);
     handleClickBar(e);
   }
 
-  function handleMouseUp() {
+  function handleMouseUp(): void {
     setIsDragging(false);
   }
 
   // 備忘録　ドラッグ中にバーの位置を％で計算して見た目だけ反映させる（実際の音量やシークは別処理）
-  function handleDrag(e) {
+  function handleDrag(e: MouseEvent): void {
     if (!isDragging) return;
     if (isProgressType && isLocalPlaying && !isLocalReady) return;
 
