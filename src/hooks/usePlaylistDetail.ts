@@ -4,7 +4,7 @@ import usePlaylistStore from "../store/playlistStore";
 import usePlaybackStore from "../store/playbackStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
-const usePlaylistDetail = (id, containerRef) => {
+const usePlaylistDetail = (id: string, containerRef: React.RefObject<HTMLElement>): void => {
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
   const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
@@ -16,14 +16,14 @@ const usePlaylistDetail = (id, containerRef) => {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  function fetchTracksFailed(logValue) {
-    console.error(logValue);
+  function fetchTracksFailed(logValue: unknown) {
+    console.error(logValue as number | Error);
     setTracks([]);
     setQueue([]);
     showMessage("fetchPlaylistDetailFailed");
   }
 
-  async function fetchTracks() {
+  async function fetchTracks(): Promise<void> {
     const cachedTracks = localStorage.getItem(`playlistDetail:${id}Tracks`);
 
     if (cachedTracks) {
