@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 
-export function useSkeletonHandler({ isImageListEmpty, imagesLoaded, resetKey }) {
+type SkeletonHandlerProps = {
+  isImageListEmpty: boolean;
+  imagesLoaded: boolean;
+  resetKey: object | null;
+};
+
+export function useSkeletonHandler({
+  isImageListEmpty,
+  imagesLoaded,
+  resetKey,
+}: SkeletonHandlerProps): boolean {
   const [showSkeleton, setShowSkeleton] = useState(true);
 
   // 空 or 読み込む画像がなかったら
