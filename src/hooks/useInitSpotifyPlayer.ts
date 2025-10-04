@@ -5,7 +5,7 @@ const useInitSpotifyPlayer = () => {
   const initPlayer = usePlayerStore((state) => state.initPlayer);
 
   useEffect(() => {
-    let instance;
+    let instance: Spotify.Player;
 
     (async () => {
       instance = await initPlayer();
