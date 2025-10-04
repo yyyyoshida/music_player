@@ -4,10 +4,39 @@ import usePlaybackStore from "./playbackStore";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import useUploadModalStore from "./uploadModalStore";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
+import type { TrackObject, fromSearchResultTrackObject } from "./playbackStore";
+import { FALLBACK_COVER_IMAGE } from "../assets/icons";
+
+type PlaylistSelectStore = {
+  isSelectVisible: boolean;
+  selectedTrack: TrackObject | null;
+  localCoverImageUrl: string | null;
+  uploadTrackFile: File | null;
+
+  setSelectedTrack: (selectedTrack: TrackObject) => void;
+  setLocalCoverImageUrl: (localCoverImageUrl: string | null) => void;
+  setUploadTrackFile: (uploadTrackFile: File | null) => void;
+
+  openPlaylistSelectModal: () => void;
+  closePlaylistSelectModal: () => void;
+  addTrackToList: (playlistId: string, addedTrack: TrackObject) => void;
+  saveTrackToFirestore: (playlistId: string) => Promise<void>;
+  saveUploadedLocalTrack: (playlistId: string) => Promise<void>;
+  blobUrlToFile: (blobUrl: string | null, filename: string) => Promise<File | null>;
+  saveUploadAndNewTrack: (playlistId: string) => Promise<void>;
+  executeTrackSave: (actionFunction: () => void, playlistId: string) => Promise<void>;
+  addTrackToPlaylist: (playlistId: string) => Promise<void>;
+  handleTrackSelect: (
+    track: TrackObject | fromSearchResultTrackObject,
+    shouldToggle: boolean,
+    file: File | null,
+    imageUrl: string | null
+  ) => void;
+};
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-const usePlaylistSelectionStore = create((set, get) => ({
+const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   isSelectVisible: false,
   selectedTrack: null,
   localCoverImageUrl: null,
@@ -68,6 +97,8 @@ const usePlaylistSelectionStore = create((set, get) => ({
 
   blobUrlToFile: async (blobUrl, filename) => {
     try {
+      if (!blobUrl) throw new Error("Blob URLが無効");
+
       const response = await fetch(blobUrl);
       if (!response.ok) {
         console.error("Blob取得失敗: ", response.status);
@@ -81,10 +112,21 @@ const usePlaylistSelectionStore = create((set, get) => ({
   },
 
   saveUploadAndNewTrack: async (playlistId) => {
-    const { blobUrlToFile, localCoverImageUrl, uploadTrackFile, selectedTrack, addTrackToList } = get();
+    const { blobUrlToFile, localCoverImageUrl, uploadTrackFile, selectedTrack, addTrackToList } =
+      get();
     const formData = new FormData();
 
     const coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
+    console.log(coverImageFile, "coverImageFile");
+
+    if (!uploadTrackFile) {
+      console.error("音声ファイルがありません");
+      throw new Error("addFailedNewLocal");
+    }
+    if (!selectedTrack) {
+      console.error("トラック情報がありません");
+      throw new Error("addFailedNewLocal");
+    }
 
     if (coverImageFile) formData.append("cover", coverImageFile);
     formData.append("audio", uploadTrackFile);
@@ -114,7 +156,7 @@ const usePlaylistSelectionStore = create((set, get) => ({
       closePlaylistSelectModal();
       hideUploadModal();
       clearPlaylistCache(playlistId);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       hideUploadModal();
       closePlaylistSelectModal();
@@ -122,24 +164,34 @@ const usePlaylistSelectionStore = create((set, get) => ({
       // ActionSuccessMessage.js 側でユーザー向けメッセージに変換して表示している ↙
 
       // 既知のエラー以外は汎用の "addFailed" を表示
-      if (error.message !== "addFailedSpotify" && error.message !== "addFailedLocal" && error.message !== "addFailedNewLocal") {
-        showMessage("addFailed");
-        return;
-      }
+      if (typeof error === "object" && error !== null && "message" in error) {
+        const message = (error as { message: string }).message;
 
-      showMessage(error.message);
+        showMessage(message);
+      } else {
+        showMessage("addFailed");
+      }
     }
   },
 
   addTrackToPlaylist: async (playlistId) => {
-    const { selectedTrack, closePlaylistSelectModal, executeTrackSave, saveTrackToFirestore, saveUploadedLocalTrack, saveUploadAndNewTrack } = get();
+    const {
+      selectedTrack,
+      closePlaylistSelectModal,
+      executeTrackSave,
+      saveTrackToFirestore,
+      saveUploadedLocalTrack,
+      saveUploadAndNewTrack,
+    } = get();
     const { showUploadModal } = useUploadModalStore.getState();
 
-    if (!selectedTrack) return;
+    if (!selectedTrack || !("source" in selectedTrack)) return;
 
-    const isNewLocalTrack = selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
-    const isSpotifyTrack = selectedTrack.trackUri;
-    const isUploadedLocalTrack = selectedTrack.audioURL;
+    const isNewLocalTrack =
+      selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
+
+    const isSpotifyTrack = "trackUri" in selectedTrack;
+    const isUploadedLocalTrack = "audioURL" in selectedTrack;
 
     if (isNewLocalTrack) {
       closePlaylistSelectModal();
@@ -163,20 +215,21 @@ const usePlaylistSelectionStore = create((set, get) => ({
   },
 
   handleTrackSelect: (track, shouldToggle = true, file = null, imageUrl = null) => {
-    const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } = get();
+    const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } =
+      get();
     const { trackOrigin } = usePlaybackStore.getState();
 
-    if (trackOrigin === "searchResults") {
+    if (trackOrigin === "searchResults" && "uri" in track) {
       setSelectedTrack({
         trackId: track.id,
         trackUri: track.uri,
-        albumImage: track.album.images[1]?.url,
+        albumImage: track.album!.images[1]?.url ?? FALLBACK_COVER_IMAGE,
         title: track.name,
-        artist: track.artists[0]?.name,
+        artist: track.artists[0]?.name ?? "Unknown Artist",
         duration_ms: track.duration_ms,
         source: "spotify",
       });
-    } else if (trackOrigin === "firebase" && track.source === "spotify") {
+    } else if (trackOrigin === "firebase" && "source" in track && track.source === "spotify") {
       setSelectedTrack({
         trackId: track.trackId,
         trackUri: track.trackUri,
@@ -186,7 +239,11 @@ const usePlaylistSelectionStore = create((set, get) => ({
         duration_ms: track.duration_ms,
         source: "spotify",
       });
-    } else if (trackOrigin === "local" || track.source === "local") {
+    } else if (
+      "source" in track &&
+      "albumImagePath" in track &&
+      (trackOrigin === "local" || track.source === "local")
+    ) {
       setSelectedTrack({
         title: track.title,
         artist: track.artist,
@@ -199,17 +256,19 @@ const usePlaylistSelectionStore = create((set, get) => ({
       });
       if (file) setUploadTrackFile(file);
       if (imageUrl) setLocalCoverImageUrl(imageUrl);
-    } else {
-      setSelectedTrack({
-        trackId: track.track.id,
-        trackUri: track.track.uri,
-        albumImage: track.track.album.images[1].url,
-        title: track.track.name,
-        artist: track.track.artists[0].name,
-        duration: track.track.duration_ms,
-        source: "spotify",
-      });
     }
+    // }else
+    // 最近再生した曲は現在機能してないので一時的にコメントアウト{
+    // setSelectedTrack({
+    //   trackId: track.track.id,
+    //   trackUri: track.track.uri,
+    //   albumImage: track.track.album.images[1].url,
+    //   title: track.track.name,
+    //   artist: track.track.artists[0].name,
+    //   duration: track.track.duration_ms,
+    //   source: "spotify",
+    // });
+    // }
 
     if (shouldToggle) openPlaylistSelectModal();
   },

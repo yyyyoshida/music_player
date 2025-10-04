@@ -2,11 +2,11 @@ import { create } from "zustand";
 import usePlayerStore from "./playerStore";
 
 interface BaseTrack {
-  addedAt: string;
+  addedAt?: string;
   albumImage: string;
   artist: string;
   duration_ms: number;
-  id: string;
+  id?: string;
   title: string;
 }
 
@@ -23,7 +23,26 @@ interface LocalTrack extends BaseTrack {
   audioURL: string;
 }
 
-export type TrackObject = SpotifyTrack | LocalTrack;
+type fromSearchResultTrackImages = {
+  height: number;
+  width: number;
+  url: string;
+};
+
+export type fromSearchResultTrackObject = {
+  id: string;
+  uri: string;
+  album: {
+    images: fromSearchResultTrackImages[];
+  };
+  name: string;
+  artists: {
+    name: string;
+  }[];
+  duration_ms: number;
+};
+
+export type TrackObject = SpotifyTrack | LocalTrack | fromSearchResultTrackObject;
 
 type PlaybackStore = {
   queue: TrackObject[];
@@ -127,6 +146,7 @@ const usePlaybackStore = create<PlaybackStore>((set, get) => ({
     } = get();
 
     const track = queue[index];
+    console.log(track);
     const isSameTrack = index === currentIndex;
     const isFirstTrackNotPlayed = currentIndex === 0;
     // 同じトラックはスキップすることで再生・停止で切り替えてる

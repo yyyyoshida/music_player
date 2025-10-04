@@ -45,7 +45,7 @@ type PlaylistStore = {
 
   setTracks: (value: TrackObject[] | ((prev: TrackObject[]) => TrackObject[])) => void;
   setDeletedTrackDuration: (deletedTrackDuration: number) => void;
-  setAddedTrackDuration: (updater: number | ((prev: number) => number)) => void;
+  setAddedTrackDuration: (updater: number | ((prev: number) => number)) => number | void;
 
   setErrorMessage: (errorMessage: string) => void;
   setIsShaking: (isShaking: boolean) => void;
