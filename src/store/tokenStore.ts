@@ -1,6 +1,14 @@
 import { create } from "zustand";
 
-const useTokenStore = create((set) => ({
+type TokenStore = {
+  token: string | null;
+  isToken: boolean;
+
+  setToken: (token: string | null) => void;
+  setIsToken: (isToken: boolean) => void;
+};
+
+const useTokenStore = create<TokenStore>((set) => ({
   token: localStorage.getItem("access_token"),
   isToken: false,
 

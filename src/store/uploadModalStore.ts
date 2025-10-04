@@ -1,10 +1,15 @@
 import { create } from "zustand";
 
-const useUploadModalStore = create((set) => ({
+type UploadModalStore = {
+  isUploadModalVisible: boolean;
+  showUploadModal: () => void;
+  hideUploadModal: () => void;
+};
+
+const useUploadModalStore = create<UploadModalStore>((set) => ({
   isUploadModalVisible: false,
 
   showUploadModal: () => set({ isUploadModalVisible: true }),
-
   hideUploadModal: () => set({ isUploadModalVisible: false }),
 }));
 

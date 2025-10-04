@@ -3,10 +3,71 @@ import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import { getPlaylistInfo } from "../utils/playlistUtils";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
+import type { TrackObject } from "./playbackStore";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-const usePlaylistStore = create((set, get) => ({
+type PlaylistObject = {
+  albumImage: string;
+  createdAt: any;
+  id: string;
+  name: string;
+  totalDuration: number;
+  trackCount: number;
+};
+
+type PlaylistInfo = {
+  name: string;
+  totalDuration: number;
+};
+
+type PlaylistStore = {
+  isCreateVisible: boolean;
+  isDeleteVisible: boolean;
+  playlistInfo: PlaylistInfo;
+  playlists: PlaylistObject[];
+  currentPlaylistId: string | null;
+  tracks: TrackObject[];
+  deletedTrackDuration: number;
+  addedTrackDuration: number;
+
+  errorMessage: string;
+  isShaking: boolean;
+  preselectedTrack: PlaylistObject | null;
+  isCoverImageFading: boolean;
+  playlistNameRef: string | null;
+
+  addSelectedTrackToPlaylistRef: () => void;
+
+  setPlaylistInfo: (playlistInfo: PlaylistInfo) => void;
+  setPlaylists: (playlists: PlaylistObject[]) => void;
+  setCurrentPlaylistId: (currentPlaylistId: string | null) => void;
+
+  setTracks: (value: TrackObject[] | ((prev: TrackObject[]) => TrackObject[])) => void;
+  setDeletedTrackDuration: (deletedTrackDuration: number) => void;
+  setAddedTrackDuration: (updater: number | ((prev: number) => number)) => number | void;
+
+  setErrorMessage: (errorMessage: string) => void;
+  setIsShaking: (isShaking: boolean) => void;
+  setPreselectedTrack: (preselectedTrack: PlaylistObject | null) => void;
+  setIsCoverImageFading: (isCoverImageFading: boolean) => void;
+  setPlaylistNameRef: (playlistNameRef: string | null) => void;
+
+  goToPage: (navigate: (path: string) => void, path: string) => void;
+
+  showCreatePlaylistModal: () => void;
+  hideCreatePlaylistModal: () => void;
+  showDeletePlaylistModal: () => void;
+  hideDeletePlaylistModal: () => void;
+  triggerError: (message: string) => void;
+  handleCreatePlaylist: () => Promise<void> | Promise<string>;
+  deletePlaylist: (playlistId: string, navigate: (url: string) => void) => Promise<void>;
+  showCoverImages: () => void;
+  fadeCoverImages: () => void;
+  deleteTrack: (trackId: string) => Promise<void>;
+};
+
+const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   isCreateVisible: false,
   isDeleteVisible: false,
   playlistInfo: { name: "", totalDuration: 0 },
@@ -33,15 +94,14 @@ const usePlaylistStore = create((set, get) => ({
     set((state) => {
       const isArray = Array.isArray(value);
 
-      if (isArray) return { tracks: value };
-
-      if (!isArray) return { tracks: value(state.tracks) };
+      return isArray ? { tracks: value } : { tracks: value(state.tracks) };
     }),
 
   setDeletedTrackDuration: (deletedTrackDuration) => set({ deletedTrackDuration }),
   setAddedTrackDuration: (updater) =>
     set((state) => ({
-      addedTrackDuration: typeof updater === "function" ? updater(state.addedTrackDuration) : updater,
+      addedTrackDuration:
+        typeof updater === "function" ? updater(state.addedTrackDuration) : updater,
     })),
   setErrorMessage: (errorMessage) => set({ errorMessage }),
   setIsShaking: (isShaking) => set({ isShaking }),
@@ -52,10 +112,7 @@ const usePlaylistStore = create((set, get) => ({
   goToPage: (navigate, path) => navigate(path),
 
   showCreatePlaylistModal: () => {
-    const { playlistNameRef } = get();
-
-    set({ isCreateVisible: true, errorMessage: "" });
-    playlistNameRef.current.value = "";
+    set({ isCreateVisible: true, errorMessage: "", playlistNameRef: "" });
   },
 
   hideCreatePlaylistModal: () => {
@@ -75,9 +132,9 @@ const usePlaylistStore = create((set, get) => ({
   },
 
   handleCreatePlaylist: async () => {
-    const { playlistNameRef, hideCreatePlaylistModal, triggerError } = get();
+    const { playlistNameRef, setPlaylistNameRef, hideCreatePlaylistModal, triggerError } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
-    const newName = playlistNameRef.current.value;
+    const newName = playlistNameRef ?? "";
 
     const validationError = validatePlaylistName(newName);
 
@@ -113,7 +170,7 @@ const usePlaylistStore = create((set, get) => ({
       const data = await response.json();
       console.log(data);
       showMessage("newPlaylist");
-      playlistNameRef.current.value = "";
+      setPlaylistNameRef("");
       set({ preselectedTrack: null });
       hideCreatePlaylistModal();
     } catch {
@@ -133,7 +190,7 @@ const usePlaylistStore = create((set, get) => ({
 
       if (!response.ok) throw new Error("プレイリスト削除失敗");
 
-      clearPlaylistCache();
+      clearPlaylistCache(playlistId);
       navigate("/playlist");
       showMessage("deletePlaylist");
     } catch {
@@ -147,16 +204,22 @@ const usePlaylistStore = create((set, get) => ({
   fadeCoverImages: () => set({ isCoverImageFading: true }),
 
   deleteTrack: async (trackId) => {
-    const { currentPlaylistId, deletedTrackDuration, tracks, fadeCoverImages, clearPlaylistCache } = get();
+    const { currentPlaylistId, setPlaylistInfo, deletedTrackDuration, tracks, fadeCoverImages } =
+      get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
+    const playlistId = currentPlaylistId ?? "";
+
     try {
-      const playlistInfoData = await getPlaylistInfo(currentPlaylistId);
+      const playlistInfoData = await getPlaylistInfo(playlistId, setPlaylistInfo, showMessage);
       const totalDuration = playlistInfoData.totalDuration;
 
-      const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) throw new Error("楽曲削除失敗");
 
@@ -165,10 +228,16 @@ const usePlaylistStore = create((set, get) => ({
       const newDeletedTrackDuration = deletedTrackDuration + deletedTrack.duration_ms;
       const resultTotalDuration = totalDuration - newDeletedTrackDuration;
       const updatedInfoData = { ...playlistInfoData, totalDuration: resultTotalDuration };
-      localStorage.setItem(`playlistDetail:${currentPlaylistId}Info`, JSON.stringify(updatedInfoData));
+      localStorage.setItem(
+        `playlistDetail:${currentPlaylistId}Info`,
+        JSON.stringify(updatedInfoData)
+      );
 
       const updatedTracks = tracks.filter((track) => track.id !== trackId);
-      localStorage.setItem(`playlistDetail:${currentPlaylistId}Tracks`, JSON.stringify(updatedTracks));
+      localStorage.setItem(
+        `playlistDetail:${currentPlaylistId}Tracks`,
+        JSON.stringify(updatedTracks)
+      );
 
       set({
         deletedTrackDuration: newDeletedTrackDuration,
@@ -177,7 +246,7 @@ const usePlaylistStore = create((set, get) => ({
 
       fadeCoverImages();
       showMessage("deleteTrack");
-      clearPlaylistCache();
+      clearPlaylistCache(playlistId);
     } catch (error) {
       showMessage("deleteTrackFailed");
     }
