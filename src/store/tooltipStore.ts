@@ -10,6 +10,10 @@ type TooltipStore = {
   setIsButtonPressed: (isButtonPressed: boolean) => void;
   setIsHovered: (isHovered: boolean) => void;
   setTooltipPosition: (tooltipPosition: { x: number; y: number } | null) => void;
+  handleButtonPress: () => void;
+  handleMouseEnter: () => void;
+  handleMouseLeave: () => void;
+  trackMousePosition: (e: MouseEvent) => void;
 };
 
 let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
