@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import useTooltipStore from "../store/tooltipStore";
 
-const useTooltip = (tooltipRef) => {
+type UseTooltipReturn = {
+  correctedPosition: { x: number; y: number };
+  isTooltipVisible: "visible" | "hidden";
+};
+
+const useTooltip = (tooltipRef: React.RefObject<HTMLElement>): UseTooltipReturn => {
   const [correctedPosition, setCorrectedPosition] = useState({ x: 0, y: 0 });
 
   const isButtonPressed = useTooltipStore((state) => state.isButtonPressed);
