@@ -8,7 +8,7 @@ import type { TrackObject } from "./playbackStore";
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export type PlaylistObject = {
-  albumImage: string;
+  albumImages: string;
   createdAt: any;
   id: string;
   name: string;
