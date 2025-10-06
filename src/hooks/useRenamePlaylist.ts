@@ -3,8 +3,19 @@ import { useParams } from "react-router-dom";
 import usePlaylistStore from "../store/playlistStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
+import type { PlaylistObject } from "../store/playlistStore";
 
-const useRenamePlaylist = (setIsRenameVisible, RenameRef, isRenameVisible) => {
+type RenamePlaylistReturn = {
+  handleSaveRename: () => Promise<void>;
+  toggleRenameVisible: () => void;
+};
+
+const useRenamePlaylist = (
+  setIsRenameVisible: React.Dispatch<React.SetStateAction<boolean>>,
+
+  RenameRef: React.RefObject<HTMLInputElement>,
+  isRenameVisible: boolean
+): RenamePlaylistReturn => {
   const triggerError = usePlaylistStore((state) => state.triggerError);
   const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
@@ -22,7 +33,7 @@ const useRenamePlaylist = (setIsRenameVisible, RenameRef, isRenameVisible) => {
     setIsRenameVisible((prev) => !prev);
   }
 
-  async function handleSaveRename() {
+  async function handleSaveRename(): Promise<void> {
     let shouldToggle = true;
 
     const playlistName = playlistInfo?.name;
@@ -30,7 +41,8 @@ const useRenamePlaylist = (setIsRenameVisible, RenameRef, isRenameVisible) => {
     const validationError = validatePlaylistName(newName, playlistName);
 
     if (validationError) {
-      return triggerError(validationError);
+      triggerError(validationError);
+      return;
     }
 
     try {
@@ -50,8 +62,10 @@ const useRenamePlaylist = (setIsRenameVisible, RenameRef, isRenameVisible) => {
       showMessage("rename");
 
       const updatedInfoData = { ...playlistInfoData, name: newName };
-      const cachedPlaylists = JSON.parse(localStorage.getItem("playlists") || "[]");
-      const updatedPlaylists = cachedPlaylists.map((playlist) => (playlist.id === id ? { ...playlist, name: newName } : playlist));
+      const cachedPlaylists: PlaylistObject[] = JSON.parse(localStorage.getItem("playlists") || "[]");
+      const updatedPlaylists = cachedPlaylists.map((playlist) =>
+        playlist.id === id ? { ...playlist, name: newName } : playlist
+      );
 
       setPlaylistInfo(updatedInfoData);
       setPlaylists(updatedPlaylists);

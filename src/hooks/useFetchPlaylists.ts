@@ -11,8 +11,8 @@ const useFetchPlaylists = () => {
 
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  function fetchPlaylistsFailed(logValue) {
-    console.error("プレイリスト一覧の取得失敗: ", logValue);
+  function fetchPlaylistsFailed(logValue: unknown): void {
+    console.error("プレイリスト一覧の取得失敗: ", logValue as number | Error);
     localStorage.removeItem("playlists");
     setPlaylists([]);
     showMessage("fetchPlaylistsFailed");

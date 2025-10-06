@@ -3,8 +3,22 @@ import usePlayerStore from "../store/playerStore";
 import usePlaybackStore from "../store/playbackStore";
 import useTrackMoreMenuStore from "../store/trackMoreMenuStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
+import type { TrackObject } from "../store/playbackStore";
 
-const useTrackItem = (track, index, date, parentRef) => {
+type UseTrackItemReturn = {
+  buttonRef: React.RefObject<HTMLButtonElement | null>;
+  isCurrentTrack: boolean;
+  isActiveTrack: boolean;
+  handleClickTrackItem: () => void;
+  setButtonPosition: () => void;
+};
+
+const useTrackItem = (
+  track: TrackObject,
+  index: number,
+  date: Date,
+  parentRef: React.RefObject<HTMLElement>
+): UseTrackItemReturn => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playDisable = usePlayerStore((state) => state.playDisable);
   const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
@@ -17,7 +31,7 @@ const useTrackItem = (track, index, date, parentRef) => {
   const setTrackMenuPositionTop = useTrackMoreMenuStore((state) => state.setTrackMenuPositionTop);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
-  const buttonRef = useRef(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const isCurrentTrack = currentTrackId === track.id;
   const isActiveTrack = currentTrackId === track.id && isPlaying;
   const POSITION_OFFSET_Y = -60;
@@ -28,7 +42,15 @@ const useTrackItem = (track, index, date, parentRef) => {
       return;
     }
 
-    const uri = track.trackUri || track.uri || track.audioURL;
+    let uri;
+
+    if ("trackUri" in track) {
+      uri = track.trackUri;
+    } else if ("uri" in track) {
+      uri = track.uri;
+    } else if ("audioURL" in track) {
+      uri = track.audioURL;
+    }
 
     if (!uri) {
       // showMessage('playFailed'); 後で引数に対応させる

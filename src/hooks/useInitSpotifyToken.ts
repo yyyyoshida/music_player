@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { isValidToken, getNewAccessToken, getRefreshToken, saveRefreshToken } from "../utils/spotifyAuth";
 import useTokenStore from "../store/tokenStore";
 
-const useInitSpotifyToken = () => {
+const useInitSpotifyToken = (): void => {
   const setToken = useTokenStore((state) => state.setToken);
   const setIsToken = useTokenStore((state) => state.setIsToken);
 
-  async function initTokenFromCache() {
+  async function initTokenFromCache(): Promise<boolean> {
     const localAccessToken = localStorage.getItem("access_token");
     const localRefreshToken = localStorage.getItem("refresh_token");
 
@@ -32,7 +32,7 @@ const useInitSpotifyToken = () => {
     return false;
   }
 
-  async function initTokenFromCode() {
+  async function initTokenFromCode(): Promise<boolean> {
     const code = new URLSearchParams(window.location.search).get("code");
     if (!code) return false;
 
@@ -55,7 +55,7 @@ const useInitSpotifyToken = () => {
         await saveRefreshToken(data.refresh_token);
       }
 
-      window.history.replaceState({}, null, "/");
+      window.history.replaceState({}, "", "/");
       console.log("code");
       return true;
     } catch (error) {
@@ -64,7 +64,7 @@ const useInitSpotifyToken = () => {
     }
   }
 
-  async function initTokenFromDB() {
+  async function initTokenFromDB(): Promise<boolean> {
     try {
       const storedRefreshToken = await getRefreshToken();
       if (!storedRefreshToken) throw new Error("リフレッシュトークンがサーバーにない");

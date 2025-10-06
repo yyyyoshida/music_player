@@ -48,7 +48,7 @@ type PlaybackStore = {
   queue: TrackObject[];
   currentIndex: number;
   currentTrackId: string | null;
-  currentPlayedAt: string | null;
+  currentPlayedAt: Date | null;
   currentTitle: string;
   currentArtistName: string;
   currentCoverImage: string;
@@ -59,7 +59,7 @@ type PlaybackStore = {
   setQueue: (updater: TrackObject[] | ((prev: TrackObject[]) => TrackObject[])) => void;
   setCurrentIndex: (currentIndex: number) => void;
   setCurrentTrackId: (currentTrackId: string | null) => void;
-  setCurrentPlayedAt: (currentPlayedAt: string | null) => void;
+  setCurrentPlayedAt: (currentPlayedAt: Date | null) => void;
   setCurrentTitle: (currentTitle: string) => void;
   setCurrentArtistName: (currentArtistName: string) => void;
   setCurrentCoverImage: (currentCoverImage: string) => void;
@@ -112,8 +112,7 @@ const usePlaybackStore = create<PlaybackStore>((set, get) => ({
   },
 
   syncTrackInfo: (track) => {
-    const { setCurrentTrackId, setCurrentArtistName, setCurrentTitle, setCurrentCoverImage } =
-      get();
+    const { setCurrentTrackId, setCurrentArtistName, setCurrentTitle, setCurrentCoverImage } = get();
     const { setCurrentTime, setDuration } = usePlayerStore.getState();
 
     if (!track) return;
