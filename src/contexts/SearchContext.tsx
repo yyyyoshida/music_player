@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import type { ReactNode } from "react";
 import type { TrackObject } from "../store/playbackStore";
 import usePlaybackStore from "../store/playbackStore";
@@ -17,7 +17,7 @@ type SearchContextProviderProps = {
   children: ReactNode;
 };
 
-export const SearchContext = createContext<SearchContextType | null>(null);
+const SearchContext = createContext<SearchContextType | null>(null);
 
 export const SearchProvider = ({ children }: SearchContextProviderProps) => {
   const [query, setQuery] = useState("");
@@ -39,4 +39,10 @@ export const SearchProvider = ({ children }: SearchContextProviderProps) => {
   );
 };
 
-export default SearchContext;
+export const useSearchContext = () => {
+  const context = useContext(SearchContext);
+  if (!context) {
+    throw new Error("useSearchContextはSearchProvider内で使用する必要があります");
+  }
+  return context;
+};
