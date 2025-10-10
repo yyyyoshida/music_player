@@ -1,15 +1,15 @@
-import { useRef, useContext } from "react";
+import { useRef } from "react";
 import ProgressBarWrapper from "./ProgressBarWrapper";
 import TrackInfo from "../tracks/TrackInfo";
 import PlayerActions from "./PlayerActions";
 import PlayerOptions from "./PlayerOptions";
 import AudioPlayer from "../AudioPlayer";
 // import { RepeatProvider } from './RepeatContext';
-import { TrackInfoContext } from "../../contexts/TrackInfoContext";
+import { useTrackInfoContext } from "../../contexts/TrackInfoContext";
 
 const PlayerControls = () => {
   const actionsRef = useRef(null);
-  const { isVisible } = useContext(TrackInfoContext);
+  const { isVisible } = useTrackInfoContext();
 
   return (
     // <div className="player-controls">
