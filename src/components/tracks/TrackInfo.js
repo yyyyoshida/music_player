@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { TrackInfoContext } from "../../contexts/TrackInfoContext";
+import { useTrackInfoContext } from "../../contexts/TrackInfoContext";
 import useDelayedText from "../../hooks/useDelayText";
 import usePlaybackStore from "../../store/playbackStore";
 import useTooltipStore from "../../store/tooltipStore";
@@ -22,7 +22,7 @@ const TrackInfo = () => {
   const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
 
-  const { handleTrackInfoClick, isVisible } = useContext(TrackInfoContext);
+  const { handleTrackInfoClick, isVisible } = useTrackInfoContext();
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
   const imgRef = useRef(null);

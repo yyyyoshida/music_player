@@ -1,5 +1,5 @@
-import { useContext, useRef } from "react";
-import { TrackInfoContext } from "../contexts/TrackInfoContext";
+import { useRef } from "react";
+import { useTrackInfoContext } from "../contexts/TrackInfoContext";
 
 import { isFallback } from "../utils/isFallback";
 import usePlaybackStore from "../store/playbackStore";
@@ -8,7 +8,7 @@ import useFadeTransition from "../hooks/useFadeTransition";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 export const ExpandedTrackCoverView = () => {
-  const { isVisible } = useContext(TrackInfoContext);
+  const { isVisible } = useTrackInfoContext();
   const transitionRef = useRef(null);
 
   const currentTitle = usePlaybackStore((state) => state.currentTitle);

@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useContext } from "react";
 import type { ReactNode } from "react";
 
 type TrackInfoContextType = {
@@ -12,7 +12,7 @@ type TrackInfoContextProviderProps = {
   children: ReactNode;
 };
 
-export const TrackInfoContext = createContext<TrackInfoContextType | null>(null);
+const TrackInfoContext = createContext<TrackInfoContextType | null>(null);
 
 export const TrackInfoProvider = ({ children }: TrackInfoContextProviderProps) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,4 +22,13 @@ export const TrackInfoProvider = ({ children }: TrackInfoContextProviderProps) =
   };
 
   return <TrackInfoContext.Provider value={{ isVisible, setIsVisible, handleTrackInfoClick }}>{children}</TrackInfoContext.Provider>;
+};
+
+export const useTrackInfoContext = () => {
+  const context = useContext(TrackInfoContext);
+
+  if (!context) {
+    throw new Error("useTrackInfoContextはTrackInfoProvider内で使用する必要があります");
+  }
+  return context;
 };
