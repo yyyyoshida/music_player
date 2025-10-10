@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import type { ReactNode } from "react";
 import { fetchSpotifyAPI } from "../utils/spotifyAuth";
 import useTokenStore from "../store/tokenStore";
@@ -21,7 +21,7 @@ type UserProviderProps = {
   children: ReactNode;
 };
 
-export const UserContext = createContext<UserContextType | null>(null);
+const UserContext = createContext<UserContextType | null>(null);
 
 export const UserProvider = ({ children }: UserProviderProps) => {
   const token = useTokenStore((state) => state.token);
@@ -62,4 +62,13 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   }, [token]);
 
   return <UserContext.Provider value={{ profile }}>{children}</UserContext.Provider>;
+};
+
+export const useUserContext = () => {
+  const context = useContext(UserContext);
+
+  if (!context) {
+    throw new Error("useUserContextはUserProvider内で使用する必要があります");
+  }
+  return context;
 };
