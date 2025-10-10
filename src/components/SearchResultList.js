@@ -1,5 +1,5 @@
-import { useContext, useEffect } from "react";
-import { SearchContext } from "../contexts/SearchContext";
+import { useEffect } from "react";
+import { useSearchContext } from "../contexts/SearchContext";
 import usePlaybackStore from "../store/playbackStore";
 import TrackItem from "./tracks/TrackItem";
 import TrackListSkeleton from "./skeletonUI/TrackListSkeleton";
@@ -8,7 +8,7 @@ import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 import { formatTime } from "../utils/formatTime";
 
 const TrackList = ({ containerRef }) => {
-  const { searchResults, query } = useContext(SearchContext);
+  const { searchResults, query } = useSearchContext();
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
   const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
 

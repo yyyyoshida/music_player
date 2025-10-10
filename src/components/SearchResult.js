@@ -1,10 +1,9 @@
-import { useContext } from "react";
 import SearchResultList from "./SearchResultList";
-import { SearchContext } from "../contexts/SearchContext";
+import { useSearchContext } from "../contexts/SearchContext";
 import TrackListHead from "./tracks/TrackListHead";
 
 const SearchResult = ({ containerRef }) => {
-  const { query, hasSearchError } = useContext(SearchContext);
+  const { query, hasSearchError } = useSearchContext();
   return (
     <section className="search-result">
       <div className="search-result__header">

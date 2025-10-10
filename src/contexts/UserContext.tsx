@@ -1,15 +1,33 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
+import type { ReactNode } from "react";
 import { fetchSpotifyAPI } from "../utils/spotifyAuth";
 import useTokenStore from "../store/tokenStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
-export const UserContext = createContext();
+type ImagesObject = {
+  height: number;
+  width: number;
+  url: string;
+};
 
-export const UserProvider = ({ children }) => {
+type UserContextType = {
+  profile: {
+    images: ImagesObject[];
+    display_name: string;
+  } | null;
+};
+
+type UserProviderProps = {
+  children: ReactNode;
+};
+
+const UserContext = createContext<UserContextType | null>(null);
+
+export const UserProvider = ({ children }: UserProviderProps) => {
   const token = useTokenStore((state) => state.token);
   const setIsToken = useTokenStore((state) => state.setIsToken);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<UserContextType["profile"]>(null);
 
   async function fetchProfile() {
     try {
@@ -27,6 +45,7 @@ export const UserProvider = ({ children }) => {
       const data = await response.json();
 
       setProfile(data);
+      console.log(data);
       setIsToken(true);
     } catch (error) {
       console.error("プロフィール取得失敗: ", error);
@@ -43,4 +62,13 @@ export const UserProvider = ({ children }) => {
   }, [token]);
 
   return <UserContext.Provider value={{ profile }}>{children}</UserContext.Provider>;
+};
+
+export const useUserContext = () => {
+  const context = useContext(UserContext);
+
+  if (!context) {
+    throw new Error("useUserContextはUserProvider内で使用する必要があります");
+  }
+  return context;
 };
