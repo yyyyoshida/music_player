@@ -1,12 +1,11 @@
-import { useContext } from "react";
 import SearchBar from "./SearchBar";
 import LocalFileImportNav from "./LocalFileImportNav";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
-import { UserContext } from "../contexts/UserContext";
+import { useUserContext } from "../contexts/UserContext";
 
 function Header() {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
-  const { profile } = useContext(UserContext);
+  const { profile } = useUserContext();
 
   const userIcon = profile?.images[1].url || "/img/dummy-user.jpg";
   const userName = profile?.display_name || "A A";
