@@ -20,7 +20,7 @@ const PlayerControls = () => {
       {/* <RepeatProvider> */}
       <ProgressBarWrapper />
       <div className="player-controls__info">
-        <TrackInfo actionsRef={actionsRef} />
+        <TrackInfo />
         <PlayerActions actionsRef={actionsRef} />
         <PlayerOptions />
       </div>
