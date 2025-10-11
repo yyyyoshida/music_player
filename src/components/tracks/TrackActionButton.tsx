@@ -1,7 +1,14 @@
+import type { RefObject } from "react";
 import useTooltipStore from "../../store/tooltipStore";
 import { FAVORITE_ICON, ADD_TO_PLAYLIST_ICON, TRACK_MORE_ICON } from "../../assets/icons";
 
-const TrackActionButton = ({ type, clickAction, buttonRef }) => {
+type TrackActionButtonProps = {
+  type: "favorite" | "add-playlist" | "more";
+  clickAction?: () => void;
+  buttonRef?: RefObject<HTMLButtonElement | null>;
+};
+
+const TrackActionButton = ({ type, clickAction, buttonRef }: TrackActionButtonProps) => {
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
   const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
@@ -13,14 +20,14 @@ const TrackActionButton = ({ type, clickAction, buttonRef }) => {
       ref={buttonRef}
       onClick={(e) => {
         e.stopPropagation();
-        clickAction?.(e);
+        clickAction?.();
         handleButtonPress();
       }}
-      onMouseEnter={(e) => {
+      onMouseEnter={() => {
         if (type === "favorite") setTooltipText("お気に入りに追加");
         if (type === "add-playlist") setTooltipText("プレイリストに追加");
         if (type === "more") setTooltipText("その他のオプション");
-        handleMouseEnter(e);
+        handleMouseEnter();
       }}
       onMouseLeave={handleMouseLeave}
     >

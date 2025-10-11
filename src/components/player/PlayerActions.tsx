@@ -5,7 +5,7 @@ import PrevNextButton from "./PrevNextButton";
 import RepeatButton from "./RepeatButton";
 
 type PlayerActionsProps = {
-  actionsRef: RefObject<HTMLDivElement>;
+  actionsRef: RefObject<HTMLDivElement | null>;
 };
 
 const PlayerActions = ({ actionsRef }: PlayerActionsProps) => {
