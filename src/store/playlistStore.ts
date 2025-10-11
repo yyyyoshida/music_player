@@ -64,7 +64,7 @@ type PlaylistStore = {
   deletePlaylist: (playlistId: string, navigate: (url: string) => void) => Promise<void>;
   showCoverImages: () => void;
   fadeCoverImages: () => void;
-  deleteTrack: (trackId: string) => Promise<void>;
+  deleteTrack: (trackId: string | null) => Promise<void>;
 };
 
 const usePlaylistStore = create<PlaylistStore>((set, get) => ({

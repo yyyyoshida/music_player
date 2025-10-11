@@ -29,8 +29,8 @@ type PlaylistSelectStore = {
   handleTrackSelect: (
     track: TrackObject | fromSearchResultTrackObject,
     shouldToggle: boolean,
-    file: File | null,
-    imageUrl: string | null
+    file?: File | null,
+    imageUrl?: string | null
   ) => void;
 };
 
@@ -112,8 +112,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   },
 
   saveUploadAndNewTrack: async (playlistId) => {
-    const { blobUrlToFile, localCoverImageUrl, uploadTrackFile, selectedTrack, addTrackToList } =
-      get();
+    const { blobUrlToFile, localCoverImageUrl, uploadTrackFile, selectedTrack, addTrackToList } = get();
     const formData = new FormData();
 
     const coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
@@ -187,8 +186,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
 
     if (!selectedTrack || !("source" in selectedTrack)) return;
 
-    const isNewLocalTrack =
-      selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
+    const isNewLocalTrack = selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
 
     const isSpotifyTrack = "trackUri" in selectedTrack;
     const isUploadedLocalTrack = "audioURL" in selectedTrack;
@@ -215,8 +213,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   },
 
   handleTrackSelect: (track, shouldToggle = true, file = null, imageUrl = null) => {
-    const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } =
-      get();
+    const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } = get();
     const { trackOrigin } = usePlaybackStore.getState();
 
     if (trackOrigin === "searchResults" && "uri" in track) {

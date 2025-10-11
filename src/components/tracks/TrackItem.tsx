@@ -1,15 +1,25 @@
+import type { RefObject } from "react";
 import { useLocation } from "react-router-dom";
-import { playIcon, pauseIcon } from "../../assets/icons";
+import { playIcon, pauseIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
-import TrackSourceIcon from "../TrackSourceIcon";
+import TrackSourceIcon from "./TrackSourceIcon";
 import TrackActionButton from "./TrackActionButton";
 import { isFallback } from "../../utils/isFallback";
 import { formatTime } from "../../utils/formatTime";
 import useTrackItem from "../../hooks/useTrackItem";
+import type { TrackObject } from "../../store/playbackStore";
 
-const TrackItem = ({ track, index, date, query, parentRef }) => {
+type TrackItemProps = {
+  track: TrackObject;
+  index: number;
+  date: Date;
+  query: TrackObject[];
+  parentRef: RefObject<HTMLDivElement | null>;
+};
+
+const TrackItem = ({ track, index, date, query, parentRef }: TrackItemProps) => {
   const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
   const toggleTrackMenu = useTrackMoreMenuStore((state) => state.toggleTrackMenu);
 
@@ -17,7 +27,9 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
   const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
   const handleTrackSelect = usePlaylistSelectionStore((state) => state.handleTrackSelect);
 
-  const isUsedFallbackImage = isFallback(track.albumImage);
+  let isUsedFallbackImage = false;
+  if ("albumImage" in track) isUsedFallbackImage = isFallback(track.albumImage);
+
   const location = useLocation();
   const isSearchPage = location.pathname === "/search-result";
   const { buttonRef, isCurrentTrack, isActiveTrack, handleClickTrackItem, setButtonPosition } = useTrackItem(track, index, date, parentRef);
@@ -39,8 +51,8 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
 
       <div className="track-item__cover-art-wrapper">
         <img
-          src={track.albumImage || track.album.images[2]?.url}
-          alt={track.title}
+          src={("albumImage" in track ? track.albumImage : track.album?.images[2]?.url) || FALLBACK_COVER_IMAGE}
+          alt={("title" in track ? track.title : track.name) || "不明"}
           className={`track-item__cover-art track-item__cover ${isUsedFallbackImage ? "track-item__initial-cover" : ""}`}
           width="50px"
           height="50px"
@@ -49,11 +61,11 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
         />
       </div>
       <div className="track-item__track-info">
-        <p className="track-item__title">{track.title || track.name}</p>
-        <p className="track-item__artist">{track.artist || track.artists[0]?.name}</p>
+        <p className="track-item__title">{("title" in track ? track.title : track.name) || "不明"}</p>
+        <p className="track-item__artist">{("artist" in track ? track.artist : track.artists[0]?.name) || "不明"}</p>
       </div>
       <div className="track-item__right">
-        {track.source && <TrackSourceIcon source={track.source} />}
+        {"source" in track && track.source && <TrackSourceIcon source={track.source} />}
         {isSearchPage ? (
           <>
             <TrackActionButton
@@ -78,7 +90,7 @@ const TrackItem = ({ track, index, date, query, parentRef }) => {
               setButtonPosition();
               handleTrackSelect(track, false);
               toggleTrackMenu(index);
-              setMenuTrackId(track.id);
+              setMenuTrackId(track.id || null);
             }}
             buttonRef={buttonRef}
           />
