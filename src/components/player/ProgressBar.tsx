@@ -4,8 +4,12 @@ import usePlaybackStore from "../../store/playbackStore";
 import useBarHandler from "../../hooks/useBarHandler";
 import usePlayerStore from "../../store/playerStore";
 
-const ProgressBar = ({ initialValue }) => {
-  const barRef = useRef(null);
+type ProgressBarProps = {
+  initialValue: number;
+};
+
+const ProgressBar = ({ initialValue }: ProgressBarProps) => {
+  const barRef = useRef<HTMLDivElement | null>(null);
 
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const setIsPlaying = usePlayerStore((state) => state.setIsPlaying);
@@ -27,7 +31,7 @@ const ProgressBar = ({ initialValue }) => {
 
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({
     type: "progress",
-    value: initialValue,
+    initialValue: initialValue,
     barRef: barRef,
   });
 
