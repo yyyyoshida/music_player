@@ -8,7 +8,7 @@ import AudioPlayer from "../AudioPlayer";
 import { useTrackInfoContext } from "../../contexts/TrackInfoContext";
 
 const PlayerControls = () => {
-  const actionsRef = useRef(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
   const { isVisible } = useTrackInfoContext();
 
   return (
