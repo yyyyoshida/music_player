@@ -31,9 +31,9 @@ const PlayerOptions = () => {
         <button
           className="player-controls__button player-controls__button--more"
           onClick={toggleOpenMenu}
-          onMouseEnter={(e) => {
+          onMouseEnter={() => {
             setTooltipText("その他のオプション");
-            handleMouseEnter(e);
+            handleMouseEnter();
           }}
           onMouseLeave={() => {
             handleMouseLeave();
