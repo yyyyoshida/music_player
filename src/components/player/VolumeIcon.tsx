@@ -1,6 +1,11 @@
-import { ImVolumeMute2, ImVolumeMute, ImVolumeLow, ImVolumeMedium, ImVolumeHigh } from "react-icons/im";
+import { ImVolumeMute2, ImVolumeLow, ImVolumeMedium, ImVolumeHigh } from "react-icons/im";
 
-const VolumeIcon = ({ volume, isMuted }) => {
+type VolumeIconProps = {
+  volume: number;
+  isMuted: boolean;
+};
+
+const VolumeIcon = ({ volume, isMuted }: VolumeIconProps) => {
   let IconComponent;
   let iconClassName = "player-controls__button--volume-icon";
 
