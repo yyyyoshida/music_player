@@ -5,7 +5,7 @@ import { FAVORITE_ICON, ADD_TO_PLAYLIST_ICON, TRACK_MORE_ICON } from "../../asse
 type TrackActionButtonProps = {
   type: "favorite" | "add-playlist" | "more";
   clickAction?: () => void;
-  buttonRef: RefObject<HTMLButtonElement>;
+  buttonRef?: RefObject<HTMLButtonElement | null>;
 };
 
 const TrackActionButton = ({ type, clickAction, buttonRef }: TrackActionButtonProps) => {
