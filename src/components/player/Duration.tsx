@@ -3,7 +3,7 @@ import usePlayerStore from "../../store/playerStore";
 import { formatTime } from "../../utils/formatTime";
 
 const Duration = () => {
-  const [SongDuration, setSongDuration] = useState("0:00");
+  const [SongDuration, setSongDuration] = useState<string>("0:00");
   const duration = usePlayerStore((state) => state.duration);
 
   useEffect(() => {

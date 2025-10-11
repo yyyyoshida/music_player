@@ -20,9 +20,9 @@ const PlayButton = () => {
     handleButtonPress();
   }
 
-  function handlePlayPauseMouseEnter(e) {
+  function handlePlayPauseMouseEnter() {
     setTooltipText(isPlaying ? "一時停止" : "再生");
-    handleMouseEnter(e);
+    handleMouseEnter();
   }
 
   return (

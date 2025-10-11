@@ -25,9 +25,9 @@ const ShuffleButton = () => {
       id="js-player-controls"
       className="player-controls__button player-controls__button--shuffle"
       onClick={toggleShuffle}
-      onMouseEnter={(e) => {
+      onMouseEnter={() => {
         setTooltipText(isShuffle ? "シャッフル：オン" : "シャッフル：オフ");
-        handleMouseEnter(e);
+        handleMouseEnter();
       }}
       onMouseLeave={() => {
         handleMouseLeave();
