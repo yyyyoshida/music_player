@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTrackInfoContext } from "../../contexts/TrackInfoContext";
 import useDelayedText from "../../hooks/useDelayText";
 import usePlaybackStore from "../../store/playbackStore";
@@ -25,10 +25,10 @@ const TrackInfo = () => {
   const { handleTrackInfoClick, isVisible } = useTrackInfoContext();
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
 
-  const imgRef = useRef(null);
-  const transitionRef = useRef(null);
-  const trackInfoRef = useRef(null);
-  const trackMetaRef = useRef(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const transitionRef = useRef<HTMLDivElement>(null);
+  const trackInfoRef = useRef<HTMLDivElement>(null);
+  const trackMetaRef = useRef<HTMLElement>(null);
 
   const isUsedFallbackImage = isFallback(currentCoverImage);
 
@@ -37,7 +37,7 @@ const TrackInfo = () => {
       if (!trackInfoRef.current || !trackMetaRef.current) return;
       const OFFSET_VALUE = 35;
 
-      const coverArtWidth = imgRef.current.clientWidth;
+      const coverArtWidth = imgRef.current?.clientWidth ?? MIN_WIDTH;
       const trackMetaWidth = trackMetaRef.current.clientWidth;
       let newWidth;
       if (isVisible) {
@@ -67,9 +67,9 @@ const TrackInfo = () => {
           handleTrackInfoClick();
           handleButtonPress();
         }}
-        onMouseEnter={(e) => {
+        onMouseEnter={() => {
           setTooltipText(isVisible ? "全画面表示：オフ" : "全画面表示");
-          handleMouseEnter(e);
+          handleMouseEnter();
         }}
         onMouseLeave={() => {
           handleMouseLeave();
