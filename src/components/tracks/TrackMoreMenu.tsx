@@ -18,8 +18,8 @@ const TrackMoreMenu = () => {
 
   const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
 
-  const menuRef = useRef(null);
-  const isButtonHoveredRef = useRef(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const isButtonHoveredRef = useRef<boolean>(null);
   const isNotSearchPage = window.location.pathname !== "/search-result";
 
   useEffect(() => {
@@ -27,10 +27,10 @@ const TrackMoreMenu = () => {
   }, [isTrackMenuButtonHovered]);
 
   useEffect(() => {
-    function handleClickOutside(e) {
+    function handleClickOutside(e: MouseEvent) {
       if (!isTrackMenuVisible) return;
 
-      const isClickInMenu = menuRef.current?.contains(e.target);
+      const isClickInMenu = menuRef.current?.contains(e.target as Node);
       const hoveredOverButton = isButtonHoveredRef.current;
 
       if (!isClickInMenu && !hoveredOverButton) {
