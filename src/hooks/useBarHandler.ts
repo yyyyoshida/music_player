@@ -3,14 +3,14 @@ import usePlayerStore from "../store/playerStore";
 
 type BarHandlerProps = {
   type: "progress" | "volume";
-  initialVolume?: number;
-  barRef: React.RefObject<HTMLElement>;
-  handleVolumeChange: (newPercentage: number) => void;
+  initialValue?: number;
+  barRef: React.RefObject<HTMLDivElement | null>;
+  handleVolumeChange?: (newPercentage: number) => void;
 };
 
 export default function useBarHandler({
   type,
-  initialVolume = 0,
+  initialValue = 0,
   barRef,
   handleVolumeChange,
 }: BarHandlerProps) {
@@ -23,7 +23,7 @@ export default function useBarHandler({
   const [percentage, setPercentage] = useState(() => {
     const saved = localStorage.getItem("player_volume");
 
-    if (saved === null) return initialVolume;
+    if (saved === null) return initialValue;
     return parseInt(saved);
   });
   const [isDragging, setIsDragging] = useState(false);
@@ -35,12 +35,13 @@ export default function useBarHandler({
   function handleClickBar(e: React.MouseEvent<HTMLDivElement>): number | void {
     if (isLocalPlaying && !isLocalReady) return;
 
-    const barRect = barRef?.current.getBoundingClientRect();
+    const barRect = barRef.current?.getBoundingClientRect();
+    if (!barRect) return;
     const clickX = e?.clientX - barRect?.left;
     const newPercentage = roundToTwoDecimals((clickX / barRect?.width) * 100);
 
     if (isProgressType) return setPercentage(newPercentage);
-    if (isVolumeType) handleVolumeChange(newPercentage);
+    if (isVolumeType && handleVolumeChange) handleVolumeChange(newPercentage);
   }
 
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>): void {
@@ -57,12 +58,13 @@ export default function useBarHandler({
     if (!isDragging) return;
     if (isProgressType && isLocalPlaying && !isLocalReady) return;
 
-    const barRect = barRef.current.getBoundingClientRect();
+    const barRect = barRef.current?.getBoundingClientRect();
+    if (!barRect) return;
     const moveX = e.clientX - barRect.left;
     const newPercentage = roundToTwoDecimals(Math.min(Math.max((moveX / barRect.width) * 100, 0), 100));
 
     if (isProgressType) return setPercentage(newPercentage);
-    if (isVolumeType) handleVolumeChange(newPercentage);
+    if (isVolumeType && handleVolumeChange) handleVolumeChange(newPercentage);
   }
 
   useEffect(() => {

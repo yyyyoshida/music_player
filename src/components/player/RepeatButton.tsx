@@ -22,9 +22,9 @@ const RepeatButton = () => {
         toggleRepeat();
         handleButtonPress();
       }}
-      onMouseEnter={(e) => {
+      onMouseEnter={() => {
         setTooltipText(isRepeat ? "リピート：オン" : "リピート：オフ");
-        handleMouseEnter(e);
+        handleMouseEnter();
       }}
       onMouseLeave={() => {
         handleMouseLeave();

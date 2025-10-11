@@ -2,7 +2,11 @@ import { useState } from "react";
 import useTooltipStore from "../../store/tooltipStore";
 import usePlaybackStore from "../../store/playbackStore";
 
-const PrevNextButton = ({ type }) => {
+type PrevNextButtonProps = {
+  type: "prev" | "next";
+};
+
+const PrevNextButton = ({ type }: PrevNextButtonProps) => {
   const CLICK_DELAY = 350;
   const [isClickable, setIsClickable] = useState(true);
   const setTooltipText = useTooltipStore((state) => state.setTooltipText);
@@ -36,9 +40,9 @@ const PrevNextButton = ({ type }) => {
     <button
       className={`player-controls__button ${type === "next" ? "next-button" : "prev-button"} ${type === "next" && isNextDisabled ? "disabled" : ""} ${type === "prev" && isPrevDisabled ? "disabled" : ""}`}
       onClick={handlePrevNextClick}
-      onMouseEnter={(e) => {
+      onMouseEnter={() => {
         setTooltipText(type === "next" ? "次へ" : "前へ");
-        handleMouseEnter(e);
+        handleMouseEnter();
       }}
       onMouseLeave={() => {
         handleMouseLeave();
