@@ -2,13 +2,21 @@ import { useState, useContext, useRef, useEffect } from "react";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import { isFallback } from "../../utils/isFallback";
 
+type PlaylistCoverImageGridProps = {
+  images: (string | undefined)[];
+  wrapperClassName?: string;
+  fallbackImgWrapperClassName?: string;
+  fallbackImgClassName?: string;
+  imgClassName?: string;
+};
+
 const PlaylistCoverImageGrid = ({
   images,
   wrapperClassName = "",
   fallbackImgWrapperClassName = "",
   fallbackImgClassName = "",
   imgClassName = "",
-}) => {
+}: PlaylistCoverImageGridProps) => {
   const [delayedImages, setDelayedImages] = useState(images);
   const DELAYED_REFLECTION_TIME = 160;
 
@@ -23,7 +31,7 @@ const PlaylistCoverImageGrid = ({
   const hasNoImage = delayedImages.length === 0;
   const isSingleImage = delayedImages.length <= 3;
   const displayImages = hasNoImage ? [FALLBACK_COVER_IMAGE] : [...delayedImages].slice(0, delayedImages.length <= 3 ? 1 : 4);
-  const isFallbackImage = (imgSrc) => isFallback(imgSrc);
+  const isFallbackImage = (imgSrc: string | undefined) => !imgSrc || isFallback(imgSrc);
 
   return (
     <div className={`playlist-cover-image-grid ${isSingleImage ? "single" : ""} ${wrapperClassName}`}>
