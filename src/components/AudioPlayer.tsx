@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react"; // ←ここ必須
+import { useEffect, useRef } from "react";
 import usePlayerStore from "../store/playerStore";
 
 function AudioPlayer() {
   const setAudioRef = usePlayerStore((state) => state.setAudioRef);
 
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     setAudioRef(audioRef);
