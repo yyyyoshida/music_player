@@ -14,8 +14,8 @@ import type { TrackObject } from "../../store/playbackStore";
 type TrackItemProps = {
   track: TrackObject;
   index: number;
-  date: string;
-  parentRef: RefObject<HTMLDivElement | null>;
+  date?: string;
+  parentRef?: RefObject<HTMLDivElement | null>;
 };
 
 const TrackItem = ({ track, index, date, parentRef }: TrackItemProps) => {

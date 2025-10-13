@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 type SkeletonHandlerProps = {
-  isImageListEmpty: boolean;
+  isImageListEmpty?: boolean;
   imagesLoaded: boolean;
-  resetKey?: object | null;
+  resetKey?: string | object | null;
 };
 
 export function useSkeletonHandler({
