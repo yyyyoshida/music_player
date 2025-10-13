@@ -7,10 +7,10 @@ type UseWaitForImagesLoadReturn = {
   isImageListEmpty: boolean;
 };
 
-const useWaitForImagesLoad = (
+const useWaitForImagesLoad = <T extends TrackObject | PlaylistObject>(
   type: "trackList" | "playlistCover",
-  tracks: TrackObject[] | PlaylistObject[],
-  deps: TrackObject[] | PlaylistObject[] = [],
+  tracks: T[],
+  deps: React.DependencyList = [],
   delay = 200,
   imagesLoadCount = 10
 ): UseWaitForImagesLoadReturn => {
@@ -58,9 +58,10 @@ function waitForAllImagesToLoad(imageUrls: string[]): Promise<void[]> {
   );
 }
 
-function getImageUrls(
+function getImageUrls<T extends TrackObject | PlaylistObject>(
   type: "trackList" | "playlistCover",
-  tracks: TrackObject[] | PlaylistObject[],
+  tracks: T[],
+
   imagesLoadCount: number
 ): string[] {
   if (!tracks || tracks.length === 0) return [];
