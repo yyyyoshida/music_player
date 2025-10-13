@@ -1,15 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, type RefObject } from "react";
 import { useSearchContext } from "../contexts/SearchContext";
 import usePlaybackStore from "../store/playbackStore";
 import TrackItem from "./tracks/TrackItem";
 import TrackListSkeleton from "./skeletonUI/TrackListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
-import { formatTime } from "../utils/formatTime";
 
-const TrackList = ({ containerRef }) => {
+type TrackListProps = {
+  containerRef: RefObject<HTMLDivElement>;
+};
+
+const TrackList = ({ containerRef }: TrackListProps) => {
   const { searchResults, query } = useSearchContext();
-  const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
   const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
 
   const IMAGES_LOADED_COUNT = 10;
@@ -33,20 +35,7 @@ const TrackList = ({ containerRef }) => {
           <li>検索結果がありません</li>
         ) : (
           searchResults.map((track, index) => {
-            const isCurrentTrack = currentTrackId === track.id;
-            const isClicked = isCurrentTrack;
-
-            return (
-              <TrackItem
-                key={track.id + "-" + query}
-                track={track}
-                index={index}
-                isCurrentTrack={isCurrentTrack}
-                isClicked={isClicked}
-                formatTime={formatTime}
-                query={query}
-              />
-            );
+            return <TrackItem key={track.id + "-" + query} track={track} index={index} />;
           })
         )}
       </ul>
