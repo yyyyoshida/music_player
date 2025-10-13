@@ -13,7 +13,7 @@ type RenamePlaylistReturn = {
 const useRenamePlaylist = (
   setIsRenameVisible: React.Dispatch<React.SetStateAction<boolean>>,
 
-  RenameRef: React.RefObject<HTMLInputElement>,
+  RenameRef: React.RefObject<HTMLInputElement | null>,
   isRenameVisible: boolean
 ): RenamePlaylistReturn => {
   const triggerError = usePlaylistStore((state) => state.triggerError);
@@ -37,7 +37,7 @@ const useRenamePlaylist = (
     let shouldToggle = true;
 
     const playlistName = playlistInfo?.name;
-    const newName = RenameRef.current.value.trim();
+    const newName = RenameRef.current?.value.trim() ?? "";
     const validationError = validatePlaylistName(newName, playlistName);
 
     if (validationError) {
@@ -81,8 +81,10 @@ const useRenamePlaylist = (
   }
 
   useEffect(() => {
-    RenameRef.current.value = playlistInfo?.name;
-    RenameRef.current.select();
+    if (RenameRef.current) {
+      RenameRef.current.value = playlistInfo?.name ?? "";
+      RenameRef.current.select();
+    }
   }, [isRenameVisible, playlistInfo]);
   return {
     handleSaveRename,

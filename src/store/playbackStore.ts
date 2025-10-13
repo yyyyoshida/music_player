@@ -10,13 +10,13 @@ interface BaseTrack {
   title: string;
 }
 
-interface SpotifyTrack extends BaseTrack {
+export interface SpotifyTrack extends BaseTrack {
   source: "spotify";
   trackId: string;
   trackUri: string;
 }
 
-interface LocalTrack extends BaseTrack {
+export interface LocalTrack extends BaseTrack {
   source: "local";
   albumImagePath: string;
   audioPath: string;
@@ -48,7 +48,7 @@ type PlaybackStore = {
   queue: TrackObject[];
   currentIndex: number;
   currentTrackId: string | null;
-  currentPlayedAt: Date | null;
+  currentPlayedAt: string | null;
   currentTitle: string;
   currentArtistName: string;
   currentCoverImage: string;
@@ -59,7 +59,7 @@ type PlaybackStore = {
   setQueue: (updater: TrackObject[] | ((prev: TrackObject[]) => TrackObject[])) => void;
   setCurrentIndex: (currentIndex: number) => void;
   setCurrentTrackId: (currentTrackId: string | null) => void;
-  setCurrentPlayedAt: (currentPlayedAt: Date | null) => void;
+  setCurrentPlayedAt: (currentPlayedAt: string | null) => void;
   setCurrentTitle: (currentTitle: string) => void;
   setCurrentArtistName: (currentArtistName: string) => void;
   setCurrentCoverImage: (currentCoverImage: string) => void;
