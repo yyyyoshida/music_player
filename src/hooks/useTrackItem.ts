@@ -16,8 +16,8 @@ type UseTrackItemReturn = {
 const useTrackItem = (
   track: TrackObject,
   index: number,
-  date: string,
-  parentRef: React.RefObject<HTMLDivElement | null>
+  date: string | undefined,
+  parentRef: React.RefObject<HTMLDivElement | null> | undefined
 ): UseTrackItemReturn => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playDisable = usePlayerStore((state) => state.playDisable);
@@ -63,12 +63,12 @@ const useTrackItem = (
     }
 
     setIsTrackSet(true);
-    setCurrentPlayedAt(date);
+    if (date) setCurrentPlayedAt(date);
     playTrackAtIndex(index);
   }
 
   function setButtonPosition() {
-    if (!buttonRef.current || !parentRef.current) return;
+    if (!buttonRef.current || !parentRef?.current) return;
 
     const buttonRect = buttonRef.current.getBoundingClientRect();
     const parentRect = parentRef.current.getBoundingClientRect();
