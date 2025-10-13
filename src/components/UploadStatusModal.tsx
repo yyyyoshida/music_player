@@ -1,13 +1,15 @@
 import useUploadModalStore from "../store/uploadModalStore";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
+import { FALLBACK_COVER_IMAGE } from "../assets/icons";
+import type { LocalTrack } from "../store/playbackStore";
 
 const UploadStatusModal = () => {
-  const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
+  const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack) as LocalTrack;
 
   const isUploadModalVisible = useUploadModalStore((state) => state.isUploadModalVisible);
   const hideUploadModal = useUploadModalStore((state) => state.hideUploadModal);
   // let trackCoverImage;
-  const isUsedFallbackImage = selectedTrack?.albumImage === "/img/fallback-cover.png";
+  const isUsedFallbackImage = selectedTrack?.albumImage === FALLBACK_COVER_IMAGE;
 
   return (
     <div className="upload-modal modal" style={{ visibility: isUploadModalVisible ? "visible" : "hidden" }}>
