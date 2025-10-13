@@ -1,8 +1,13 @@
+import type { RefObject } from "react";
 import SearchResultList from "./SearchResultList";
 import { useSearchContext } from "../contexts/SearchContext";
 import TrackListHead from "./tracks/TrackListHead";
 
-const SearchResult = ({ containerRef }) => {
+type SearchResultProps = {
+  containerRef: RefObject<HTMLDivElement>;
+};
+
+const SearchResult = ({ containerRef }: SearchResultProps) => {
   const { query, hasSearchError } = useSearchContext();
   return (
     <section className="search-result">
