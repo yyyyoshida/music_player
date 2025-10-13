@@ -10,13 +10,13 @@ interface BaseTrack {
   title: string;
 }
 
-interface SpotifyTrack extends BaseTrack {
+export interface SpotifyTrack extends BaseTrack {
   source: "spotify";
   trackId: string;
   trackUri: string;
 }
 
-interface LocalTrack extends BaseTrack {
+export interface LocalTrack extends BaseTrack {
   source: "local";
   albumImagePath: string;
   audioPath: string;
