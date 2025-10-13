@@ -14,12 +14,11 @@ import type { TrackObject } from "../../store/playbackStore";
 type TrackItemProps = {
   track: TrackObject;
   index: number;
-  date: Date;
-  query: TrackObject[];
+  date: string;
   parentRef: RefObject<HTMLDivElement | null>;
 };
 
-const TrackItem = ({ track, index, date, query, parentRef }: TrackItemProps) => {
+const TrackItem = ({ track, index, date, parentRef }: TrackItemProps) => {
   const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
   const toggleTrackMenu = useTrackMoreMenuStore((state) => state.toggleTrackMenu);
 
@@ -56,7 +55,6 @@ const TrackItem = ({ track, index, date, query, parentRef }: TrackItemProps) => 
           className={`track-item__cover-art track-item__cover ${isUsedFallbackImage ? "track-item__initial-cover" : ""}`}
           width="50px"
           height="50px"
-          key={track.id + "-" + query}
           loading={index >= 10 ? "lazy" : "eager"}
         />
       </div>

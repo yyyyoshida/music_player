@@ -20,7 +20,7 @@ const Playlist = () => {
   const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
   const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
 
-  function handlePlaylistClick(playlistId) {
+  function handlePlaylistClick(playlistId: string) {
     navigate(`/playlist-detail/${playlistId}`);
   }
 

@@ -16,7 +16,7 @@ type UseTrackItemReturn = {
 const useTrackItem = (
   track: TrackObject,
   index: number,
-  date: Date,
+  date: string,
   parentRef: React.RefObject<HTMLDivElement | null>
 ): UseTrackItemReturn => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);

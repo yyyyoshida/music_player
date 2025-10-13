@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 type SkeletonHandlerProps = {
   isImageListEmpty: boolean;
   imagesLoaded: boolean;
-  resetKey: object | null;
+  resetKey?: object | null;
 };
 
 export function useSkeletonHandler({

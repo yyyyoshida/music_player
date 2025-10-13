@@ -1,8 +1,14 @@
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import usePlaylistStore from "../../store/playlistStore";
 import { useNavigate } from "react-router-dom";
+import type { SpotifyTrack, LocalTrack } from "../../store/playbackStore";
 
-const DeletePlaylistModal = ({ tracks, id }) => {
+type DeletePlaylistModalProps = {
+  tracks: (SpotifyTrack | LocalTrack)[];
+  id: string;
+};
+
+const DeletePlaylistModal = ({ tracks, id }: DeletePlaylistModalProps) => {
   const isDeleteVisible = usePlaylistStore((state) => state.isDeleteVisible);
   const hideDeletePlaylistModal = usePlaylistStore((state) => state.hideDeletePlaylistModal);
   const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);

@@ -3,11 +3,18 @@ import usePlaylistStore from "../../store/playlistStore";
 import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import useRenamePlaylist from "../../hooks/useRenamePlaylist";
+import type { TrackObject, SpotifyTrack, LocalTrack } from "../../store/playbackStore";
 
-const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }) => {
+type RenamePlaylistProps = {
+  isRenameVisible: boolean;
+  setIsRenameVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  tracks: (SpotifyTrack | LocalTrack)[];
+};
+
+const RenamePlaylist = ({ isRenameVisible, setIsRenameVisible, tracks }: RenamePlaylistProps) => {
   const errorMessage = usePlaylistStore((state) => state.errorMessage);
   const isShaking = usePlaylistStore((state) => state.isShaking);
-  const RenameRef = useRef("");
+  const RenameRef = useRef<HTMLInputElement>(null);
 
   const { handleSaveRename, toggleRenameVisible } = useRenamePlaylist(setIsRenameVisible, RenameRef, isRenameVisible);
 
