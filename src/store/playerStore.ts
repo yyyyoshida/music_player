@@ -47,8 +47,8 @@ type PlayerStore = {
   updateVolume: (volume: number) => Promise<void>;
   seekToSpotify: (seekTime: number) => Promise<void>;
   initPlayer: () => Promise<any>;
-  syncSpotifyPlayerState: () => void;
-  syncLocalAudioState: () => void;
+  syncSpotifyPlayerState: () => (() => void) | void;
+  syncLocalAudioState: () => (() => void) | void;
 };
 
 type SpotifyPlaybackState = {
