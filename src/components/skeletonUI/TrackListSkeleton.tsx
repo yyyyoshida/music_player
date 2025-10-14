@@ -2,7 +2,7 @@ const TrackListSkeleton = ({ count = 11 }) => {
   return (
     <ul className="skeleton-track-list">
       {Array(count)
-        .fill()
+        .fill(null)
         .map((_, i) => (
           <li key={i} className="skeleton-track-list__item">
             <div className="skeleton-track-list__item-left ">

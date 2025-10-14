@@ -1,7 +1,9 @@
+import type { ActionType } from "../store/actionSuccessMessageStore";
+
 export async function getPlaylistInfo(
   currentPlaylistId: string,
   setPlaylistInfo: (info: { name: string; totalDuration: number }) => void,
-  showMessage: (key: string) => void
+  showMessage: (key: ActionType) => void
 ): Promise<{ name: string; totalDuration: number }> {
   const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${currentPlaylistId}Info`);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;

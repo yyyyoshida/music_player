@@ -6,7 +6,7 @@ type UseTooltipReturn = {
   isTooltipVisible: "visible" | "hidden";
 };
 
-const useTooltip = (tooltipRef: React.RefObject<HTMLElement>): UseTooltipReturn => {
+const useTooltip = (tooltipRef: React.RefObject<HTMLSpanElement | null>): UseTooltipReturn => {
   const [correctedPosition, setCorrectedPosition] = useState({ x: 0, y: 0 });
 
   const isButtonPressed = useTooltipStore((state) => state.isButtonPressed);

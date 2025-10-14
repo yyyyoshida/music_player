@@ -17,7 +17,7 @@ type PlayerStore = {
   isLocalPlaying: boolean;
   isSpotifyPlaying: boolean;
   isLocalReady: boolean;
-  audioRef: RefObject<HTMLAudioElement> | null;
+  audioRef: RefObject<HTMLAudioElement | null>;
   player: any;
   deviceId: string | null;
   playerReady: boolean;
@@ -32,7 +32,7 @@ type PlayerStore = {
   setIsLocalPlaying: (isLocalPlaying: boolean) => void;
   setIsSpotifyPlaying: (isSpotifyPlaying: boolean) => void;
   setIsLocalReady: (isLocalReady: boolean) => void;
-  setAudioRef: (audioRef: RefObject<HTMLAudioElement> | null) => void;
+  setAudioRef: (audioRef: RefObject<HTMLAudioElement | null>) => void;
   setPlayer: (playerInstance: any) => void;
   setDeviceId: (deviceId: string | null) => void;
   setPlayerReady: (playerReady: boolean) => void;
@@ -74,7 +74,7 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
   isLocalPlaying: false,
   isSpotifyPlaying: false,
   isLocalReady: false,
-  audioRef: null,
+  audioRef: { current: null },
   player: null,
   deviceId: null,
   playerReady: false,
@@ -160,7 +160,7 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
     } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
-    if (isLocalPlaying) {
+    if (isLocalPlaying && audioRef?.current) {
       audioRef?.current.pause();
       setIsLocalPlaying(false);
     }
@@ -223,14 +223,8 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   playLocalTrack: (trackUri) => {
-    const {
-      isSpotifyPlaying,
-      setIsSpotifyPlaying,
-      player,
-      setIsLocalReady,
-      audioRef,
-      handleLocalCanPlay,
-    } = get();
+    const { isSpotifyPlaying, setIsSpotifyPlaying, player, setIsLocalReady, audioRef, handleLocalCanPlay } =
+      get();
 
     if (isSpotifyPlaying) {
       player.pause();
@@ -248,8 +242,7 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   handleLocalCanPlay: () => {
-    const { audioRef, setIsLocalPlaying, setPlayDisable, setIsPlaying, setIsLocalReady } =
-      get();
+    const { audioRef, setIsLocalPlaying, setPlayDisable, setIsPlaying, setIsLocalReady } = get();
 
     if (!audioRef?.current) return;
 
@@ -335,10 +328,7 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
         position: (position / duration) * PERCENT,
       });
     };
-    const progressInterval = setInterval(
-      updateSpotifyProgress,
-      UPDATE_PROGRESS_BAR_INTERVAL_MS
-    );
+    const progressInterval = setInterval(updateSpotifyProgress, UPDATE_PROGRESS_BAR_INTERVAL_MS);
 
     return () => {
       clearInterval(progressInterval);

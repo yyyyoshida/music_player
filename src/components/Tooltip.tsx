@@ -4,7 +4,7 @@ import useTooltip from "../hooks/useTooltip";
 
 const Tooltip = () => {
   const tooltipText = useTooltipStore((state) => state.tooltipText);
-  const tooltipRef = useRef(null);
+  const tooltipRef = useRef<HTMLSpanElement>(null);
   const { correctedPosition, isTooltipVisible } = useTooltip(tooltipRef);
 
   return (
