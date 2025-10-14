@@ -23,7 +23,7 @@ import Tooltip from "./Tooltip";
 const Main = () => {
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
 
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
