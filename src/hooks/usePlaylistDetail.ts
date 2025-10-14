@@ -4,7 +4,10 @@ import usePlaylistStore from "../store/playlistStore";
 import usePlaybackStore from "../store/playbackStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 
-const usePlaylistDetail = (id: string | undefined, containerRef: React.RefObject<HTMLElement>): void => {
+const usePlaylistDetail = (
+  id: string | undefined,
+  containerRef: React.RefObject<HTMLElement | null>
+): void => {
   const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
   const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
   const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
@@ -51,7 +54,7 @@ const usePlaylistDetail = (id: string | undefined, containerRef: React.RefObject
 
   useEffect(() => {
     if (!id) return;
-    containerRef.current.scrollTo(0, 0);
+    containerRef.current?.scrollTo(0, 0);
     setDeletedTrackDuration(0);
     setAddedTrackDuration(0);
     setTrackOrigin("firebase");

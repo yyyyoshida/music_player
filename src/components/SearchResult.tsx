@@ -4,7 +4,7 @@ import { useSearchContext } from "../contexts/SearchContext";
 import TrackListHead from "./tracks/TrackListHead";
 
 type SearchResultProps = {
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
 };
 
 const SearchResult = ({ containerRef }: SearchResultProps) => {

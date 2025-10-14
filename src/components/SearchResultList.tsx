@@ -7,7 +7,7 @@ import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 
 type TrackListProps = {
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
 };
 
 const TrackList = ({ containerRef }: TrackListProps) => {
@@ -22,7 +22,7 @@ const TrackList = ({ containerRef }: TrackListProps) => {
   const showSkeleton = useSkeletonHandler({ imagesLoaded, resetKey: query });
 
   useEffect(() => {
-    containerRef.current.scrollTo(0, 0);
+    containerRef.current?.scrollTo(0, 0);
     setTrackOrigin("searchResults");
   }, [query]);
 
