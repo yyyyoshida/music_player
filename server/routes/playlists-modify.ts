@@ -1,13 +1,13 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const { admin, db, bucket } = require("../firebase");
-const { validatePlaylistName } = require("../utils/playlistValidation");
+import { admin, db, bucket } from "../firebase";
+import { validatePlaylistName } from "../utils/playlistValidation";
 
 //=======================
 // プレイリストの楽曲削除
 //=======================
 
-async function deleteFileIfUnused(field, filePath) {
+async function deleteFileIfUnused(field: string, filePath: string | null | undefined) {
   if (!filePath) return;
 
   const tracksUsingSameFile = await db.collectionGroup("tracks").where(field, "==", filePath).get();
@@ -16,8 +16,10 @@ async function deleteFileIfUnused(field, filePath) {
     try {
       await bucket.file(filePath).delete();
       console.log(`Storageファイル削除済み: ${filePath}`);
-    } catch (error) {
-      console.warn(`Storageファイル削除失敗: ${filePath}`, error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) return console.error(`プレイリスト削除失敗: ${filePath}`, error.message);
+
+      console.error(`プレイリスト削除 ${filePath}`, error);
     }
   } else {
     console.log(`他のトラックも使用中のため削除スキップ: ${filePath}`);
@@ -35,7 +37,7 @@ router.delete("/playlists/:playlistId/tracks/:trackId", async (req, res) => {
       return res.status(404).json({ error: "Track not found" });
     }
 
-    const deletedTrack = trackSnapshot.data();
+    const deletedTrack = trackSnapshot.data()!;
 
     await deleteFileIfUnused("audioPath", deletedTrack.audioPath);
     await deleteFileIfUnused("albumImagePath", deletedTrack.albumImagePath);
@@ -72,7 +74,10 @@ router.delete("/playlists/:playlistId", async (req, res) => {
     // //////////////////////////////////////////////////////////////////////////
     const deletePromises = tracksSnapshot.docs.flatMap((doc) => {
       const data = doc.data();
-      return [deleteFileIfUnused("audioPath", data.audioPath), deleteFileIfUnused("albumImagePath", data.albumImagePath)];
+      return [
+        deleteFileIfUnused("audioPath", data.audioPath),
+        deleteFileIfUnused("albumImagePath", data.albumImagePath),
+      ];
     });
 
     await Promise.all(deletePromises);
@@ -110,4 +115,4 @@ router.patch("/playlists/:playlistId", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

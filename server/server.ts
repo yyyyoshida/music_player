@@ -1,12 +1,12 @@
-require("dotenv").config();
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
 
-const express = require("express");
-const cors = require("cors");
+import tokenRouter from "./routes/token.js";
+import playlistsGetRouter from "./routes/playlists-get.js";
+import playlistsModifyRouter from "./routes/playlists-modify.js";
+import playlistsAddRouter from "./routes/playlists-add.js";
 
-const tokenRouter = require("./routes/token");
-const playlistsGetRouter = require("./routes/playlists-get");
-const playlistsModifyRouter = require("./routes/playlists-modify");
-const playlistsAddRouter = require("./routes/playlists-add");
 const app = express();
 
 app.use(cors());

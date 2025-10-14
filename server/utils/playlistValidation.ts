@@ -1,6 +1,6 @@
-const MAX_NAME_LENGTH = 10;
+export const MAX_NAME_LENGTH = 10;
 
-function countNameLength(string) {
+export function countNameLength(string: string) {
   let nameLength = 0;
   for (let i = 0; i < string.length; i++) {
     const code = string.charCodeAt(i);
@@ -9,7 +9,7 @@ function countNameLength(string) {
   return nameLength;
 }
 
-function validatePlaylistName(name, BeforePlaylistName = null) {
+export function validatePlaylistName(name: string, BeforePlaylistName: string | null = null) {
   if (typeof name !== "string") {
     return "名前は文字列である必要があります";
   }
@@ -32,4 +32,4 @@ function validatePlaylistName(name, BeforePlaylistName = null) {
   return null;
 }
 
-module.exports = { MAX_NAME_LENGTH, countNameLength, validatePlaylistName };
+// module.exports = { MAX_NAME_LENGTH, countNameLength, validatePlaylistName };

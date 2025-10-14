@@ -12,6 +12,7 @@
     "declarationMap": true,
     "noUncheckedIndexedAccess": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
