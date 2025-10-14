@@ -18,7 +18,7 @@ import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import type { SpotifyTrack, LocalTrack } from "../../store/playbackStore";
 
 type PlaylistDetailProps = {
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
 };
 
 const PlaylistDetail = ({ containerRef }: PlaylistDetailProps) => {
