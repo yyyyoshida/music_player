@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
+import type { ActionType } from "../store/actionSuccessMessageStore";
 
 const ActionSuccessMessage = () => {
   const isMessageVisible = useActionSuccessMessageStore((state) => state.isMessageVisible);
@@ -35,7 +36,7 @@ const ActionSuccessMessage = () => {
     );
   }
 
-  const messages = {
+  const messages: Record<ActionType, { text: string; success: boolean }> = {
     add: { text: "楽曲をプレイリストに追加しました", success: true },
     addFailed: { text: "曲の追加に失敗しました", success: false },
     addFailedSpotify: { text: "Spotify曲の追加に失敗しました", success: false },
