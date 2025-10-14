@@ -1,7 +1,12 @@
 import { useRef, useEffect } from "react";
 
-const LocalAudioDuration = ({ file, onDuration }) => {
-  const audioRef = useRef(null);
+type LocalAudioDurationProps = {
+  file: File;
+  onDuration: (duration: number) => void;
+};
+
+const LocalAudioDuration = ({ file, onDuration }: LocalAudioDurationProps) => {
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (file && audioRef.current) {
@@ -9,14 +14,14 @@ const LocalAudioDuration = ({ file, onDuration }) => {
       audioRef.current.src = objectUrl;
 
       const handleLoadedMetadata = () => {
-        onDuration(audioRef.current.duration);
+        onDuration(audioRef.current?.duration ?? 0);
         URL.revokeObjectURL(objectUrl);
       };
 
       audioRef.current.addEventListener("loadedmetadata", handleLoadedMetadata);
 
       return () => {
-        audioRef.current.removeEventListener("loadedmetadata", handleLoadedMetadata);
+        audioRef.current?.removeEventListener("loadedmetadata", handleLoadedMetadata);
       };
     }
   }, [file, onDuration]);

@@ -6,6 +6,7 @@ import useUploadModalStore from "./uploadModalStore";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import type { TrackObject, fromSearchResultTrackObject } from "./playbackStore";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
+import type { ActionType } from "./actionSuccessMessageStore";
 
 type PlaylistSelectStore = {
   isSelectVisible: boolean;
@@ -166,7 +167,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
       if (typeof error === "object" && error !== null && "message" in error) {
         const message = (error as { message: string }).message;
 
-        showMessage(message);
+        showMessage(message as ActionType);
       } else {
         showMessage("addFailed");
       }

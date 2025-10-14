@@ -9,12 +9,12 @@ const SearchBar = () => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useSearchContext();
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const token = useTokenStore((state) => state.token);
-  const queryRef = useRef("");
+  const queryRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!token || location.pathname !== "/search-result") return;
+    if (!token || location.pathname !== "/search-result" || !queryRef.current) return;
 
     const savedQuery = localStorage.getItem("searchQuery") || "";
 
@@ -68,15 +68,15 @@ const SearchBar = () => {
   //   }
   // }
 
-  function handleSearchError(logValue) {
-    console.error("検索結果の取得に失敗: ", logValue);
+  function handleSearchError(logValue: unknown) {
+    console.error("検索結果の取得に失敗: ", logValue as number | Error);
     setHasSearchError(true);
     setSearchResults([]);
     showMessage("searchFailed");
   }
 
   async function handleSearch() {
-    const queryText = queryRef.current.value;
+    const queryText = queryRef.current?.value;
     if (!queryText || queryText === query) return;
 
     setQuery(queryText);
@@ -109,6 +109,7 @@ const SearchBar = () => {
   }
 
   function clearSearchText() {
+    if (!queryRef.current) return;
     queryRef.current.value = "";
     queryRef.current?.focus();
   }
