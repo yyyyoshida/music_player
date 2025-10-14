@@ -1,6 +1,6 @@
 const MAX_NAME_LENGTH = 10;
 
-function countNameLength(string) {
+function countNameLength(string: string) {
   let nameLength = 0;
   for (let i = 0; i < string.length; i++) {
     const code = string.charCodeAt(i);
@@ -9,7 +9,7 @@ function countNameLength(string) {
   return nameLength;
 }
 
-function validatePlaylistName(name, BeforePlaylistName = null) {
+function validatePlaylistName(name: string, BeforePlaylistName: string | null = null) {
   if (typeof name !== "string") {
     return "名前は文字列である必要があります";
   }
