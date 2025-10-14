@@ -1,13 +1,14 @@
-const express = require("express");
-const router = express.Router();
-const { db } = require("../firebase");
+import express, { Request, Response, Router } from "express";
+
+const router: Router = express.Router();
+import { db as firestore } from "../firebase";
 
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 
 // トークン交換エンドポイント
-router.post("/exchange_token", async (req, res) => {
+router.post("/exchange_token", async (req: any, res: any) => {
   console.log("トークン交換エンドポイント");
 
   const { code } = req.body;
@@ -16,7 +17,7 @@ router.post("/exchange_token", async (req, res) => {
   const params = new URLSearchParams();
   params.append("grant_type", "authorization_code");
   params.append("code", code);
-  params.append("redirect_uri", REDIRECT_URI);
+  params.append("redirect_uri", REDIRECT_URI!);
 
   const basicAuth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
 
@@ -45,7 +46,7 @@ router.post("/exchange_token", async (req, res) => {
 });
 
 // リフレッシュトークンエンドポイント
-router.post("/refresh_token", async (req, res) => {
+router.post("/refresh_token", async (req: any, res: any) => {
   const { refresh_token } = req.body;
   if (!refresh_token) return res.status(400).json({ error: "refresh_token is required" });
 
@@ -86,12 +87,12 @@ router.post("/refresh_token", async (req, res) => {
 });
 
 // トークン保存
-router.post("/save_refresh_token", async (req, res) => {
+router.post("/save_refresh_token", async (req: any, res: any) => {
   const { refresh_token } = req.body;
   if (!refresh_token) return res.status(400).json({ error: "refresh_token required" });
 
   try {
-    await db.collection("users").doc("only_user").set({ refresh_token }, { merge: true });
+    await firestore.collection("users").doc("only_user").set({ refresh_token }, { merge: true });
     console.log("DBにrefresh_tokenを保存");
     res.json({ message: "refresh_token保存完了" });
   } catch (e) {
@@ -101,9 +102,9 @@ router.post("/save_refresh_token", async (req, res) => {
 });
 
 // トークン取得
-router.post("/get_refresh_token", async (req, res) => {
+router.post("/get_refresh_token", async (req: any, res: any) => {
   try {
-    const docs = await db.collection("users").limit(1).get();
+    const docs = await firestore.collection("users").limit(1).get();
     if (docs.empty) return res.status(404).json({ error: "トークンが見つかりません" });
 
     const doc = docs.docs[0];
@@ -115,4 +116,4 @@ router.post("/get_refresh_token", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
