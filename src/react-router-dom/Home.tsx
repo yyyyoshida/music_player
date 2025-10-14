@@ -7,7 +7,6 @@ import useTokenStore from "../store/tokenStore";
 
 import CardListSkeleton from "../components/skeletonUI/CardListSkeleton";
 import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
-import { divide } from "lodash";
 
 const Home = () => {
   const [tracks, setTracks] = useState([]);
