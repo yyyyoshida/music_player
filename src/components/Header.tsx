@@ -7,7 +7,7 @@ function Header() {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
   const { profile } = useUserContext();
 
-  const userIcon = profile?.images[1].url || "/img/dummy-user.jpg";
+  const userIcon = profile?.images?.[1]?.url ?? "/img/dummy-user.jpg";
   const userName = profile?.display_name || "A A";
 
   return (
