@@ -1,16 +1,15 @@
-const express = require("express");
+import express from "express";
+import multer from "multer";
+import sharp from "sharp";
+import { admin, db, bucket } from "../firebase";
+import { validatePlaylistName } from "../utils/playlistValidation";
 const router = express.Router();
-const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
-const sharp = require("sharp");
-const { admin, db, bucket } = require("../firebase");
-const { validatePlaylistName } = require("../utils/playlistValidation");
-
 //=====================
 // プレイリスト新規作成
 //=====================
 
-router.post("/playlists", async (req, res) => {
+router.post("/playlists", async (req: any, res: any) => {
   const { name } = req.body;
 
   const error = validatePlaylistName(name);
@@ -97,7 +96,7 @@ router.post("/playlists/:id/local-tracks", async (req, res) => {
 // Date.now()はバッティング防止
 
 // 音声ファイルをStorageにアップロードしてURLとパスを返す
-async function uploadAudio(fileBuffer, title) {
+async function uploadAudio(fileBuffer: Buffer, title: string) {
   const fileName = `tracks/${title}_${Date.now()}.mp3`;
   const storageFile = bucket.file(fileName);
 
@@ -117,7 +116,7 @@ async function uploadAudio(fileBuffer, title) {
 // 画像もあればアップロードしてURLとパスを返す
 const FALLBACK_COVER_IMAGE = "http://localhost:3000/img/fallback-cover.png";
 
-async function uploadImage(imageFile) {
+async function uploadImage(imageFile: Express.Multer.File | undefined) {
   if (!imageFile || !imageFile.buffer || !imageFile.mimetype.startsWith("image/")) {
     return { albumImageURL: FALLBACK_COVER_IMAGE, albumImagePath: null };
   }
@@ -141,42 +140,49 @@ async function uploadImage(imageFile) {
   return { albumImageURL, albumImagePath: fileName };
 }
 
-router.post("/playlists/:id/local-tracks/new", upload.fields([{ name: "audio" }, { name: "cover" }]), async (req, res) => {
-  if (!req.files?.audio?.length) return res.status(400).json({ error: "音声ファイルが見つかりません" });
+router.post(
+  "/playlists/:id/local-tracks/new",
+  upload.fields([{ name: "audio" }, { name: "cover" }]),
+  async (req: any, res: any) => {
+    if (!req.files?.audio?.length) return res.status(400).json({ error: "音声ファイルが見つかりません" });
 
-  try {
-    const playlistId = req.params.id;
-    const track = JSON.parse(req.body.track);
-    const audioFile = req.files.audio[0];
-    const coverFile = req.files.cover?.[0] ?? null;
-    const playlistRef = db.collection("playlists").doc(playlistId);
+    try {
+      const playlistId = req.params.id;
+      const track = JSON.parse(req.body.track);
+      const audioFile = req.files.audio[0];
+      const coverFile = req.files.cover?.[0] ?? null;
+      const playlistRef = db.collection("playlists").doc(playlistId);
 
-    const [audioResult, imageResult] = await Promise.all([uploadAudio(audioFile.buffer, track.title), uploadImage(coverFile)]);
+      const [audioResult, imageResult] = await Promise.all([
+        uploadAudio(audioFile.buffer, track.title),
+        uploadImage(coverFile),
+      ]);
 
-    const newTrackRef = await playlistRef.collection("tracks").add({
-      title: track.title,
-      artist: track.artist,
-      duration_ms: track.duration_ms,
-      albumImage: imageResult.albumImageURL,
-      albumImagePath: imageResult.albumImagePath,
-      audioURL: audioResult.audioURL,
-      audioPath: audioResult.audioPath,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
-      source: "local",
-    });
+      const newTrackRef = await playlistRef.collection("tracks").add({
+        title: track.title,
+        artist: track.artist,
+        duration_ms: track.duration_ms,
+        albumImage: imageResult.albumImageURL,
+        albumImagePath: imageResult.albumImagePath,
+        audioURL: audioResult.audioURL,
+        audioPath: audioResult.audioPath,
+        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+        source: "local",
+      });
 
-    const newTrackSnapshot = await newTrackRef.get();
-    const addedTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
+      const newTrackSnapshot = await newTrackRef.get();
+      const addedTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
 
-    await playlistRef.update({
-      totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
-    });
+      await playlistRef.update({
+        totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+      });
 
-    res.status(200).json({ addedTrack });
-  } catch (error) {
-    console.error("PCからプレイリストに追加失敗", error);
-    res.status(500).json({ error: "PCからプレイリストに追加失敗" });
+      res.status(200).json({ addedTrack });
+    } catch (error) {
+      console.error("PCからプレイリストに追加失敗", error);
+      res.status(500).json({ error: "PCからプレイリストに追加失敗" });
+    }
   }
-});
+);
 
-module.exports = router;
+export default router;
