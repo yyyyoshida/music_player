@@ -15,7 +15,7 @@ import TrackListSkeleton from "../skeletonUI/TrackListSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import { formatTimeHours } from "../../utils/formatTime";
 import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
-import type { SpotifyTrack, LocalTrack } from "../../store/playbackStore";
+import type { SpotifyTrack, LocalTrack } from "../../types/tracksType";
 
 type PlaylistDetailProps = {
   containerRef: RefObject<HTMLDivElement | null>;

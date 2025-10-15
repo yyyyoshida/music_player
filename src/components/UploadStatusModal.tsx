@@ -1,7 +1,7 @@
 import useUploadModalStore from "../store/uploadModalStore";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
-import type { LocalTrack } from "../store/playbackStore";
+import type { LocalTrack } from "../types/tracksType";
 
 const UploadStatusModal = () => {
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack) as LocalTrack;

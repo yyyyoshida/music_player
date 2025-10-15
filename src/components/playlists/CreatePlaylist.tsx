@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { FALLBACK_COVER_IMAGE, warningIcon } from "../../assets/icons";
 import usePlaylistStore from "../../store/playlistStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
-import type { TrackObject } from "../../store/playbackStore";
+import type { TrackObject } from "../../types/tracksType";
 
 function getPlaylistCover(track: TrackObject | null): string {
   if (!track) return FALLBACK_COVER_IMAGE;
