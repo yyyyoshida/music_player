@@ -9,7 +9,7 @@ import TrackActionButton from "./TrackActionButton";
 import { isFallback } from "../../utils/isFallback";
 import { formatTime } from "../../utils/formatTime";
 import useTrackItem from "../../hooks/useTrackItem";
-import type { TrackObject } from "../../store/playbackStore";
+import type { TrackObject } from "../../types/tracksType";
 
 type TrackItemProps = {
   track: TrackObject;

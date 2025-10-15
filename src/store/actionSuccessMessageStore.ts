@@ -1,30 +1,5 @@
 import { create } from "zustand";
-
-export type ActionType =
-  | "add"
-  | "addFailed"
-  | "addFailedSpotify"
-  | "addFailedLocal"
-  | "addFailedNewLocal"
-  | "deleteTrack"
-  | "deleteTrackFailed"
-  | "deletePlaylist"
-  | "deletePlaylistFailed"
-  | "fetchPlaylistsFailed"
-  | "fetchPlaylistInfoFailed"
-  | "fetchPlaylistDetailFailed"
-  | "fetchProfileFailed"
-  | "newPlaylist"
-  | "newPlaylistFailed"
-  | "rename"
-  | "renameFailed"
-  | "deviceNotFound"
-  | "tokenExpired"
-  | "playFailed"
-  | "tooFrequent"
-  | "searchFailed"
-  | "unselected"
-  | "未実装";
+import type { ActionType } from "../types/actionType";
 
 type ActionSuccessMessageStore = {
   isMessageVisible: boolean;

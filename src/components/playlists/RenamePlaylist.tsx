@@ -3,7 +3,7 @@ import usePlaylistStore from "../../store/playlistStore";
 import { warningIcon } from "../../assets/icons";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import useRenamePlaylist from "../../hooks/useRenamePlaylist";
-import type { TrackObject, SpotifyTrack, LocalTrack } from "../../store/playbackStore";
+import type { SpotifyTrack, LocalTrack } from "../../types/tracksType";
 
 type RenamePlaylistProps = {
   isRenameVisible: boolean;

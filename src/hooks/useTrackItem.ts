@@ -3,7 +3,7 @@ import usePlayerStore from "../store/playerStore";
 import usePlaybackStore from "../store/playbackStore";
 import useTrackMoreMenuStore from "../store/trackMoreMenuStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
-import type { TrackObject } from "../store/playbackStore";
+import type { TrackObject } from "../types/tracksType";
 
 type UseTrackItemReturn = {
   buttonRef: React.RefObject<HTMLButtonElement | null>;
