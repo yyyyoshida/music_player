@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import type { ReactNode } from "react";
-import type { TrackObject } from "../store/playbackStore";
+import type { TrackObject } from "../types/tracksType";
 import usePlaybackStore from "../store/playbackStore";
 import { useLocation } from "react-router-dom";
 

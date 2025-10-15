@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import usePlaylistStore from "../store/playlistStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
-import type { PlaylistObject } from "../store/playlistStore";
+import type { PlaylistObject } from "../types/playlistType";
 
 type RenamePlaylistReturn = {
   handleSaveRename: () => Promise<void>;

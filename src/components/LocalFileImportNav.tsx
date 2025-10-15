@@ -4,7 +4,7 @@ import jsmediatags from "jsmediatags/dist/jsmediatags.min.js";
 import LocalAudioDuration from "./LocalAudioDuration";
 import usePlaybackStore from "../store/playbackStore";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
-import type { LocalTrack } from "../store/playbackStore";
+import type { LocalTrack } from "../types/tracksType";
 
 type MediaTags = {
   title?: string;
