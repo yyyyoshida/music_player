@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
-import type { ActionType } from "../store/actionSuccessMessageStore";
+import type { ActionType } from "../types/actionType";
 
 const ActionSuccessMessage = () => {
   const isMessageVisible = useActionSuccessMessageStore((state) => state.isMessageVisible);
