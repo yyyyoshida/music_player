@@ -4,17 +4,9 @@ import { getPlaylistInfo } from "../utils/playlistUtils";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
 import type { TrackObject } from "../types/tracksType";
+import type { PlaylistObject } from "../types/playlistType";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
-export type PlaylistObject = {
-  albumImages: string[];
-  createdAt: any;
-  id: string;
-  name: string;
-  totalDuration: number;
-  trackCount: number;
-};
 
 type PlaylistInfo = {
   name: string;

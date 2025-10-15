@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { PlaylistObject } from "../store/playlistStore";
+import type { PlaylistObject } from "../types/playlistType";
 import type { TrackObject } from "../types/tracksType";
 
 type UseWaitForImagesLoadReturn = {
