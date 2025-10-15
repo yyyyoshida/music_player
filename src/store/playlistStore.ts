@@ -3,7 +3,7 @@ import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import { getPlaylistInfo } from "../utils/playlistUtils";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
-import type { TrackObject } from "./playbackStore";
+import type { TrackObject } from "../types/tracksType";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 

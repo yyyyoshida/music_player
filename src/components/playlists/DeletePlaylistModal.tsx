@@ -1,7 +1,7 @@
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import usePlaylistStore from "../../store/playlistStore";
 import { useNavigate } from "react-router-dom";
-import type { SpotifyTrack, LocalTrack } from "../../store/playbackStore";
+import type { SpotifyTrack, LocalTrack } from "../../types/tracksType";
 
 type DeletePlaylistModalProps = {
   tracks: (SpotifyTrack | LocalTrack)[];
