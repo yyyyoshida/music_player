@@ -27,7 +27,6 @@ type PlaylistStore = {
   isShaking: boolean;
   preselectedTrack: PlaylistObject | null;
   isCoverImageFading: boolean;
-  playlistNameRef: string | null;
 
   addSelectedTrackToPlaylistRef: () => void;
 
@@ -43,7 +42,6 @@ type PlaylistStore = {
   setIsShaking: (isShaking: boolean) => void;
   setPreselectedTrack: (preselectedTrack: PlaylistObject | null) => void;
   setIsCoverImageFading: (isCoverImageFading: boolean) => void;
-  setPlaylistNameRef: (playlistNameRef: string | null) => void;
 
   goToPage: (navigate: (path: string) => void, path: string) => void;
 
@@ -52,7 +50,7 @@ type PlaylistStore = {
   showDeletePlaylistModal: () => void;
   hideDeletePlaylistModal: () => void;
   triggerError: (message: string) => void;
-  handleCreatePlaylist: () => Promise<void> | Promise<string>;
+  handleCreatePlaylist: (name: string | null) => Promise<void> | Promise<string>;
   deletePlaylist: (playlistId: string, navigate: (url: string) => void) => Promise<void>;
   showCoverImages: () => void;
   fadeCoverImages: () => void;
@@ -74,7 +72,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   preselectedTrack: null,
   isCoverImageFading: false,
 
-  playlistNameRef: "",
   addSelectedTrackToPlaylistRef: () => {},
 
   setPlaylistInfo: (playlistInfo) => set({ playlistInfo }),
@@ -98,12 +95,11 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   setIsShaking: (isShaking) => set({ isShaking }),
   setPreselectedTrack: (preselectedTrack) => set({ preselectedTrack }),
   setIsCoverImageFading: (isCoverImageFading) => set({ isCoverImageFading }),
-  setPlaylistNameRef: (playlistNameRef) => set({ playlistNameRef }),
 
   goToPage: (navigate, path) => navigate(path),
 
   showCreatePlaylistModal: () => {
-    set({ isCreateVisible: true, errorMessage: "", playlistNameRef: "" });
+    set({ isCreateVisible: true, errorMessage: "" });
   },
 
   hideCreatePlaylistModal: () => {
@@ -122,12 +118,12 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     set({ errorMessage: message, isShaking: true });
   },
 
-  handleCreatePlaylist: async () => {
-    const { playlistNameRef, setPlaylistNameRef, hideCreatePlaylistModal, triggerError } = get();
+  handleCreatePlaylist: async (name) => {
+    const { hideCreatePlaylistModal, triggerError } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
-    const newName = playlistNameRef ?? "";
+    name = name ?? "";
 
-    const validationError = validatePlaylistName(newName);
+    const validationError = validatePlaylistName(name);
 
     if (validationError) {
       return triggerError(validationError);
@@ -139,9 +135,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: newName,
-        }),
+        body: JSON.stringify({ name }),
       });
 
       if (!response.ok) {
@@ -161,7 +155,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       const data = await response.json();
       console.log(data);
       showMessage("newPlaylist");
-      setPlaylistNameRef("");
       set({ preselectedTrack: null });
       hideCreatePlaylistModal();
     } catch {
