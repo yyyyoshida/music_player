@@ -5,8 +5,8 @@ import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import useUploadModalStore from "./uploadModalStore";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import type { TrackObject, fromSearchResultTrackObject } from "../types/tracksType";
+import type { ActionType } from "../types/actionType";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
-import type { ActionType } from "./actionSuccessMessageStore";
 
 type PlaylistSelectStore = {
   isSelectVisible: boolean;

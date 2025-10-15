@@ -1,4 +1,4 @@
-import type { ActionType } from "../store/actionSuccessMessageStore";
+import type { ActionType } from "../types/actionType";
 
 export async function getPlaylistInfo(
   currentPlaylistId: string,
