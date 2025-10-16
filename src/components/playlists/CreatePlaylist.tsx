@@ -25,7 +25,6 @@ const CreatePlaylist = () => {
   const errorMessage = usePlaylistStore((state) => state.errorMessage);
   const isShaking = usePlaylistStore((state) => state.isShaking);
   const setIsShaking = usePlaylistStore((state) => state.setIsShaking);
-  const setPlaylistNameRef = usePlaylistStore((state) => state.setPlaylistNameRef);
   const hideCreatePlaylistModal = usePlaylistStore((state) => state.hideCreatePlaylistModal);
   const handleCreatePlaylist = usePlaylistStore((state) => state.handleCreatePlaylist);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
@@ -36,14 +35,9 @@ const CreatePlaylist = () => {
   const SHAKE_DURATION_MS = 600;
 
   useEffect(() => {
-    if (playlistNameRef.current) {
-      setPlaylistNameRef(playlistNameRef.current.value);
-    }
-  }, [playlistNameRef]);
-
-  useEffect(() => {
     if (isCreateVisible && playlistNameRef.current) {
       playlistNameRef.current.focus();
+      playlistNameRef.current.value = "";
     }
   }, [isCreateVisible]);
 
@@ -78,7 +72,7 @@ const CreatePlaylist = () => {
               className="playlist-page__create-playlist-modal-input modal-input"
               id="title"
               ref={playlistNameRef}
-              onKeyDown={(e) => e.key === "Enter" && handleCreatePlaylist()}
+              onKeyDown={(e) => e.key === "Enter" && handleCreatePlaylist(playlistNameRef.current?.value ?? "")}
             />
 
             {errorMessage && (
@@ -97,7 +91,7 @@ const CreatePlaylist = () => {
             </button>
             <button
               className="playlist-page__create-playlist-modal-create modal-cancel-submit-button modal-submit-button"
-              onClick={handleCreatePlaylist}
+              onClick={() => handleCreatePlaylist(playlistNameRef.current?.value ?? "")}
             >
               作成
             </button>
