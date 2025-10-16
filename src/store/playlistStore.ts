@@ -27,6 +27,7 @@ type PlaylistStore = {
   isShaking: boolean;
   preselectedTrack: PlaylistObject | null;
   isCoverImageFading: boolean;
+  refreshTrigger: number;
 
   addSelectedTrackToPlaylistRef: () => void;
 
@@ -42,6 +43,7 @@ type PlaylistStore = {
   setIsShaking: (isShaking: boolean) => void;
   setPreselectedTrack: (preselectedTrack: PlaylistObject | null) => void;
   setIsCoverImageFading: (isCoverImageFading: boolean) => void;
+  setRefreshTrigger: (value: number | ((prev: number) => number)) => void;
 
   goToPage: (navigate: (path: string) => void, path: string) => void;
 
@@ -71,6 +73,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   isShaking: false,
   preselectedTrack: null,
   isCoverImageFading: false,
+  refreshTrigger: 0,
 
   addSelectedTrackToPlaylistRef: () => {},
 
@@ -95,6 +98,8 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   setIsShaking: (isShaking) => set({ isShaking }),
   setPreselectedTrack: (preselectedTrack) => set({ preselectedTrack }),
   setIsCoverImageFading: (isCoverImageFading) => set({ isCoverImageFading }),
+  setRefreshTrigger: (value) =>
+    set((state) => ({ refreshTrigger: typeof value === "function" ? value(state.refreshTrigger) : value })),
 
   goToPage: (navigate, path) => navigate(path),
 
@@ -153,9 +158,11 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       }
 
       const data = await response.json();
-      console.log(data);
       showMessage("newPlaylist");
-      set({ preselectedTrack: null });
+      set((state) => ({
+        preselectedTrack: null,
+        refreshTrigger: state.refreshTrigger + 1,
+      }));
       hideCreatePlaylistModal();
     } catch {
       showMessage("newPlaylistFailed");
