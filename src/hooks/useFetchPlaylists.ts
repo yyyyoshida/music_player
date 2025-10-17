@@ -6,6 +6,8 @@ const useFetchPlaylists = () => {
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
   const playlists = usePlaylistStore((state) => state.playlists);
   const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
+  const refreshTrigger = usePlaylistStore((state) => state.refreshTrigger);
+  const setRefreshTrigger = usePlaylistStore((state) => state.setRefreshTrigger);
 
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
@@ -22,7 +24,8 @@ const useFetchPlaylists = () => {
   useEffect(() => {
     setIsPlaylistsLoading(true);
     const cachedPlaylists = localStorage.getItem("playlists");
-    if (cachedPlaylists) {
+
+    if (cachedPlaylists && refreshTrigger === 0) {
       setPlaylists(JSON.parse(cachedPlaylists));
       setIsPlaylistsLoading(false);
       return;
@@ -40,11 +43,12 @@ const useFetchPlaylists = () => {
         const data = await response.json();
         setPlaylists(data);
         localStorage.setItem("playlists", JSON.stringify(data));
+        setRefreshTrigger(0);
       } catch (error) {
         fetchPlaylistsFailed(error);
       }
     })();
-  }, []);
+  }, [refreshTrigger]);
   return { playlists, isPlaylistsLoading };
 };
 
