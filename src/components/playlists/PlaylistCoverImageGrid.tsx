@@ -21,21 +21,23 @@ const PlaylistCoverImageGrid = ({
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
   const showCoverImages = usePlaylistStore((state) => state.showCoverImages);
   const [delayedImages, setDelayedImages] = useState(images);
-  const DELAYED_REFLECTION_TIME = 160;
-  const DELAYED_SHOW_TIME = 600;
+  const COVER_IMAGE_UPDATE_DELAY = 160;
+  const COVER_IMAGE_SHOW_DELAY = 600;
 
+  // 現在開いてるプレイリストに同期させるため ↓
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setDelayedImages(images);
-    }, DELAYED_REFLECTION_TIME);
+    }, COVER_IMAGE_UPDATE_DELAY);
 
     return () => clearTimeout(timeoutId);
   }, [images]);
 
+  // 曲の追加・削除でカバー画像が一瞬切り替わるちらつきを防ぐため ↓
   useEffect(() => {
     const timer = setTimeout(() => {
       showCoverImages();
-    }, DELAYED_SHOW_TIME);
+    }, COVER_IMAGE_SHOW_DELAY);
 
     return () => clearTimeout(timer);
   }, [isCoverImageFading]);
