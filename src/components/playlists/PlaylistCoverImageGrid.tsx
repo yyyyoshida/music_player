@@ -1,6 +1,7 @@
-import { useState, useContext, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import { isFallback } from "../../utils/isFallback";
+import usePlaylistStore from "../../store/playlistStore";
 
 type PlaylistCoverImageGridProps = {
   images: (string | undefined)[];
@@ -17,8 +18,11 @@ const PlaylistCoverImageGrid = ({
   fallbackImgClassName = "",
   imgClassName = "",
 }: PlaylistCoverImageGridProps) => {
+  const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
+  const showCoverImages = usePlaylistStore((state) => state.showCoverImages);
   const [delayedImages, setDelayedImages] = useState(images);
   const DELAYED_REFLECTION_TIME = 160;
+  const DELAYED_SHOW_TIME = 600;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -27,6 +31,14 @@ const PlaylistCoverImageGrid = ({
 
     return () => clearTimeout(timeoutId);
   }, [images]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      showCoverImages();
+    }, DELAYED_SHOW_TIME);
+
+    return () => clearTimeout(timer);
+  }, [isCoverImageFading]);
 
   const hasNoImage = delayedImages.length === 0;
   const isSingleImage = delayedImages.length <= 3;
