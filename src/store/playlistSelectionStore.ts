@@ -65,7 +65,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   saveTrackToFirestore: async (playlistId) => {
     const { addTrackToList, selectedTrack } = get();
 
-    const response = await fetch(`${BASE_URL}/api/playlistss/${playlistId}/spotify-tracks`, {
+    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/spotify-tracks`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
