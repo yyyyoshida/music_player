@@ -4,6 +4,7 @@ import { fetchSpotifyAPI, initSpotifyPlayer } from "../utils/spotifyAuth";
 import useTokenStore from "./tokenStore";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 type PlayerStore = {
   TRACK_CHANGE_COOLDOWN: number;
@@ -208,7 +209,7 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
     if (!player) return;
     await player.seek(0);
 
-    const savedVolume = parseFloat(localStorage.getItem("player_volume") ?? "30");
+    const savedVolume = parseFloat(localStorage.getItem(STORAGE_KEYS.VOLUME) ?? "30");
     const clampedVolume = clampVolume(savedVolume);
     await player.setVolume(clampedVolume);
     // await updateVolume(clampedVolume);

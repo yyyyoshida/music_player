@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 type TokenStore = {
   token: string | null;
@@ -9,7 +10,7 @@ type TokenStore = {
 };
 
 const useTokenStore = create<TokenStore>((set) => ({
-  token: localStorage.getItem("access_token"),
+  token: localStorage.getItem(STORAGE_KEYS.TOKEN),
   isToken: false,
 
   setToken: (token) => set({ token }),

@@ -2,14 +2,15 @@ import { useEffect } from "react";
 import { isValidToken, getNewAccessToken, getRefreshToken, saveRefreshToken } from "../utils/spotifyAuth";
 import useTokenStore from "../store/tokenStore";
 import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const useInitSpotifyToken = (): void => {
   const setToken = useTokenStore((state) => state.setToken);
   const setIsToken = useTokenStore((state) => state.setIsToken);
 
   async function initTokenFromCache(): Promise<boolean> {
-    const localAccessToken = localStorage.getItem("access_token");
-    const localRefreshToken = localStorage.getItem("refresh_token");
+    const localAccessToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const localRefreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
 
     // ローカルのトークンでログイン;
     if (localAccessToken && isValidToken()) {
@@ -47,12 +48,12 @@ const useInitSpotifyToken = (): void => {
       const data = await res.json();
 
       if (data.access_token) {
-        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem(STORAGE_KEYS.TOKEN, data.access_token);
         setToken(data.access_token);
       }
 
       if (data.refresh_token) {
-        localStorage.setItem("refresh_token", data.refresh_token);
+        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.refresh_token);
         await saveRefreshToken(data.refresh_token);
       }
 
@@ -72,8 +73,8 @@ const useInitSpotifyToken = (): void => {
 
       const newToken = await getNewAccessToken(storedRefreshToken);
       setToken(newToken);
-      localStorage.setItem("access_token", newToken);
-      localStorage.setItem("refresh_token", storedRefreshToken);
+      localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
+      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, storedRefreshToken);
       console.log("DB");
       return true;
     } catch (error) {

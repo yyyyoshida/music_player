@@ -1,7 +1,8 @@
 import { API } from "../api/apis";
+import { STORAGE_KEYS } from "./storageKeys";
 
 export async function getNewAccessToken(refreshToken: string | null = null): Promise<string> {
-  const tokenToUse = refreshToken || window.localStorage.getItem("refresh_token");
+  const tokenToUse = refreshToken || window.localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
 
   const response = await fetch(API.NEW_TOKEN_URL, {
     method: "POST",
@@ -14,15 +15,15 @@ export async function getNewAccessToken(refreshToken: string | null = null): Pro
   }
 
   const data = await response.json();
-  window.localStorage.setItem("access_token", data.access_token);
+  window.localStorage.setItem(STORAGE_KEYS.TOKEN, data.access_token);
 
   if (data.refresh_token) {
-    window.localStorage.setItem("refresh_token", data.refresh_token);
+    window.localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.refresh_token);
   }
 
   if (data.expires_in) {
     const expiryTime = Date.now() + data.expires_in * 1000;
-    window.localStorage.setItem("access_token_expiry", expiryTime.toString());
+    window.localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, expiryTime.toString());
   }
   return data.access_token;
 }
@@ -55,7 +56,7 @@ export async function getRefreshToken(): Promise<string> {
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
 export function isValidToken() {
-  const expiryString = window.localStorage.getItem("access_token_expiry");
+  const expiryString = window.localStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRY);
   if (!expiryString) return false;
 
   const expiry = Number(expiryString);
@@ -64,7 +65,7 @@ export function isValidToken() {
 
 // Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
 export async function fetchSpotifyAPI(url: string, options: RequestInit = {}): Promise<Response> {
-  let token = window.localStorage.getItem("access_token");
+  let token = window.localStorage.getItem(STORAGE_KEYS.TOKEN);
   console.log("トークンは有効かどうか：", isValidToken());
 
   if (!isValidToken()) {
@@ -119,7 +120,7 @@ export async function initSpotifyPlayer({
   setToken,
 }: SpotifyInitArgs): Promise<{ playerInstance: Spotify.Player }> {
   const DEFAULT_VOLUME = 0.3;
-  const currentToken = window.localStorage.getItem("access_token");
+  const currentToken = window.localStorage.getItem(STORAGE_KEYS.TOKEN);
 
   await loadSpotifySDK();
 
