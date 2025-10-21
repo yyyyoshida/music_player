@@ -4,6 +4,7 @@ import useBarHandler from "../../hooks/useBarHandler";
 import VolumeIcon from "./VolumeIcon";
 import useTooltipStore from "../../store/tooltipStore";
 import usePlayerStore from "../../store/playerStore";
+import { STORAGE_KEYS } from "../../utils/storageKeys";
 
 type VolumeBarProps = {
   initialValue: number;
@@ -11,7 +12,7 @@ type VolumeBarProps = {
 
 const VolumeBar = ({ initialValue }: VolumeBarProps) => {
   const [isMuted, setIsMuted] = useState(() => {
-    const savedMute = localStorage.getItem("isMuted");
+    const savedMute = localStorage.getItem(STORAGE_KEYS.IS_MUTED);
     return savedMute ? JSON.parse(savedMute) : false;
   });
   const barRef = useRef<HTMLDivElement | null>(null);
@@ -58,7 +59,7 @@ const VolumeBar = ({ initialValue }: VolumeBarProps) => {
   useEffect(() => {
     if (!playerReady) return;
 
-    const savedVolume = localStorage.getItem("player_volume");
+    const savedVolume = localStorage.getItem(STORAGE_KEYS.VOLUME);
     const initialVolume = savedVolume ? parseFloat(savedVolume) : 30;
 
     setPercentage(initialVolume);
@@ -67,12 +68,12 @@ const VolumeBar = ({ initialValue }: VolumeBarProps) => {
   }, [isMuted, playerReady]);
 
   useEffect(() => {
-    localStorage.setItem("player_volume", percentage.toString());
+    localStorage.setItem(STORAGE_KEYS.VOLUME, percentage.toString());
   }, [percentage]);
 
   useEffect(() => {
-    localStorage.setItem("isMuted", isMuted);
-    if (isMuted) localStorage.setItem("player_volume", percentage.toString());
+    localStorage.setItem(STORAGE_KEYS.IS_MUTED, isMuted);
+    if (isMuted) localStorage.setItem(STORAGE_KEYS.VOLUME, percentage.toString());
   }, [isMuted]);
 
   return (

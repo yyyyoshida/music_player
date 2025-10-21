@@ -1,12 +1,13 @@
 import type { ActionType } from "../types/actionType";
+import { API } from "../api/apis";
+import { STORAGE_KEYS } from "./storageKeys";
 
 export async function getPlaylistInfo(
   currentPlaylistId: string,
   setPlaylistInfo: (info: { name: string; totalDuration: number }) => void,
   showMessage: (key: ActionType) => void
 ): Promise<{ name: string; totalDuration: number }> {
-  const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${currentPlaylistId}Info`);
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const cachedPlaylistInfo = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(currentPlaylistId));
 
   if (cachedPlaylistInfo) {
     setPlaylistInfo(JSON.parse(cachedPlaylistInfo));
@@ -14,14 +15,14 @@ export async function getPlaylistInfo(
   }
 
   try {
-    const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/info`);
+    const response = await fetch(API.PLAYLIST_INFO(currentPlaylistId));
 
     if (!response.ok) {
       throw new Error(String(response.status));
     }
 
     const data = await response.json();
-    localStorage.setItem(`playlistDetail:${currentPlaylistId}Info`, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(currentPlaylistId), JSON.stringify(data));
 
     setPlaylistInfo(data);
     return data;
@@ -32,7 +33,7 @@ export async function getPlaylistInfo(
 
   function getPlaylistInfoFailed(logValue: any) {
     console.error("プレイリストメタ情報取得失敗: ", logValue);
-    localStorage.removeItem(`playlistDetail:${currentPlaylistId}Info`);
+    localStorage.removeItem(STORAGE_KEYS.getCachedPlaylistInfoKey(currentPlaylistId));
     showMessage("fetchPlaylistInfoFailed");
     setPlaylistInfo({ name: "プレイリスト", totalDuration: 0 });
   }

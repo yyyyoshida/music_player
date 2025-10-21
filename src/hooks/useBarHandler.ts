@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import usePlayerStore from "../store/playerStore";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 type BarHandlerProps = {
   type: "progress" | "volume";
@@ -21,7 +22,7 @@ export default function useBarHandler({
   const isLocalReady = usePlayerStore((state) => state.isLocalReady);
 
   const [percentage, setPercentage] = useState(() => {
-    const saved = localStorage.getItem("player_volume");
+    const saved = localStorage.getItem(STORAGE_KEYS.VOLUME);
 
     if (saved === null) return initialValue;
     return parseInt(saved);

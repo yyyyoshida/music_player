@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import usePlaylistStore from "../store/playlistStore";
+import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const useFetchPlaylists = () => {
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
@@ -11,11 +13,9 @@ const useFetchPlaylists = () => {
 
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
   function fetchPlaylistsFailed(logValue: unknown): void {
     console.error("プレイリスト一覧の取得失敗: ", logValue as number | Error);
-    localStorage.removeItem("playlists");
+    localStorage.removeItem(STORAGE_KEYS.PLAYLISTS);
     setPlaylists([]);
     showMessage("fetchPlaylistsFailed");
     setIsPlaylistsLoading(false);
@@ -23,7 +23,7 @@ const useFetchPlaylists = () => {
 
   useEffect(() => {
     setIsPlaylistsLoading(true);
-    const cachedPlaylists = localStorage.getItem("playlists");
+    const cachedPlaylists = localStorage.getItem(STORAGE_KEYS.PLAYLISTS);
 
     if (cachedPlaylists && refreshTrigger === 0) {
       setPlaylists(JSON.parse(cachedPlaylists));
@@ -33,7 +33,7 @@ const useFetchPlaylists = () => {
 
     (async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/playlists`);
+        const response = await fetch(API.PLAYLISTS);
 
         if (!response.ok) {
           fetchPlaylistsFailed(response.status);
@@ -42,7 +42,7 @@ const useFetchPlaylists = () => {
 
         const data = await response.json();
         setPlaylists(data);
-        localStorage.setItem("playlists", JSON.stringify(data));
+        localStorage.setItem(STORAGE_KEYS.PLAYLISTS, JSON.stringify(data));
         setRefreshTrigger(0);
       } catch (error) {
         fetchPlaylistsFailed(error);
