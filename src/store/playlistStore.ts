@@ -197,14 +197,16 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   deleteTrack: async (trackId) => {
     const { currentPlaylistId, setPlaylistInfo, deletedTrackDuration, tracks, fadeCoverImages } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
-
-    const playlistId = currentPlaylistId ?? "";
+    const playlistId = currentPlaylistId;
 
     try {
+      if (!playlistId) throw new Error("idが無効");
+      if (!trackId) throw new Error("trackIdが無効");
+
       const playlistInfoData = await getPlaylistInfo(playlistId, setPlaylistInfo, showMessage);
       const totalDuration = playlistInfoData.totalDuration;
 
-      const response = await fetch(API.DELETE_TRACK(playlistId, trackId ?? ""), {
+      const response = await fetch(API.DELETE_TRACK(playlistId, trackId), {
         method: "DELETE",
       });
 

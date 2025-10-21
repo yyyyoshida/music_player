@@ -28,7 +28,11 @@ const usePlaylistDetail = (
   }
 
   async function fetchTracks(): Promise<void> {
-    const cachedTracks = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(id ?? ""));
+    if (!id) {
+      fetchTracksFailed(400);
+      return;
+    }
+    const cachedTracks = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(id));
 
     if (cachedTracks) {
       setTracks(JSON.parse(cachedTracks));
@@ -37,7 +41,7 @@ const usePlaylistDetail = (
     }
 
     try {
-      const response = await fetch(API.FETCH_PLAYLIST_TRACKS(id ?? ""));
+      const response = await fetch(API.FETCH_PLAYLIST_TRACKS(id));
 
       if (!response.ok) {
         fetchTracksFailed(response.status);
@@ -45,7 +49,7 @@ const usePlaylistDetail = (
       }
 
       const data = await response.json();
-      localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(id ?? ""), JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(id), JSON.stringify(data));
       setTracks(data);
       setQueue(data);
     } catch (error) {
