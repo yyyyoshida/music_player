@@ -3,6 +3,7 @@ import type { RefObject } from "react";
 import { fetchSpotifyAPI, initSpotifyPlayer } from "../utils/spotifyAuth";
 import useTokenStore from "./tokenStore";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
+import { API } from "../api/apis";
 
 type PlayerStore = {
   TRACK_CHANGE_COOLDOWN: number;
@@ -174,14 +175,11 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
     setIsSpotifyPlaying(true);
 
     try {
-      const response = await fetchSpotifyAPI(
-        `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        }
-      );
+      const response = await fetchSpotifyAPI(API.SPOTIFY_TRACK_PLAY(deviceId ?? ""), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
       console.log(response);
 

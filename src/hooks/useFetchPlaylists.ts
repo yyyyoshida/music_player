@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import usePlaylistStore from "../store/playlistStore";
+import { API } from "../api/apis";
 
 const useFetchPlaylists = () => {
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
@@ -10,8 +11,6 @@ const useFetchPlaylists = () => {
   const setRefreshTrigger = usePlaylistStore((state) => state.setRefreshTrigger);
 
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
-
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   function fetchPlaylistsFailed(logValue: unknown): void {
     console.error("プレイリスト一覧の取得失敗: ", logValue as number | Error);
@@ -33,7 +32,7 @@ const useFetchPlaylists = () => {
 
     (async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/playlists`);
+        const response = await fetch(API.PLAYLISTS);
 
         if (!response.ok) {
           fetchPlaylistsFailed(response.status);

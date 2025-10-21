@@ -4,6 +4,7 @@ import useTokenStore from "../store/tokenStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { fetchSpotifyAPI } from "../utils/spotifyAuth";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
+import { API } from "../api/apis";
 
 const SearchBar = () => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useSearchContext();
@@ -85,7 +86,7 @@ const SearchBar = () => {
 
     try {
       const encodedQuery = encodeURIComponent(queryText);
-      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
+      const response = await fetchSpotifyAPI(API.SPOTIFY_SEARCH(encodedQuery), {
         method: "GET",
       });
 

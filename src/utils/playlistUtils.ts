@@ -1,4 +1,5 @@
 import type { ActionType } from "../types/actionType";
+import { API } from "../api/apis";
 
 export async function getPlaylistInfo(
   currentPlaylistId: string,
@@ -6,7 +7,6 @@ export async function getPlaylistInfo(
   showMessage: (key: ActionType) => void
 ): Promise<{ name: string; totalDuration: number }> {
   const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${currentPlaylistId}Info`);
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   if (cachedPlaylistInfo) {
     setPlaylistInfo(JSON.parse(cachedPlaylistInfo));
@@ -14,7 +14,7 @@ export async function getPlaylistInfo(
   }
 
   try {
-    const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/info`);
+    const response = await fetch(API.PLAYLIST_INFO(currentPlaylistId));
 
     if (!response.ok) {
       throw new Error(String(response.status));

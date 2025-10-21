@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { isValidToken, getNewAccessToken, getRefreshToken, saveRefreshToken } from "../utils/spotifyAuth";
 import useTokenStore from "../store/tokenStore";
+import { API } from "../api/apis";
 
 const useInitSpotifyToken = (): void => {
   const setToken = useTokenStore((state) => state.setToken);
@@ -37,7 +38,7 @@ const useInitSpotifyToken = (): void => {
     if (!code) return false;
 
     try {
-      const res = await fetch("http://localhost:4000/api/exchange_token", {
+      const res = await fetch(API.EXCHANGE_TOKEN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
