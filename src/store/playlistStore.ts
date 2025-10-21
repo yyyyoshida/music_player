@@ -5,8 +5,7 @@ import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
 import type { TrackObject } from "../types/tracksType";
 import type { PlaylistObject } from "../types/playlistType";
-
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { API } from "../api/apis";
 
 type PlaylistInfo = {
   name: string;
@@ -135,7 +134,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/api/playlists`, {
+      const response = await fetch(API.PLAYLISTS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +174,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
     try {
-      const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}`, {
+      const response = await fetch(API.PLAYLIST(playlistId), {
         method: "DELETE",
       });
 
@@ -204,7 +203,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       const playlistInfoData = await getPlaylistInfo(playlistId, setPlaylistInfo, showMessage);
       const totalDuration = playlistInfoData.totalDuration;
 
-      const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
+      const response = await fetch(API.DELETE_TRACK(playlistId, trackId ?? ""), {
         method: "DELETE",
       });
 
@@ -215,10 +214,10 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       const newDeletedTrackDuration = deletedTrackDuration + deletedTrack.duration_ms;
       const resultTotalDuration = totalDuration - newDeletedTrackDuration;
       const updatedInfoData = { ...playlistInfoData, totalDuration: resultTotalDuration };
-      localStorage.setItem(`playlistDetail:${currentPlaylistId}Info`, JSON.stringify(updatedInfoData));
+      localStorage.setItem(`playlistDetail:${playlistId}Info`, JSON.stringify(updatedInfoData));
 
       const updatedTracks = tracks.filter((track) => track.id !== trackId);
-      localStorage.setItem(`playlistDetail:${currentPlaylistId}Tracks`, JSON.stringify(updatedTracks));
+      localStorage.setItem(`playlistDetail:${playlistId}Tracks`, JSON.stringify(updatedTracks));
 
       set({
         deletedTrackDuration: newDeletedTrackDuration,

@@ -4,6 +4,7 @@ import usePlaylistStore from "../store/playlistStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
 import type { PlaylistObject } from "../types/playlistType";
+import { API } from "../api/apis";
 
 type RenamePlaylistReturn = {
   handleSaveRename: () => Promise<void>;
@@ -26,7 +27,6 @@ const useRenamePlaylist = (
   const { id } = useParams();
   const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${id}Info`);
   const playlistInfoData = cachedPlaylistInfo ? JSON.parse(cachedPlaylistInfo) : null;
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   function toggleRenameVisible() {
     setErrorMessage("");
@@ -46,7 +46,7 @@ const useRenamePlaylist = (
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/api/playlists/${id}`, {
+      const response = await fetch(API.PLAYLIST(id ?? ""), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newName, beforeName: playlistName }),

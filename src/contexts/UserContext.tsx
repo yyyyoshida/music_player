@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { fetchSpotifyAPI } from "../utils/spotifyAuth";
 import useTokenStore from "../store/tokenStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
+import { API } from "../api/apis";
 
 type ImagesObject = {
   height: number;
@@ -31,7 +32,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
   async function fetchProfile() {
     try {
-      const response = await fetchSpotifyAPI("https://api.spotify.com/v1/me", {
+      const response = await fetchSpotifyAPI(API.SPOTIFY_ME, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

@@ -1,9 +1,9 @@
-export async function getNewAccessToken(
-  refreshToken: string | null = null
-): Promise<string> {
+import { API } from "../api/apis";
+
+export async function getNewAccessToken(refreshToken: string | null = null): Promise<string> {
   const tokenToUse = refreshToken || window.localStorage.getItem("refresh_token");
 
-  const response = await fetch("http://localhost:4000/api/refresh_token", {
+  const response = await fetch(API.NEW_TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh_token: tokenToUse }),
@@ -28,7 +28,7 @@ export async function getNewAccessToken(
 }
 
 export async function saveRefreshToken(refreshToken: string): Promise<void> {
-  const res = await fetch("http://localhost:4000/api/save_refresh_token", {
+  const res = await fetch(API.SAVE_REFRESH_TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh_token: refreshToken }),
@@ -41,7 +41,7 @@ export async function saveRefreshToken(refreshToken: string): Promise<void> {
 }
 
 export async function getRefreshToken(): Promise<string> {
-  const res = await fetch("http://localhost:4000/api/get_refresh_token", {
+  const res = await fetch(API.NEW_REFRESH_TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({}),
@@ -63,10 +63,7 @@ export function isValidToken() {
 }
 
 // Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
-export async function fetchSpotifyAPI(
-  url: string,
-  options: RequestInit = {}
-): Promise<Response> {
+export async function fetchSpotifyAPI(url: string, options: RequestInit = {}): Promise<Response> {
   let token = window.localStorage.getItem("access_token");
   console.log("トークンは有効かどうか：", isValidToken());
 
