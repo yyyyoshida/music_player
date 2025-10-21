@@ -6,6 +6,7 @@ import validatePlaylistName from "../utils/validatePlaylistName";
 import type { TrackObject } from "../types/tracksType";
 import type { PlaylistObject } from "../types/playlistType";
 import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 type PlaylistInfo = {
   name: string;
@@ -214,10 +215,13 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       const newDeletedTrackDuration = deletedTrackDuration + deletedTrack.duration_ms;
       const resultTotalDuration = totalDuration - newDeletedTrackDuration;
       const updatedInfoData = { ...playlistInfoData, totalDuration: resultTotalDuration };
-      localStorage.setItem(`playlistDetail:${playlistId}Info`, JSON.stringify(updatedInfoData));
+      localStorage.setItem(
+        STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId),
+        JSON.stringify(updatedInfoData)
+      );
 
       const updatedTracks = tracks.filter((track) => track.id !== trackId);
-      localStorage.setItem(`playlistDetail:${playlistId}Tracks`, JSON.stringify(updatedTracks));
+      localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(updatedTracks));
 
       set({
         deletedTrackDuration: newDeletedTrackDuration,

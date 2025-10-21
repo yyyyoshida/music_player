@@ -4,6 +4,7 @@ import usePlaylistStore from "../store/playlistStore";
 import usePlaybackStore from "../store/playbackStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const usePlaylistDetail = (
   id: string | undefined,
@@ -27,7 +28,7 @@ const usePlaylistDetail = (
   }
 
   async function fetchTracks(): Promise<void> {
-    const cachedTracks = localStorage.getItem(`playlistDetail:${id}Tracks`);
+    const cachedTracks = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(id ?? ""));
 
     if (cachedTracks) {
       setTracks(JSON.parse(cachedTracks));
@@ -44,7 +45,7 @@ const usePlaylistDetail = (
       }
 
       const data = await response.json();
-      localStorage.setItem(`playlistDetail:${id}Tracks`, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(id ?? ""), JSON.stringify(data));
       setTracks(data);
       setQueue(data);
     } catch (error) {
