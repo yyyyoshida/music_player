@@ -26,7 +26,9 @@ const useRenamePlaylist = (
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const { id } = useParams();
-  const cachedPlaylistInfo = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id ?? ""));
+  let cachedPlaylistInfo = null;
+  if (id) cachedPlaylistInfo = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id));
+
   const playlistInfoData = cachedPlaylistInfo ? JSON.parse(cachedPlaylistInfo) : null;
 
   function toggleRenameVisible() {
@@ -47,7 +49,9 @@ const useRenamePlaylist = (
     }
 
     try {
-      const response = await fetch(API.PLAYLIST(id ?? ""), {
+      if (!id) throw new Error("idが無効");
+
+      const response = await fetch(API.PLAYLIST(id), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newName, beforeName: playlistName }),
@@ -73,7 +77,7 @@ const useRenamePlaylist = (
       setPlaylistInfo(updatedInfoData);
       setPlaylists(updatedPlaylists);
 
-      localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id ?? ""), JSON.stringify(updatedInfoData));
+      localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id), JSON.stringify(updatedInfoData));
       localStorage.setItem(STORAGE_KEYS.PLAYLISTS, JSON.stringify(updatedPlaylists));
     } catch (error) {
       console.error("プレイリスト名変更エラー:", error);
