@@ -3,6 +3,8 @@ import { getPlaylistInfo } from "../utils/playlistUtils";
 import usePlaylistStore from "../store/playlistStore";
 import usePlaybackStore from "../store/playbackStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
+import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const usePlaylistDetail = (
   id: string | undefined,
@@ -17,7 +19,6 @@ const usePlaylistDetail = (
   const setQueue = usePlaybackStore((state) => state.setQueue);
   const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   function fetchTracksFailed(logValue: unknown) {
     console.error(logValue as number | Error);
@@ -27,7 +28,11 @@ const usePlaylistDetail = (
   }
 
   async function fetchTracks(): Promise<void> {
-    const cachedTracks = localStorage.getItem(`playlistDetail:${id}Tracks`);
+    if (!id) {
+      fetchTracksFailed(400);
+      return;
+    }
+    const cachedTracks = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(id));
 
     if (cachedTracks) {
       setTracks(JSON.parse(cachedTracks));
@@ -36,7 +41,7 @@ const usePlaylistDetail = (
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/api/playlists/${id}/tracks`);
+      const response = await fetch(API.FETCH_PLAYLIST_TRACKS(id));
 
       if (!response.ok) {
         fetchTracksFailed(response.status);
@@ -44,7 +49,7 @@ const usePlaylistDetail = (
       }
 
       const data = await response.json();
-      localStorage.setItem(`playlistDetail:${id}Tracks`, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(id), JSON.stringify(data));
       setTracks(data);
       setQueue(data);
     } catch (error) {

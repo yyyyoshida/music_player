@@ -7,6 +7,7 @@ import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import type { TrackObject, fromSearchResultTrackObject } from "../types/tracksType";
 import type { ActionType } from "../types/actionType";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
+import { API } from "../api/apis";
 
 type PlaylistSelectStore = {
   isSelectVisible: boolean;
@@ -34,8 +35,6 @@ type PlaylistSelectStore = {
     imageUrl?: string | null
   ) => void;
 };
-
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   isSelectVisible: false,
@@ -65,7 +64,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   saveTrackToFirestore: async (playlistId) => {
     const { addTrackToList, selectedTrack } = get();
 
-    const response = await fetch(`${BASE_URL}/api/playlistss/${playlistId}/spotify-tracks`, {
+    const response = await fetch(API.PLAYLIST_SPOTIFY_TRACKS(playlistId), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -82,7 +81,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   saveUploadedLocalTrack: async (playlistId) => {
     const { addTrackToList, selectedTrack } = get();
 
-    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/local-tracks`, {
+    const response = await fetch(API.PLAYLIST_LOCAL_TRACKS(playlistId), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -132,7 +131,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
     formData.append("audio", uploadTrackFile);
     formData.append("track", JSON.stringify(selectedTrack));
 
-    const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}/local-tracks/new`, {
+    const response = await fetch(API.PLAYLIST_NEW_LOCAL_TRACKS(playlistId), {
       method: "POST",
       body: formData,
     });

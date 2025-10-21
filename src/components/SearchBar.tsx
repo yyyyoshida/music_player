@@ -4,6 +4,8 @@ import useTokenStore from "../store/tokenStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { fetchSpotifyAPI } from "../utils/spotifyAuth";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
+import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const SearchBar = () => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useSearchContext();
@@ -16,7 +18,7 @@ const SearchBar = () => {
   useEffect(() => {
     if (!token || location.pathname !== "/search-result" || !queryRef.current) return;
 
-    const savedQuery = localStorage.getItem("searchQuery") || "";
+    const savedQuery = localStorage.getItem(STORAGE_KEYS.SEARCH_QUERY) || "";
 
     queryRef.current.value = savedQuery;
 
@@ -80,12 +82,12 @@ const SearchBar = () => {
     if (!queryText || queryText === query) return;
 
     setQuery(queryText);
-    localStorage.setItem("searchQuery", queryText);
+    localStorage.setItem(STORAGE_KEYS.SEARCH_QUERY, queryText);
     navigate(`/search-result?query=${encodeURIComponent(queryText)}`);
 
     try {
       const encodedQuery = encodeURIComponent(queryText);
-      const response = await fetchSpotifyAPI(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=50`, {
+      const response = await fetchSpotifyAPI(API.SPOTIFY_SEARCH(encodedQuery), {
         method: "GET",
       });
 

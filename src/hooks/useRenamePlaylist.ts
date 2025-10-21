@@ -4,6 +4,8 @@ import usePlaylistStore from "../store/playlistStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
 import type { PlaylistObject } from "../types/playlistType";
+import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 type RenamePlaylistReturn = {
   handleSaveRename: () => Promise<void>;
@@ -24,9 +26,10 @@ const useRenamePlaylist = (
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
   const { id } = useParams();
-  const cachedPlaylistInfo = localStorage.getItem(`playlistDetail:${id}Info`);
+  let cachedPlaylistInfo = null;
+  if (id) cachedPlaylistInfo = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id));
+
   const playlistInfoData = cachedPlaylistInfo ? JSON.parse(cachedPlaylistInfo) : null;
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   function toggleRenameVisible() {
     setErrorMessage("");
@@ -46,7 +49,9 @@ const useRenamePlaylist = (
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/api/playlists/${id}`, {
+      if (!id) throw new Error("idが無効");
+
+      const response = await fetch(API.PLAYLIST(id), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newName, beforeName: playlistName }),
@@ -62,7 +67,9 @@ const useRenamePlaylist = (
       showMessage("rename");
 
       const updatedInfoData = { ...playlistInfoData, name: newName };
-      const cachedPlaylists: PlaylistObject[] = JSON.parse(localStorage.getItem("playlists") || "[]");
+      const cachedPlaylists: PlaylistObject[] = JSON.parse(
+        localStorage.getItem(STORAGE_KEYS.PLAYLISTS) || "[]"
+      );
       const updatedPlaylists = cachedPlaylists.map((playlist) =>
         playlist.id === id ? { ...playlist, name: newName } : playlist
       );
@@ -70,8 +77,8 @@ const useRenamePlaylist = (
       setPlaylistInfo(updatedInfoData);
       setPlaylists(updatedPlaylists);
 
-      localStorage.setItem(`playlistDetail:${id}Info`, JSON.stringify(updatedInfoData));
-      localStorage.setItem("playlists", JSON.stringify(updatedPlaylists));
+      localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id), JSON.stringify(updatedInfoData));
+      localStorage.setItem(STORAGE_KEYS.PLAYLISTS, JSON.stringify(updatedPlaylists));
     } catch (error) {
       console.error("プレイリスト名変更エラー:", error);
       showMessage("renameFailed");

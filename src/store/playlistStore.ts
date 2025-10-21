@@ -5,8 +5,8 @@ import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import validatePlaylistName from "../utils/validatePlaylistName";
 import type { TrackObject } from "../types/tracksType";
 import type { PlaylistObject } from "../types/playlistType";
-
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { API } from "../api/apis";
+import { STORAGE_KEYS } from "../utils/storageKeys";
 
 type PlaylistInfo = {
   name: string;
@@ -135,7 +135,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/api/playlists`, {
+      const response = await fetch(API.PLAYLISTS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +175,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
     try {
-      const response = await fetch(`${BASE_URL}/api/playlists/${playlistId}`, {
+      const response = await fetch(API.PLAYLIST(playlistId), {
         method: "DELETE",
       });
 
@@ -197,14 +197,16 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   deleteTrack: async (trackId) => {
     const { currentPlaylistId, setPlaylistInfo, deletedTrackDuration, tracks, fadeCoverImages } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
-
-    const playlistId = currentPlaylistId ?? "";
+    const playlistId = currentPlaylistId;
 
     try {
+      if (!playlistId) throw new Error("idが無効");
+      if (!trackId) throw new Error("trackIdが無効");
+
       const playlistInfoData = await getPlaylistInfo(playlistId, setPlaylistInfo, showMessage);
       const totalDuration = playlistInfoData.totalDuration;
 
-      const response = await fetch(`${BASE_URL}/api/playlists/${currentPlaylistId}/tracks/${trackId}`, {
+      const response = await fetch(API.DELETE_TRACK(playlistId, trackId), {
         method: "DELETE",
       });
 
@@ -215,10 +217,13 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       const newDeletedTrackDuration = deletedTrackDuration + deletedTrack.duration_ms;
       const resultTotalDuration = totalDuration - newDeletedTrackDuration;
       const updatedInfoData = { ...playlistInfoData, totalDuration: resultTotalDuration };
-      localStorage.setItem(`playlistDetail:${currentPlaylistId}Info`, JSON.stringify(updatedInfoData));
+      localStorage.setItem(
+        STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId),
+        JSON.stringify(updatedInfoData)
+      );
 
       const updatedTracks = tracks.filter((track) => track.id !== trackId);
-      localStorage.setItem(`playlistDetail:${currentPlaylistId}Tracks`, JSON.stringify(updatedTracks));
+      localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(updatedTracks));
 
       set({
         deletedTrackDuration: newDeletedTrackDuration,
