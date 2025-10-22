@@ -6,9 +6,7 @@ router.post("/sleep/spotify-tracks", async (req, res) => {
   try {
     const track = req.body;
 
-    const newTrackRef = await db.collection("sleepTracks").doc(track.id);
-
-    await newTrackRef.set({
+    const newTrackRef = await db.collection("sleepTracks").add({
       ...track,
       addedAt: admin.firestore.FieldValue.serverTimestamp(),
     });

@@ -21,5 +21,9 @@ export type ActionType =
   | "playFailed"
   | "tooFrequent"
   | "searchFailed"
+  | "sleep"
+  | "sleepFailed"
+  | "sleepFailedSpotify"
+  | "sleepFailedLocal"
   | "unselected"
   | "未実装";
