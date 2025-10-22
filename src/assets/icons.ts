@@ -17,3 +17,5 @@ export const FALLBACK_COVER_IMAGE = "/img/fallback-cover.png";
 export const FAVORITE_ICON = "/img/heart.png";
 export const ADD_TO_PLAYLIST_ICON = "/img/plus.png";
 export const TRACK_MORE_ICON = "/img/more.png";
+export const SLEEP_ICON_64PX = "/img/sleep-64.png";
+export const SLEEP_ICON_16PX = "/img/sleep-16.png";
