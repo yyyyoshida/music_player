@@ -87,7 +87,7 @@ const SearchBar = () => {
 
     try {
       const encodedQuery = encodeURIComponent(queryText);
-      const response = await fetchSpotifyAPI(API.SPOTIFY_SEARCH(encodedQuery), {
+      const response = await fetchSpotifyAPI(API.spotifySearch(encodedQuery), {
         method: "GET",
       });
 

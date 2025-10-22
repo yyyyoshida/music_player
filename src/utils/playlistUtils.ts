@@ -15,7 +15,7 @@ export async function getPlaylistInfo(
   }
 
   try {
-    const response = await fetch(API.PLAYLIST_INFO(currentPlaylistId));
+    const response = await fetch(API.playlistInfo(currentPlaylistId));
 
     if (!response.ok) {
       throw new Error(String(response.status));

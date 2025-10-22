@@ -41,7 +41,7 @@ const usePlaylistDetail = (
     }
 
     try {
-      const response = await fetch(API.FETCH_PLAYLIST_TRACKS(id));
+      const response = await fetch(API.fetchPlaylistTracks(id));
 
       if (!response.ok) {
         fetchTracksFailed(response.status);
