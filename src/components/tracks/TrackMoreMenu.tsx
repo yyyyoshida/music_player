@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { FAVORITE_ICON, ADD_TO_PLAYLIST_ICON } from "../../assets/icons";
+import { FAVORITE_ICON, ADD_TO_PLAYLIST_ICON, SLEEP_ICON_64PX } from "../../assets/icons";
 
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
@@ -86,8 +86,8 @@ const TrackMoreMenu = () => {
                 closeTrackMenu();
               }}
             >
-              <img src="/img/うんちアイコン2.png" className="track-more-menu__item-icon-bored" />
-              この曲に飽きた
+              <img src={SLEEP_ICON_64PX} className="track-more-menu__item-icon-bored" />
+              曲をスリープ
             </li>
           </>
         )}
