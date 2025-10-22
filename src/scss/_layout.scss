@@ -2,6 +2,7 @@
 @use "mixin" as *;
 @use "button" as *;
 @use "animations" as *;
+@use "card-grid" as *;
 
 * {
   // font-family: 'M PLUS 1p', serif;
@@ -1106,3 +1107,5 @@ footer {
   pointer-events: none;
   cursor: default;
 }
+
+@include card-grid(sleep, restore);
