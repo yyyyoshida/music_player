@@ -66,6 +66,11 @@ const ActionSuccessMessage = () => {
 
     searchFailed: { text: "検索に失敗しました。ページをリロードして再試行してください", success: false },
 
+    sleep: { text: "曲をスリープにしました", success: true },
+    sleepFailed: { text: "曲のスリープに失敗しました", success: false },
+    sleepFailedSpotify: { text: "Spotify曲のスリープに失敗しました", success: false },
+    sleepFailedLocal: { text: "ローカル曲のスリープに失敗しました", success: false },
+
     unselected: { text: "曲がセットされていません", success: false },
     未実装: { text: "この機能はまだ未実装です", success: true },
   };
