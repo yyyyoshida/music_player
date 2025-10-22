@@ -2,6 +2,8 @@ import SearchBar from "./SearchBar";
 import LocalFileImportNav from "./LocalFileImportNav";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import { useUserContext } from "../contexts/UserContext";
+import { SLEEP_ICON_16PX } from "../assets/icons";
+import { Link } from "react-router-dom";
 
 function Header() {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
@@ -33,6 +35,13 @@ function Header() {
               <img src="/img/ソングリストアイコン1 (1).png" alt="" className="sidebar-header__item-icon" />
               プレイリスト
             </a>
+          </li>
+
+          <li className="sidebar-header__item">
+            <Link className="sidebar-header__link" to="/sleep-tracks">
+              <img src={SLEEP_ICON_16PX} alt="" className="sidebar-header__item-icon" />
+              スリープ曲一覧
+            </Link>
           </li>
 
           <LocalFileImportNav />
