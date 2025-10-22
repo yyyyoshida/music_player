@@ -51,7 +51,7 @@ const useRenamePlaylist = (
     try {
       if (!id) throw new Error("idが無効");
 
-      const response = await fetch(API.PLAYLIST(id), {
+      const response = await fetch(API.playlist(id), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newName, beforeName: playlistName }),

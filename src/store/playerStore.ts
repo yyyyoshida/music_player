@@ -176,7 +176,7 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
     setIsSpotifyPlaying(true);
 
     try {
-      const response = await fetchSpotifyAPI(API.SPOTIFY_TRACK_PLAY(deviceId ?? ""), {
+      const response = await fetchSpotifyAPI(API.spotifyTrackPlay(deviceId ?? ""), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

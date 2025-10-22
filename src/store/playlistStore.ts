@@ -175,7 +175,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
     try {
-      const response = await fetch(API.PLAYLIST(playlistId), {
+      const response = await fetch(API.playlist(playlistId), {
         method: "DELETE",
       });
 
@@ -206,7 +206,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       const playlistInfoData = await getPlaylistInfo(playlistId, setPlaylistInfo, showMessage);
       const totalDuration = playlistInfoData.totalDuration;
 
-      const response = await fetch(API.DELETE_TRACK(playlistId, trackId), {
+      const response = await fetch(API.deleteTrack(playlistId, trackId), {
         method: "DELETE",
       });
 

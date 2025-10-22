@@ -64,7 +64,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   saveTrackToFirestore: async (playlistId) => {
     const { addTrackToList, selectedTrack } = get();
 
-    const response = await fetch(API.PLAYLIST_SPOTIFY_TRACKS(playlistId), {
+    const response = await fetch(API.playlistSpotifyTracks(playlistId), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -81,7 +81,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   saveUploadedLocalTrack: async (playlistId) => {
     const { addTrackToList, selectedTrack } = get();
 
-    const response = await fetch(API.PLAYLIST_LOCAL_TRACKS(playlistId), {
+    const response = await fetch(API.playlistLocalTracks(playlistId), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -131,7 +131,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
     formData.append("audio", uploadTrackFile);
     formData.append("track", JSON.stringify(selectedTrack));
 
-    const response = await fetch(API.PLAYLIST_NEW_LOCAL_TRACKS(playlistId), {
+    const response = await fetch(API.playlistNewLocalTracks(playlistId), {
       method: "POST",
       body: formData,
     });
