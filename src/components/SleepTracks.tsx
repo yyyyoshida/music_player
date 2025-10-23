@@ -72,7 +72,7 @@ const SleepTracks = () => {
 
           return (
             <li
-              className="sleep__track-item"
+              className={`sleep__track-item ${isCurrentTrack ? "is-current" : ""} ${isActiveTrack ? "is-playing" : ""}`}
               key={track.id}
               onClick={() => {
                 handleClickTrackItem(track, date, index, isCurrentTrack);
@@ -82,11 +82,21 @@ const SleepTracks = () => {
                 <img className="sleep__track-cover-art" src={track.albumImage} alt={track.title} />
 
                 <button className="sleep__track-play-pause-button play-pause-button">
-                  <img src={playIcon} alt="" className="sleep__track-play-pause-button-icon play-pause-button-icon play-button-icon" />
+                  <img
+                    src={isActiveTrack ? pauseIcon : playIcon}
+                    alt={isActiveTrack ? "pause" : "play"}
+                    className={`sleep__track-play-pause-button-icon play-pause-button-icon ${isActiveTrack ? "pause-button-icon" : "play-button-icon"} `}
+                  />
                 </button>
                 <button className="sleep__track-restore-button">
                   <img src="img/restore.png" className="sleep__track-restore-button-icon" />
                 </button>
+                <div className="equalizer">
+                  <div className="bar"></div>
+                  <div className="bar"></div>
+                  <div className="bar"></div>
+                  <div className="bar"></div>
+                </div>
               </div>
 
               <div className="sleep__track-info">
