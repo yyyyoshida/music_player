@@ -38,7 +38,7 @@ const useSleepTracks = () => {
 
       if (!response.ok) throw new Error("sleepFailedSpotify");
       const { sleepingTrack } = await response.json();
-      await deleteTrack(menuTrackId);
+      await deleteTrack(menuTrackId, false);
       console.log(sleepingTrack);
       showMessage("sleep");
     } catch (error) {
