@@ -1347,15 +1347,31 @@ footer {
   margin: auto;
 }
 
-.equalizer {
+.sleep .equalizer {
   position: absolute;
   left: 50%;
   top: 50%;
   top: 100px;
   top: 94px;
   width: 30px;
+  visibility: hidden;
   transform: translate(-50%, -50%) rotate(180deg) scale(1.8);
   filter: none !important;
+}
+.sleep .equalizer .bar {
+  margin: 0.8px;
+}
+
+.sleep .is-playing .equalizer {
+  height: 21px;
+  visibility: visible;
+}
+.sleep .is-playing .sleep__track-cover-art {
+  filter: brightness(50%);
+}
+
+.sleep .is-current .sleep__track-cover-art {
+  filter: brightness(50%);
 }
 
 .modal {

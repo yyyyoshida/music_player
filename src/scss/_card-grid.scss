@@ -116,7 +116,7 @@
     }
   }
 
-  .equalizer {
+  .#{$block} .equalizer {
     position: absolute;
     // right: 14px;
     // bottom: 12px;
@@ -126,9 +126,34 @@
     top: 94px;
     width: 30px;
     // visibility: visible;
+    visibility: hidden;
     // transform: scale(1.8) rotate(180deg) translate(-50%, -50%);
     transform: translate(-50%, -50%) rotate(180deg) scale(1.8);
     // z-index: 10000;
     filter: none !important;
+    .bar {
+      margin: 0.8px;
+    }
+  }
+
+  // ===============================
+  // 再生中 or 一時停止中の状態管理
+  // ==============================
+
+  .#{$block} .is-playing {
+    .equalizer {
+      height: 21px;
+      visibility: visible;
+    }
+
+    .#{$block}__track-cover-art {
+      filter: brightness(50%);
+    }
+  }
+
+  .#{$block} .is-current {
+    .#{$block}__track-cover-art {
+      filter: brightness(50%);
+    }
   }
 }
