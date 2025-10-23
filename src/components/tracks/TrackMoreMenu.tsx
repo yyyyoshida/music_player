@@ -5,6 +5,7 @@ import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore"
 import useTrackMoreMenuStore from "../../store/trackMoreMenuStore";
 import usePlaylistStore from "../../store/playlistStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
+import useSleepTracks from "../../hooks/useSleepTracks";
 
 const TrackMoreMenu = () => {
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
@@ -18,6 +19,7 @@ const TrackMoreMenu = () => {
 
   const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
 
+  const { sleepTrack } = useSleepTracks();
   const menuRef = useRef<HTMLDivElement>(null);
   const isButtonHoveredRef = useRef<boolean>(null);
   const isNotSearchPage = window.location.pathname !== "/search-result";
@@ -82,7 +84,7 @@ const TrackMoreMenu = () => {
             <li
               className="track-more-menu__item"
               onClick={() => {
-                showMessage("未実装");
+                sleepTrack();
                 closeTrackMenu();
               }}
             >
