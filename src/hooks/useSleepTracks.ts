@@ -21,6 +21,9 @@ const useSleepTracks = () => {
   }, [selectedTrack]);
 
   async function sleepTrack() {
+    const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
+    const cachedTracks = cached ? JSON.parse(cached) : [];
+
     try {
       if (!selectedTrack) throw new Error("曲が選択されていません");
       if (!("source" in selectedTrack)) throw new Error("曲が壊れています");
@@ -43,6 +46,10 @@ const useSleepTracks = () => {
       if (!response.ok) throw new Error("sleepFailedSpotify");
       const { sleepingTrack } = await response.json();
       await deleteTrack(menuTrackId, false);
+
+      cachedTracks.push(sleepingTrack);
+      localStorage.setItem(STORAGE_KEYS.SLEEP_TRACKS, JSON.stringify(cachedTracks));
+
       console.log(sleepingTrack);
       showMessage("sleep");
     } catch (error) {
