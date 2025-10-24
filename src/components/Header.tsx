@@ -38,7 +38,7 @@ function Header() {
           </li>
 
           <li className="sidebar-header__item">
-            <Link className="sidebar-header__link" to="/sleep-tracks">
+            <Link className="sidebar-header__link" to="/sleep">
               <img src={SLEEP_ICON_16PX} alt="" className="sidebar-header__item-icon" />
               スリープ曲一覧
             </Link>
