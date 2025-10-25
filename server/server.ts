@@ -6,6 +6,7 @@ import tokenRouter from "./routes/token.js";
 import playlistsGetRouter from "./routes/playlists-get.js";
 import playlistsModifyRouter from "./routes/playlists-modify.js";
 import playlistsAddRouter from "./routes/playlists-add.js";
+import sleepRouter from "./routes/sleep.js";
 
 const app = express();
 
@@ -24,3 +25,4 @@ app.use("/api", tokenRouter);
 app.use("/api", playlistsGetRouter);
 app.use("/api", playlistsModifyRouter);
 app.use("/api", playlistsAddRouter);
+app.use("/api", sleepRouter);

@@ -19,6 +19,7 @@ import TrackMoreMenu from "./tracks/TrackMoreMenu";
 import UploadStatusModal from "./UploadStatusModal";
 import ActionSuccessMessage from "./ActionSuccessMessage";
 import Tooltip from "./Tooltip";
+import Sleep from "./Sleep";
 
 const Main = () => {
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
@@ -43,6 +44,7 @@ const Main = () => {
               <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
               <Route path="/playlist" element={<Playlist />} />
               <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
+              <Route path="/sleep" element={<Sleep />} />
             </Routes>
             <PlayerControls />
             <ActionSuccessMessage />

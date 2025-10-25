@@ -13,6 +13,9 @@ export const API = {
   playlist: (playlistId: string) => `${BASE_URL}/api/playlists/${playlistId}`, // 名前変更・削除
   playlistInfo: (playlistId: string) => `${BASE_URL}/api/playlists/${playlistId}/info`, //プレイリストの詳細取得
 
+  // スリープ機能
+  SLEEP_SPOTIFY_TRACKS: `${BASE_URL}/api/sleep/spotify-tracks`,
+
   // Spotify
 
   spotifySearch: (query: string) => `https://api.spotify.com/v1/search?q=${query}&type=track&limit=50`,

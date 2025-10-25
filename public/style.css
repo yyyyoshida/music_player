@@ -1234,6 +1234,146 @@ footer {
   cursor: default;
 }
 
+.sleep {
+  width: 100%;
+}
+
+.sleep__title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.sleep__text {
+  padding-top: 40px;
+  font-size: 1.125rem;
+}
+
+.sleep__text-info {
+  padding-top: 40px;
+  color: #b3b3b3;
+  font-size: 0.875rem;
+}
+
+.sleep__track-list {
+  margin-top: 54px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sleep__track-item {
+  width: 200px;
+  height: 268px;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  overflow: hidden;
+}
+
+.sleep__track-item:hover {
+  background-color: #444;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+}
+.sleep__track-item:hover .sleep__track-play-pause-button {
+  visibility: visible;
+  transform: translateY(0px);
+  opacity: 1;
+}
+.sleep__track-item:hover .sleep__track-restore-button {
+  visibility: visible;
+  transform: translateY(0px);
+  opacity: 1;
+}
+
+.sleep__track-cover-art-wrapper {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border: rgba(175, 175, 175, 0.2745098039) solid 1px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.sleep__track-cover-art {
+  border-radius: 5px;
+  background-color: #242424;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.sleep__track-info {
+  padding-top: 10px;
+}
+
+.sleep__track-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.sleep__track-artist {
+  color: #b3b3b3;
+  font-size: 0.875rem;
+  padding-top: 10px;
+}
+
+.sleep__track-restore-button {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(39, 39, 39, 0.37);
+  -webkit-backdrop-filter: blur(3px);
+          backdrop-filter: blur(3px);
+  border-radius: 50%;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
+  border: 1px solid #292929;
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.2s ease background-color, 0.2s ease opacity;
+}
+.sleep__track-restore-button:hover {
+  background-color: rgba(114, 114, 114, 0.4666666667);
+}
+.sleep__track-restore-button-icon {
+  display: block;
+  width: 18px;
+  margin: auto;
+}
+
+.sleep .equalizer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  top: 100px;
+  top: 94px;
+  width: 30px;
+  visibility: hidden;
+  transform: translate(-50%, -50%) rotate(180deg) scale(1.8);
+  filter: none !important;
+}
+.sleep .equalizer .bar {
+  margin: 0.8px;
+}
+
+.sleep .is-playing .equalizer {
+  height: 21px;
+  visibility: visible;
+}
+.sleep .is-playing .sleep__track-cover-art {
+  filter: brightness(50%);
+}
+
+.sleep .is-current .sleep__track-cover-art {
+  filter: brightness(50%);
+}
+
 .modal {
   position: fixed;
   bottom: 0;

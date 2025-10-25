@@ -7,6 +7,8 @@ export const STORAGE_KEYS = {
   IS_MUTED: "isMuted",
   VOLUME: "player_volume",
 
+  SLEEP_TRACKS: "sleepTracks",
+
   PLAYLISTS: "playlists",
 
   getCachedTracksKey: (id: string) => `playlistDetail:${id}Tracks`,
