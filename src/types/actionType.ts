@@ -21,5 +21,10 @@ export type ActionType =
   | "playFailed"
   | "tooFrequent"
   | "searchFailed"
+  | "sleep"
+  | "sleepFailed"
+  | "sleepFailedSpotify"
+  | "sleepFailedLocal"
+  | "sleepTracksFetchFailed"
   | "unselected"
   | "未実装";

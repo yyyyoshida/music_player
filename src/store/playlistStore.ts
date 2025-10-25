@@ -56,7 +56,7 @@ type PlaylistStore = {
   deletePlaylist: (playlistId: string, navigate: (url: string) => void) => Promise<void>;
   showCoverImages: () => void;
   fadeCoverImages: () => void;
-  deleteTrack: (trackId: string | null) => Promise<void>;
+  deleteTrack: (trackId: string | null, isShowMessage?: boolean) => Promise<void>;
 };
 
 const usePlaylistStore = create<PlaylistStore>((set, get) => ({
@@ -194,7 +194,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   showCoverImages: () => set({ isCoverImageFading: false }),
   fadeCoverImages: () => set({ isCoverImageFading: true }),
 
-  deleteTrack: async (trackId) => {
+  deleteTrack: async (trackId, isShowMessage = true) => {
     const { currentPlaylistId, setPlaylistInfo, deletedTrackDuration, tracks, fadeCoverImages } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
     const playlistId = currentPlaylistId;
@@ -231,7 +231,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       });
 
       fadeCoverImages();
-      showMessage("deleteTrack");
+      if (isShowMessage) showMessage("deleteTrack");
       clearPlaylistCache(playlistId);
     } catch (error) {
       showMessage("deleteTrackFailed");
