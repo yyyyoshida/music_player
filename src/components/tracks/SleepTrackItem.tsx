@@ -6,9 +6,10 @@ type SleepTrackItemProps = {
   track: SpotifyTrack | LocalTrack;
   index: number;
   date: string;
+  restoreSleepTrack: (trackId: string) => Promise<void>;
 };
 
-const SleepTrackItem = ({ track, index, date }: SleepTrackItemProps) => {
+const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackItemProps) => {
   const { isCurrentTrack, isActiveTrack, handleClickTrackItem } = useTrackItem(track, index, date);
 
   return (
@@ -27,7 +28,13 @@ const SleepTrackItem = ({ track, index, date }: SleepTrackItemProps) => {
             className={`sleep__track-play-pause-button-icon play-pause-button-icon ${isActiveTrack ? "pause-button-icon" : "play-button-icon"} `}
           />
         </button>
-        <button className="sleep__track-restore-button">
+        <button
+          className="sleep__track-restore-button"
+          onClick={(e) => {
+            e.stopPropagation();
+            restoreSleepTrack(track.id!);
+          }}
+        >
           <img src="img/restore.png" className="sleep__track-restore-button-icon" />
         </button>
         <div className="equalizer">

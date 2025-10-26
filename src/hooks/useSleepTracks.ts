@@ -88,7 +88,23 @@ const useSleepTracks = () => {
     }
   }
 
-  return { sleepTrack, fetchSleepTracks };
+  async function restoreSleepTrack(trackId: string) {
+    let removedTrack = null;
+
+    try {
+      const response = await fetch(API.deleteSleepSpotifyTracks(trackId), { method: "DELETE" });
+
+      if (!response.ok) throw new Error(response.statusText);
+
+      removedTrack = await response.json();
+    } catch (error) {
+      console.error("スリープ曲の復元に失敗:", error);
+      showMessage("sleepSpotifyRestoreFailed");
+      return;
+    }
+  }
+
+  return { sleepTrack, fetchSleepTracks, restoreSleepTrack };
 };
 
 export default useSleepTracks;

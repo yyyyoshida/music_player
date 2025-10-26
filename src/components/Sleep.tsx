@@ -10,7 +10,7 @@ import useSleepTracks from "../hooks/useSleepTracks";
 
 const SleepTracks = () => {
   const tracks = usePlaylistStore((state) => state.tracks);
-  const { fetchSleepTracks } = useSleepTracks();
+  const { fetchSleepTracks, restoreSleepTrack } = useSleepTracks();
   const LOADING_IMAGE_DELAY = 200;
   const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("trackList", tracks, [tracks], LOADING_IMAGE_DELAY);
   const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
@@ -35,7 +35,7 @@ const SleepTracks = () => {
           const addedAt = track.addedAt;
           const date: string | Date = new Date(addedAt ?? 0).toLocaleString();
 
-          return <SleepTrackItem key={track.id} track={track} index={index} date={date} />;
+          return <SleepTrackItem key={track.id} track={track} index={index} date={date} restoreSleepTrack={restoreSleepTrack} />;
         })}
       </ul>
     </div>
