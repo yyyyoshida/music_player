@@ -214,6 +214,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
 
   handleTrackSelect: (track, shouldToggle = true, file = null, imageUrl = null) => {
     const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } = get();
+    const { currentPlaylistId } = usePlaylistStore.getState();
     const { trackOrigin } = usePlaybackStore.getState();
 
     if (trackOrigin === "searchResults" && "uri" in track) {
@@ -228,6 +229,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
       });
     } else if (trackOrigin === "firebase" && "source" in track && track.source === "spotify") {
       setSelectedTrack({
+        playlistRef: currentPlaylistId,
         trackId: track.trackId,
         trackUri: track.trackUri,
         albumImage: track.albumImage,
