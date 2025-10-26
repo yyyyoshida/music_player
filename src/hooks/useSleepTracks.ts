@@ -12,6 +12,7 @@ import { STORAGE_KEYS } from "../utils/storageKeys";
 const useSleepTracks = () => {
   const deleteTrack = usePlaylistStore((state) => state.deleteTrack);
   const setTracks = usePlaylistStore((state) => state.setTracks);
+  const setRefreshTrigger = usePlaylistStore((state) => state.setRefreshTrigger);
   const setQueue = usePlaybackStore((state) => state.setQueue);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
@@ -126,6 +127,7 @@ const useSleepTracks = () => {
       if (!response.ok) throw new Error(response.statusText);
 
       const { addedTrack } = await response.json();
+      setRefreshTrigger(1);
     } catch (error) {
       console.error("スリープ曲の復元に失敗:", error);
       showMessage("sleepSpotifyRestoreFailed");
