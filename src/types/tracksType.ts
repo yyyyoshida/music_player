@@ -4,6 +4,7 @@ interface BaseTrack {
   artist: string;
   duration_ms: number;
   id?: string;
+  playlistRef?: string | null;
   title: string;
 }
 
