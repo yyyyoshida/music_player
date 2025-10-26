@@ -6,7 +6,7 @@ type SleepTrackItemProps = {
   track: SpotifyTrack | LocalTrack;
   index: number;
   date: string;
-  restoreSleepTrack: (trackId: string) => Promise<void>;
+  restoreSleepTrack: (trackId: string | undefined, playlistRef: string | undefined) => Promise<void>;
 };
 
 const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackItemProps) => {
@@ -32,7 +32,7 @@ const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackIte
           className="sleep__track-restore-button"
           onClick={(e) => {
             e.stopPropagation();
-            restoreSleepTrack(track.id!);
+            restoreSleepTrack(track.id, track.playlistRef!);
           }}
         >
           <img src="img/restore.png" className="sleep__track-restore-button-icon" />
