@@ -41,4 +41,24 @@ router.get("/sleep/spotify-tracks", async (_req, res) => {
   }
 });
 
+router.delete("/sleep/spotify-tracks/:trackId", async (req, res) => {
+  try {
+    const { trackId } = req.params;
+    const trackRef = db.collection("sleepTracks").doc(trackId);
+    const trackSnapshot = await trackRef.get();
+
+    if (!trackSnapshot.exists) {
+      return res.status(404).json({ error: "曲が存在しない" });
+    }
+
+    const deletedTrack = trackSnapshot.data();
+    await trackRef.delete();
+
+    res.status(200).json({ deletedTrack });
+  } catch (error) {
+    console.error("スリープ一覧からの削除に失敗:", error);
+    res.status(500).json({ error: "スリープ一覧からの削除に失敗" });
+  }
+});
+
 export default router;
