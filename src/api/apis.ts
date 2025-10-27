@@ -15,6 +15,8 @@ export const API = {
 
   // スリープ機能
   SLEEP_SPOTIFY_TRACKS: `${BASE_URL}/api/sleep/spotify-tracks`,
+  deleteSleepSpotifyTracks: (trackId: string) => `${BASE_URL}/api/sleep/spotify-tracks/${trackId}`,
+  restoreSleepSpotifyTracks: (id: string) => `${BASE_URL}/api/sleep/spotify-tracks/${id}/restore`, // POST
 
   // Spotify
 

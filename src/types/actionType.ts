@@ -26,5 +26,6 @@ export type ActionType =
   | "sleepFailedSpotify"
   | "sleepFailedLocal"
   | "sleepTracksFetchFailed"
+  | "sleepSpotifyRestoreFailed"
   | "unselected"
   | "未実装";
