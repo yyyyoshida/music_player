@@ -41,4 +41,49 @@ router.get("/sleep/spotify-tracks", async (_req, res) => {
   }
 });
 
+router.delete("/sleep/spotify-tracks/:trackId", async (req, res) => {
+  try {
+    const { trackId } = req.params;
+    const trackRef = db.collection("sleepTracks").doc(trackId);
+    const trackSnapshot = await trackRef.get();
+
+    if (!trackSnapshot.exists) {
+      return res.status(404).json({ error: "曲が存在しない" });
+    }
+
+    const deletedTrack = trackSnapshot.data();
+    await trackRef.delete();
+
+    res.status(200).json(deletedTrack);
+  } catch (error) {
+    console.error("スリープ一覧からの削除に失敗:", error);
+    res.status(500).json({ error: "スリープ一覧からの削除に失敗" });
+  }
+});
+
+router.post("/sleep/spotify-tracks/:playlistRef/restore", async (req, res) => {
+  try {
+    const playlistId = req.params.playlistRef;
+    const track = req.body;
+    const playlistRef = db.collection("playlists").doc(playlistId);
+
+    const newTrackRef = await playlistRef.collection("tracks").add({
+      ...track,
+      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    const newTrackSnapshot = await newTrackRef.get();
+    const addedTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
+
+    await playlistRef.update({
+      totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+    });
+
+    res.status(200).json({ addedTrack });
+  } catch (error) {
+    console.error("プレイリストに追加失敗", error);
+    res.status(500).json({ error: "プレイリストに追加失敗" });
+  }
+});
+
 export default router;
