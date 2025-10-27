@@ -1,10 +1,13 @@
+type playlistId = {
+  id: string;
+};
+
 interface BaseTrack {
   addedAt?: string;
   albumImage: string;
   artist: string;
   duration_ms: number;
   id?: string;
-  playlistRef?: string | null;
   title: string;
 }
 
@@ -12,6 +15,10 @@ export interface SpotifyTrack extends BaseTrack {
   source: "spotify";
   trackId: string;
   trackUri: string;
+}
+
+export interface SleepSpotifyTrack extends SpotifyTrack {
+  playlistIds: playlistId[];
 }
 
 export interface LocalTrack extends BaseTrack {
@@ -40,4 +47,4 @@ export type fromSearchResultTrackObject = {
   duration_ms: number;
 };
 
-export type TrackObject = SpotifyTrack | LocalTrack | fromSearchResultTrackObject;
+export type TrackObject = SpotifyTrack | SleepSpotifyTrack | LocalTrack | fromSearchResultTrackObject;
