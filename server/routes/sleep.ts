@@ -5,16 +5,40 @@ import { admin, db } from "../firebase";
 router.post("/sleep/spotify-tracks", async (req, res) => {
   try {
     const track = req.body;
+    const foundPlaylistIds: string[] = [];
+    const matchedTracks: { trackId: string; playlistId: string }[] = [];
+
+    const playlistSnapshots = await db.collection("playlists").get();
+
+    for (const playlistDoc of playlistSnapshots.docs) {
+      const playlistId = playlistDoc.id;
+
+      const trackQuery = await db
+        .collection("playlists")
+        .doc(playlistId)
+        .collection("tracks")
+        .where("trackId", "==", track.trackId)
+        .get();
+
+      if (!trackQuery.empty) {
+        foundPlaylistIds.push(playlistId);
+
+        trackQuery.forEach((track) => {
+          matchedTracks.push({ trackId: track.id, playlistId });
+        });
+      }
+    }
 
     const newTrackRef = await db.collection("sleepTracks").add({
       ...track,
+      playlistIds: foundPlaylistIds,
       addedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     const newTrackSnapshot = await newTrackRef.get();
     const sleepingTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
 
-    res.status(200).json({ sleepingTrack });
+    res.status(200).json({ sleepingTrack, matchedTracks });
   } catch (error) {
     console.error("曲のスリープに失敗", error);
     res.status(500).json({ error: "曲のスリープに失敗" });
