@@ -9,6 +9,11 @@ import type { SpotifyTrack, LocalTrack } from "../types/tracksType";
 import { API } from "../api/apis";
 import { STORAGE_KEYS } from "../utils/storageKeys";
 
+type MatchedTrack = {
+  trackId: string;
+  playlistId: string;
+};
+
 const useSleepTracks = () => {
   const deleteTrack = usePlaylistStore((state) => state.deleteTrack);
   const setTracks = usePlaylistStore((state) => state.setTracks);
@@ -16,7 +21,6 @@ const useSleepTracks = () => {
   const setQueue = usePlaybackStore((state) => state.setQueue);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
-  const menuTrackId = useTrackMoreMenuStore((state) => state.menuTrackId);
 
   useEffect(() => {
     console.log(selectedTrack, "selectedTrack");
@@ -46,8 +50,11 @@ const useSleepTracks = () => {
       }
 
       if (!response.ok) throw new Error("sleepFailedSpotify");
-      const { sleepingTrack } = await response.json();
-      await deleteTrack(menuTrackId, false);
+      const { sleepingTrack, matchedTracks } = await response.json();
+
+      matchedTracks.forEach(async (track: MatchedTrack) => {
+        await deleteTrack(track.trackId, false, track.playlistId);
+      });
 
       cachedTracks.push(sleepingTrack);
       localStorage.setItem(STORAGE_KEYS.SLEEP_TRACKS, JSON.stringify(cachedTracks));
