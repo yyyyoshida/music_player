@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import usePlaylistStore from "../store/playlistStore";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
-import useTrackMoreMenuStore from "../store/trackMoreMenuStore";
 import usePlaybackStore from "../store/playbackStore";
 import type { ActionType } from "../types/actionType";
 import type { SpotifyTrack, LocalTrack } from "../types/tracksType";
@@ -17,7 +16,6 @@ type MatchedTrack = {
 const useSleepTracks = () => {
   const deleteTrack = usePlaylistStore((state) => state.deleteTrack);
   const setTracks = usePlaylistStore((state) => state.setTracks);
-  const setRefreshTrigger = usePlaylistStore((state) => state.setRefreshTrigger);
   const setQueue = usePlaybackStore((state) => state.setQueue);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
@@ -97,17 +95,16 @@ const useSleepTracks = () => {
     }
   }
 
-  async function restoreSleepTrack(trackId: string | undefined, playlistRef: string | undefined) {
+  async function restoreSleepTrack(trackId: string | undefined, playlistIds: string[]) {
     let removedTrack = null;
     const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
     const cachedTracks: (SpotifyTrack | LocalTrack)[] = JSON.parse(cached!);
 
     try {
       if (!trackId) throw new Error("trackIdが無効");
-      if (!playlistRef) throw new Error("playlistRefが無効");
+      if (!playlistIds || playlistIds.length === 0) throw new Error("playlistIdsが無効");
 
       const response = await fetch(API.deleteSleepSpotifyTracks(trackId), { method: "DELETE" });
-
       if (!response.ok) throw new Error(response.statusText);
 
       removedTrack = await response.json();
@@ -123,7 +120,7 @@ const useSleepTracks = () => {
     }
 
     try {
-      const response = await fetch(API.restoreSleepSpotifyTracks(playlistRef), {
+      const response = await fetch(API.RESTORE_SLEEP_SPOTIFY_TRACKS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,8 +130,19 @@ const useSleepTracks = () => {
 
       if (!response.ok) throw new Error(response.statusText);
 
-      const { addedTrack } = await response.json();
-      setRefreshTrigger(1);
+      const restoredTracksInfo = await response.json();
+
+      for (let i = 0; i < restoredTracksInfo.length; i++) {
+        const playlistId = restoredTracksInfo[i].playlistId;
+        const restoredTrack = restoredTracksInfo[i].track;
+        const cached = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(playlistId));
+
+        if (cached) {
+          const cachedTracks = JSON.parse(cached);
+          cachedTracks.push(restoredTrack);
+          localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(cachedTracks));
+        }
+      }
     } catch (error) {
       console.error("スリープ曲の復元に失敗:", error);
       showMessage("sleepSpotifyRestoreFailed");
