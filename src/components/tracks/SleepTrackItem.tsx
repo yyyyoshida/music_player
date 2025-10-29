@@ -1,4 +1,5 @@
 import useTrackItem from "../../hooks/useTrackItem";
+import usePlayerStore from "../../store/playerStore";
 import type { SleepSpotifyTrack } from "../../types/tracksType";
 import { pauseIcon, playIcon } from "../../assets/icons";
 
@@ -12,9 +13,18 @@ type SleepTrackItemProps = {
 const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackItemProps) => {
   const { isCurrentTrack, isActiveTrack, handleClickTrackItem } = useTrackItem(track, index, date);
 
+  const playDisable = usePlayerStore((state) => state.playDisable);
+  // 変数名分かりにくい ↓
+  const isLoading = playDisable;
+  const isSelectedTrack = isCurrentTrack;
+  const isPlayingTrack = isActiveTrack;
+
+  const isSelectedTrackLoaded = isSelectedTrack && !isLoading;
+  const isPlayingTrackLoaded = isPlayingTrack && !isLoading;
+
   return (
     <li
-      className={`sleep__track-item ${isCurrentTrack ? "is-current" : ""} ${isActiveTrack ? "is-playing" : ""}`}
+      className={`sleep__track-item ${isSelectedTrackLoaded ? "is-current" : ""} ${isPlayingTrackLoaded ? "is-playing" : ""}`}
       key={track.id}
       onClick={handleClickTrackItem}
     >
@@ -23,9 +33,11 @@ const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackIte
 
         <button className="sleep__track-play-pause-button play-pause-button">
           <img
-            src={isActiveTrack ? pauseIcon : playIcon}
-            alt={isActiveTrack ? "pause" : "play"}
-            className={`sleep__track-play-pause-button-icon play-pause-button-icon ${isActiveTrack ? "pause-button-icon" : "play-button-icon"} `}
+            src={isPlayingTrackLoaded ? pauseIcon : playIcon}
+            alt={isPlayingTrackLoaded ? "pause" : "play"}
+            className={`sleep__track-play-pause-button-icon play-pause-button-icon ${
+              isPlayingTrackLoaded ? "pause-button-icon" : "play-button-icon"
+            } `}
           />
         </button>
         <button
