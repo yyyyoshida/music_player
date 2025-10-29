@@ -71,6 +71,7 @@ const ActionSuccessMessage = () => {
     sleepFailedSpotify: { text: "Spotify曲のスリープに失敗しました", success: false },
     sleepFailedLocal: { text: "ローカル曲のスリープに失敗しました", success: false },
     sleepTracksFetchFailed: { text: "スリープ曲一覧の取得に失敗しました", success: false },
+    sleepTrackRestore: { text: "曲の復元に成功しました", success: true },
     sleepSpotifyRestoreFailed: { text: "Spotify曲をスリープからの復元に失敗しました", success: false },
 
     unselected: { text: "曲がセットされていません", success: false },

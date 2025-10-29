@@ -143,6 +143,8 @@ const useSleepTracks = () => {
           localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(cachedTracks));
         }
       }
+
+      showMessage("sleepTrackRestore");
     } catch (error) {
       console.error("スリープ曲の復元に失敗:", error);
       showMessage("sleepSpotifyRestoreFailed");
