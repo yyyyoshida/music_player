@@ -18,6 +18,8 @@ export const API = {
   deleteSleepSpotifyTracks: (trackId: string) => `${BASE_URL}/api/sleep/spotify-tracks/${trackId}`,
   restoreSleepSpotifyTracks: (id: string) => `${BASE_URL}/api/sleep/spotify-tracks/${id}/restore`, // POST
 
+  RESTORE_SLEEP_SPOTIFY_TRACKS: `${BASE_URL}/api/sleep/spotify-tracks/restore`, // POST
+
   // Spotify
 
   spotifySearch: (query: string) => `https://api.spotify.com/v1/search?q=${query}&type=track&limit=50`,

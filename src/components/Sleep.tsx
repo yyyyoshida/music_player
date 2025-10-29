@@ -5,7 +5,7 @@ import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 import CardListSkeleton from "./skeletonUI/CardListSkeleton";
 
-import type { SpotifyTrack, LocalTrack } from "../types/tracksType";
+import type { SleepSpotifyTrack } from "../types/tracksType";
 import useSleepTracks from "../hooks/useSleepTracks";
 
 const SleepTracks = () => {
@@ -31,7 +31,7 @@ const SleepTracks = () => {
       {showSkeleton && <CardListSkeleton />}
 
       <ul className={`sleep__track-list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
-        {(tracks as (SpotifyTrack | LocalTrack)[]).map((track, index) => {
+        {(tracks as SleepSpotifyTrack[]).map((track, index) => {
           const addedAt = track.addedAt;
           const date: string | Date = new Date(addedAt ?? 0).toLocaleString();
 
