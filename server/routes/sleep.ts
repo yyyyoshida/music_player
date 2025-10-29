@@ -5,16 +5,40 @@ import { admin, db } from "../firebase";
 router.post("/sleep/spotify-tracks", async (req, res) => {
   try {
     const track = req.body;
+    const foundPlaylistIds: string[] = [];
+    const matchedTracks: { trackId: string; playlistId: string }[] = [];
+
+    const playlistSnapshots = await db.collection("playlists").get();
+
+    for (const playlistDoc of playlistSnapshots.docs) {
+      const playlistId = playlistDoc.id;
+
+      const trackQuery = await db
+        .collection("playlists")
+        .doc(playlistId)
+        .collection("tracks")
+        .where("trackId", "==", track.trackId)
+        .get();
+
+      if (!trackQuery.empty) {
+        foundPlaylistIds.push(playlistId);
+
+        trackQuery.forEach((track) => {
+          matchedTracks.push({ trackId: track.id, playlistId });
+        });
+      }
+    }
 
     const newTrackRef = await db.collection("sleepTracks").add({
       ...track,
+      playlistIds: foundPlaylistIds,
       addedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     const newTrackSnapshot = await newTrackRef.get();
     const sleepingTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
 
-    res.status(200).json({ sleepingTrack });
+    res.status(200).json({ sleepingTrack, matchedTracks });
   } catch (error) {
     console.error("曲のスリープに失敗", error);
     res.status(500).json({ error: "曲のスリープに失敗" });
@@ -61,25 +85,39 @@ router.delete("/sleep/spotify-tracks/:trackId", async (req, res) => {
   }
 });
 
-router.post("/sleep/spotify-tracks/:playlistRef/restore", async (req, res) => {
+router.post("/sleep/spotify-tracks/restore", async (req, res) => {
   try {
-    const playlistId = req.params.playlistRef;
     const track = req.body;
-    const playlistRef = db.collection("playlists").doc(playlistId);
+    const playlistIds = track.playlistIds;
 
-    const newTrackRef = await playlistRef.collection("tracks").add({
-      ...track,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    if (!playlistIds || playlistIds.length === 0) {
+      return res.status(400).json({ error: "playlistIds が指定されていません" });
+    }
 
-    const newTrackSnapshot = await newTrackRef.get();
-    const addedTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
+    const { playlistIds: _, ...trackRest } = track;
 
-    await playlistRef.update({
-      totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
-    });
+    const batch = db.batch();
+    const restoredTracks: { playlistId: string; track: any }[] = [];
 
-    res.status(200).json({ addedTrack });
+    for (const playlistId of playlistIds) {
+      const playlistRef = db.collection("playlists").doc(playlistId);
+      const tracks = playlistRef.collection("tracks");
+
+      const newTrackRef = tracks.doc();
+
+      const resTrackData = {
+        ...trackRest,
+        id: newTrackRef.id,
+        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      batch.set(newTrackRef, resTrackData);
+
+      restoredTracks.push({ playlistId, track: resTrackData });
+    }
+
+    await batch.commit();
+    res.status(200).json(restoredTracks);
   } catch (error) {
     console.error("プレイリストに追加失敗", error);
     res.status(500).json({ error: "プレイリストに追加失敗" });

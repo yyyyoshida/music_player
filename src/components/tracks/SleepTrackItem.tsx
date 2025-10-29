@@ -1,12 +1,12 @@
 import useTrackItem from "../../hooks/useTrackItem";
-import type { SpotifyTrack, LocalTrack } from "../../types/tracksType";
+import type { SleepSpotifyTrack } from "../../types/tracksType";
 import { pauseIcon, playIcon } from "../../assets/icons";
 
 type SleepTrackItemProps = {
-  track: SpotifyTrack | LocalTrack;
+  track: SleepSpotifyTrack;
   index: number;
   date: string;
-  restoreSleepTrack: (trackId: string | undefined, playlistRef: string | undefined) => Promise<void>;
+  restoreSleepTrack: (trackId: string | undefined, playlistIds: string[]) => Promise<void>;
 };
 
 const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackItemProps) => {
@@ -32,7 +32,10 @@ const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackIte
           className="sleep__track-restore-button"
           onClick={(e) => {
             e.stopPropagation();
-            restoreSleepTrack(track.id, track.playlistRef!);
+            restoreSleepTrack(
+              track.id,
+              track.playlistIds.map((p) => p.id)
+            );
           }}
         >
           <img src="img/restore.png" className="sleep__track-restore-button-icon" />

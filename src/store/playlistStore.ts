@@ -56,7 +56,11 @@ type PlaylistStore = {
   deletePlaylist: (playlistId: string, navigate: (url: string) => void) => Promise<void>;
   showCoverImages: () => void;
   fadeCoverImages: () => void;
-  deleteTrack: (trackId: string | null, isShowMessage?: boolean) => Promise<void>;
+  deleteTrack: (
+    trackId: string | null,
+    isShowMessage?: boolean,
+    selectedPlaylistId?: string | null
+  ) => Promise<void>;
 };
 
 const usePlaylistStore = create<PlaylistStore>((set, get) => ({
@@ -194,14 +198,15 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   showCoverImages: () => set({ isCoverImageFading: false }),
   fadeCoverImages: () => set({ isCoverImageFading: true }),
 
-  deleteTrack: async (trackId, isShowMessage = true) => {
+  deleteTrack: async (trackId, isShowMessage = true, selectedPlaylistId = null) => {
     const { currentPlaylistId, setPlaylistInfo, deletedTrackDuration, tracks, fadeCoverImages } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
-    const playlistId = currentPlaylistId;
 
     try {
-      if (!playlistId) throw new Error("idが無効");
+      if (!currentPlaylistId) throw new Error("currentPlaylistIdが無効");
       if (!trackId) throw new Error("trackIdが無効");
+
+      const playlistId = selectedPlaylistId ? selectedPlaylistId : currentPlaylistId;
 
       const playlistInfoData = await getPlaylistInfo(playlistId, setPlaylistInfo, showMessage);
       const totalDuration = playlistInfoData.totalDuration;
