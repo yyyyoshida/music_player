@@ -1305,6 +1305,7 @@ footer {
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
+  transition: filter 0.15s ease;
 }
 
 .sleep__track-info {
