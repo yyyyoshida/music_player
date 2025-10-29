@@ -85,25 +85,39 @@ router.delete("/sleep/spotify-tracks/:trackId", async (req, res) => {
   }
 });
 
-router.post("/sleep/spotify-tracks/:playlistRef/restore", async (req, res) => {
+router.post("/sleep/spotify-tracks/restore", async (req, res) => {
   try {
-    const playlistId = req.params.playlistRef;
     const track = req.body;
-    const playlistRef = db.collection("playlists").doc(playlistId);
+    const playlistIds = track.playlistIds;
 
-    const newTrackRef = await playlistRef.collection("tracks").add({
-      ...track,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    if (!playlistIds || playlistIds.length === 0) {
+      return res.status(400).json({ error: "playlistIds が指定されていません" });
+    }
 
-    const newTrackSnapshot = await newTrackRef.get();
-    const addedTrack = { id: newTrackRef.id, ...newTrackSnapshot.data() };
+    const { playlistIds: _, ...trackRest } = track;
 
-    await playlistRef.update({
-      totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
-    });
+    const batch = db.batch();
+    const restoredTracks: { playlistId: string; track: any }[] = [];
 
-    res.status(200).json({ addedTrack });
+    for (const playlistId of playlistIds) {
+      const playlistRef = db.collection("playlists").doc(playlistId);
+      const tracks = playlistRef.collection("tracks");
+
+      const newTrackRef = tracks.doc();
+
+      const resTrackData = {
+        ...trackRest,
+        id: newTrackRef.id,
+        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      batch.set(newTrackRef, resTrackData);
+
+      restoredTracks.push({ playlistId, track: resTrackData });
+    }
+
+    await batch.commit();
+    res.status(200).json(restoredTracks);
   } catch (error) {
     console.error("プレイリストに追加失敗", error);
     res.status(500).json({ error: "プレイリストに追加失敗" });
