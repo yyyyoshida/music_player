@@ -229,7 +229,6 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
       });
     } else if (trackOrigin === "firebase" && "source" in track && track.source === "spotify") {
       setSelectedTrack({
-        playlistRef: currentPlaylistId,
         trackId: track.trackId,
         trackUri: track.trackUri,
         albumImage: track.albumImage,
