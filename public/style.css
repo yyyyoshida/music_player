@@ -318,6 +318,55 @@ body .fade-in-up {
     background-position: 60px 0;
   }
 }
+.spin-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 42px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 6px solid rgb(217, 22, 86);
+  animation: spin-clip-reveal 0.8s infinite linear alternate, spin-rotate-flip 1.6s infinite linear;
+}
+
+@keyframes spin-clip-reveal {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%);
+  }
+  12.5% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%);
+  }
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 100% 100%, 100% 100%);
+  }
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
+  }
+  62.5% {
+    clip-path: polygon(50% 50%, 100% 0, 100% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
+  }
+  75% {
+    clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 100%, 0% 100%);
+  }
+  100% {
+    clip-path: polygon(50% 50%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 0% 100%);
+  }
+}
+@keyframes spin-rotate-flip {
+  0% {
+    transform: translate(-50%, -50%) scaleY(1) rotate(0deg);
+  }
+  49.99% {
+    transform: translate(-50%, -50%) scaleY(1) rotate(135deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) scaleY(-1) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) scaleY(-1) rotate(-135deg);
+  }
+}
 * {
   box-sizing: border-box;
 }

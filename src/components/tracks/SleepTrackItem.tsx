@@ -19,12 +19,11 @@ const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackIte
   const isSelectedTrack = isCurrentTrack;
   const isPlayingTrack = isActiveTrack;
 
-  const isSelectedTrackLoaded = isSelectedTrack && !isLoading;
   const isPlayingTrackLoaded = isPlayingTrack && !isLoading;
 
   return (
     <li
-      className={`sleep__track-item ${isSelectedTrackLoaded ? "is-current" : ""} ${isPlayingTrackLoaded ? "is-playing" : ""}`}
+      className={`sleep__track-item ${isSelectedTrack ? "is-current" : ""} ${isPlayingTrackLoaded ? "is-playing" : ""}`}
       key={track.id}
       onClick={handleClickTrackItem}
     >
@@ -52,6 +51,8 @@ const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackIte
         >
           <img src="img/restore.png" className="sleep__track-restore-button-icon" />
         </button>
+        {isLoading && isSelectedTrack && <div className="spin-loader"></div>}
+
         <div className="equalizer">
           <div className="bar"></div>
           <div className="bar"></div>
