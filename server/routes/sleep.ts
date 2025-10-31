@@ -97,7 +97,7 @@ router.post("/sleep/spotify-tracks/restore", async (req, res) => {
     const { playlistIds: _, ...trackRest } = track;
 
     const batch = db.batch();
-    const restoredTracks: { playlistId: string; track: any }[] = [];
+    const restoredTracks: { track: any }[] = [];
 
     for (const playlistId of playlistIds) {
       const playlistRef = db.collection("playlists").doc(playlistId);
@@ -113,11 +113,23 @@ router.post("/sleep/spotify-tracks/restore", async (req, res) => {
 
       batch.set(newTrackRef, resTrackData);
 
-      restoredTracks.push({ playlistId, track: resTrackData });
+      batch.update(playlistRef, {
+        totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+      });
+
+      restoredTracks.push(resTrackData);
     }
 
     await batch.commit();
-    res.status(200).json(restoredTracks);
+
+    const updatedPlaylists = await Promise.all(
+      playlistIds.map(async (playlistId: string) => {
+        const playlistRef = await db.collection("playlists").doc(playlistId).get();
+        return { playlistId, totalDuration: playlistRef.data()?.totalDuration || 0 };
+      })
+    );
+
+    res.status(200).json({ restoredTracks, updatedPlaylists });
   } catch (error) {
     console.error("プレイリストに追加失敗", error);
     res.status(500).json({ error: "プレイリストに追加失敗" });
