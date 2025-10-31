@@ -130,17 +130,28 @@ const useSleepTracks = () => {
 
       if (!response.ok) throw new Error(response.statusText);
 
-      const restoredTracksInfo = await response.json();
+      const data = await response.json();
+      const restoredTracks = data.restoredTracks;
+      const updatedPlaylistsInfo = data.updatedPlaylists;
 
-      for (let i = 0; i < restoredTracksInfo.length; i++) {
-        const playlistId = restoredTracksInfo[i].playlistId;
-        const restoredTrack = restoredTracksInfo[i].track;
-        const cached = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(playlistId));
+      for (let i = 0; i < restoredTracks.length; i++) {
+        const restoredTrack = restoredTracks[i];
+        const playlistId = updatedPlaylistsInfo[i].playlistId;
+        const playlistTotalDuration = updatedPlaylistsInfo[i].totalDuration;
 
-        if (cached) {
-          const cachedTracks = JSON.parse(cached);
+        const rawCachedTracks = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(playlistId));
+        const rawCachedInfo = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId));
+
+        if (rawCachedTracks) {
+          const cachedTracks = JSON.parse(rawCachedTracks);
           cachedTracks.push(restoredTrack);
           localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(cachedTracks));
+        }
+
+        if (rawCachedInfo) {
+          const cachedInfo = JSON.parse(rawCachedInfo);
+          cachedInfo.totalDuration = playlistTotalDuration;
+          localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId), JSON.stringify(cachedInfo));
         }
       }
 
