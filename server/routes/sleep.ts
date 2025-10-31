@@ -113,6 +113,10 @@ router.post("/sleep/spotify-tracks/restore", async (req, res) => {
 
       batch.set(newTrackRef, resTrackData);
 
+      batch.update(playlistRef, {
+        totalDuration: admin.firestore.FieldValue.increment(Number(track.duration_ms)),
+      });
+
       restoredTracks.push({ playlistId, track: resTrackData });
     }
 
