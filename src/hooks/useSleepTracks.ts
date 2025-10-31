@@ -139,20 +139,8 @@ const useSleepTracks = () => {
         const playlistId = updatedPlaylistsInfo[i].playlistId;
         const playlistTotalDuration = updatedPlaylistsInfo[i].totalDuration;
 
-        const rawCachedTracks = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(playlistId));
-        const rawCachedInfo = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId));
-
-        if (rawCachedTracks) {
-          const cachedTracks = JSON.parse(rawCachedTracks);
-          cachedTracks.push(restoredTrack);
-          localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(cachedTracks));
-        }
-
-        if (rawCachedInfo) {
-          const cachedInfo = JSON.parse(rawCachedInfo);
-          cachedInfo.totalDuration = playlistTotalDuration;
-          localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId), JSON.stringify(cachedInfo));
-        }
+        updatedPlaylistCache(playlistId, restoredTrack);
+        updatePlaylistInfoCache(playlistId, playlistTotalDuration);
       }
 
       showMessage("sleepTrackRestore");
@@ -166,3 +154,25 @@ const useSleepTracks = () => {
 };
 
 export default useSleepTracks;
+
+function updatedPlaylistCache(playlistId: string, restoredTrack: SpotifyTrack) {
+  const cached = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(playlistId));
+
+  if (cached) {
+    const cachedTracks = JSON.parse(cached);
+    cachedTracks.push(restoredTrack);
+
+    localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(cachedTracks));
+  }
+}
+
+function updatePlaylistInfoCache(playlistId: string, totalDuration: number) {
+  const cached = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId));
+
+  if (cached) {
+    const cachedInfo = JSON.parse(cached);
+    cachedInfo.totalDuration = totalDuration;
+
+    localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId), JSON.stringify(cachedInfo));
+  }
+}
