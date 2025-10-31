@@ -130,18 +130,17 @@ const useSleepTracks = () => {
 
       if (!response.ok) throw new Error(response.statusText);
 
-      const restoredTracksInfo = await response.json();
+      const data = await response.json();
+      const restoredTracks = data.restoredTracks;
+      const updatedPlaylistsInfo = data.updatedPlaylists;
 
-      for (let i = 0; i < restoredTracksInfo.length; i++) {
-        const playlistId = restoredTracksInfo[i].playlistId;
-        const restoredTrack = restoredTracksInfo[i].track;
-        const cached = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(playlistId));
+      for (let i = 0; i < restoredTracks.length; i++) {
+        const restoredTrack = restoredTracks[i];
+        const playlistId = updatedPlaylistsInfo[i].playlistId;
+        const playlistTotalDuration = updatedPlaylistsInfo[i].totalDuration;
 
-        if (cached) {
-          const cachedTracks = JSON.parse(cached);
-          cachedTracks.push(restoredTrack);
-          localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(cachedTracks));
-        }
+        updatedPlaylistCache(playlistId, restoredTrack);
+        updatePlaylistInfoCache(playlistId, playlistTotalDuration);
       }
 
       showMessage("sleepTrackRestore");
@@ -155,3 +154,25 @@ const useSleepTracks = () => {
 };
 
 export default useSleepTracks;
+
+function updatedPlaylistCache(playlistId: string, restoredTrack: SpotifyTrack) {
+  const cached = localStorage.getItem(STORAGE_KEYS.getCachedTracksKey(playlistId));
+
+  if (cached) {
+    const cachedTracks = JSON.parse(cached);
+    cachedTracks.push(restoredTrack);
+
+    localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(cachedTracks));
+  }
+}
+
+function updatePlaylistInfoCache(playlistId: string, totalDuration: number) {
+  const cached = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId));
+
+  if (cached) {
+    const cachedInfo = JSON.parse(cached);
+    cachedInfo.totalDuration = totalDuration;
+
+    localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId), JSON.stringify(cachedInfo));
+  }
+}
