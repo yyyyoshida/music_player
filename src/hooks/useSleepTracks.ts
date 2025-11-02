@@ -7,6 +7,7 @@ import type { ActionType } from "../types/actionType";
 import type { SpotifyTrack, LocalTrack } from "../types/tracksType";
 import { API } from "../api/apis";
 import { STORAGE_KEYS } from "../utils/storageKeys";
+import { updatePlaylistsCacheFromSleep } from "../utils/playlistCache";
 
 type MatchedTrack = {
   trackId: string;
@@ -141,6 +142,7 @@ const useSleepTracks = () => {
 
         updatedPlaylistCache(playlistId, restoredTrack);
         updatePlaylistInfoCache(playlistId, playlistTotalDuration);
+        updatePlaylistsCacheFromSleep(playlistId, restoredTrack);
       }
 
       showMessage("sleepTrackRestore");
