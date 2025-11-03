@@ -76,6 +76,7 @@ router.post("/playlists/:id/local-tracks", async (req, res) => {
       audioURL: track.audioURL,
       audioPath: track.audioPath,
       addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      trackId: track.trackId,
       source: "local",
     });
 
