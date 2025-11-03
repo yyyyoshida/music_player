@@ -30,6 +30,7 @@ type PlaylistSelectStore = {
   addTrackToPlaylist: (playlistId: string) => Promise<void>;
   handleTrackSelect: (
     track: TrackObject | fromSearchResultTrackObject,
+    type: "search" | "playlist" | "local-upload",
     shouldToggle: boolean,
     file?: File | null,
     imageUrl?: string | null
@@ -186,7 +187,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
 
     if (!selectedTrack || !("source" in selectedTrack)) return;
 
-    const isNewLocalTrack = selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
+    const isNewLocalTrack = selectedTrack.source === "local-upload" && !("audioURL" in selectedTrack);
 
     const isSpotifyTrack = "trackUri" in selectedTrack;
     const isUploadedLocalTrack = "audioURL" in selectedTrack;
@@ -212,12 +213,15 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
     await executeTrackSave(() => saveUploadAndNewTrack(playlistId), playlistId);
   },
 
-  handleTrackSelect: (track, shouldToggle = true, file = null, imageUrl = null) => {
+  handleTrackSelect: (track, type, shouldToggle = true, file = null, imageUrl = null) => {
     const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } = get();
-    const { currentPlaylistId } = usePlaylistStore.getState();
-    const { trackOrigin } = usePlaybackStore.getState();
 
-    if (trackOrigin === "searchResults" && "uri" in track) {
+    const isSearchResultTrack = type === "search" && "uri" in track;
+    const isSpotifyTrack = type === "playlist" && "source" in track && track.source === "spotify";
+    const isUploadTrack = type === "local-upload" && "source" in track && track.source === "local-upload";
+    const isLocalTrack = type === "playlist" && "source" in track && track.source === "local";
+
+    if (isSearchResultTrack) {
       setSelectedTrack({
         trackId: track.id,
         trackUri: track.uri,
@@ -227,7 +231,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         duration_ms: track.duration_ms,
         source: "spotify",
       });
-    } else if (trackOrigin === "firebase" && "source" in track && track.source === "spotify") {
+    } else if (isSpotifyTrack) {
       setSelectedTrack({
         trackId: track.trackId,
         trackUri: track.trackUri,
@@ -237,11 +241,17 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         duration_ms: track.duration_ms,
         source: "spotify",
       });
-    } else if (
-      "source" in track &&
-      "albumImagePath" in track &&
-      (trackOrigin === "local" || track.source === "local")
-    ) {
+    } else if (isUploadTrack) {
+      setSelectedTrack({
+        title: track.title,
+        artist: track.artist,
+        duration_ms: track.duration_ms,
+        albumImage: track.albumImage,
+        source: "local-upload",
+      });
+      if (file) setUploadTrackFile(file);
+      if (imageUrl) setLocalCoverImageUrl(imageUrl);
+    } else if (isLocalTrack) {
       setSelectedTrack({
         title: track.title,
         artist: track.artist,
@@ -252,8 +262,6 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         audioURL: track.audioURL,
         source: "local",
       });
-      if (file) setUploadTrackFile(file);
-      if (imageUrl) setLocalCoverImageUrl(imageUrl);
     }
     // }else
     // 最近再生した曲は現在機能してないので一時的にコメントアウト{
