@@ -216,7 +216,12 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   handleTrackSelect: (track, type, shouldToggle = true, file = null, imageUrl = null) => {
     const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } = get();
 
-    if (type === "search" && "uri" in track) {
+    const isSearchResultTrack = type === "search" && "uri" in track;
+    const isSpotifyTrack = type === "playlist" && "source" in track && track.source === "spotify";
+    const isUploadTrack = type === "local-upload" && "source" in track && track.source === "local-upload";
+    const isLocalTrack = type === "playlist" && "source" in track && track.source === "local";
+
+    if (isSearchResultTrack) {
       setSelectedTrack({
         trackId: track.id,
         trackUri: track.uri,
@@ -226,7 +231,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         duration_ms: track.duration_ms,
         source: "spotify",
       });
-    } else if (type === "playlist" && "source" in track && track.source === "spotify") {
+    } else if (isSpotifyTrack) {
       setSelectedTrack({
         trackId: track.trackId,
         trackUri: track.trackUri,
@@ -236,7 +241,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         duration_ms: track.duration_ms,
         source: "spotify",
       });
-    } else if (type === "local-upload" && "source" in track && track.source === "local-upload") {
+    } else if (isUploadTrack) {
       setSelectedTrack({
         title: track.title,
         artist: track.artist,
@@ -246,7 +251,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
       });
       if (file) setUploadTrackFile(file);
       if (imageUrl) setLocalCoverImageUrl(imageUrl);
-    } else if (type === "playlist" && "source" in track && track.source === "local") {
+    } else if (isLocalTrack) {
       setSelectedTrack({
         title: track.title,
         artist: track.artist,
