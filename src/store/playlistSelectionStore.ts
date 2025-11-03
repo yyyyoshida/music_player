@@ -186,7 +186,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
 
     if (!selectedTrack || !("source" in selectedTrack)) return;
 
-    const isNewLocalTrack = selectedTrack.source === "local" && selectedTrack.audioURL === undefined;
+    const isNewLocalTrack = selectedTrack.source === "local-upload" && !("audioURL" in selectedTrack);
 
     const isSpotifyTrack = "trackUri" in selectedTrack;
     const isUploadedLocalTrack = "audioURL" in selectedTrack;
@@ -237,6 +237,16 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         duration_ms: track.duration_ms,
         source: "spotify",
       });
+    } else if ("source" in track && trackOrigin === "local" && track.source === "local-upload") {
+      setSelectedTrack({
+        title: track.title,
+        artist: track.artist,
+        duration_ms: track.duration_ms,
+        albumImage: track.albumImage,
+        source: "local-upload",
+      });
+      if (file) setUploadTrackFile(file);
+      if (imageUrl) setLocalCoverImageUrl(imageUrl);
     } else if (
       "source" in track &&
       "albumImagePath" in track &&
@@ -252,8 +262,6 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         audioURL: track.audioURL,
         source: "local",
       });
-      if (file) setUploadTrackFile(file);
-      if (imageUrl) setLocalCoverImageUrl(imageUrl);
     }
     // }else
     // 最近再生した曲は現在機能してないので一時的にコメントアウト{
