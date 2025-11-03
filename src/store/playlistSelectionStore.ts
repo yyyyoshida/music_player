@@ -30,6 +30,7 @@ type PlaylistSelectStore = {
   addTrackToPlaylist: (playlistId: string) => Promise<void>;
   handleTrackSelect: (
     track: TrackObject | fromSearchResultTrackObject,
+    type: "search" | "playlist" | "local-upload",
     shouldToggle: boolean,
     file?: File | null,
     imageUrl?: string | null
@@ -212,12 +213,10 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
     await executeTrackSave(() => saveUploadAndNewTrack(playlistId), playlistId);
   },
 
-  handleTrackSelect: (track, shouldToggle = true, file = null, imageUrl = null) => {
+  handleTrackSelect: (track, type, shouldToggle = true, file = null, imageUrl = null) => {
     const { setSelectedTrack, setUploadTrackFile, setLocalCoverImageUrl, openPlaylistSelectModal } = get();
-    const { currentPlaylistId } = usePlaylistStore.getState();
-    const { trackOrigin } = usePlaybackStore.getState();
 
-    if (trackOrigin === "searchResults" && "uri" in track) {
+    if (type === "search" && "uri" in track) {
       setSelectedTrack({
         trackId: track.id,
         trackUri: track.uri,
@@ -227,7 +226,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         duration_ms: track.duration_ms,
         source: "spotify",
       });
-    } else if (trackOrigin === "firebase" && "source" in track && track.source === "spotify") {
+    } else if (type === "playlist" && "source" in track && track.source === "spotify") {
       setSelectedTrack({
         trackId: track.trackId,
         trackUri: track.trackUri,
@@ -237,7 +236,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
         duration_ms: track.duration_ms,
         source: "spotify",
       });
-    } else if ("source" in track && trackOrigin === "local" && track.source === "local-upload") {
+    } else if (type === "local-upload" && "source" in track && track.source === "local-upload") {
       setSelectedTrack({
         title: track.title,
         artist: track.artist,
@@ -247,11 +246,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
       });
       if (file) setUploadTrackFile(file);
       if (imageUrl) setLocalCoverImageUrl(imageUrl);
-    } else if (
-      "source" in track &&
-      "albumImagePath" in track &&
-      (trackOrigin === "local" || track.source === "local")
-    ) {
+    } else if (type === "playlist" && "source" in track && track.source === "local") {
       setSelectedTrack({
         title: track.title,
         artist: track.artist,

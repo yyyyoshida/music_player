@@ -75,7 +75,7 @@ const LocalFileImportNav = () => {
         source: "local-upload",
       };
 
-      handleTrackSelect(localTrack as NewLocalTrack, true, uploadTrackFile, localCoverImageUrl);
+      handleTrackSelect(localTrack as NewLocalTrack, "local-upload", true, uploadTrackFile, localCoverImageUrl);
     }
   }, [uploadTrackFile, tags, trackDuration, localCoverImageUrl]);
 
