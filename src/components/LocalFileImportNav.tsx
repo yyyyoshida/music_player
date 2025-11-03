@@ -4,7 +4,7 @@ import jsmediatags from "jsmediatags/dist/jsmediatags.min.js";
 import LocalAudioDuration from "./LocalAudioDuration";
 import usePlaybackStore from "../store/playbackStore";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
-import type { LocalTrack } from "../types/tracksType";
+import type { NewLocalTrack } from "../types/tracksType";
 
 type MediaTags = {
   title?: string;
@@ -67,14 +67,15 @@ const LocalFileImportNav = () => {
   // データベースに保存する情報の紐付け
   useEffect(() => {
     if (uploadTrackFile && tags && trackDuration !== null) {
-      const localTrack: Partial<LocalTrack> = {
+      const localTrack: Partial<NewLocalTrack> = {
         title: tags.title || uploadTrackFile.name,
         artist: tags.artist || "Unknown Artist",
         duration_ms: trackDuration,
         albumImage: localCoverImageUrl || "/img/fallback-cover.png",
+        source: "local-upload",
       };
 
-      handleTrackSelect(localTrack as LocalTrack, true, uploadTrackFile, localCoverImageUrl);
+      handleTrackSelect(localTrack as NewLocalTrack, "local-upload", true, uploadTrackFile, localCoverImageUrl);
     }
   }, [uploadTrackFile, tags, trackDuration, localCoverImageUrl]);
 
