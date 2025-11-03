@@ -76,7 +76,7 @@ const TrackItem = ({ track, index, date, parentRef }: TrackItemProps) => {
             <TrackActionButton
               type={"add-playlist"}
               clickAction={() => {
-                handleTrackSelect(track, false);
+                handleTrackSelect(track, "search", false);
                 openPlaylistSelectModal();
               }}
             />
@@ -86,7 +86,7 @@ const TrackItem = ({ track, index, date, parentRef }: TrackItemProps) => {
             type={"more"}
             clickAction={() => {
               setButtonPosition();
-              handleTrackSelect(track, false);
+              handleTrackSelect(track, "playlist", false);
               toggleTrackMenu(index);
               setMenuTrackId(track.id || null);
             }}
