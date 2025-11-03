@@ -63,7 +63,7 @@ const TrackItem = ({ track, index, date, parentRef }: TrackItemProps) => {
         <p className="track-item__artist">{("artist" in track ? track.artist : track.artists[0]?.name) || "不明"}</p>
       </div>
       <div className="track-item__right">
-        {"source" in track && track.source && <TrackSourceIcon source={track.source} />}
+        {"source" in track && track.source && <TrackSourceIcon source={track.source as "spotify" | "local"} />}
         {isSearchPage ? (
           <>
             <TrackActionButton
