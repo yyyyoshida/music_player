@@ -253,6 +253,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
       if (imageUrl) setLocalCoverImageUrl(imageUrl);
     } else if (isLocalTrack) {
       setSelectedTrack({
+        trackId: track.trackId,
         title: track.title,
         artist: track.artist,
         duration_ms: track.duration_ms,
