@@ -28,6 +28,10 @@ export interface LocalTrack extends BaseTrack {
   audioURL: string;
 }
 
+export interface NewLocalTrack extends BaseTrack {
+  source: "local-upload";
+}
+
 type fromSearchResultTrackImages = {
   height: number;
   width: number;
@@ -47,4 +51,9 @@ export type fromSearchResultTrackObject = {
   duration_ms: number;
 };
 
-export type TrackObject = SpotifyTrack | SleepSpotifyTrack | LocalTrack | fromSearchResultTrackObject;
+export type TrackObject =
+  | SpotifyTrack
+  | SleepSpotifyTrack
+  | LocalTrack
+  | NewLocalTrack
+  | fromSearchResultTrackObject;
