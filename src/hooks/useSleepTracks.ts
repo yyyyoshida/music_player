@@ -6,7 +6,9 @@ import usePlaybackStore from "../store/playbackStore";
 import type { ActionType } from "../types/actionType";
 import type { SpotifyTrack, LocalTrack } from "../types/tracksType";
 import { API } from "../api/apis";
+import { getPlaylistInfo } from "../utils/playlistUtils";
 import { STORAGE_KEYS } from "../utils/storageKeys";
+import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import { updatePlaylistsCacheFromSleep } from "../utils/playlistCache";
 
 type MatchedTrack = {
@@ -15,8 +17,12 @@ type MatchedTrack = {
 };
 
 const useSleepTracks = () => {
-  const deleteTrack = usePlaylistStore((state) => state.deleteTrack);
+  const tracks = usePlaylistStore((state) => state.tracks);
   const setTracks = usePlaylistStore((state) => state.setTracks);
+  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
+  const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
+  const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
+  const fadeCoverImages = usePlaylistStore((state) => state.fadeCoverImages);
   const setQueue = usePlaybackStore((state) => state.setQueue);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
@@ -44,7 +50,7 @@ const useSleepTracks = () => {
       const { sleepingTrack, matchedTracks } = await response.json();
 
       matchedTracks.forEach(async (track: MatchedTrack) => {
-        await deleteTrack(track.trackId, false, track.playlistId);
+        await deleteTrackForSleep(track.trackId, track.playlistId);
       });
 
       cachedTracks.push(sleepingTrack);
@@ -59,6 +65,42 @@ const useSleepTracks = () => {
       } else {
         showMessage("sleepFailed");
       }
+    }
+  }
+
+  async function deleteTrackForSleep(trackId: string, playlistId: string) {
+    try {
+      if (!trackId) throw new Error("trackIdが無効");
+      if (!playlistId) throw new Error("playlistIdが無効");
+
+      const response = await fetch(API.deleteTrackForSleep(playlistId, trackId), {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error(response.statusText);
+
+      const deletedTrack = await response.json();
+
+      const playlistInfoData = await getPlaylistInfo(playlistId, setPlaylistInfo, showMessage);
+      const totalDuration = playlistInfoData.totalDuration;
+
+      const newDeletedTrackDuration = deletedTrackDuration + deletedTrack.duration_ms;
+      const resultTotalDuration = totalDuration - newDeletedTrackDuration;
+      const updatedInfoData = { ...playlistInfoData, totalDuration: resultTotalDuration };
+      localStorage.setItem(
+        STORAGE_KEYS.getCachedPlaylistInfoKey(playlistId),
+        JSON.stringify(updatedInfoData)
+      );
+
+      const updatedTracks = tracks.filter((track) => track.id !== trackId);
+      localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(playlistId), JSON.stringify(updatedTracks));
+      setTracks(updatedTracks);
+      setDeletedTrackDuration(newDeletedTrackDuration);
+
+      fadeCoverImages();
+      clearPlaylistCache(playlistId);
+    } catch (error) {
+      console.error("スリープ曲の削除に失敗:", error);
+      showMessage("deleteTrackFailed");
     }
   }
 
@@ -144,7 +186,7 @@ const useSleepTracks = () => {
     }
   }
 
-  return { sleepTrack, fetchSleepTracks, restoreSleepTrack };
+  return { sleepTrack, deleteTrackForSleep, fetchSleepTracks, restoreSleepTrack };
 };
 
 export default useSleepTracks;
