@@ -45,7 +45,7 @@ router.post("/sleep/tracks", async (req, res) => {
   }
 });
 
-router.get("/sleep/spotify-tracks", async (_req, res) => {
+router.get("/sleep/tracks", async (_req, res) => {
   try {
     const sleepTracksRef = db.collection("sleepTracks").orderBy("addedAt", "asc");
     const sleepTracksSnapshot = await sleepTracksRef.get();
