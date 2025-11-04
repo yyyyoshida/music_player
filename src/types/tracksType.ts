@@ -7,13 +7,13 @@ interface BaseTrack {
   albumImage: string;
   artist: string;
   duration_ms: number;
+  trackId: string;
   id?: string;
   title: string;
 }
 
 export interface SpotifyTrack extends BaseTrack {
   source: "spotify";
-  trackId: string;
   trackUri: string;
 }
 
@@ -28,7 +28,7 @@ export interface LocalTrack extends BaseTrack {
   audioURL: string;
 }
 
-export interface NewLocalTrack extends BaseTrack {
+export interface NewLocalTrack extends Omit<BaseTrack, "trackId"> {
   source: "local-upload";
 }
 

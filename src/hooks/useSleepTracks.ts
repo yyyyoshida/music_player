@@ -31,22 +31,14 @@ const useSleepTracks = () => {
 
     try {
       if (!selectedTrack) throw new Error("曲が選択されていません");
-      if (!("source" in selectedTrack)) throw new Error("曲が壊れています");
 
-      const isSpotifyTrack = selectedTrack.source === "spotify";
-
-      let response = null;
-      if (isSpotifyTrack) {
-        response = await fetch(API.SLEEP_SPOTIFY_TRACKS, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(selectedTrack),
-        });
-      } else {
-        throw new Error("ローカル曲はまだ未対応");
-      }
+      const response = await fetch(API.SLEEP_TRACKS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedTrack),
+      });
 
       if (!response.ok) throw new Error("sleepFailedSpotify");
       const { sleepingTrack, matchedTracks } = await response.json();
