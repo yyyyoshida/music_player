@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 import { admin, db } from "../firebase";
 
-router.post("/sleep/spotify-tracks", async (req, res) => {
+router.post("/sleep/tracks", async (req, res) => {
   try {
     const track = req.body;
     const foundPlaylistIds: string[] = [];
