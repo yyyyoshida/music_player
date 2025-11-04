@@ -74,7 +74,7 @@ const useSleepTracks = () => {
     }
 
     try {
-      const response = await fetch(API.SLEEP_SPOTIFY_TRACKS);
+      const response = await fetch(API.SLEEP_TRACKS);
       if (!response.ok) throw new Error(response.statusText);
 
       const fetchedTracks = await response.json();
