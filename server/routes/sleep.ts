@@ -45,6 +45,33 @@ router.post("/sleep/tracks", async (req, res) => {
   }
 });
 
+router.delete("/sleep/playlists/:playlistId/tracks/:trackId", async (req, res) => {
+  try {
+    const { playlistId, trackId } = req.params;
+    const playlistRef = db.collection("playlists").doc(playlistId);
+    const trackRef = playlistRef.collection("tracks").doc(trackId);
+    const trackSnapshot = await trackRef.get();
+
+    if (!trackSnapshot.exists) {
+      return res.status(404).json({ error: "曲が存在しない" });
+    }
+
+    const deletedTrack = trackSnapshot.data();
+    if (!deletedTrack) return res.status(404).json({ error: "曲が存在しない" });
+
+    await trackRef.delete();
+
+    await playlistRef.update({
+      totalDuration: admin.firestore.FieldValue.increment(-deletedTrack.duration_ms),
+    });
+
+    res.status(200).json(deletedTrack);
+  } catch (error) {
+    console.error("曲の削除に失敗", error);
+    res.status(500).json({ error: "曲の削除に失敗" });
+  }
+});
+
 router.get("/sleep/tracks", async (_req, res) => {
   try {
     const sleepTracksRef = db.collection("sleepTracks").orderBy("addedAt", "asc");
