@@ -1,5 +1,7 @@
+import fs from "fs";
 import admin, { ServiceAccount } from "firebase-admin";
-import serviceAccount from "./my-music-player-8ae45-firebase-adminsdk-fbsvc-149eac64fa.json";
+
+const serviceAccount = JSON.parse(fs.readFileSync(process.env.FIREBASE_KEY_PATH!, "utf8"));
 
 if (!admin.apps.length) {
   admin.initializeApp({
