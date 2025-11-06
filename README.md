@@ -1,9 +1,23 @@
 # 自分専用音楽プレイヤー
+軽いデモ動画
+
+
+
+
+https://github.com/user-attachments/assets/378f68f7-d61b-4af1-ab04-978a845a4683
+
+
+
+
+
+
+
+
 URL：https://www.amazon.co.jp/
 
 <!-- <img width="300" height="180" alt="FireShot Capture 027 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/b4f126db-1b89-4e48-8367-0de0974596c0" /> -->
 <img width="300" height="180" alt="FireShot Capture 026 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/09b5d1b5-db46-4392-af5a-7af5ff844f94" />
-<img width="300" height="180" alt="FireShot Capture 031 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/4d1904a0-3dc0-41f7-9edc-59ed5b7a5564" />
+<!-- <img width="300" height="180" alt="FireShot Capture 031 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/4d1904a0-3dc0-41f7-9edc-59ed5b7a5564" /> -->
 <img width="300" height="180" alt="FireShot Capture 025 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/7e8243f8-80ef-4baa-b444-1e33fbe75c2d" />
 <!-- <img width="300" height="180" alt="FireShot Capture 032 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/5f68a7ce-d7e7-4d2a-9f6a-7fb87b0714e7" /> -->
 
@@ -14,13 +28,7 @@ Password：yyyyoshida
 このアプリは自分用に作ったSpotify曲とPCに保存した曲を共有でプレイリストに管理できるアプリです。
 
 # 開発背景
-私は、PCで何か作業をするときに、よく音楽を聴くのですが使っていた音楽配信サービス（Spotify）に聴きたい曲がなかったり、
-
-そういうときはYouTubeから曲を保存してWindowsに入ってるメディアプレイヤーでプレイリストを作って聴いてたのですが、
-
-ほかにも何度も聞いてると飽きてくる曲が出始めて「聴きたくないけどプレイリストから削除はしたくない」という場面が増えてきました。
-
-そういう小さな不便さの積み重ねで「もっと自分にとって使いやすいアプリがあればいいのに」と思うようになり、開発に至りました。
+私は、PCで何か作業をするときに、よく音楽を聴くのですが使っていた音楽配信サービス（Spotify）に聴きたい曲がなかったり、そういうときはYouTubeから曲を保存してWindowsに入ってるメディアプレイヤーでプレイリストを作って聴いてたのですが、ほかにも何度も聞いてると飽きてくる曲が出始めて「聴きたくないけどプレイリストから削除はしたくない」という場面が増えてきました。そういう小さな不便さの積み重ねで「もっと自分にとって使いやすいアプリがあればいいのに」と思うようになり、開発に至りました。
 
 
 
@@ -30,13 +38,13 @@ Password：yyyyoshida
 
 
 # 使用技術
-
-<!-- [![My Skills](https://skillicons.dev/icons?i=firebase,nodejs,express,react,ts,js,sass,)](https://skillicons.dev) -->
+<details>
+  <summary>詳細…</summary>
 
 ## フロントエンド
 - 言語：TypeScript
 - ライブラリ：React、Jest + Testing Library、Zustand
-- スタイル：Scss
+- スタイル：SCSS
 ## バックエンド
 - 言語：TypeScript、Node.js
 - フレームワーク：Express
@@ -44,33 +52,62 @@ Password：yyyyoshida
 - ストレージ：Firestorage
 - API：Spotify API
 
-### 開発背景
+</details>
 
-今後追加予定
 
-<!-- 理由は既存の音楽アプリは課金しないと機能に制限がかかってたり、欲しい機能がついてなかったりしたからです。 -->
+# 技術選定
+<details>
+  <summary>詳細…</summary>
+  
+### 【TypeScript】
+最初はJavaScriptを使用していたが、コード量が増えるにつれてバグが増えていったので型チェックで早期にバグを検知できるTypeScriptを採用しました。あと、型があることでコードの可読性も上がるし、オブジェクトのプロパティを使おうとしたときにIDEが教えてくれるのが魅力的に感じたからです。
+### 【React】
+最初はJavaScriptを使っていましたが、アプリに今後もどんどん機能が増えて複雑になっていくと考えたらフレームワーク使った方がいいなと思って、Reactはページをコンポーネントを組み合わせて作れて、パーツを再利用できたり、jsx記法でDOM操作がほぼ不要になり開発効率が上がると思ったからです。
+### 【Zustand】
+状態のファイル間での共有はContextで全てを管理していましたが、Providerの階層がとても深くなっていってそのせいで画面全体が過剰に再レンダリングされる問題が起きていました。そこでReduxとZustandで迷いましたが、よりシンプルに書けて学習コストが低いZustandを選びました。
+### 【SCSS】
+昔から使い慣れていたのでSCSSにしました。<br>現在なら、クラス名を考える必要がなく開発スピードが上がるTailwind CSSを選ぶと思います。
+### 【Node.js】
+バックエンドもJavaScriptで書くことができ、学習コストを抑えることができ、他の言語を一から学ぶより開発スピードが上がると考えたからです。<br>ExpressはNode.jsの解説動画でセットで使っていたのと記述がシンプルになるから使いました。
+### 【Firebase】
+このアプリは自分用なので無料プランでもキャッシュを利用すれば十分使えるし、他のサービスと比較したときに学習コストが低いのでFirebaseにしました。
+### 【Spotify API】
 
-### 工夫したところ
+</details>
 
-今後追加予定
+
+# 工夫した点
+<details>
+  <summary>詳細…</summary>
+
+</details>
+
+# 反省点
+<details>
+  <summary>詳細…</summary>
+
+</details>
+
+# 実装予定の機能・今後やること
+<details>
+  <summary>詳細…</summary>
+
+- 最近再生した曲一覧機能の実装
+- YoutubeのURLから動画をプレイリストに追加機能の実装
+- 歌詞の表示機能の実装
+- Spotify APIの認証周りのテストコード
+  - その他主要機能のテストコード
+- FirebaseをSupabaseに移行してSQLにチャレンジ
+</details>
+
+
+
+
+
+
 
 ### 動作環境
 
-今後追加予定
 
-## Gitブランチ運用について
 
-開発初期（〜2025年5月頃）までは Git の基本的な使い方を学ぶことを目的に、`main` ブランチへ直接コミットしていました。
-
-その後、プロジェクトの構成が安定し、より実践的な開発フローを意識するために、以下のようなブランチ運用ルールを導入しました（2025年6月〜）：
-
-- `main`：リリース用の安定したコード
-- `feature/*`：新機能の追加
-- `fix/*`：バグ修正
-- `refactor/*`：リファクタリング
-- `perf/*`: パフォーマンス改善
-- `style/*`: CSSやレイアウト調整（機能影響なし）
-- `ui/*`: UIコンポーネントの変更・追加
-
-細かい修正（例：文言の変更や1〜2行の調整など）は状況に応じて `main` に直接コミットすることもありますが、基本的にはブランチを切って作業しています。
 
