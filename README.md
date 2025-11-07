@@ -1,20 +1,4 @@
 # 自分専用音楽プレイヤー
-軽いデモ動画
-
-
-
-
-https://github.com/user-attachments/assets/378f68f7-d61b-4af1-ab04-978a845a4683
-
-
-
-
-
-
-
-
-URL：https://www.amazon.co.jp/
-
 <!-- <img width="300" height="180" alt="FireShot Capture 027 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/b4f126db-1b89-4e48-8367-0de0974596c0" /> -->
 <img width="300" height="180" alt="FireShot Capture 026 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/09b5d1b5-db46-4392-af5a-7af5ff844f94" />
 <!-- <img width="300" height="180" alt="FireShot Capture 031 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/4d1904a0-3dc0-41f7-9edc-59ed5b7a5564" /> -->
@@ -22,19 +6,37 @@ URL：https://www.amazon.co.jp/
 <!-- <img width="300" height="180" alt="FireShot Capture 032 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/5f68a7ce-d7e7-4d2a-9f6a-7fb87b0714e7" /> -->
 
 ## Spotify曲とPCに保存した曲を共有でプレイリストに管理できるアプリ
-※ 外部のアクセスを防ぐために簡易なパスワードをかけています。<br>
-Password：yyyyoshida
 
 このアプリは自分用に作ったSpotify曲とPCに保存した曲を共有でプレイリストに管理できるアプリです。
 
 # 開発背景
 私は、PCで何か作業をするときに、よく音楽を聴くのですが使っていた音楽配信サービス（Spotify）に聴きたい曲がなかったり、そういうときはYouTubeから曲を保存してWindowsに入ってるメディアプレイヤーでプレイリストを作って聴いてたのですが、ほかにも何度も聞いてると飽きてくる曲が出始めて「聴きたくないけどプレイリストから削除はしたくない」という場面が増えてきました。そういう小さな不便さの積み重ねで「もっと自分にとって使いやすいアプリがあればいいのに」と思うようになり、開発に至りました。
 
+軽いデモ動画
+
+https://github.com/user-attachments/assets/378f68f7-d61b-4af1-ab04-978a845a4683
 
 
+※ 外部のアクセスを防ぐために簡易なパスワードをかけています。曲の追加・削除自由に操作してもらって構いません。<br>
+Password：yyyyoshida <br>
+URL：https://www.amazon.co.jp/
+
+# 機能紹介
+<details>
+  <summary>詳細…</summary>
+  
+### Spotify曲の検索・追加
+![Videotogif](https://github.com/user-attachments/assets/321e16fa-91d8-4be3-a360-56e8270edce1)
+
+### PCに保存した曲の追加
+![local](https://github.com/user-attachments/assets/b2d56be2-0921-4980-bba7-93b7b2dc23c8)
+
+### プレイリストの作成・削除
+![playlist-add-delete](https://github.com/user-attachments/assets/3202f393-7e69-456c-853b-453b58475f8a)
+### 画面拡大・次の曲 & 前の曲へ移動
 
 
-
+</details>
 
 
 # 使用技術
@@ -107,6 +109,7 @@ Password：yyyyoshida
 
 
 ### 動作環境
+
 
 
 
