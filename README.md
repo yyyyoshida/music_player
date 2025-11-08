@@ -1,29 +1,16 @@
 # 自分専用音楽プレイヤー
+## Spotify曲とPCに保存した曲を共有でプレイリストに管理できるアプリ
 <!-- <img width="300" height="180" alt="FireShot Capture 027 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/b4f126db-1b89-4e48-8367-0de0974596c0" /> -->
 <img width="300" height="180" alt="FireShot Capture 026 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/09b5d1b5-db46-4392-af5a-7af5ff844f94" />
 <!-- <img width="300" height="180" alt="FireShot Capture 031 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/4d1904a0-3dc0-41f7-9edc-59ed5b7a5564" /> -->
 <img width="300" height="180" alt="FireShot Capture 025 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/7e8243f8-80ef-4baa-b444-1e33fbe75c2d" />
 <!-- <img width="300" height="180" alt="FireShot Capture 032 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/5f68a7ce-d7e7-4d2a-9f6a-7fb87b0714e7" /> -->
 
-## Spotify曲とPCに保存した曲を共有でプレイリストに管理できるアプリ
+
 
 このアプリは自分用に作ったSpotify曲とPCに保存した曲を共有でプレイリストに管理できるアプリです。
 
-# 開発背景
-私は、PCで何か作業をするときに、よく音楽を聴くのですが使っていた音楽配信サービス（Spotify）に聴きたい曲がなかったり、そういうときはYouTubeから曲を保存してWindowsに入ってるメディアプレイヤーでプレイリストを作って聴いてたのですが、ほかにも何度も聞いてると飽きてくる曲が出始めて「聴きたくないけどプレイリストから削除はしたくない」という場面が増えてきました。そういう小さな不便さの積み重ねで「もっと自分にとって使いやすいアプリがあればいいのに」と思うようになり、開発に至りました。
-
-軽いデモ動画
-
-https://github.com/user-attachments/assets/378f68f7-d61b-4af1-ab04-978a845a4683
-
-
-※ 外部のアクセスを防ぐために簡易なパスワードをかけています。曲の追加・削除自由に操作してもらって構いません。<br>
-Password：yyyyoshida <br>
-URL：https://www.amazon.co.jp/
-
 # 機能紹介
-<details>
-  <summary>詳細…</summary>
   
 ### Spotify曲の検索・追加
 ![Videotogif](https://github.com/user-attachments/assets/321e16fa-91d8-4be3-a360-56e8270edce1)
@@ -33,16 +20,32 @@ URL：https://www.amazon.co.jp/
 
 ### プレイリストの作成・削除
 ![playlist-add-delete](https://github.com/user-attachments/assets/3202f393-7e69-456c-853b-453b58475f8a)
+
 ### 画面拡大・次の曲 & 前の曲へ移動
+![expand](https://github.com/user-attachments/assets/05210ac2-9b33-491c-9f71-b1d46c6d1b66)
+
+### 飽きた曲を一時的に非表示 → 管理 → 復元
+![Videotogif](https://github.com/user-attachments/assets/3706191e-cd7f-4ba6-889a-56d7cca77751)
+
+### 飽きた曲の試聴
+![sleep-sound](https://github.com/user-attachments/assets/793b44a2-c6da-4ffd-84c2-a9e8a71a03ad)
 
 
-</details>
+
+
+
+### デモリンク
+Password：yyyyoshida <br>
+URL：https://hogehogehoge
+
+※ 外部アクセス防止のため簡易パスワードを設定しています。  
+※ 曲の追加・削除など、自由に操作してOKです。
+
+# 開発背景
+私は、PCで何か作業をするときに、よく音楽を聴くのですが使っていた音楽配信サービス（Spotify）に聴きたい曲がなかったり、そういうときはYouTubeから曲を保存してWindowsに入ってるメディアプレイヤーでプレイリストを作って聴いてたのですが、ほかにも何度も聞いてると飽きてくる曲が出始めて「聴きたくないけどプレイリストから削除はしたくない」という場面が増えてきました。そういう小さな不便さの積み重ねで「もっと自分にとって使いやすいアプリがあればいいのに」と思うようになり、開発に至りました。<br>それに加えて純粋な好奇心で作りたい欲があったので、それも後押しになりました。
 
 
 # 使用技術
-<details>
-  <summary>詳細…</summary>
-
 ## フロントエンド
 - 言語：TypeScript
 - ライブラリ：React、Jest + Testing Library、Zustand
@@ -54,13 +57,8 @@ URL：https://www.amazon.co.jp/
 - ストレージ：Firestorage
 - API：Spotify API
 
-</details>
-
 
 # 技術選定
-<details>
-  <summary>詳細…</summary>
-  
 ### 【TypeScript】
 最初はJavaScriptを使用していたが、コード量が増えるにつれてバグが増えていったので型チェックで早期にバグを検知できるTypeScriptを採用しました。あと、型があることでコードの可読性も上がるし、オブジェクトのプロパティを使おうとしたときにIDEが教えてくれるのが魅力的に感じたからです。
 ### 【React】
@@ -75,24 +73,15 @@ URL：https://www.amazon.co.jp/
 このアプリは自分用なので無料プランでもキャッシュを利用すれば十分使えるし、他のサービスと比較したときに学習コストが低いのでFirebaseにしました。
 ### 【Spotify API】
 
-</details>
-
 
 # 工夫した点
-<details>
-  <summary>詳細…</summary>
 
-</details>
 
 # 反省点
-<details>
-  <summary>詳細…</summary>
 
-</details>
 
 # 実装予定の機能・今後やること
-<details>
-  <summary>詳細…</summary>
+
 
 - 最近再生した曲一覧機能の実装
 - YoutubeのURLから動画をプレイリストに追加機能の実装
@@ -100,17 +89,10 @@ URL：https://www.amazon.co.jp/
 - Spotify APIの認証周りのテストコード
   - その他主要機能のテストコード
 - FirebaseをSupabaseに移行してSQLにチャレンジ
-</details>
-
-
-
 
 
 
 
 ### 動作環境
-
-
-
 
 
