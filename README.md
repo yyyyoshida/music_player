@@ -7,10 +7,9 @@
 <!-- <img width="300" height="180" alt="FireShot Capture 032 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/5f68a7ce-d7e7-4d2a-9f6a-7fb87b0714e7" /> -->
 
 
-
 このアプリは自分用に作ったSpotify曲とPCに保存した曲を共有でプレイリストに管理できるアプリです。
 
-# 機能紹介
+# 主な機能
   
 ### Spotify曲の検索・追加
 ![Videotogif](https://github.com/user-attachments/assets/321e16fa-91d8-4be3-a360-56e8270edce1)
@@ -35,11 +34,17 @@
 
 
 ### デモリンク
-Password：yyyyoshida <br>
-URL：https://hogehogehoge
+URL：https://hogehogehoge <br>
+Password：yyyyoshida
 
 ※ 外部アクセス防止のため簡易パスワードを設定しています。  
 ※ 曲の追加・削除など、自由に操作してOKです。
+
+# 開発者向け情報
+本アプリは Spotify API と Firebaseを使用しており、 環境変数は公開できないため<br>
+ローカル環境での起動は原則できない構成となっています。
+
+動作確認はデモURLから行ってください。
 
 # 開発背景
 私は、PCで何か作業をするときに、よく音楽を聴くのですが使っていた音楽配信サービス（Spotify）に聴きたい曲がなかったり、そういうときはYouTubeから曲を保存してWindowsに入ってるメディアプレイヤーでプレイリストを作って聴いてたのですが、ほかにも何度も聞いてると飽きてくる曲が出始めて「聴きたくないけどプレイリストから削除はしたくない」という場面が増えてきました。そういう小さな不便さの積み重ねで「もっと自分にとって使いやすいアプリがあればいいのに」と思うようになり、開発に至りました。<br>それに加えて純粋な好奇心で作りたい欲があったので、それも後押しになりました。
@@ -75,6 +80,114 @@ URL：https://hogehogehoge
 
 
 # 工夫した点
+#### 工夫した点は以下になります
+- Zustandを使用して画面全体の無駄な再レンダリングを防いだ
+- キャッシュを利用してデータベースとの無駄な通信を減らした
+- 企業向け配慮
+- 曲の連続再生で発生する429エラー対策
+- 各要素にローディングアニメーションを追加
+- コーディング方針　if文の早期リターン
+
+
+
+## Zustandを使用して画面全体の無駄な再レンダリングを防いだ
+使用技術でも触れましたが、もともと状態管理はContextだけで行っていました。しかし、気づいたらProviderの階層が深くなっており、そのせいで画面全体が過剰に再レンダリングされる問題が起きていました。<br><br>
+```javascript
+// appファイル内
+
+  return (
+    <BrowserRouter>
+      <ActionSuccessMessageProvider>
+        <RepeatProvider>
+          <PlayerProvider isTrackSet={isTrackSet} setIsTrackSet={setIsTrackSet} queue={queue} currentIndex={currentIndex}>
+            <PlaybackProvider isTrackSet={isTrackSet} queue={queue} setQueue={setQueue} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
+              <SearchProvider>
+                <PlaylistProvider>
+                  <UploadModalProvider>
+                    <PlaylistSelectionProvider>
+                      <Header onSearchResults={handleSearchResults} profile={profile} />
+                      <Main searchResults={searchResults} setProfile={setProfile} />
+                    </PlaylistSelectionProvider>
+                  </UploadModalProvider>
+                </PlaylistProvider>
+              </SearchProvider>
+            </PlaybackProvider>
+          </PlayerProvider>
+        </RepeatProvider>
+      </ActionSuccessMessageProvider>
+    </BrowserRouter>
+  );
+```
+React Developer Toolsで再レンダリングを可視化したものになります ↓
+![re-re](https://github.com/user-attachments/assets/1440e04c-13be-4b18-aa64-9862ab8d153a)
+<br>
+この問題を改善するためにZustandを導入しました。<br><br>
+更新頻度の高い状態はZustandの各ストアで管理し、トークンなどの更新頻度が低いものはContextに残すことで、<br>
+コンポーネントは必要な状態だけを購読でき、無駄な再レンダリングを大幅に削減することができました。
+
+![re](https://github.com/user-attachments/assets/6b070051-d01f-4869-8c14-fd310abd5dda)
+
+## キャッシュを利用してデータベースとの無駄な通信を減らした
+firebaseは従量課金制ですが、一定の量なら無料で使用できるので無料枠に収めるためにキャッシュ（localStorage）でDBのアクセスを最小にしました。
+
+例えばマウント時にデータベースにアクセスしてそのデータをlocalStorageに保存することで２回目以降はそのキャッシュを利用することで無駄な通信を大幅に減らすことができました。<br><br>
+
+現在は、プレイリスト内の曲を追加・削除するときにキャッシュを削除してデータベースから再取得する設計にしていますが、<br>
+今後はデータベースの更新のレスポンスを利用してキャッシュを直接更新する設計にすることで、データを再取得せずに済むようにする予定です。
+また、IndexedDBの存在も最近知ったため、今後はlocalStorageからIndexedDBに移行することも検討しています。
+
+## 企業側向けUX改善
+ もともとこのアプリを利用する際は、Spotifyアカウントでログインが必要でしたが、
+ポートフォリオを確認する採用担当の方が動作確認のために毎回ログインするのは手間だと思いました。
+そこで、ログイン時に取得できるリフレッシュトークンをサーバー側で保持し、アクセストークンを自動で更新する設計にしました。
+これにより、採用担当者の方はログインせずにすぐアプリを試すことができるようになり、確認の手間を減らすことができます。
+
+※ このアプリは個人利用・ポートフォリオ用のため、利便性を優先した設計にしています。
+
+## 曲の連続再生で発生する429エラー対策
+Spotify APIが今年の5月（2025）にアップデートが入り、その影響でSpotify曲を連続で切り替えると429エラーが出るようになりました。
+その対策として0.7秒の遅延を入れて再生することで解決しました。さらに再生バーにローディングアニメーションを入れて遅延をロードと見せることで
+
+
+## 各要素にローディングアニメーションを追加
+
+## コーディング方針　if文の早期リターン
+本来なら`else if` やネストして書くところを早期リターンで処理を区切りました。
+これによりネストが浅くなり、処理の流れを直感的に理解でき、可読性を向上させました。
+```typescript
+// 一例 ↓
+
+async function initTokenFromCache(): Promise<boolean> {
+  const localAccessToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+  const localRefreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+
+  // ローカルのトークンでログイン;
+  if (localAccessToken && isValidToken()) {
+    setToken(localAccessToken);
+    console.log("ローカルToken");
+    return true;
+  }
+
+  // ローカルのリフレッシュトークンでログイン
+  if (localRefreshToken) {
+    try {
+      const newToken = await getNewAccessToken();
+      setToken(newToken);
+      console.log("ローカルrefresh");
+      return true;
+    } catch (error) {
+      console.warn("ローカルリフレッシュ失敗(次の手段でログイン):", error);
+    }
+  }
+
+  return false;
+}
+```
+
+
+
+
+
 
 
 # 反省点
@@ -94,5 +207,6 @@ URL：https://hogehogehoge
 
 
 ### 動作環境
+
 
 
