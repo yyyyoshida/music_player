@@ -9,9 +9,14 @@ export const useVisualizerStore = create<{
   ) => void;
 
   startVisualizer: (() => void) | null;
+  stopVisualizer: (() => void) | null;
+  _animationId: number | null;
+  isVisualizerActive: boolean;
 }>((set, get) => ({
   leftCanvas: null,
   rightCanvas: null,
+  _animationId: null,
+  isVisualizerActive: false,
 
   setCanvasRefs: (left, right) => set({ leftCanvas: left, rightCanvas: right }),
 
@@ -29,9 +34,28 @@ export const useVisualizerStore = create<{
       });
 
       startDrawLoop(analyser, data, leftCanvas, rightCanvas);
+      set({ isVisualizerActive: true });
     } catch (err) {
       console.error("Error accessing display media.", err);
     }
+  },
+
+  stopVisualizer: () => {
+    const { _animationId, leftCanvas, rightCanvas } = get();
+
+    if (_animationId !== null) {
+      cancelAnimationFrame(_animationId);
+      set({ _animationId: null });
+    }
+
+    [leftCanvas?.current, rightCanvas?.current].forEach((canvas) => {
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    set({ isVisualizerActive: false });
   },
 }));
 
@@ -150,7 +174,9 @@ function startDrawLoop(
 ) {
   const loop = () => {
     draw(analyser, soundData, leftCanvas, rightCanvas);
-    requestAnimationFrame(loop);
+    const id = requestAnimationFrame(loop);
+    useVisualizerStore.setState({ _animationId: id });
   };
-  requestAnimationFrame(loop);
+  const id = requestAnimationFrame(loop);
+  useVisualizerStore.setState({ _animationId: id });
 }
