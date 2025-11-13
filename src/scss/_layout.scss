@@ -185,6 +185,9 @@ footer {
   z-index: 3000;
   overflow: hidden;
   opacity: 0;
+  padding-top: 110px;
+  padding-left: 40px;
+  padding-right: 40px;
   transition: opacity 0.35s ease;
   pointer-events: none;
   // &::-webkit-scrollbar {
@@ -217,10 +220,9 @@ footer {
     // }
   }
   &__content {
-    position: absolute;
-    top: 110px;
-    left: 50%;
-    transform: translate(-50%);
+    max-width: 400px;
+    position: relative;
+    z-index: 3001;
     height: 100%;
     text-align: center;
     display: flex;

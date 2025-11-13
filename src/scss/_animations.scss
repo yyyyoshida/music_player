@@ -131,3 +131,19 @@ body {
     transform: translate(-50%, -50%) scaleY(-1) rotate(-135deg);
   }
 }
+
+.visualizer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 30px;
+
+  &-canvas {
+    flex: 1;
+    width: 100%;
+    width: calc((100% / 2) - 250px);
+    height: 400px;
+    display: block;
+    z-index: 3000;
+  }
+}
