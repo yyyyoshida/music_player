@@ -118,12 +118,10 @@ const BAR_GAP = 6;
 const MIN_BAR_HEIGHT = 3;
 
 const HEIGHT_AT_CENTER = 2;
-const HEIGHT_AT_EDGES = 8;
 
 const SOUND_VALUE_MAX = 255;
 const SMOOTHING_DIVISOR = 3;
 
-const CENTER_WEIGHT = 1;
 const HALF_INDEX_SHIFT = 1;
 const PREV_INDEX = 1;
 
@@ -133,36 +131,28 @@ function drawBars(
   soundData: Uint8Array<ArrayBuffer>
 ) {
   const bars = Math.floor(canvas.width / (BAR_WIDTH + BAR_GAP));
-
-  const maxHeightCenterBased = canvas.height / HEIGHT_AT_CENTER;
-  const maxHeightEdgeBased = canvas.height / HEIGHT_AT_EDGES;
   const centerY = canvas.height / 2;
 
-  for (let barIndex = 0; barIndex < bars; barIndex++) {
-    const barPositionRatio = barIndex / bars;
-
-    // 例えば画面左側のバーから見て左側と右側を高さを混ぜた高さの上限 ↓
-    const maxHeightBlend =
-      maxHeightCenterBased * (CENTER_WEIGHT - barPositionRatio) + maxHeightEdgeBased * barPositionRatio;
-
-    const soundIndex = Math.floor(barPositionRatio * soundData.length);
-
-    // 前後の音データも参照して平均（滑らかに見せるため） ↓
+  for (let i = 0; i < bars; i++) {
+    const ratio = i / bars;
+    const index = Math.floor(ratio * soundData.length);
     const rawValue =
-      (soundData[soundIndex]! +
-        soundData[soundIndex >> HALF_INDEX_SHIFT]! +
-        (soundData[soundIndex - PREV_INDEX] ?? 0)) /
+      (soundData[index]! +
+        (soundData[index >> HALF_INDEX_SHIFT] ?? 0) +
+        (soundData[index - PREV_INDEX] ?? 0)) /
       SMOOTHING_DIVISOR;
 
-    const barHeight = Math.max(
-      Math.min((rawValue / SOUND_VALUE_MAX) * maxHeightCenterBased, maxHeightBlend),
-      MIN_BAR_HEIGHT
-    );
-    const x = barIndex * (BAR_WIDTH + BAR_GAP);
+    let height = (rawValue / SOUND_VALUE_MAX) * (canvas.height / HEIGHT_AT_CENTER);
+
+    height = Math.max(height, MIN_BAR_HEIGHT);
+
+    const x = i * (BAR_WIDTH + BAR_GAP);
 
     ctx.fillStyle = "#D91656";
-    ctx.fillRect(x, centerY - barHeight, BAR_WIDTH, barHeight); // 上側のバーを描画
-    ctx.fillRect(x, centerY, BAR_WIDTH, barHeight); // 下側のバーを描画
+
+    // 中央から上下のバーを描画 ↓
+    ctx.fillRect(x, centerY - height, BAR_WIDTH, height);
+    ctx.fillRect(x, centerY, BAR_WIDTH, height);
   }
 }
 
