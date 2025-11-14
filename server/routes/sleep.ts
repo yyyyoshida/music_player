@@ -32,7 +32,7 @@ router.post("/sleep/tracks", async (req, res) => {
     const newTrackRef = await db.collection("sleepTracks").add({
       ...track,
       playlistIds: foundPlaylistIds,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      addedAt: new Date().toISOString(),
     });
 
     const newTrackSnapshot = await newTrackRef.get();
@@ -77,11 +77,9 @@ router.get("/sleep/tracks", async (_req, res) => {
     const sleepTracksRef = db.collection("sleepTracks").orderBy("addedAt", "asc");
     const sleepTracksSnapshot = await sleepTracksRef.get();
     const sleepTracks = sleepTracksSnapshot.docs.map((doc) => {
-      const data = doc.data();
       return {
         id: doc.id,
         ...doc.data(),
-        addedAt: data.addedAt ? data.addedAt.toDate().toISOString() : null,
       };
     });
 
@@ -135,7 +133,7 @@ router.post("/sleep/spotify-tracks/restore", async (req, res) => {
       const resTrackData = {
         ...trackRest,
         id: newTrackRef.id,
-        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+        addedAt: new Date().toISOString(),
       };
 
       batch.set(newTrackRef, resTrackData);
