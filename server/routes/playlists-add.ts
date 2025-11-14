@@ -43,7 +43,7 @@ router.post("/playlists/:id/spotify-tracks", async (req, res) => {
 
     const newTrackRef = await playlistRef.collection("tracks").add({
       ...track,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      addedAt: new Date().toISOString(),
     });
 
     const newTrackSnapshot = await newTrackRef.get();
@@ -75,7 +75,7 @@ router.post("/playlists/:id/local-tracks", async (req, res) => {
       albumImagePath: track.albumImagePath,
       audioURL: track.audioURL,
       audioPath: track.audioPath,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      addedAt: new Date().toISOString(),
       trackId: track.trackId,
       source: "local",
     });
@@ -170,7 +170,7 @@ router.post(
         albumImagePath: imageResult.albumImagePath,
         audioURL: audioResult.audioURL,
         audioPath: audioResult.audioPath,
-        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+        addedAt: new Date().toISOString(),
         trackId: audioResult.hash,
         source: "local",
       });
