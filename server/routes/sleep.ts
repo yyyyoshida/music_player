@@ -77,11 +77,9 @@ router.get("/sleep/tracks", async (_req, res) => {
     const sleepTracksRef = db.collection("sleepTracks").orderBy("addedAt", "asc");
     const sleepTracksSnapshot = await sleepTracksRef.get();
     const sleepTracks = sleepTracksSnapshot.docs.map((doc) => {
-      const data = doc.data();
       return {
         id: doc.id,
         ...doc.data(),
-        addedAt: data.addedAt ? data.addedAt.toDate().toISOString() : null,
       };
     });
 
