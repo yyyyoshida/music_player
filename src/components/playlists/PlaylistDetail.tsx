@@ -119,7 +119,9 @@ const PlaylistDetail = ({ containerRef }: PlaylistDetailProps) => {
               const addedAt = track.addedAt;
               const date = new Date(addedAt ?? 0);
 
-              return <TrackItem key={track.id} track={track} index={index} date={date.toLocaleString()} parentRef={playlistDetailRef} />;
+              return (
+                <TrackItem key={track?.addedAt || index} track={track} index={index} date={date.toLocaleString()} parentRef={playlistDetailRef} />
+              );
             })}
           </ul>
 

@@ -73,9 +73,11 @@ router.get("/playlists/:id/tracks", async (req, res) => {
       .orderBy("addedAt", "asc");
     const tracksSnapshot = await tracksRef.get();
     const tracks = tracksSnapshot.docs.map((doc) => {
+      const data = doc.data();
       return {
         id: doc.id,
         ...doc.data(),
+        addedAt: data.addedAt ? data.addedAt.toDate().toISOString() : null,
       };
     });
 
