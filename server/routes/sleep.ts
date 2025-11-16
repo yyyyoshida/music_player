@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 import { admin, db } from "../firebase";
 
-router.post("/sleep/spotify-tracks", async (req, res) => {
+router.post("/sleep/tracks", async (req, res) => {
   try {
     const track = req.body;
     const foundPlaylistIds: string[] = [];
@@ -32,7 +32,7 @@ router.post("/sleep/spotify-tracks", async (req, res) => {
     const newTrackRef = await db.collection("sleepTracks").add({
       ...track,
       playlistIds: foundPlaylistIds,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      addedAt: new Date().toISOString(),
     });
 
     const newTrackSnapshot = await newTrackRef.get();
@@ -45,16 +45,41 @@ router.post("/sleep/spotify-tracks", async (req, res) => {
   }
 });
 
-router.get("/sleep/spotify-tracks", async (_req, res) => {
+router.delete("/sleep/playlists/:playlistId/tracks/:trackId", async (req, res) => {
+  try {
+    const { playlistId, trackId } = req.params;
+    const playlistRef = db.collection("playlists").doc(playlistId);
+    const trackRef = playlistRef.collection("tracks").doc(trackId);
+    const trackSnapshot = await trackRef.get();
+
+    if (!trackSnapshot.exists) {
+      return res.status(404).json({ error: "曲が存在しない" });
+    }
+
+    const deletedTrack = trackSnapshot.data();
+    if (!deletedTrack) return res.status(404).json({ error: "曲が存在しない" });
+
+    await trackRef.delete();
+
+    await playlistRef.update({
+      totalDuration: admin.firestore.FieldValue.increment(-deletedTrack.duration_ms),
+    });
+
+    res.status(200).json(deletedTrack);
+  } catch (error) {
+    console.error("曲の削除に失敗", error);
+    res.status(500).json({ error: "曲の削除に失敗" });
+  }
+});
+
+router.get("/sleep/tracks", async (_req, res) => {
   try {
     const sleepTracksRef = db.collection("sleepTracks").orderBy("addedAt", "asc");
     const sleepTracksSnapshot = await sleepTracksRef.get();
     const sleepTracks = sleepTracksSnapshot.docs.map((doc) => {
-      const data = doc.data();
       return {
         id: doc.id,
         ...doc.data(),
-        addedAt: data.addedAt ? data.addedAt.toDate().toISOString() : null,
       };
     });
 
@@ -108,7 +133,7 @@ router.post("/sleep/spotify-tracks/restore", async (req, res) => {
       const resTrackData = {
         ...trackRest,
         id: newTrackRef.id,
-        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+        addedAt: new Date().toISOString(),
       };
 
       batch.set(newTrackRef, resTrackData);

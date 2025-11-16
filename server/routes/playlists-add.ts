@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import sharp from "sharp";
+import crypto from "crypto";
 import { admin, db, bucket } from "../firebase";
 import { validatePlaylistName } from "../utils/playlistValidation";
 const router = express.Router();
@@ -42,7 +43,7 @@ router.post("/playlists/:id/spotify-tracks", async (req, res) => {
 
     const newTrackRef = await playlistRef.collection("tracks").add({
       ...track,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      addedAt: new Date().toISOString(),
     });
 
     const newTrackSnapshot = await newTrackRef.get();
@@ -74,7 +75,8 @@ router.post("/playlists/:id/local-tracks", async (req, res) => {
       albumImagePath: track.albumImagePath,
       audioURL: track.audioURL,
       audioPath: track.audioPath,
-      addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      addedAt: new Date().toISOString(),
+      trackId: track.trackId,
       source: "local",
     });
 
@@ -97,7 +99,9 @@ router.post("/playlists/:id/local-tracks", async (req, res) => {
 
 // 音声ファイルをStorageにアップロードしてURLとパスを返す
 async function uploadAudio(fileBuffer: Buffer, title: string) {
-  const fileName = `tracks/${title}_${Date.now()}.mp3`;
+  const hash = crypto.createHash("sha1").update(fileBuffer).digest("hex");
+
+  const fileName = `tracks/${hash}_${Date.now()}.mp3`;
   const storageFile = bucket.file(fileName);
 
   await storageFile.save(fileBuffer, {
@@ -110,7 +114,7 @@ async function uploadAudio(fileBuffer: Buffer, title: string) {
   const url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
 
   console.log("アップロード完了:", url);
-  return { audioURL: url, audioPath: fileName };
+  return { audioURL: url, audioPath: fileName, hash };
 }
 
 // 画像もあればアップロードしてURLとパスを返す
@@ -166,7 +170,8 @@ router.post(
         albumImagePath: imageResult.albumImagePath,
         audioURL: audioResult.audioURL,
         audioPath: audioResult.audioPath,
-        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+        addedAt: new Date().toISOString(),
+        trackId: audioResult.hash,
         source: "local",
       });
 

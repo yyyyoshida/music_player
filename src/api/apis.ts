@@ -14,7 +14,9 @@ export const API = {
   playlistInfo: (playlistId: string) => `${BASE_URL}/api/playlists/${playlistId}/info`, //プレイリストの詳細取得
 
   // スリープ機能
-  SLEEP_SPOTIFY_TRACKS: `${BASE_URL}/api/sleep/spotify-tracks`,
+  SLEEP_TRACKS: `${BASE_URL}/api/sleep/tracks`,
+  deleteTrackForSleep: (playlistId: string, trackId: string) =>
+    `${BASE_URL}/api/sleep/playlists/${playlistId}/tracks/${trackId}`,
   deleteSleepSpotifyTracks: (trackId: string) => `${BASE_URL}/api/sleep/spotify-tracks/${trackId}`,
   restoreSleepSpotifyTracks: (id: string) => `${BASE_URL}/api/sleep/spotify-tracks/${id}/restore`, // POST
 
