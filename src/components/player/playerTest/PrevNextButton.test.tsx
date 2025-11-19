@@ -22,6 +22,22 @@ describe("PrevNextButton", () => {
     );
   });
 
+  test("前ボタンを押すとgoToPreviousTrack関数が呼ばれる", async () => {
+    render(<PrevNextButton type="prev" />);
+    const button = screen.getByRole("button");
+
+    userEvent.click(button);
+    expect(mockGoToPreviousTrack).toHaveBeenCalledTimes(1);
+  });
+
+  test("次ボタンを押すとgoToNextTrack関数が呼ばれる", async () => {
+    render(<PrevNextButton type="next" />);
+    const button = screen.getByRole("button");
+
+    userEvent.click(button);
+    expect(mockGoToNextTrack).toHaveBeenCalledTimes(1);
+  });
+
   test("前ボタンが無効時は処理が呼ばれない", async () => {
     (usePlaybackStore as unknown as jest.Mock).mockImplementation((selector) =>
       selector({
