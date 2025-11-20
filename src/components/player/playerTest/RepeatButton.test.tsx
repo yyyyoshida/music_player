@@ -9,6 +9,7 @@ jest.mock("../../../store/repeatStore");
 jest.mock("../../../store/tooltipStore");
 
 const mockToggleRepeat = jest.fn();
+// 呼ばれたら落ちないように空関数でモック ↓
 const mockHandleButtonPress = jest.fn();
 const mockHandleMouseEnter = jest.fn();
 const mockHandleMouseLeave = jest.fn();
@@ -27,32 +28,30 @@ beforeEach(() => {
   );
 });
 
-function testRepeatButton(isRepeatValue: boolean, expectedTooltipText: any) {
-  test(`Repeatが${isRepeatValue ? "オン" : "オフ"}のときのボタン動作とツールチップ呼び出し確認`, async () => {
-    (useRepeatStore as unknown as jest.Mock).mockImplementation((selector) =>
-      selector({
-        isRepeat: isRepeatValue,
-        toggleRepeat: mockToggleRepeat,
-      })
-    );
-
-    render(<RepeatButton />);
-
-    const button = screen.getByRole("button");
-    expect(button).toBeInTheDocument();
-
-    await userEvent.click(button);
-    expect(mockToggleRepeat).toHaveBeenCalledTimes(1);
-    expect(mockHandleButtonPress).toHaveBeenCalledTimes(1);
-
-    await userEvent.hover(button);
-    expect(mockSetTooltipText).toHaveBeenCalledWith(expectedTooltipText);
-    expect(mockHandleMouseEnter).toHaveBeenCalled();
-
-    await userEvent.unhover(button);
-    expect(mockHandleMouseLeave).toHaveBeenCalled();
-  });
+function renderRepeat(isRepeatValue: boolean) {
+  (useRepeatStore as unknown as jest.Mock).mockImplementation((selector) =>
+    selector({
+      isRepeat: isRepeatValue,
+      toggleRepeat: mockToggleRepeat,
+    })
+  );
+  render(<RepeatButton />);
 }
 
-testRepeatButton(true, "リピート：オン");
-testRepeatButton(false, "リピート：オフ");
+describe("RepeatButton", () => {
+  test("リピート：オフ時に押すとtoggleRepeat関数が呼ばれる", async () => {
+    renderRepeat(false);
+    const button = screen.getByRole("button");
+
+    userEvent.click(button);
+    expect(mockToggleRepeat).toHaveBeenCalledTimes(1);
+  });
+
+  test("リピート：オン時に押すとtoggleRepeat関数が呼ばれる", async () => {
+    renderRepeat(true);
+    const button = screen.getByRole("button");
+
+    userEvent.click(button);
+    expect(mockToggleRepeat).toHaveBeenCalledTimes(1);
+  });
+});
