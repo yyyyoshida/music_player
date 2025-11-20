@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import PrevNextButton from "../PrevNextButton";
 import usePlaybackStore from "../../../store/playbackStore";
@@ -70,5 +70,28 @@ describe("PrevNextButton", () => {
 
     userEvent.click(button);
     expect(mockGoToNextTrack).not.toHaveBeenCalled();
+  });
+
+  test("前・次ボタンを連打しても1回しか呼ばれない（350ms後に再クリック可能になる）", async () => {
+    jest.useFakeTimers();
+
+    render(<PrevNextButton type="next" />);
+    const button = screen.getByRole("button");
+
+    userEvent.click(button);
+    userEvent.click(button);
+    userEvent.click(button);
+
+    expect(mockGoToNextTrack).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      jest.advanceTimersByTime(350);
+    });
+
+    userEvent.click(button);
+
+    expect(mockGoToNextTrack).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
   });
 });
