@@ -1,86 +1,32 @@
-import { useState, useEffect, useRef } from "react";
-import useDelayedText from "../../hooks/useDelayText";
-import useBarHandler from "../../hooks/useBarHandler";
+import { useRef } from "react";
 import VolumeIcon from "./VolumeIcon";
 import useTooltipStore from "../../store/tooltipStore";
-import usePlayerStore from "../../store/playerStore";
-import { STORAGE_KEYS } from "../../utils/storageKeys";
+import useDelayedText from "../../hooks/useDelayText";
+import useVolumeBar from "../../hooks/useVolumeBar";
 
 type VolumeBarProps = {
   initialValue: number;
 };
 
 const VolumeBar = ({ initialValue }: VolumeBarProps) => {
-  const [isMuted, setIsMuted] = useState(() => {
-    const savedMute = localStorage.getItem(STORAGE_KEYS.IS_MUTED);
-    return savedMute ? JSON.parse(savedMute) : false;
-  });
   const barRef = useRef<HTMLDivElement | null>(null);
-  useDelayedText(isMuted, "ミュート：解除", "ミュート");
-  const audioRef = usePlayerStore((state) => state.audioRef);
-  const updateVolume = usePlayerStore((state) => state.updateVolume);
-  const playerReady = usePlayerStore((state) => state.playerReady);
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
 
+  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
   const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
   const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
   const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
-  const { percentage, setPercentage, handleMouseDown } = useBarHandler({
-    type: "volume",
-    initialValue: initialValue,
-    barRef: barRef,
-    handleVolumeChange: handleVolumeChange,
-  });
 
-  function applyVolume(value: number) {
-    if (!audioRef?.current) return;
-    const clampValue = Math.max(Math.min(value, 1), 0);
-
-    audioRef.current.volume = clampValue;
-    updateVolume(clampValue);
-  }
-
-  function handleVolumeChange(newPercentage: number) {
-    setPercentage(newPercentage);
-    if (!playerReady || isMuted) return;
-    applyVolume(newPercentage / 100);
-  }
-
-  function toggleMute() {
-    handleButtonPress();
-
-    const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-
-    const newVolume = nextMuted ? 0 : percentage / 100;
-    applyVolume(newVolume);
-  }
-
-  useEffect(() => {
-    if (!playerReady) return;
-
-    const savedVolume = localStorage.getItem(STORAGE_KEYS.VOLUME);
-    const initialVolume = savedVolume ? parseFloat(savedVolume) : 30;
-
-    setPercentage(initialVolume);
-
-    !isMuted ? applyVolume(initialVolume / 100) : applyVolume(0);
-  }, [isMuted, playerReady]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.VOLUME, percentage.toString());
-  }, [percentage]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.IS_MUTED, isMuted);
-    if (isMuted) localStorage.setItem(STORAGE_KEYS.VOLUME, percentage.toString());
-  }, [isMuted]);
+  const { percentage, handleMouseDown, toggleMute, isMuted } = useVolumeBar({ initialValue, barRef });
+  useDelayedText(isMuted, "ミュート：解除", "ミュート");
 
   return (
     <>
       <button
         className="player-controls__button player-controls__button--volume"
-        onClick={toggleMute}
+        onClick={() => {
+          toggleMute();
+          handleButtonPress();
+        }}
         onMouseEnter={() => {
           setTooltipText(isMuted ? "ミュート：解除" : "ミュート");
           handleMouseEnter();
