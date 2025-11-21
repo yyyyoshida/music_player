@@ -28,4 +28,28 @@ beforeEach(() => {
   );
 });
 
-describe("VolumeBarコンポーネントテスト", () => {});
+function setupVolumeBar(initialValue: number = 30) {
+  const audioRef = { current: { volume: 0.5 } };
+  (usePlayerStore as unknown as jest.Mock).mockImplementation((selector) =>
+    selector({
+      playerReady: true,
+      updateVolume: mockUpdateVolume,
+      audioRef: audioRef,
+    })
+  );
+  render(<VolumeBar initialValue={initialValue} />);
+
+  return audioRef;
+}
+
+describe("VolumeBarコンポーネントテスト", () => {
+  test("ミュートしたら音量が0になる", async () => {
+    const audioRef = setupVolumeBar();
+    userEvent.click(screen.getByRole("button"));
+
+    // ローカル曲用の処理
+    expect(audioRef.current.volume).toBe(0);
+    // Spotify用の処理
+    expect(mockUpdateVolume).toHaveBeenCalledWith(0);
+  });
+});
