@@ -45,4 +45,14 @@ describe("updatePlaylistsCacheFromSleep", () => {
       albumImages: [trackToRestore.albumImage, "img-B"].slice(0, 4),
     });
   });
+
+  test("一致するIDのプレイリストがない場合、キャッシュは変更されない", () => {
+    const mockPlaylistsCache = JSON.parse(JSON.stringify(basePlaylistsCache));
+    localStorage.setItem(STORAGE_KEYS.PLAYLISTS, JSON.stringify(mockPlaylistsCache));
+
+    updatePlaylistsCacheFromSleep("C", trackToRestore);
+    const result = JSON.parse(localStorage.getItem(STORAGE_KEYS.PLAYLISTS)!);
+
+    expect(result).toEqual(mockPlaylistsCache);
+  });
 });
