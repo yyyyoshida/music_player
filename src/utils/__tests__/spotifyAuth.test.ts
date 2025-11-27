@@ -1,4 +1,4 @@
-import { getNewAccessToken, saveRefreshToken } from "../spotifyAuth";
+import { getNewAccessToken, saveRefreshToken, getRefreshToken } from "../spotifyAuth";
 
 import { STORAGE_KEYS } from "../storageKeys";
 
@@ -65,5 +65,25 @@ describe("saveRefreshToken", () => {
       json: () => Promise.resolve({}),
     });
     await expect(saveRefreshToken("invalid-refresh-token")).rejects.toThrow("リフレッシュトークン保存に失敗");
+  });
+});
+
+describe("getRefreshToken", () => {
+  test("成功時にリフレッシュトークンを返す", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ refresh_token: "new-refresh-token" }),
+    });
+
+    const refreshToken = await getRefreshToken();
+    expect(refreshToken).toBe("new-refresh-token");
+  });
+
+  test("fetchが失敗した場合はエラーを投げる", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({}),
+    });
+    await expect(getRefreshToken()).rejects.toThrow("リフレッシュトークン取得に失敗");
   });
 });
