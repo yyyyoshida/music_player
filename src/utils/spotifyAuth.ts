@@ -1,31 +1,47 @@
 import { API } from "../api/apis";
 import { STORAGE_KEYS } from "./storageKeys";
 
-export async function getNewAccessToken(refreshToken: string | null = null): Promise<string> {
-  const tokenToUse = refreshToken || localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+type TokenResponse = {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+};
 
+export async function getNewAccessToken(refreshToken: string | null = null): Promise<string> {
+  const refreshTokenToUse = refreshToken || localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+  if (!refreshTokenToUse) throw new Error("リフレッシュトークンが存在しない");
+
+  const tokenResponse = await requestNewToken(refreshTokenToUse);
+  saveTokenData(tokenResponse);
+
+  return tokenResponse.access_token;
+}
+
+async function requestNewToken(refreshToken: string) {
   const response = await fetch(API.NEW_TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: tokenToUse }),
+    body: JSON.stringify({ refresh_token: refreshToken }),
   });
 
   if (!response.ok) {
     throw new Error("アクセストークンの更新に失敗しました");
   }
 
-  const data = await response.json();
-  localStorage.setItem(STORAGE_KEYS.TOKEN, data.access_token);
+  return await response.json();
+}
 
-  if (data.refresh_token) {
-    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.refresh_token);
+function saveTokenData(tokenResponse: TokenResponse) {
+  localStorage.setItem(STORAGE_KEYS.TOKEN, tokenResponse.access_token);
+
+  if (tokenResponse.refresh_token) {
+    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokenResponse.refresh_token);
   }
 
-  if (data.expires_in) {
-    const expiryTime = Date.now() + data.expires_in * 1000;
+  if (tokenResponse.expires_in) {
+    const expiryTime = Date.now() + tokenResponse.expires_in * 1000;
     localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, expiryTime.toString());
   }
-  return data.access_token;
 }
 
 export async function saveRefreshToken(refreshToken: string): Promise<void> {
