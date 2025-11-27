@@ -1,4 +1,4 @@
-import { getNewAccessToken, saveRefreshToken, getRefreshToken } from "../spotifyAuth";
+import { getNewAccessToken, saveRefreshToken, getRefreshToken, isValidToken } from "../spotifyAuth";
 
 import { STORAGE_KEYS } from "../storageKeys";
 
@@ -85,5 +85,34 @@ describe("getRefreshToken", () => {
       json: () => Promise.resolve({}),
     });
     await expect(getRefreshToken()).rejects.toThrow("リフレッシュトークン取得に失敗");
+  });
+});
+
+const ONE_SECOND_MS = 1000;
+const FIVE_MINUTES_MS = 5 * 60 * 1000;
+
+describe("isValidToken", () => {
+  test("トークンの期限がない場合はfalseを返す", () => {
+    expect(isValidToken()).toBe(false);
+  });
+
+  test("トークンの期限が5分以上残ってる場合はtrueを返す", () => {
+    const validTime = Date.now() + FIVE_MINUTES_MS + ONE_SECOND_MS;
+    localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, String(validTime));
+    expect(isValidToken()).toBe(true);
+  });
+
+  test("トークンの期限が過ぎている場合はfalseを返す", () => {
+    const expiredTime = Date.now() - ONE_SECOND_MS;
+
+    localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, String(expiredTime));
+    expect(isValidToken()).toBe(false);
+  });
+
+  test("トークンの期限が5分以内に切れる場合はfalseを返す", () => {
+    const expiringSoonTime = Date.now() + FIVE_MINUTES_MS - ONE_SECOND_MS;
+
+    localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, String(expiringSoonTime));
+    expect(isValidToken()).toBe(false);
   });
 });
