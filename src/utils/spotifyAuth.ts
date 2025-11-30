@@ -80,13 +80,18 @@ export function isValidToken() {
 }
 
 // Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
-export async function fetchSpotifyAPI(url: string, options: RequestInit = {}): Promise<Response> {
+export async function fetchSpotifyAPI(
+  url: string,
+  options: RequestInit = {},
+  isValidTokenFn = isValidToken,
+  getNewAccessTokenFn = getNewAccessToken
+): Promise<Response> {
   let token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-  console.log("トークンは有効かどうか：", isValidToken());
 
-  if (!isValidToken()) {
+  if (!isValidTokenFn()) {
+    console.log("トークンが無効なので再取得します");
     try {
-      token = await getNewAccessToken();
+      token = await getNewAccessTokenFn();
       if (!token) throw new Error("トークン再取得できなかった");
     } catch (error) {
       console.error("トークン再取得失敗:", error);
