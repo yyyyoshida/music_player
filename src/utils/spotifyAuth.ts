@@ -1,31 +1,47 @@
 import { API } from "../api/apis";
 import { STORAGE_KEYS } from "./storageKeys";
 
-export async function getNewAccessToken(refreshToken: string | null = null): Promise<string> {
-  const tokenToUse = refreshToken || window.localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+type TokenResponse = {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+};
 
+export async function getNewAccessToken(refreshToken: string | null = null): Promise<string> {
+  const refreshTokenToUse = refreshToken || localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+  if (!refreshTokenToUse) throw new Error("リフレッシュトークンが存在しない");
+
+  const tokenResponse = await requestNewToken(refreshTokenToUse);
+  saveTokenData(tokenResponse);
+
+  return tokenResponse.access_token;
+}
+
+async function requestNewToken(refreshToken: string) {
   const response = await fetch(API.NEW_TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: tokenToUse }),
+    body: JSON.stringify({ refresh_token: refreshToken }),
   });
 
   if (!response.ok) {
     throw new Error("アクセストークンの更新に失敗しました");
   }
 
-  const data = await response.json();
-  window.localStorage.setItem(STORAGE_KEYS.TOKEN, data.access_token);
+  return await response.json();
+}
 
-  if (data.refresh_token) {
-    window.localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.refresh_token);
+function saveTokenData(tokenResponse: TokenResponse) {
+  localStorage.setItem(STORAGE_KEYS.TOKEN, tokenResponse.access_token);
+
+  if (tokenResponse.refresh_token) {
+    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokenResponse.refresh_token);
   }
 
-  if (data.expires_in) {
-    const expiryTime = Date.now() + data.expires_in * 1000;
-    window.localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, expiryTime.toString());
+  if (tokenResponse.expires_in) {
+    const expiryTime = Date.now() + tokenResponse.expires_in * 1000;
+    localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, expiryTime.toString());
   }
-  return data.access_token;
 }
 
 export async function saveRefreshToken(refreshToken: string): Promise<void> {
@@ -56,7 +72,7 @@ export async function getRefreshToken(): Promise<string> {
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
 export function isValidToken() {
-  const expiryString = window.localStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRY);
+  const expiryString = localStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRY);
   if (!expiryString) return false;
 
   const expiry = Number(expiryString);
@@ -64,13 +80,18 @@ export function isValidToken() {
 }
 
 // Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
-export async function fetchSpotifyAPI(url: string, options: RequestInit = {}): Promise<Response> {
-  let token = window.localStorage.getItem(STORAGE_KEYS.TOKEN);
-  console.log("トークンは有効かどうか：", isValidToken());
+export async function fetchSpotifyAPI(
+  url: string,
+  options: RequestInit = {},
+  isValidTokenFn = isValidToken,
+  getNewAccessTokenFn = getNewAccessToken
+): Promise<Response> {
+  let token = localStorage.getItem(STORAGE_KEYS.TOKEN);
 
-  if (!isValidToken()) {
+  if (!isValidTokenFn()) {
+    console.log("トークンが無効なので再取得します");
     try {
-      token = await getNewAccessToken();
+      token = await getNewAccessTokenFn();
       if (!token) throw new Error("トークン再取得できなかった");
     } catch (error) {
       console.error("トークン再取得失敗:", error);
@@ -120,7 +141,7 @@ export async function initSpotifyPlayer({
   setToken,
 }: SpotifyInitArgs): Promise<{ playerInstance: Spotify.Player }> {
   const DEFAULT_VOLUME = 0.3;
-  const currentToken = window.localStorage.getItem(STORAGE_KEYS.TOKEN);
+  const currentToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
 
   await loadSpotifySDK();
 
