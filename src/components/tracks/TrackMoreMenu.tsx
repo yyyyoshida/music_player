@@ -22,7 +22,7 @@ const TrackMoreMenu = () => {
   const { sleepTrack } = useSleepTracks();
   const menuRef = useRef<HTMLDivElement>(null);
   const isButtonHoveredRef = useRef<boolean>(null);
-  const isNotSearchPage = window.location.pathname !== "/search-result";
+  const isNotSearchPage = window.location.pathname !== "/search";
 
   useEffect(() => {
     isButtonHoveredRef.current = isTrackMenuButtonHovered;

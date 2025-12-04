@@ -30,7 +30,7 @@ const TrackItem = ({ track, index, date, parentRef }: TrackItemProps) => {
   if ("albumImage" in track) isUsedFallbackImage = isFallback(track.albumImage);
 
   const location = useLocation();
-  const isSearchPage = location.pathname === "/search-result";
+  const isSearchPage = location.pathname === "/search";
   const { buttonRef, isCurrentTrack, isActiveTrack, handleClickTrackItem, setButtonPosition } = useTrackItem(track, index, date, parentRef);
 
   return (

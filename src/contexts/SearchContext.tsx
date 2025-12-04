@@ -27,7 +27,7 @@ export const SearchProvider = ({ children }: SearchContextProviderProps) => {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname !== "/search-result") return;
+    if (location.pathname !== "/search") return;
 
     setQueue(searchResults);
   }, [searchResults, location.pathname]);
