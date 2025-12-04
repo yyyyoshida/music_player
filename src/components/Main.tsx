@@ -43,7 +43,7 @@ const Main = () => {
               <Route path="/" element={<Home />} />
               <Route path="/search-result" element={<SearchResult containerRef={containerRef} />} />
               <Route path="/playlist" element={<Playlist />} />
-              <Route path="/playlist-detail/:id" element={<PlaylistDetail containerRef={containerRef} />} />
+              <Route path="/playlist/:id" element={<PlaylistDetail containerRef={containerRef} />} />
               <Route path="/sleep" element={<Sleep />} />
             </Routes>
             <PlayerControls />

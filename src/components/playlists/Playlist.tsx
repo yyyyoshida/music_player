@@ -21,7 +21,7 @@ const Playlist = () => {
   const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
 
   function handlePlaylistClick(playlistId: string) {
-    navigate(`/playlist-detail/${playlistId}`);
+    navigate(`/playlist/${playlistId}`);
   }
 
   return (
