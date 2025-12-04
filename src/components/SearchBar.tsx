@@ -16,7 +16,7 @@ const SearchBar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (!token || location.pathname !== "/search-result" || !queryRef.current) return;
+    if (!token || location.pathname !== "/search" || !queryRef.current) return;
 
     const savedQuery = localStorage.getItem(STORAGE_KEYS.SEARCH_QUERY) || "";
 
@@ -83,7 +83,7 @@ const SearchBar = () => {
 
     setQuery(queryText);
     localStorage.setItem(STORAGE_KEYS.SEARCH_QUERY, queryText);
-    navigate(`/search-result?query=${encodeURIComponent(queryText)}`);
+    navigate(`/search?query=${encodeURIComponent(queryText)}`);
 
     try {
       const encodedQuery = encodeURIComponent(queryText);
