@@ -15,7 +15,7 @@ function Header() {
   return (
     <header className="sidebar-header">
       <h1 className="sidebar-header__logo">
-        <a href="#">音楽プレイヤー</a>
+        <Link to="/">音楽プレイヤー</Link>
       </h1>
       <div className="sidebar-header__user">
         <img src={userIcon} alt="" className="sidebar-header__user-icon" />
@@ -25,16 +25,16 @@ function Header() {
       <nav className="sidebar-header__nav">
         <ul className="sidebar-header__list">
           <li className="sidebar-header__item">
-            <a className="sidebar-header__link" href="/">
+            <Link className="sidebar-header__link" to="/">
               <img src="/img/ホームアイコン (1).png" alt="" className="sidebar-header__item-icon" />
               ホーム
-            </a>
+            </Link>
           </li>
           <li className="sidebar-header__item">
-            <a className="sidebar-header__link" href="/playlist">
+            <Link className="sidebar-header__link" to="/playlist">
               <img src="/img/ソングリストアイコン1 (1).png" alt="" className="sidebar-header__item-icon" />
               プレイリスト
-            </a>
+            </Link>
           </li>
 
           <li className="sidebar-header__item">
