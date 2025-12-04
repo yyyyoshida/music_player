@@ -46,16 +46,16 @@ function Header() {
 
           <LocalFileImportNav />
 
-          <li
-            className="sidebar-header__item"
-            onClick={() => {
-              showMessage("未実装");
-            }}
-          >
-            <a className="sidebar-header__link" href="#">
+          <li className="sidebar-header__item">
+            <button
+              className="sidebar-header__link"
+              onClick={() => {
+                showMessage("未実装");
+              }}
+            >
               <img src="/img/無料の設定歯車アイコン (1).png" alt="" className="sidebar-header__item-icon" />
               設定
-            </a>
+            </button>
           </li>
         </ul>
       </nav>
