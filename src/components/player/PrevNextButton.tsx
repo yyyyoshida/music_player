@@ -9,12 +9,8 @@ type PrevNextButtonProps = {
 const PrevNextButton = ({ type }: PrevNextButtonProps) => {
   const CLICK_DELAY = 350;
   const [isClickable, setIsClickable] = useState(true);
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
-  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
-  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
-  const goToNextTrack = usePlaybackStore((state) => state.goToNextTrack);
-  const goToPreviousTrack = usePlaybackStore((state) => state.goToPreviousTrack);
+  const { setTooltipText, handleButtonPress, handleMouseEnter, handleMouseLeave } = useTooltipStore.getState();
+  const { goToNextTrack, goToPreviousTrack } = usePlaybackStore.getState();
   const isPrevDisabled = usePlaybackStore((state) => state.isPrevDisabled);
   const isNextDisabled = usePlaybackStore((state) => state.isNextDisabled);
 

@@ -5,12 +5,8 @@ import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore"
 
 const ShuffleButton = () => {
   const [isShuffle, setIsShuffle] = useState(false);
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
-  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
-  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
-
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const { setTooltipText, handleButtonPress, handleMouseEnter, handleMouseLeave } = useTooltipStore.getState();
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   useDelayedText(isShuffle, "シャッフル：オン", "シャッフル：オフ");
 
