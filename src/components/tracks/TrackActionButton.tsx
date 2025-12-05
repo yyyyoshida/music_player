@@ -9,10 +9,7 @@ type TrackActionButtonProps = {
 };
 
 const TrackActionButton = ({ type, clickAction, buttonRef }: TrackActionButtonProps) => {
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
-  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
-  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
+  const { setTooltipText, handleButtonPress, handleMouseEnter, handleMouseLeave } = useTooltipStore.getState();
 
   return (
     <button

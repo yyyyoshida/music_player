@@ -17,10 +17,7 @@ const TrackInfo = () => {
   const currentCoverImage = usePlaybackStore((state) => state.currentCoverImage);
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
 
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
-  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
-  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
+  const { setTooltipText, handleButtonPress, handleMouseEnter, handleMouseLeave } = useTooltipStore.getState();
 
   const { handleTrackInfoClick, isVisible } = useTrackInfoContext();
   useDelayedText(isVisible, "全画面表示：オフ", "全画面表示");
