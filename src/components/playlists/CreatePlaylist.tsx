@@ -2,7 +2,9 @@ import { useEffect, useRef } from "react";
 import { FALLBACK_COVER_IMAGE, warningIcon } from "../../assets/icons";
 import usePlaylistStore from "../../store/playlistStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import type { TrackObject } from "../../types/tracksType";
+import { handleCreatePlaylist } from "../../utils/playlistUtils";
 
 function getPlaylistCover(track: TrackObject | null): string {
   if (!track) return FALLBACK_COVER_IMAGE;
@@ -25,9 +27,20 @@ const CreatePlaylist = () => {
   const errorMessage = usePlaylistStore((state) => state.errorMessage);
   const isShaking = usePlaylistStore((state) => state.isShaking);
   const setIsShaking = usePlaylistStore((state) => state.setIsShaking);
-  const hideCreatePlaylistModal = usePlaylistStore((state) => state.hideCreatePlaylistModal);
-  const handleCreatePlaylist = usePlaylistStore((state) => state.handleCreatePlaylist);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
+
+  const { hideCreatePlaylistModal, triggerError, setPreselectedTrack, setRefreshTrigger } = usePlaylistStore.getState();
+  const closePlaylistSelectModal = usePlaylistSelectionStore.getState().closePlaylistSelectModal;
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
+
+  const handleCreatePlaylistActions = {
+    hideCreatePlaylistModal,
+    triggerError,
+    setPreselectedTrack,
+    setRefreshTrigger,
+    closePlaylistSelectModal,
+    showMessage,
+  };
 
   const playlistNameRef = useRef<HTMLInputElement>(null);
   const playlistCover = getPlaylistCover(selectedTrack);
@@ -72,7 +85,7 @@ const CreatePlaylist = () => {
               className="playlist-page__create-playlist-modal-input modal-input"
               id="title"
               ref={playlistNameRef}
-              onKeyDown={(e) => e.key === "Enter" && handleCreatePlaylist(playlistNameRef.current?.value ?? "")}
+              onKeyDown={(e) => e.key === "Enter" && handleCreatePlaylist(playlistNameRef.current?.value ?? "", handleCreatePlaylistActions)}
             />
 
             {errorMessage && (
@@ -91,7 +104,7 @@ const CreatePlaylist = () => {
             </button>
             <button
               className="playlist-page__create-playlist-modal-create modal-cancel-submit-button modal-submit-button"
-              onClick={() => handleCreatePlaylist(playlistNameRef.current?.value ?? "")}
+              onClick={() => handleCreatePlaylist(playlistNameRef.current?.value ?? "", handleCreatePlaylistActions)}
             >
               作成
             </button>
