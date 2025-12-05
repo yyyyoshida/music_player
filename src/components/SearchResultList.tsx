@@ -12,7 +12,7 @@ type TrackListProps = {
 
 const TrackList = ({ containerRef }: TrackListProps) => {
   const { searchResults, query } = useSearchContext();
-  const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
+  const setTrackOrigin = usePlaybackStore.getState().setTrackOrigin;
 
   const IMAGES_LOADED_COUNT = 10;
   const LOADING_DELAY = 100;

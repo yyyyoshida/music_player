@@ -6,7 +6,7 @@ import { SLEEP_ICON_16PX } from "../assets/icons";
 import { Link } from "react-router-dom";
 
 function Header() {
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
   const { profile } = useUserContext();
 
   const userIcon = profile?.images?.[1]?.url ?? "/img/dummy-user.jpg";

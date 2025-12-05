@@ -9,7 +9,7 @@ import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const SearchBar = () => {
   const { setQuery, setSearchResults, setHasSearchError, query } = useSearchContext();
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
   const token = useTokenStore((state) => state.token);
   const queryRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();

@@ -7,7 +7,7 @@ const UploadStatusModal = () => {
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack) as LocalTrack;
 
   const isUploadModalVisible = useUploadModalStore((state) => state.isUploadModalVisible);
-  const hideUploadModal = useUploadModalStore((state) => state.hideUploadModal);
+  const hideUploadModal = useUploadModalStore.getState().hideUploadModal;
   // let trackCoverImage;
   const isUsedFallbackImage = selectedTrack?.albumImage === FALLBACK_COVER_IMAGE;
 
