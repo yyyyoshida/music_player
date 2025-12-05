@@ -24,7 +24,6 @@ type PlaylistStore = {
 
   errorMessage: string;
   isShaking: boolean;
-  preselectedTrack: PlaylistObject | null;
   isCoverImageFading: boolean;
   refreshTrigger: number;
 
@@ -40,7 +39,6 @@ type PlaylistStore = {
 
   setErrorMessage: (errorMessage: string) => void;
   setIsShaking: (isShaking: boolean) => void;
-  setPreselectedTrack: (preselectedTrack: PlaylistObject | null) => void;
   setIsCoverImageFading: (isCoverImageFading: boolean) => void;
   setRefreshTrigger: (value: number | ((prev: number) => number)) => void;
 
@@ -73,7 +71,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
 
   errorMessage: "",
   isShaking: false,
-  preselectedTrack: null,
   isCoverImageFading: false,
   refreshTrigger: 0,
 
@@ -98,7 +95,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     })),
   setErrorMessage: (errorMessage) => set({ errorMessage }),
   setIsShaking: (isShaking) => set({ isShaking }),
-  setPreselectedTrack: (preselectedTrack) => set({ preselectedTrack }),
   setIsCoverImageFading: (isCoverImageFading) => set({ isCoverImageFading }),
   setRefreshTrigger: (value) =>
     set((state) => ({ refreshTrigger: typeof value === "function" ? value(state.refreshTrigger) : value })),
