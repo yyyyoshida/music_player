@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { clearPlaylistCache } from "../utils/clearPlaylistCache";
 import { getPlaylistInfo } from "../utils/playlistUtils";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
-import validatePlaylistName from "../utils/validatePlaylistName";
 import type { TrackObject } from "../types/tracksType";
 import type { PlaylistObject } from "../types/playlistType";
 import { API } from "../api/apis";
@@ -25,7 +24,6 @@ type PlaylistStore = {
 
   errorMessage: string;
   isShaking: boolean;
-  preselectedTrack: PlaylistObject | null;
   isCoverImageFading: boolean;
   refreshTrigger: number;
 
@@ -41,7 +39,6 @@ type PlaylistStore = {
 
   setErrorMessage: (errorMessage: string) => void;
   setIsShaking: (isShaking: boolean) => void;
-  setPreselectedTrack: (preselectedTrack: PlaylistObject | null) => void;
   setIsCoverImageFading: (isCoverImageFading: boolean) => void;
   setRefreshTrigger: (value: number | ((prev: number) => number)) => void;
 
@@ -52,7 +49,6 @@ type PlaylistStore = {
   showDeletePlaylistModal: () => void;
   hideDeletePlaylistModal: () => void;
   triggerError: (message: string) => void;
-  handleCreatePlaylist: (name: string | null) => Promise<void> | Promise<string>;
   deletePlaylist: (playlistId: string, navigate: (url: string) => void) => Promise<void>;
   showCoverImages: () => void;
   fadeCoverImages: () => void;
@@ -75,7 +71,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
 
   errorMessage: "",
   isShaking: false,
-  preselectedTrack: null,
   isCoverImageFading: false,
   refreshTrigger: 0,
 
@@ -100,7 +95,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     })),
   setErrorMessage: (errorMessage) => set({ errorMessage }),
   setIsShaking: (isShaking) => set({ isShaking }),
-  setPreselectedTrack: (preselectedTrack) => set({ preselectedTrack }),
   setIsCoverImageFading: (isCoverImageFading) => set({ isCoverImageFading }),
   setRefreshTrigger: (value) =>
     set((state) => ({ refreshTrigger: typeof value === "function" ? value(state.refreshTrigger) : value })),
@@ -125,53 +119,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
 
   triggerError: (message) => {
     set({ errorMessage: message, isShaking: true });
-  },
-
-  handleCreatePlaylist: async (name) => {
-    const { hideCreatePlaylistModal, triggerError } = get();
-    const showMessage = useActionSuccessMessageStore.getState().showMessage;
-    name = name ?? "";
-
-    const validationError = validatePlaylistName(name);
-
-    if (validationError) {
-      return triggerError(validationError);
-    }
-
-    try {
-      const response = await fetch(API.PLAYLISTS, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
-      });
-
-      if (!response.ok) {
-        try {
-          // サーバー側のプレイリスト名のバリデーションエラーが入る
-          const data = await response.json();
-          triggerError(data.error);
-        } catch (error) {
-          // バリデーション以外のエラー
-          console.error("プレイリスト名バリデーション以外のエラー", error);
-          showMessage("newPlaylistFailed");
-          hideCreatePlaylistModal();
-        }
-        return;
-      }
-
-      const data = await response.json();
-      showMessage("newPlaylist");
-      set((state) => ({
-        preselectedTrack: null,
-        refreshTrigger: state.refreshTrigger + 1,
-      }));
-      hideCreatePlaylistModal();
-    } catch {
-      showMessage("newPlaylistFailed");
-      hideCreatePlaylistModal();
-    }
   },
 
   deletePlaylist: async (playlistId, navigate) => {
