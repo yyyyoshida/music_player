@@ -10,8 +10,7 @@ type DeletePlaylistModalProps = {
 
 const DeletePlaylistModal = ({ tracks, id }: DeletePlaylistModalProps) => {
   const isDeleteVisible = usePlaylistStore((state) => state.isDeleteVisible);
-  const hideDeletePlaylistModal = usePlaylistStore((state) => state.hideDeletePlaylistModal);
-  const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
+  const { hideDeletePlaylistModal, deletePlaylist } = usePlaylistStore.getState();
   const navigate = useNavigate();
 
   return (

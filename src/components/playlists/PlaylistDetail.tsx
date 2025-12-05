@@ -30,13 +30,13 @@ const PlaylistDetail = ({ containerRef }: PlaylistDetailProps) => {
   const addedTrackDuration = usePlaylistStore((state) => state.addedTrackDuration);
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
-  const showDeletePlaylistModal = usePlaylistStore((state) => state.showDeletePlaylistModal);
+  const showDeletePlaylistModal = usePlaylistStore.getState().showDeletePlaylistModal;
 
   const queue = usePlaybackStore((state) => state.queue);
-  const playTrackAtIndex = usePlaybackStore((state) => state.playTrackAtIndex);
+  const playTrackAtIndex = usePlaybackStore.getState().playTrackAtIndex;
 
-  const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const setIsTrackSet = usePlayerStore.getState().setIsTrackSet;
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   const LOADING_DELAY = 200;
   const isEmptyPlaylist = tracks.length === 0;

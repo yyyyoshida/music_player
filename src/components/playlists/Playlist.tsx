@@ -10,7 +10,7 @@ import usePlaylistStore from "../../store/playlistStore";
 import { formatTimeHours } from "../../utils/formatTime";
 
 const Playlist = () => {
-  const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
+  const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
   const { playlists } = useFetchPlaylists();
   const navigate = useNavigate();
 
