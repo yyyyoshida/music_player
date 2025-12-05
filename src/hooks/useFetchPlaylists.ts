@@ -7,11 +7,11 @@ import { STORAGE_KEYS } from "../utils/storageKeys";
 const useFetchPlaylists = () => {
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
   const playlists = usePlaylistStore((state) => state.playlists);
-  const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
+  const setPlaylists = usePlaylistStore.getState().setPlaylists;
   const refreshTrigger = usePlaylistStore((state) => state.refreshTrigger);
-  const setRefreshTrigger = usePlaylistStore((state) => state.setRefreshTrigger);
+  const setRefreshTrigger = usePlaylistStore.getState().setRefreshTrigger;
 
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   function fetchPlaylistsFailed(logValue: unknown): void {
     console.error("プレイリスト一覧の取得失敗: ", logValue as number | Error);

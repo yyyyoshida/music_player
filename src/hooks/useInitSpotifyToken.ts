@@ -6,7 +6,7 @@ import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const useInitSpotifyToken = (): void => {
   const setToken = useTokenStore((state) => state.setToken);
-  const setIsToken = useTokenStore((state) => state.setIsToken);
+  const setIsToken = useTokenStore.getState().setIsToken;
 
   async function initTokenFromCache(): Promise<boolean> {
     const localAccessToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
