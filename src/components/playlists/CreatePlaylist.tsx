@@ -28,18 +28,20 @@ const CreatePlaylist = () => {
   const isShaking = usePlaylistStore((state) => state.isShaking);
   const setIsShaking = usePlaylistStore((state) => state.setIsShaking);
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
+  const addTrackToPlaylist = usePlaylistSelectionStore((state) => state.addTrackToPlaylist);
 
-  const { hideCreatePlaylistModal, triggerError, setPreselectedTrack, setRefreshTrigger } = usePlaylistStore.getState();
-  const closePlaylistSelectModal = usePlaylistSelectionStore.getState().closePlaylistSelectModal;
+  const { hideCreatePlaylistModal, triggerError, setRefreshTrigger } = usePlaylistStore.getState();
+  const { closePlaylistSelectModal, setSelectedTrack } = usePlaylistSelectionStore.getState();
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   const handleCreatePlaylistActions = {
     hideCreatePlaylistModal,
     triggerError,
-    setPreselectedTrack,
+    setSelectedTrack,
     setRefreshTrigger,
     closePlaylistSelectModal,
     showMessage,
+    addTrackToPlaylist,
   };
 
   const playlistNameRef = useRef<HTMLInputElement>(null);

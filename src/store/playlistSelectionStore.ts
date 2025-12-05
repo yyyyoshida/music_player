@@ -15,7 +15,7 @@ type PlaylistSelectStore = {
   localCoverImageUrl: string | null;
   uploadTrackFile: File | null;
 
-  setSelectedTrack: (selectedTrack: TrackObject) => void;
+  setSelectedTrack: (selectedTrack: TrackObject | null) => void;
   setLocalCoverImageUrl: (localCoverImageUrl: string | null) => void;
   setUploadTrackFile: (uploadTrackFile: File | null) => void;
 
