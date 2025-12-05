@@ -23,7 +23,7 @@ export const SearchProvider = ({ children }: SearchContextProviderProps) => {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<TrackObject[]>([]);
   const [hasSearchError, setHasSearchError] = useState(false);
-  const setQueue = usePlaybackStore((state) => state.setQueue);
+  const setQueue = usePlaybackStore.getState().setQueue;
   const location = useLocation();
 
   useEffect(() => {
