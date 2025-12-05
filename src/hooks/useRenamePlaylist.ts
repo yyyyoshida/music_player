@@ -18,10 +18,7 @@ const useRenamePlaylist = (
   RenameRef: React.RefObject<HTMLInputElement | null>,
   isRenameVisible: boolean
 ): RenamePlaylistReturn => {
-  const triggerError = usePlaylistStore((state) => state.triggerError);
-  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
-  const setPlaylists = usePlaylistStore((state) => state.setPlaylists);
-  const setErrorMessage = usePlaylistStore((state) => state.setErrorMessage);
+  const { triggerError, setPlaylistInfo, setPlaylists, setErrorMessage } = usePlaylistStore.getState();
   const playlistInfo = usePlaylistStore((state) => state.playlistInfo);
   const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
 
