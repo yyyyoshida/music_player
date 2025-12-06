@@ -9,11 +9,9 @@ import usePlaylistStore from "../../store/playlistStore";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 
 const PlaylistSelection = () => {
-  const showCreatePlaylistModal = usePlaylistStore((state) => state.showCreatePlaylistModal);
+  const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
-  const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
-  const closePlaylistSelectModal = usePlaylistSelectionStore((state) => state.closePlaylistSelectModal);
-  const addTrackToPlaylist = usePlaylistSelectionStore((state) => state.addTrackToPlaylist);
+  const { openPlaylistSelectModal, closePlaylistSelectModal, addTrackToPlaylist } = usePlaylistSelectionStore.getState();
 
   const LOADING_DELAY = 200;
 

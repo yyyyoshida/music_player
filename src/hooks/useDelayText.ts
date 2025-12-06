@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import useTooltipStore from "../store/tooltipStore";
 
 const useDelayedText = (isTrue: boolean, offText: string, onText: string): void => {
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
+  const setTooltipText = useTooltipStore.getState().setTooltipText;
 
   useEffect(() => {
     setTooltipText(isTrue ? offText : onText);

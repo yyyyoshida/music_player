@@ -6,9 +6,7 @@ type TrackSourceIconProps = {
 };
 
 const TrackSourceIcon = ({ source }: TrackSourceIconProps) => {
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
-  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
+  const { setTooltipText, handleMouseEnter, handleMouseLeave } = useTooltipStore.getState();
 
   return (
     <div

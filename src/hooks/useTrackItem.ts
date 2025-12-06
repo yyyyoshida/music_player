@@ -21,15 +21,13 @@ const useTrackItem = (
 ): UseTrackItemReturn => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playDisable = usePlayerStore((state) => state.playDisable);
-  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
-  const setIsTrackSet = usePlayerStore((state) => state.setIsTrackSet);
+  const { togglePlayPause, setIsTrackSet } = usePlayerStore.getState();
 
   const currentTrackId = usePlaybackStore((state) => state.currentTrackId);
-  const setCurrentPlayedAt = usePlaybackStore((state) => state.setCurrentPlayedAt);
-  const playTrackAtIndex = usePlaybackStore((state) => state.playTrackAtIndex);
+  const { setCurrentPlayedAt, playTrackAtIndex } = usePlaybackStore.getState();
 
-  const setTrackMenuPositionTop = useTrackMoreMenuStore((state) => state.setTrackMenuPositionTop);
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const setTrackMenuPositionTop = useTrackMoreMenuStore.getState().setTrackMenuPositionTop;
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const isCurrentTrack = currentTrackId === track.id;

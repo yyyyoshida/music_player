@@ -8,16 +8,16 @@ import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import useSleepTracks from "../../hooks/useSleepTracks";
 
 const TrackMoreMenu = () => {
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
   const menuTrackId = useTrackMoreMenuStore((state) => state.menuTrackId);
-  const deleteTrack = usePlaylistStore((state) => state.deleteTrack);
+  const deleteTrack = usePlaylistStore.getState().deleteTrack;
 
   const isTrackMenuButtonHovered = useTrackMoreMenuStore((state) => state.isTrackMenuButtonHovered);
   const trackMenuPositionTop = useTrackMoreMenuStore((state) => state.trackMenuPositionTop);
   const isTrackMenuVisible = useTrackMoreMenuStore((state) => state.isTrackMenuVisible);
-  const closeTrackMenu = useTrackMoreMenuStore((state) => state.closeTrackMenu);
+  const closeTrackMenu = useTrackMoreMenuStore.getState().closeTrackMenu;
 
-  const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
+  const openPlaylistSelectModal = usePlaylistSelectionStore.getState().openPlaylistSelectModal;
 
   const { sleepTrack } = useSleepTracks();
   const menuRef = useRef<HTMLDivElement>(null);

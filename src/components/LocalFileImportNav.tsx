@@ -24,8 +24,8 @@ const LocalFileImportNav = () => {
   const [trackDuration, setTrackDuration] = useState<number | null>(null);
   const [tags, setTags] = useState<MediaTags | null>(null);
 
-  const handleTrackSelect = usePlaylistSelectionStore((state) => state.handleTrackSelect);
-  const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
+  const { handleTrackSelect } = usePlaylistSelectionStore.getState();
+  const setTrackOrigin = usePlaybackStore.getState().setTrackOrigin;
 
   function handleClick() {
     setTrackOrigin("local");

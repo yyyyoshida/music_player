@@ -19,12 +19,9 @@ type TrackItemProps = {
 };
 
 const TrackItem = ({ track, index, date, parentRef }: TrackItemProps) => {
-  const setMenuTrackId = useTrackMoreMenuStore((state) => state.setMenuTrackId);
-  const toggleTrackMenu = useTrackMoreMenuStore((state) => state.toggleTrackMenu);
-
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
-  const openPlaylistSelectModal = usePlaylistSelectionStore((state) => state.openPlaylistSelectModal);
-  const handleTrackSelect = usePlaylistSelectionStore((state) => state.handleTrackSelect);
+  const { setMenuTrackId, toggleTrackMenu } = useTrackMoreMenuStore.getState();
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
+  const { openPlaylistSelectModal, handleTrackSelect } = usePlaylistSelectionStore.getState();
 
   let isUsedFallbackImage = false;
   if ("albumImage" in track) isUsedFallbackImage = isFallback(track.albumImage);

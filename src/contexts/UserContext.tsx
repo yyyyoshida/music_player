@@ -26,8 +26,8 @@ const UserContext = createContext<UserContextType | null>(null);
 
 export const UserProvider = ({ children }: UserProviderProps) => {
   const token = useTokenStore((state) => state.token);
-  const setIsToken = useTokenStore((state) => state.setIsToken);
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const setIsToken = useTokenStore.getState().setIsToken;
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
   const [profile, setProfile] = useState<UserContextType["profile"]>(null);
 
   async function fetchProfile() {

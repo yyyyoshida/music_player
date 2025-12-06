@@ -4,7 +4,7 @@ import { useVisualizerStore } from "../store/visualizerStore";
 const useVisualizer = () => {
   const leftCanvasRef = useRef<HTMLCanvasElement>(null);
   const rightCanvasRef = useRef<HTMLCanvasElement>(null);
-  const setCanvasRefs = useVisualizerStore((state) => state.setCanvasRefs);
+  const setCanvasRefs = useVisualizerStore.getState().setCanvasRefs;
 
   useEffect(() => {
     if (!leftCanvasRef.current || !rightCanvasRef.current) return;

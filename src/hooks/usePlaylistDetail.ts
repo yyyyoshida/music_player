@@ -10,15 +10,11 @@ const usePlaylistDetail = (
   id: string | undefined,
   containerRef: React.RefObject<HTMLElement | null>
 ): void => {
-  const setCurrentPlaylistId = usePlaylistStore((state) => state.setCurrentPlaylistId);
-  const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
-  const setAddedTrackDuration = usePlaylistStore((state) => state.setAddedTrackDuration);
-  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
-  const setTracks = usePlaylistStore((state) => state.setTracks);
+  const { setCurrentPlaylistId, setDeletedTrackDuration, setAddedTrackDuration, setPlaylistInfo, setTracks } =
+    usePlaylistStore.getState();
 
-  const setQueue = usePlaybackStore((state) => state.setQueue);
-  const setTrackOrigin = usePlaybackStore((state) => state.setTrackOrigin);
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const { setQueue, setTrackOrigin } = usePlaybackStore.getState();
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   function fetchTracksFailed(logValue: unknown) {
     console.error(logValue as number | Error);

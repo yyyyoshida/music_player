@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import usePlayerStore from "../store/playerStore";
 
 function AudioPlayer() {
-  const setAudioRef = usePlayerStore((state) => state.setAudioRef);
+  const setAudioRef = usePlayerStore.getState().setAudioRef;
 
   const audioRef = useRef<HTMLAudioElement>(null);
 

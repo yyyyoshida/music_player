@@ -4,14 +4,10 @@ import useDelayedText from "../../hooks/useDelayText";
 import { repeatOnIcon, repeatOffIcon } from "../../assets/icons";
 
 const RepeatButton = () => {
-  const setTooltipText = useTooltipStore((state) => state.setTooltipText);
-
-  const handleButtonPress = useTooltipStore((state) => state.handleButtonPress);
-  const handleMouseEnter = useTooltipStore((state) => state.handleMouseEnter);
-  const handleMouseLeave = useTooltipStore((state) => state.handleMouseLeave);
+  const { setTooltipText, handleButtonPress, handleMouseEnter, handleMouseLeave } = useTooltipStore.getState();
 
   const isRepeat = useRepeatStore((state) => state.isRepeat);
-  const toggleRepeat = useRepeatStore((state) => state.toggleRepeat);
+  const { toggleRepeat } = useRepeatStore.getState();
 
   useDelayedText(isRepeat, "リピート：オン", "リピート：オフ");
 

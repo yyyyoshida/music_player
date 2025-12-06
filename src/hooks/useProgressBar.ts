@@ -11,7 +11,7 @@ type ProgressBarProps = {
 
 const useProgressBar = ({ initialValue, barRef }: ProgressBarProps) => {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
-  const setIsPlaying = usePlayerStore((state) => state.setIsPlaying);
+  const setIsPlaying = usePlayerStore.getState().setIsPlaying;
   const currentTime = usePlayerStore((state) => state.currentTime);
   const position = usePlayerStore((state) => state.position);
   const duration = usePlayerStore((state) => state.duration);
@@ -19,13 +19,11 @@ const useProgressBar = ({ initialValue, barRef }: ProgressBarProps) => {
   const isLocalPlaying = usePlayerStore((state) => state.isLocalPlaying);
   const isLocalReady = usePlayerStore((state) => state.isLocalReady);
   const audioRef = usePlayerStore((state) => state.audioRef);
-  const togglePlayPause = usePlayerStore((state) => state.togglePlayPause);
-  const seekToSpotify = usePlayerStore((state) => state.seekToSpotify);
-  const updateVolume = usePlayerStore((state) => state.updateVolume);
+  const { togglePlayPause, seekToSpotify, updateVolume } = usePlayerStore.getState();
   const isTrackSet = usePlayerStore((state) => state.isTrackSet);
 
   const currentIndex = usePlaybackStore((state) => state.currentIndex);
-  const goToNextTrack = usePlaybackStore((state) => state.goToNextTrack);
+  const goToNextTrack = usePlaybackStore.getState().goToNextTrack;
   const isRepeat = useRepeatStore((state) => state.isRepeat);
 
   const { percentage, setPercentage, isDragging, roundToTwoDecimals, handleMouseDown } = useBarHandler({

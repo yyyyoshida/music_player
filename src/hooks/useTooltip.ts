@@ -12,7 +12,7 @@ const useTooltip = (tooltipRef: React.RefObject<HTMLSpanElement | null>): UseToo
   const isButtonPressed = useTooltipStore((state) => state.isButtonPressed);
   const isHovered = useTooltipStore((state) => state.isHovered);
   const tooltipPosition = useTooltipStore((state) => state.tooltipPosition);
-  const trackMousePosition = useTooltipStore((state) => state.trackMousePosition);
+  const trackMousePosition = useTooltipStore.getState().trackMousePosition;
 
   const isTooltipVisible = isHovered && !isButtonPressed ? "visible" : "hidden";
 

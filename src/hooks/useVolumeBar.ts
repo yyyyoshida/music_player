@@ -14,7 +14,7 @@ const useVolumeBar = ({ initialValue, barRef }: VolumeBarProps) => {
     return savedMute ? JSON.parse(savedMute) : false;
   });
   const audioRef = usePlayerStore((state) => state.audioRef);
-  const updateVolume = usePlayerStore((state) => state.updateVolume);
+  const updateVolume = usePlayerStore.getState().updateVolume;
   const playerReady = usePlayerStore((state) => state.playerReady);
 
   const { percentage, setPercentage, handleMouseDown } = useBarHandler({

@@ -19,7 +19,7 @@ const PlaylistCoverImageGrid = ({
   imgClassName = "",
 }: PlaylistCoverImageGridProps) => {
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
-  const showCoverImages = usePlaylistStore((state) => state.showCoverImages);
+  const showCoverImages = usePlaylistStore.getState().showCoverImages;
   const [delayedImages, setDelayedImages] = useState(images);
   const COVER_IMAGE_UPDATE_DELAY = 160;
   const COVER_IMAGE_SHOW_DELAY = 600;

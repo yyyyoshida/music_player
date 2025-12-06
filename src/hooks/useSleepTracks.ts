@@ -18,14 +18,12 @@ type MatchedTrack = {
 
 const useSleepTracks = () => {
   const tracks = usePlaylistStore((state) => state.tracks);
-  const setTracks = usePlaylistStore((state) => state.setTracks);
-  const setPlaylistInfo = usePlaylistStore((state) => state.setPlaylistInfo);
   const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
-  const setDeletedTrackDuration = usePlaylistStore((state) => state.setDeletedTrackDuration);
-  const fadeCoverImages = usePlaylistStore((state) => state.fadeCoverImages);
-  const setQueue = usePlaybackStore((state) => state.setQueue);
+  const { setTracks, setPlaylistInfo, setDeletedTrackDuration, fadeCoverImages } =
+    usePlaylistStore.getState();
+  const setQueue = usePlaybackStore.getState().setQueue;
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
-  const showMessage = useActionSuccessMessageStore((state) => state.showMessage);
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   useEffect(() => {
     console.log(selectedTrack, "selectedTrack");
