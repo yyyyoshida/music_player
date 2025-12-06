@@ -72,6 +72,19 @@ Password：yyyyoshida
 ### 【Spotify API】
 
 
+# 厳選したIssue / PR
+### その１ [fix: Spotify SDKの認証周りのバグ修正 #105](https://github.com/yyyyoshida/music_player/pull/105)
+<img width="100%" height="100%" alt="fix2" src="https://github.com/user-attachments/assets/e6435f6c-7ff5-40de-b6a0-1c80bdaeb099" />
+
+### その２ [perf: Spotify再生時のパフォーマンス改善とトークン切れ時のクラッシュの修正 #92](https://github.com/yyyyoshida/music_player/pull/92)
+<img width="100%" height="100%" alt="perf_ Spotify再生時のパフォーマンス改善とトークン切れ時のクラッシュの修正" src="https://github.com/user-attachments/assets/059acc94-639b-4a92-af1d-898ae314a075" />
+
+### その３ [fix: スリープ曲復元時にプレイリスト一覧の詳細情報が更新されないバグを修正 #145](https://github.com/yyyyoshida/music_player/pull/145)
+<img width="100%" height="100%" alt="fix_スリープ曲復元時にプレイリスト一覧の詳細情報が更新されないバグを修正" src="https://github.com/user-attachments/assets/f142771d-06cf-4334-a455-eefca7ded113" />
+
+
+
+
 # 工夫した点
 #### 工夫した点は以下になります
 - Zustandを使用して画面全体の無駄な再レンダリングを防いだ
@@ -196,9 +209,6 @@ async function initTokenFromCache(): Promise<boolean> {
 ```
 
 
-# 反省点
-
-
 # 実装予定の機能・今後やること
 
 
@@ -208,6 +218,7 @@ async function initTokenFromCache(): Promise<boolean> {
 - Spotify APIの認証周りのテストコード
   - その他主要機能のテストコード
 - FirebaseをSupabaseに移行してSQLにチャレンジ
+
 
 
 
