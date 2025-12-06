@@ -73,14 +73,25 @@ Password：yyyyoshida
 
 
 # 厳選したIssue / PR
-### その１ [fix: Spotify SDKの認証周りのバグ修正 #105](https://github.com/yyyyoshida/music_player/pull/105)
+## 厳選したIssue
+### その１ [Spotify曲をプレイリストに追加できない #129](https://github.com/yyyyoshida/music_player/issues/129)
+<img width="100%" height="100%" alt="Spotify曲をプレイリストに追加できない" src="https://github.com/user-attachments/assets/750ee5ad-6309-40dd-ac00-ffa57433dafe" />
+
+### その２ [特定操作後にSpotifyとローカル曲が重なって再生される #70](https://github.com/yyyyoshida/music_player/issues/70)
+<img width="962" height="743" alt="特定操作後にSpotifyとローカル曲が重なって再生される" src="https://github.com/user-attachments/assets/75f38abe-f337-4537-8d45-f93e0682d22d" />
+
+
+## 厳選したPR
+
+### PRその１ [fix: Spotify SDKの認証周りのバグ修正 #105](https://github.com/yyyyoshida/music_player/pull/105)
 <img width="100%" height="100%" alt="fix2" src="https://github.com/user-attachments/assets/e6435f6c-7ff5-40de-b6a0-1c80bdaeb099" />
 
-### その２ [perf: Spotify再生時のパフォーマンス改善とトークン切れ時のクラッシュの修正 #92](https://github.com/yyyyoshida/music_player/pull/92)
+### PRその２ [perf: Spotify再生時のパフォーマンス改善とトークン切れ時のクラッシュの修正 #92](https://github.com/yyyyoshida/music_player/pull/92)
 <img width="100%" height="100%" alt="perf_ Spotify再生時のパフォーマンス改善とトークン切れ時のクラッシュの修正" src="https://github.com/user-attachments/assets/059acc94-639b-4a92-af1d-898ae314a075" />
 
-### その３ [fix: スリープ曲復元時にプレイリスト一覧の詳細情報が更新されないバグを修正 #145](https://github.com/yyyyoshida/music_player/pull/145)
+### PRその３ [fix: スリープ曲復元時にプレイリスト一覧の詳細情報が更新されないバグを修正 #145](https://github.com/yyyyoshida/music_player/pull/145)
 <img width="100%" height="100%" alt="fix_スリープ曲復元時にプレイリスト一覧の詳細情報が更新されないバグを修正" src="https://github.com/user-attachments/assets/f142771d-06cf-4334-a455-eefca7ded113" />
+
 
 
 
