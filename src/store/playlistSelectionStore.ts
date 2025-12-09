@@ -117,7 +117,6 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
     const formData = new FormData();
 
     const coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
-    console.log(coverImageFile, "coverImageFile");
 
     if (!uploadTrackFile) {
       console.error("音声ファイルがありません");

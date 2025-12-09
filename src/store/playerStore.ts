@@ -182,8 +182,6 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
         body: JSON.stringify(data),
       });
 
-      console.log(response);
-
       if (!response.ok) {
         console.error("曲再生失敗: ", response.status);
         showMessage("playFailed");

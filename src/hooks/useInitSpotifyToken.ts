@@ -15,7 +15,6 @@ const useInitSpotifyToken = (): void => {
     // ローカルのトークンでログイン;
     if (localAccessToken && isValidToken()) {
       setToken(localAccessToken);
-      console.log("ローカルToken");
       return true;
     }
 
@@ -24,7 +23,6 @@ const useInitSpotifyToken = (): void => {
       try {
         const newToken = await getNewAccessToken();
         setToken(newToken);
-        console.log("ローカルrefresh");
         return true;
       } catch (error) {
         console.warn("ローカルリフレッシュ失敗(次の手段でログイン):", error);
@@ -58,7 +56,6 @@ const useInitSpotifyToken = (): void => {
       }
 
       window.history.replaceState({}, "", "/");
-      console.log("code");
       return true;
     } catch (error) {
       console.warn("トークン交換失敗(次の手段でログイン):", error);
@@ -75,7 +72,6 @@ const useInitSpotifyToken = (): void => {
       setToken(newToken);
       localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
       localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, storedRefreshToken);
-      console.log("DB");
       return true;
     } catch (error) {
       setIsToken(false);
