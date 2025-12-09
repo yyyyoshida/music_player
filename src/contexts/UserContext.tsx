@@ -46,7 +46,6 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       const data = await response.json();
 
       setProfile(data);
-      console.log(data);
       setIsToken(true);
     } catch (error) {
       console.error("プロフィール取得失敗: ", error);
@@ -57,7 +56,6 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
   useEffect(() => {
     if (!token) return;
-    console.log("useSpotify", token);
 
     fetchProfile();
   }, [token]);

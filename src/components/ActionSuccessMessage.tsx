@@ -19,7 +19,6 @@ const ActionSuccessMessage = () => {
   useEffect(() => {
     return () => {
       const { timerId } = useActionSuccessMessageStore.getState();
-      console.log(timerId);
       if (timerId) clearTimeout(timerId);
     };
   }, []);

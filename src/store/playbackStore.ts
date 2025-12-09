@@ -103,7 +103,6 @@ const usePlaybackStore = create<PlaybackStore>((set, get) => ({
     } = get();
 
     const track = queue[index];
-    console.log(track);
     const isSameTrack = index === currentIndex;
     const isFirstTrackNotPlayed = currentIndex === 0;
     // 同じトラックはスキップすることで再生・停止で切り替えてる

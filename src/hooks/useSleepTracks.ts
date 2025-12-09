@@ -25,10 +25,6 @@ const useSleepTracks = () => {
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
-  useEffect(() => {
-    console.log(selectedTrack, "selectedTrack");
-  }, [selectedTrack]);
-
   async function sleepTrack() {
     const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
     const cachedTracks = cached ? JSON.parse(cached) : [];
@@ -54,7 +50,6 @@ const useSleepTracks = () => {
       cachedTracks.push(sleepingTrack);
       localStorage.setItem(STORAGE_KEYS.SLEEP_TRACKS, JSON.stringify(cachedTracks));
 
-      console.log(sleepingTrack);
       showMessage("sleep");
     } catch (error) {
       console.error(error, selectedTrack);
@@ -107,7 +102,6 @@ const useSleepTracks = () => {
     const cachedTracks = cached ? JSON.parse(cached) : null;
 
     if (cachedTracks) {
-      console.log("キャッシュで取得");
       setTracks(cachedTracks);
       setQueue(cachedTracks);
       return;
