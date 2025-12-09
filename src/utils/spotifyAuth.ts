@@ -89,7 +89,7 @@ export async function fetchSpotifyAPI(
   let token = localStorage.getItem(STORAGE_KEYS.TOKEN);
 
   if (!isValidTokenFn()) {
-    console.log("トークンが無効なので再取得します");
+    console.error("トークンが無効なので再取得します");
     try {
       token = await getNewAccessTokenFn();
       if (!token) throw new Error("トークン再取得できなかった");

@@ -49,7 +49,7 @@ const LocalFileImportNav = () => {
         }
       },
       onError: function (error: any) {
-        console.log("タグ読み取り失敗:", error);
+        console.error("タグ読み取り失敗:", error);
       },
     });
   }
