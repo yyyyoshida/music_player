@@ -1,0 +1,30 @@
+{
+  "name": "music-player-server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
+    "@types/multer": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.2.1",
+    "express-basic-auth": "^1.2.1",
+    "fast-average-color": "^9.5.0",
+    "firebase-admin": "^13.4.0",
+    "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.10.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5"
+  },
+  "description": "Node.js/Expressを使った音楽プレイヤーのAPIサーバー",
+  "license": "ISC"
+}
