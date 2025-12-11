@@ -1,6 +1,6 @@
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_API_CLIENT_ID;
 
-const REDIRECT_URI = "http://localhost:3000/";
+const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI;
 const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const RESPONSE_TYPE = "code";
 
