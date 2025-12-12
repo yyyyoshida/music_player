@@ -3,11 +3,13 @@
     "strict": true,
     "module": "commonjs",
     "target": "es2020",
-    "sourceMap": true,
+    "lib": ["es2020", "esnext"],
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "skipLibCheck": true
+    "outDir": "dist",
+    "rootDir": ".",
+    "types": ["node"]
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist", "build"]
+  "exclude": ["node_modules", "dist"]
 }
