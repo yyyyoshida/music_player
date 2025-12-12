@@ -66,7 +66,7 @@ router.post("/refresh_token", async (req: any, res: any) => {
       body: params,
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as { access_token?: string; expires_in?: number; error?: any };
     console.log(data);
 
     if (!response.ok) {
