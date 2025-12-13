@@ -46,6 +46,8 @@ const useFetchPlaylists = () => {
         setRefreshTrigger(0);
       } catch (error) {
         fetchPlaylistsFailed(error);
+      } finally {
+        setIsPlaylistsLoading(false);
       }
     })();
   }, [refreshTrigger]);
