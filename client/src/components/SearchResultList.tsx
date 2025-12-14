@@ -3,7 +3,6 @@ import { useSearchContext } from "../contexts/SearchContext";
 import usePlaybackStore from "../store/playbackStore";
 import TrackItem from "./tracks/TrackItem";
 import TrackListSkeleton from "./skeletonUI/TrackListSkeleton";
-import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 
 type TrackListProps = {
@@ -11,15 +10,12 @@ type TrackListProps = {
 };
 
 const TrackList = ({ containerRef }: TrackListProps) => {
-  const { searchResults, query } = useSearchContext();
+  const { searchResults, isSearchLoading, query } = useSearchContext();
   const setTrackOrigin = usePlaybackStore.getState().setTrackOrigin;
-
-  const IMAGES_LOADED_COUNT = 10;
-  const LOADING_DELAY = 100;
+  const SEARCH_LOADING_RELEASE_DELAY = 0;
   const isEmptySearchResults = searchResults.length === 0;
 
-  const { imagesLoaded } = useWaitForImagesLoad("trackList", searchResults, [searchResults], LOADING_DELAY, IMAGES_LOADED_COUNT);
-  const showSkeleton = useSkeletonHandler({ imagesLoaded, resetKey: query });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isSearchLoading, loadingDelay: SEARCH_LOADING_RELEASE_DELAY, resetKey: query });
 
   useEffect(() => {
     containerRef.current?.scrollTo(0, 0);
