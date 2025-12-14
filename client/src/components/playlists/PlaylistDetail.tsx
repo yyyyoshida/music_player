@@ -1,7 +1,6 @@
 import { useState, useRef, type RefObject } from "react";
 import { useParams } from "react-router-dom";
 import usePlaylistDetail from "../../hooks/usePlaylistDetail";
-import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaybackStore from "../../store/playbackStore";
 import usePlayerStore from "../../store/playerStore";
@@ -25,7 +24,6 @@ const PlaylistDetail = ({ containerRef }: PlaylistDetailProps) => {
   const { id } = useParams();
   const [isRenameVisible, setIsRenameVisible] = useState(false);
 
-  const tracks = usePlaylistStore((state) => state.tracks);
   const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
   const addedTrackDuration = usePlaylistStore((state) => state.addedTrackDuration);
   const isCoverImageFading = usePlaylistStore((state) => state.isCoverImageFading);
@@ -37,12 +35,11 @@ const PlaylistDetail = ({ containerRef }: PlaylistDetailProps) => {
 
   const setIsTrackSet = usePlayerStore.getState().setIsTrackSet;
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
+  const { tracks, isPlaylistLoading } = usePlaylistDetail(id, containerRef);
 
   const LOADING_DELAY = 200;
   const isEmptyPlaylist = tracks.length === 0;
-  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("trackList", tracks, [tracks], LOADING_DELAY);
-  const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
-  usePlaylistDetail(id, containerRef);
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistLoading, loadingDelay: LOADING_DELAY, resetKey: id! });
   const playlistDetailRef = useRef(null);
 
   function playFirstTrack() {
