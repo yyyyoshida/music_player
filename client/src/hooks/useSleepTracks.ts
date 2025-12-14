@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import usePlaylistStore from "../store/playlistStore";
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
@@ -17,6 +17,8 @@ type MatchedTrack = {
 };
 
 const useSleepTracks = () => {
+  const [isSleepTracksFetching, setIsSleepTracksFetching] = useState(true);
+
   const tracks = usePlaylistStore((state) => state.tracks);
   const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
   const { setTracks, setPlaylistInfo, setDeletedTrackDuration, fadeCoverImages } =
@@ -98,12 +100,14 @@ const useSleepTracks = () => {
   }
 
   async function fetchSleepTracks() {
+    setIsSleepTracksFetching(true);
     const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
     const cachedTracks = cached ? JSON.parse(cached) : null;
 
     if (cachedTracks) {
       setTracks(cachedTracks);
       setQueue(cachedTracks);
+      setIsSleepTracksFetching(false);
       return;
     }
 
@@ -119,6 +123,8 @@ const useSleepTracks = () => {
     } catch (error) {
       console.error("スリープ曲一覧の取得に失敗:", error);
       showMessage("sleepTracksFetchFailed");
+    } finally {
+      setIsSleepTracksFetching(false);
     }
   }
 
@@ -178,7 +184,7 @@ const useSleepTracks = () => {
     }
   }
 
-  return { sleepTrack, deleteTrackForSleep, fetchSleepTracks, restoreSleepTrack };
+  return { sleepTrack, deleteTrackForSleep, fetchSleepTracks, isSleepTracksFetching, restoreSleepTrack };
 };
 
 export default useSleepTracks;
