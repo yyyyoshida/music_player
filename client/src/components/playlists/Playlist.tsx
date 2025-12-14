@@ -4,21 +4,17 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import CardListSkeleton from "../skeletonUI/CardListSkeleton";
-import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaylistStore from "../../store/playlistStore";
 import { formatTimeHours } from "../../utils/formatTime";
 
 const Playlist = () => {
   const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
-  const { playlists } = useFetchPlaylists();
+  const { playlists, isPlaylistsLoading } = useFetchPlaylists();
   const navigate = useNavigate();
+  const isPlaylistsEmpty = !isPlaylistsLoading && playlists !== null && playlists.length === 0;
 
-  const LOADING_DELAY = 250;
-  const isPlaylistsEmpty = playlists.length === 0;
-
-  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
-  const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading });
 
   function handlePlaylistClick(playlistId: string) {
     navigate(`/playlist/${playlistId}`);
