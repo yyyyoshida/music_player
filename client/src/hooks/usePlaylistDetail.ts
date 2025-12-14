@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getPlaylistInfo } from "../utils/playlistUtils";
 import usePlaylistStore from "../store/playlistStore";
 import usePlaybackStore from "../store/playbackStore";
@@ -6,12 +6,11 @@ import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import { API } from "../api/apis";
 import { STORAGE_KEYS } from "../utils/storageKeys";
 
-const usePlaylistDetail = (
-  id: string | undefined,
-  containerRef: React.RefObject<HTMLElement | null>
-): void => {
+const usePlaylistDetail = (id: string | undefined, containerRef: React.RefObject<HTMLElement | null>) => {
+  const tracks = usePlaylistStore((state) => state.tracks);
   const { setCurrentPlaylistId, setDeletedTrackDuration, setAddedTrackDuration, setPlaylistInfo, setTracks } =
     usePlaylistStore.getState();
+  const [isPlaylistLoading, setIsPlaylistLoading] = useState(true);
 
   const { setQueue, setTrackOrigin } = usePlaybackStore.getState();
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
@@ -24,6 +23,7 @@ const usePlaylistDetail = (
   }
 
   async function fetchTracks(): Promise<void> {
+    setIsPlaylistLoading(true);
     if (!id) {
       fetchTracksFailed(400);
       return;
@@ -33,6 +33,7 @@ const usePlaylistDetail = (
     if (cachedTracks) {
       setTracks(JSON.parse(cachedTracks));
       setQueue(JSON.parse(cachedTracks));
+      setIsPlaylistLoading(false);
       return;
     }
 
@@ -44,12 +45,14 @@ const usePlaylistDetail = (
         return;
       }
 
-      const data = await response.json();
+      let data = await response.json();
       localStorage.setItem(STORAGE_KEYS.getCachedTracksKey(id), JSON.stringify(data));
       setTracks(data);
       setQueue(data);
     } catch (error) {
       fetchTracksFailed(error);
+    } finally {
+      setIsPlaylistLoading(false);
     }
   }
 
@@ -60,7 +63,7 @@ const usePlaylistDetail = (
     setAddedTrackDuration(0);
     setTrackOrigin("firebase");
     setCurrentPlaylistId(id);
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -70,6 +73,8 @@ const usePlaylistDetail = (
       await fetchTracks();
     })();
   }, [id]);
+
+  return { tracks, isPlaylistLoading };
 };
 
 export default usePlaylistDetail;
