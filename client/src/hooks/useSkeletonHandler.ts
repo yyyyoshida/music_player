@@ -1,35 +1,37 @@
 import { useEffect, useState } from "react";
 
 type SkeletonHandlerProps = {
-  isImageListEmpty?: boolean;
-  imagesLoaded: boolean;
+  isDataLoading: boolean;
+  loadingDelay?: number;
   resetKey?: string | object | null;
 };
 
 export function useSkeletonHandler({
-  isImageListEmpty,
-  imagesLoaded,
+  isDataLoading,
+  loadingDelay = 300,
   resetKey,
 }: SkeletonHandlerProps): boolean {
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(isDataLoading);
 
-  // 空 or 読み込む画像がなかったら
   useEffect(() => {
-    if (isImageListEmpty) {
-      setShowSkeleton(false);
+    if (isDataLoading) {
+      setShowSkeleton(true);
+      return;
     }
-  }, [isImageListEmpty]);
 
-  // 画像の読み込みが終わったら
-  useEffect(() => {
-    if (imagesLoaded) {
+    // スケルトンUIの一瞬表示によるチラつき対策で遅延をかけてる
+    const timer = setTimeout(() => {
       setShowSkeleton(false);
-    }
-  }, [imagesLoaded]);
+    }, loadingDelay);
+
+    return () => clearTimeout(timer);
+  }, [isDataLoading]);
 
   // 検索結果専用
   useEffect(() => {
-    setShowSkeleton(true);
+    if (resetKey !== undefined) {
+      setShowSkeleton(true);
+    }
   }, [resetKey]);
 
   return showSkeleton;

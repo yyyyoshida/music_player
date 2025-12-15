@@ -6,7 +6,6 @@ import { playIcon, pauseIcon } from "../assets/icons";
 import useTokenStore from "../store/tokenStore";
 
 import CardListSkeleton from "../components/skeletonUI/CardListSkeleton";
-import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 
 const Home = () => {
   const [tracks, setTracks] = useState([]);
@@ -18,8 +17,6 @@ const Home = () => {
   const token = useTokenStore((state) => state.token);
 
   const changeCountRef = useRef(0);
-
-  const imagesLoaded = useWaitForImagesLoad("trackList", tracks, [tracks], 21);
 
   // useEffect(() => {
   //   changeCountRef.current += 1;

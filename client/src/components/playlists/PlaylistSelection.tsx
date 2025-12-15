@@ -2,7 +2,6 @@ import PlaylistSelectSkeleton from "../skeletonUI/PlaylistSelectSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 
 import useFetchPlaylists from "../../hooks/useFetchPlaylists";
-import useWaitForImagesLoad from "../../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import usePlaylistStore from "../../store/playlistStore";
@@ -13,12 +12,9 @@ const PlaylistSelection = () => {
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
   const { openPlaylistSelectModal, closePlaylistSelectModal, addTrackToPlaylist } = usePlaylistSelectionStore.getState();
 
-  const LOADING_DELAY = 200;
-
-  const { playlists } = useFetchPlaylists();
-  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("playlistCover", playlists, [playlists], LOADING_DELAY);
+  const { playlists, isPlaylistsLoading } = useFetchPlaylists();
   const isPlaylistsEmpty = playlists.length === 0;
-  const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading });
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>

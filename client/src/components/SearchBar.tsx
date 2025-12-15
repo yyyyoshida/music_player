@@ -8,7 +8,7 @@ import { API } from "../api/apis";
 import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const SearchBar = () => {
-  const { setQuery, setSearchResults, setHasSearchError, query } = useSearchContext();
+  const { setQuery, setSearchResults, setIsSearchLoading, setHasSearchError, query } = useSearchContext();
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
   const token = useTokenStore((state) => state.token);
   const queryRef = useRef<HTMLInputElement>(null);
@@ -86,6 +86,7 @@ const SearchBar = () => {
     navigate(`/search?query=${encodeURIComponent(queryText)}`);
 
     try {
+      setIsSearchLoading(true);
       const encodedQuery = encodeURIComponent(queryText);
       const response = await fetchSpotifyAPI(API.spotifySearch(encodedQuery), {
         method: "GET",
@@ -107,6 +108,8 @@ const SearchBar = () => {
       }
     } catch (error) {
       handleSearchError(error);
+    } finally {
+      setIsSearchLoading(false);
     }
   }
 

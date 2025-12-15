@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import usePlaylistStore from "../store/playlistStore";
 import SleepTrackItem from "./tracks/SleepTrackItem";
-import useWaitForImagesLoad from "../hooks/useWaitForImagesLoad";
 import { useSkeletonHandler } from "../hooks/useSkeletonHandler";
 import CardListSkeleton from "./skeletonUI/CardListSkeleton";
 
@@ -10,10 +9,9 @@ import useSleepTracks from "../hooks/useSleepTracks";
 
 const SleepTracks = () => {
   const tracks = usePlaylistStore((state) => state.tracks);
-  const { fetchSleepTracks, restoreSleepTrack } = useSleepTracks();
-  const LOADING_IMAGE_DELAY = 200;
-  const { imagesLoaded, isImageListEmpty } = useWaitForImagesLoad("trackList", tracks, [tracks], LOADING_IMAGE_DELAY);
-  const showSkeleton = useSkeletonHandler({ isImageListEmpty, imagesLoaded });
+  const { fetchSleepTracks, isSleepTracksFetching, restoreSleepTrack } = useSleepTracks();
+  const isEmptySleepTracks = !isSleepTracksFetching && tracks !== null && tracks.length === 0;
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isSleepTracksFetching });
 
   useEffect(() => {
     fetchSleepTracks();
@@ -25,7 +23,7 @@ const SleepTracks = () => {
       <p className="sleep__text">一時的に非表示にしている曲</p>
 
       <div className="empty-message-wrapper">
-        <p className={` fade-on-loaded ${showSkeleton || !isImageListEmpty ? "" : "fade-in-up"}`}>スリープ中の曲はありません</p>
+        <p className={` fade-on-loaded ${showSkeleton || !isEmptySleepTracks ? "" : "fade-in-up"}`}>スリープ中の曲はありません</p>
       </div>
 
       {showSkeleton && <CardListSkeleton />}

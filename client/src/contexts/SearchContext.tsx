@@ -9,6 +9,8 @@ type SearchContextType = {
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   searchResults: TrackObject[];
   setSearchResults: React.Dispatch<React.SetStateAction<TrackObject[]>>;
+  isSearchLoading: boolean;
+  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>;
   hasSearchError: boolean;
   setHasSearchError: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -22,6 +24,7 @@ const SearchContext = createContext<SearchContextType | null>(null);
 export const SearchProvider = ({ children }: SearchContextProviderProps) => {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<TrackObject[]>([]);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [hasSearchError, setHasSearchError] = useState(false);
   const setQueue = usePlaybackStore.getState().setQueue;
   const location = useLocation();
@@ -33,7 +36,9 @@ export const SearchProvider = ({ children }: SearchContextProviderProps) => {
   }, [searchResults, location.pathname]);
 
   return (
-    <SearchContext.Provider value={{ query, setQuery, searchResults, setSearchResults, hasSearchError, setHasSearchError }}>
+    <SearchContext.Provider
+      value={{ query, setQuery, searchResults, setSearchResults, isSearchLoading, setIsSearchLoading, hasSearchError, setHasSearchError }}
+    >
       {children}
     </SearchContext.Provider>
   );
