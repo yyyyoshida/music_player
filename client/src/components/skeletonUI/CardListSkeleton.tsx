@@ -1,6 +1,6 @@
 const CardListSkeleton = ({ marginTop = "40px" }) => {
   return (
-    <ul className="card-list-skeleton" style={{ marginTop }}>
+    <ul className="card-list-skeleton fade-in-up" style={{ marginTop }}>
       {Array(21)
         .fill(null)
         .map((_, i) => (

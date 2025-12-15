@@ -1,6 +1,6 @@
 const PlaylistSelectSkeleton = () => {
   return (
-    <ul className="playlist-select-skeleton">
+    <ul className="playlist-select-skeleton fade-in-up">
       {Array(3)
         .fill(null)
         .map((_, i) => (
