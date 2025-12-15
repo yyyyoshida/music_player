@@ -13,6 +13,7 @@ import DeletePlaylistModal from "./DeletePlaylistModal";
 import TrackListSkeleton from "../skeletonUI/TrackListSkeleton";
 import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import { formatTimeHours } from "../../utils/formatTime";
+import { getFetchedContentFadeAnimation } from "../../lib/fetchedContentFadeAnimation";
 import { playIcon, FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import type { SpotifyTrack, LocalTrack } from "../../types/tracksType";
 
@@ -110,7 +111,8 @@ const PlaylistDetail = ({ containerRef }: PlaylistDetailProps) => {
             </p>
           </div>
           {showSkeleton && <TrackListSkeleton count={8} />}
-          <ul className={`playlist-detail__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
+
+          <ul className={`playlist-detail__list fade-on-loaded ${getFetchedContentFadeAnimation(showSkeleton, isPlaylistFromCache)}`}>
             {(tracks as (SpotifyTrack | LocalTrack)[]).map((track, index) => {
               const addedAt = track.addedAt;
               const date = new Date(addedAt ?? 0);

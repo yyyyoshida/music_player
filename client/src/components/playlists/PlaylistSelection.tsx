@@ -6,6 +6,7 @@ import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import usePlaylistStore from "../../store/playlistStore";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { getFetchedContentFadeAnimation } from "../../lib/fetchedContentFadeAnimation";
 
 const PlaylistSelection = () => {
   const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
@@ -41,7 +42,8 @@ const PlaylistSelection = () => {
           </div>
 
           {showSkeleton && <PlaylistSelectSkeleton />}
-          <ul className={`playlist-selection__list ${showSkeleton ? "" : "fade-in-up"}`}>
+
+          <ul className={`playlist-selection__list fade-on-loaded ${getFetchedContentFadeAnimation(showSkeleton, isPlaylistsFromCache)}`}>
             {playlists.map((playlist, i) => {
               const isSingleImage = playlist.albumImages.length <= 3;
               const firstTrackIsFallbackImage = playlist.trackCount === 0 || (isSingleImage && playlist.albumImages[0] === FALLBACK_COVER_IMAGE);

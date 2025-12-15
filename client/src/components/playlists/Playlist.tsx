@@ -7,6 +7,7 @@ import CardListSkeleton from "../skeletonUI/CardListSkeleton";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaylistStore from "../../store/playlistStore";
 import { formatTimeHours } from "../../utils/formatTime";
+import { getFetchedContentFadeAnimation } from "../../lib/fetchedContentFadeAnimation";
 
 const Playlist = () => {
   const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
@@ -34,7 +35,7 @@ const Playlist = () => {
       </div>
       {showSkeleton && <CardListSkeleton />}
 
-      <ul className={`playlists-page__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
+      <ul className={`playlists-page__list fade-on-loaded ${getFetchedContentFadeAnimation(showSkeleton, isPlaylistsFromCache)}`}>
         {playlists.map((playlist) => {
           const isSingleImage = playlist.albumImages.length <= 3;
           const firstTrackIsFallbackImage = playlist.trackCount === 0 || (isSingleImage && playlist.albumImages[0] === FALLBACK_COVER_IMAGE);
