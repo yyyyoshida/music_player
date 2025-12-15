@@ -9,9 +9,9 @@ import useSleepTracks from "../hooks/useSleepTracks";
 
 const SleepTracks = () => {
   const tracks = usePlaylistStore((state) => state.tracks);
-  const { fetchSleepTracks, isSleepTracksFetching, restoreSleepTrack } = useSleepTracks();
+  const { fetchSleepTracks, isSleepTracksFetching, isSleepTracksFromCache, restoreSleepTrack } = useSleepTracks();
   const isEmptySleepTracks = !isSleepTracksFetching && tracks !== null && tracks.length === 0;
-  const showSkeleton = useSkeletonHandler({ isDataLoading: isSleepTracksFetching });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isSleepTracksFetching, skipSkeleton: isSleepTracksFromCache });
 
   useEffect(() => {
     fetchSleepTracks();
