@@ -12,9 +12,9 @@ const PlaylistSelection = () => {
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
   const { openPlaylistSelectModal, closePlaylistSelectModal, addTrackToPlaylist } = usePlaylistSelectionStore.getState();
 
-  const { playlists, isPlaylistsLoading } = useFetchPlaylists();
+  const { playlists, isPlaylistsLoading, isPlaylistsFromCache } = useFetchPlaylists();
   const isPlaylistsEmpty = playlists.length === 0;
-  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading, skipSkeleton: isPlaylistsFromCache });
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>
