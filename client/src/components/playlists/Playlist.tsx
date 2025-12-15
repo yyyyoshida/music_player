@@ -10,11 +10,11 @@ import { formatTimeHours } from "../../utils/formatTime";
 
 const Playlist = () => {
   const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
-  const { playlists, isPlaylistsLoading } = useFetchPlaylists();
+  const { playlists, isPlaylistsLoading, isPlaylistsFromCache } = useFetchPlaylists();
   const navigate = useNavigate();
   const isPlaylistsEmpty = !isPlaylistsLoading && playlists !== null && playlists.length === 0;
 
-  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading, skipSkeleton: isPlaylistsFromCache });
 
   function handlePlaylistClick(playlistId: string) {
     navigate(`/playlist/${playlistId}`);

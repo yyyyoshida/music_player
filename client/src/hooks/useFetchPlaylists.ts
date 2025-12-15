@@ -6,6 +6,7 @@ import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const useFetchPlaylists = () => {
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
+  const [isPlaylistsFromCache, setIsPlaylistsFromCache] = useState(false);
   const playlists = usePlaylistStore((state) => state.playlists);
   const setPlaylists = usePlaylistStore.getState().setPlaylists;
   const refreshTrigger = usePlaylistStore((state) => state.refreshTrigger);
@@ -28,6 +29,7 @@ const useFetchPlaylists = () => {
     if (cachedPlaylists && refreshTrigger === 0) {
       setPlaylists(JSON.parse(cachedPlaylists));
       setIsPlaylistsLoading(false);
+      setIsPlaylistsFromCache(true);
       return;
     }
 
@@ -48,10 +50,11 @@ const useFetchPlaylists = () => {
         fetchPlaylistsFailed(error);
       } finally {
         setIsPlaylistsLoading(false);
+        setIsPlaylistsFromCache(false);
       }
     })();
   }, [refreshTrigger]);
-  return { playlists, isPlaylistsLoading };
+  return { playlists, isPlaylistsLoading, isPlaylistsFromCache };
 };
 
 export default useFetchPlaylists;
