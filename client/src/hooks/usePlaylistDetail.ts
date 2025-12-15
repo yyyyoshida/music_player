@@ -11,6 +11,7 @@ const usePlaylistDetail = (id: string | undefined, containerRef: React.RefObject
   const { setCurrentPlaylistId, setDeletedTrackDuration, setAddedTrackDuration, setPlaylistInfo, setTracks } =
     usePlaylistStore.getState();
   const [isPlaylistLoading, setIsPlaylistLoading] = useState(true);
+  const [isPlaylistFromCache, setIsPlaylistFromCache] = useState(false);
 
   const { setQueue, setTrackOrigin } = usePlaybackStore.getState();
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
@@ -34,6 +35,7 @@ const usePlaylistDetail = (id: string | undefined, containerRef: React.RefObject
       setTracks(JSON.parse(cachedTracks));
       setQueue(JSON.parse(cachedTracks));
       setIsPlaylistLoading(false);
+      setIsPlaylistFromCache(true);
       return;
     }
 
@@ -53,6 +55,7 @@ const usePlaylistDetail = (id: string | undefined, containerRef: React.RefObject
       fetchTracksFailed(error);
     } finally {
       setIsPlaylistLoading(false);
+      setIsPlaylistFromCache(false);
     }
   }
 
@@ -74,7 +77,7 @@ const usePlaylistDetail = (id: string | undefined, containerRef: React.RefObject
     })();
   }, [id]);
 
-  return { tracks, isPlaylistLoading };
+  return { tracks, isPlaylistLoading, isPlaylistFromCache };
 };
 
 export default usePlaylistDetail;

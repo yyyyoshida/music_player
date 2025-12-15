@@ -35,11 +35,10 @@ const PlaylistDetail = ({ containerRef }: PlaylistDetailProps) => {
 
   const setIsTrackSet = usePlayerStore.getState().setIsTrackSet;
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
-  const { tracks, isPlaylistLoading } = usePlaylistDetail(id, containerRef);
+  const { tracks, isPlaylistLoading, isPlaylistFromCache } = usePlaylistDetail(id, containerRef);
 
-  const LOADING_DELAY = 200;
   const isEmptyPlaylist = tracks.length === 0;
-  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistLoading, loadingDelay: LOADING_DELAY, resetKey: id! });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistLoading, skipSkeleton: isPlaylistFromCache, resetKey: id! });
   const playlistDetailRef = useRef(null);
 
   function playFirstTrack() {
