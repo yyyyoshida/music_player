@@ -427,6 +427,10 @@ img {
   scrollbar-width: none;
 }
 
+.container:has(.skeleton) {
+  overflow: hidden;
+}
+
 ::-webkit-scrollbar {
   width: 9px;
   background: #444444;
