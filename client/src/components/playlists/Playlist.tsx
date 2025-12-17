@@ -7,14 +7,15 @@ import CardListSkeleton from "../skeletonUI/CardListSkeleton";
 import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaylistStore from "../../store/playlistStore";
 import { formatTimeHours } from "../../utils/formatTime";
+import { getFetchedContentFadeAnimation } from "../../lib/fetchedContentFadeAnimation";
 
 const Playlist = () => {
   const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
-  const { playlists, isPlaylistsLoading } = useFetchPlaylists();
+  const { playlists, isPlaylistsLoading, isPlaylistsFromCache } = useFetchPlaylists();
   const navigate = useNavigate();
   const isPlaylistsEmpty = !isPlaylistsLoading && playlists !== null && playlists.length === 0;
 
-  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading, skipSkeleton: isPlaylistsFromCache });
 
   function handlePlaylistClick(playlistId: string) {
     navigate(`/playlist/${playlistId}`);
@@ -34,7 +35,7 @@ const Playlist = () => {
       </div>
       {showSkeleton && <CardListSkeleton />}
 
-      <ul className={`playlists-page__list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
+      <ul className={`playlists-page__list fade-on-loaded ${getFetchedContentFadeAnimation(showSkeleton, isPlaylistsFromCache)}`}>
         {playlists.map((playlist) => {
           const isSingleImage = playlist.albumImages.length <= 3;
           const firstTrackIsFallbackImage = playlist.trackCount === 0 || (isSingleImage && playlist.albumImages[0] === FALLBACK_COVER_IMAGE);

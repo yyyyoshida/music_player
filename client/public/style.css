@@ -261,7 +261,7 @@ body .fade-on-loaded {
 }
 body .fade-out {
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: 0;
 }
 body .fade-in {
   opacity: 1;
@@ -425,6 +425,10 @@ img {
 }
 .container::-webkit-scrollbar {
   scrollbar-width: none;
+}
+
+.container:has(.skeleton) {
+  overflow: hidden;
 }
 
 ::-webkit-scrollbar {

@@ -2,18 +2,25 @@ import { useEffect, useState } from "react";
 
 type SkeletonHandlerProps = {
   isDataLoading: boolean;
+  skipSkeleton?: boolean;
   loadingDelay?: number;
   resetKey?: string | object | null;
 };
 
 export function useSkeletonHandler({
   isDataLoading,
+  skipSkeleton = false,
   loadingDelay = 300,
   resetKey,
 }: SkeletonHandlerProps): boolean {
-  const [showSkeleton, setShowSkeleton] = useState(isDataLoading);
+  const [showSkeleton, setShowSkeleton] = useState(isDataLoading && !skipSkeleton);
 
   useEffect(() => {
+    if (skipSkeleton) {
+      setShowSkeleton(false);
+      return;
+    }
+
     if (isDataLoading) {
       setShowSkeleton(true);
       return;
@@ -25,7 +32,7 @@ export function useSkeletonHandler({
     }, loadingDelay);
 
     return () => clearTimeout(timer);
-  }, [isDataLoading]);
+  }, [isDataLoading, loadingDelay, skipSkeleton]);
 
   // 検索結果専用
   useEffect(() => {

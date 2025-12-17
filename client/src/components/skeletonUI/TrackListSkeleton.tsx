@@ -1,6 +1,6 @@
 const TrackListSkeleton = ({ count = 11 }) => {
   return (
-    <ul className="skeleton-track-list">
+    <ul className="skeleton-track-list fade-in-up">
       {Array(count)
         .fill(null)
         .map((_, i) => (

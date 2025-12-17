@@ -6,12 +6,13 @@ import CardListSkeleton from "./skeletonUI/CardListSkeleton";
 
 import type { SleepSpotifyTrack } from "../types/tracksType";
 import useSleepTracks from "../hooks/useSleepTracks";
+import { getFetchedContentFadeAnimation } from "../lib/fetchedContentFadeAnimation";
 
 const SleepTracks = () => {
   const tracks = usePlaylistStore((state) => state.tracks);
-  const { fetchSleepTracks, isSleepTracksFetching, restoreSleepTrack } = useSleepTracks();
+  const { fetchSleepTracks, isSleepTracksFetching, isSleepTracksFromCache, restoreSleepTrack } = useSleepTracks();
   const isEmptySleepTracks = !isSleepTracksFetching && tracks !== null && tracks.length === 0;
-  const showSkeleton = useSkeletonHandler({ isDataLoading: isSleepTracksFetching });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isSleepTracksFetching, skipSkeleton: isSleepTracksFromCache });
 
   useEffect(() => {
     fetchSleepTracks();
@@ -28,7 +29,7 @@ const SleepTracks = () => {
 
       {showSkeleton && <CardListSkeleton />}
 
-      <ul className={`sleep__track-list fade-on-loaded ${showSkeleton ? "" : "fade-in-up"}`}>
+      <ul className={`sleep__track-list fade-on-loaded ${getFetchedContentFadeAnimation(showSkeleton, isSleepTracksFromCache)}`}>
         {(tracks as SleepSpotifyTrack[]).map((track, index) => {
           const addedAt = track.addedAt;
           const date: string | Date = new Date(addedAt ?? 0).toLocaleString();

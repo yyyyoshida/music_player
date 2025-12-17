@@ -6,15 +6,16 @@ import { useSkeletonHandler } from "../../hooks/useSkeletonHandler";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import usePlaylistStore from "../../store/playlistStore";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
+import { getFetchedContentFadeAnimation } from "../../lib/fetchedContentFadeAnimation";
 
 const PlaylistSelection = () => {
   const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
   const { openPlaylistSelectModal, closePlaylistSelectModal, addTrackToPlaylist } = usePlaylistSelectionStore.getState();
 
-  const { playlists, isPlaylistsLoading } = useFetchPlaylists();
+  const { playlists, isPlaylistsLoading, isPlaylistsFromCache } = useFetchPlaylists();
   const isPlaylistsEmpty = playlists.length === 0;
-  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading });
+  const showSkeleton = useSkeletonHandler({ isDataLoading: isPlaylistsLoading, skipSkeleton: isPlaylistsFromCache });
 
   return (
     <div className="playlist-selection modal" style={{ visibility: isSelectVisible ? "visible" : "hidden" }}>
@@ -41,7 +42,8 @@ const PlaylistSelection = () => {
           </div>
 
           {showSkeleton && <PlaylistSelectSkeleton />}
-          <ul className={`playlist-selection__list ${showSkeleton ? "" : "fade-in-up"}`}>
+
+          <ul className={`playlist-selection__list fade-on-loaded ${getFetchedContentFadeAnimation(showSkeleton, isPlaylistsFromCache)}`}>
             {playlists.map((playlist, i) => {
               const isSingleImage = playlist.albumImages.length <= 3;
               const firstTrackIsFallbackImage = playlist.trackCount === 0 || (isSingleImage && playlist.albumImages[0] === FALLBACK_COVER_IMAGE);

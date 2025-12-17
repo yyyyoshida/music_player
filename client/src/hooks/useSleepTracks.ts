@@ -18,6 +18,7 @@ type MatchedTrack = {
 
 const useSleepTracks = () => {
   const [isSleepTracksFetching, setIsSleepTracksFetching] = useState(true);
+  const [isSleepTracksFromCache, setIsSleepTracksFromCache] = useState(false);
 
   const tracks = usePlaylistStore((state) => state.tracks);
   const deletedTrackDuration = usePlaylistStore((state) => state.deletedTrackDuration);
@@ -108,6 +109,7 @@ const useSleepTracks = () => {
       setTracks(cachedTracks);
       setQueue(cachedTracks);
       setIsSleepTracksFetching(false);
+      setIsSleepTracksFromCache(true);
       return;
     }
 
@@ -125,6 +127,7 @@ const useSleepTracks = () => {
       showMessage("sleepTracksFetchFailed");
     } finally {
       setIsSleepTracksFetching(false);
+      setIsSleepTracksFromCache(false);
     }
   }
 
@@ -184,7 +187,14 @@ const useSleepTracks = () => {
     }
   }
 
-  return { sleepTrack, deleteTrackForSleep, fetchSleepTracks, isSleepTracksFetching, restoreSleepTrack };
+  return {
+    sleepTrack,
+    deleteTrackForSleep,
+    fetchSleepTracks,
+    isSleepTracksFetching,
+    isSleepTracksFromCache,
+    restoreSleepTrack,
+  };
 };
 
 export default useSleepTracks;
