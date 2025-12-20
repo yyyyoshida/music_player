@@ -5,8 +5,7 @@ import { API } from "../api/apis";
 import { STORAGE_KEYS } from "../utils/storageKeys";
 
 const useInitSpotifyToken = (): void => {
-  const setToken = useTokenStore((state) => state.setToken);
-  const setIsToken = useTokenStore.getState().setIsToken;
+  const { setToken, setIsToken, setServerStatus } = useTokenStore.getState();
 
   async function initTokenFromCache(): Promise<boolean> {
     const localAccessToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
@@ -64,6 +63,7 @@ const useInitSpotifyToken = (): void => {
   }
 
   async function initTokenFromDB(): Promise<boolean> {
+    setServerStatus("checking");
     try {
       const storedRefreshToken = await getRefreshToken();
       if (!storedRefreshToken) throw new Error("リフレッシュトークンがサーバーにない");
@@ -72,9 +72,11 @@ const useInitSpotifyToken = (): void => {
       setToken(newToken);
       localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
       localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, storedRefreshToken);
+      setServerStatus("ready");
       return true;
     } catch (error) {
       setIsToken(false);
+      setServerStatus("login-required");
       console.error("🔁 トークンの更新失敗 ログインしてください:", error);
       return false;
     }
