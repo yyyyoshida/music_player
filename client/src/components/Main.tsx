@@ -37,8 +37,6 @@ const Main = () => {
       {isServerChecking && <ServerStartingModal />}
       {isServerLoginRequired && <Login />}
 
-      <Login />
-
       <div className="container" ref={containerRef}>
         <main>
           <TrackInfoProvider>
