@@ -493,3 +493,21 @@
     bottom: 20px;
   }
 }
+
+.server-starting-modal {
+  &__content {
+    width: 200px;
+    height: 200px;
+    top: 40%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  &__spin-loader {
+    border: 8px solid $primary-color;
+    width: 60px;
+    top: 38%;
+  }
+}
