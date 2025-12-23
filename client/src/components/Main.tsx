@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import usePlaylistSelectionStore from "../store/playlistSelectionStore";
+import useTokenStore from "../store/tokenStore";
 import { TrackInfoProvider } from "../contexts/TrackInfoContext";
 
 import Home from "../react-router-dom/Home";
@@ -12,6 +13,8 @@ import CreatePlaylist from "./playlists/CreatePlaylist";
 // import Footer from './Footer';
 
 import Login from "./Login";
+import ServerStartingModal from "./ServerStartingModal";
+
 import ExpandedTrackCoverView from "./ExpandedTrackCoverView";
 import PlayerControls from "./player/PlayerControls";
 import PlaylistSelection from "./playlists/PlaylistSelection";
@@ -23,12 +26,16 @@ import Sleep from "./Sleep";
 
 const Main = () => {
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
+  const isServerStatus = useTokenStore((state) => state.serverStatus);
+  const isServerChecking = isServerStatus === "checking";
+  const isServerLoginRequired = isServerStatus === "login-required";
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
-      <Login />
+      {isServerChecking && <ServerStartingModal />}
+      {isServerLoginRequired && <Login />}
 
       <div className="container" ref={containerRef}>
         <main>
@@ -57,3 +64,4 @@ const Main = () => {
 };
 
 export default Main;
+//

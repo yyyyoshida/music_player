@@ -1532,6 +1532,9 @@ footer {
   padding-top: 50px;
   line-height: 1.8;
 }
+.login__content {
+  padding-top: 60px;
+}
 .login__button {
   margin-top: 50px;
   font-weight: 700;
@@ -1841,6 +1844,21 @@ footer {
   position: absolute;
   right: 40px;
   bottom: 20px;
+}
+
+.server-starting-modal__content {
+  width: 200px;
+  height: 200px;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.server-starting-modal__spin-loader {
+  border: 8px solid rgb(217, 22, 86);
+  width: 60px;
+  top: 38%;
 }
 
 .home {
