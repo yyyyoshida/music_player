@@ -70,7 +70,6 @@ const useSleepTracks = () => {
   }
 
   async function deleteTrackForSleep(trackId: string, playlistId: string) {
-    setIsRestoringTrack(true);
     try {
       if (!trackId) throw new Error("trackIdが無効");
       if (!playlistId) throw new Error("playlistIdが無効");
@@ -103,8 +102,6 @@ const useSleepTracks = () => {
     } catch (error) {
       console.error("スリープ曲の削除に失敗:", error);
       showMessage("deleteTrackFailed");
-    } finally {
-      setIsRestoringTrack(false);
     }
   }
 
@@ -140,6 +137,7 @@ const useSleepTracks = () => {
   }
 
   async function restoreSleepTrack(trackId: string | undefined, playlistIds: string[]) {
+    setIsRestoringTrack(true);
     let removedTrack = null;
     const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
     const cachedTracks: (SpotifyTrack | LocalTrack)[] = JSON.parse(cached!);
@@ -161,6 +159,8 @@ const useSleepTracks = () => {
       console.error("スリープ曲の復元に失敗:", error);
       showMessage("sleepSpotifyRestoreFailed");
       return;
+    } finally {
+      setIsRestoringTrack(false);
     }
 
     try {
