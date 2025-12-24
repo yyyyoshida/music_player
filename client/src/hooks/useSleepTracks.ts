@@ -18,6 +18,7 @@ type MatchedTrack = {
 
 const useSleepTracks = () => {
   const [isSleepTracksFetching, setIsSleepTracksFetching] = useState(true);
+  const [isSleepingTrack, setIsSleepingTrack] = useState(false);
   const [isSleepTracksFromCache, setIsSleepTracksFromCache] = useState(false);
 
   const tracks = usePlaylistStore((state) => state.tracks);
@@ -29,6 +30,7 @@ const useSleepTracks = () => {
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   async function sleepTrack() {
+    setIsSleepingTrack(true);
     const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
     const cachedTracks = cached ? JSON.parse(cached) : [];
 
@@ -61,6 +63,8 @@ const useSleepTracks = () => {
       } else {
         showMessage("sleepFailed");
       }
+    } finally {
+      setIsSleepingTrack(false);
     }
   }
 
@@ -189,6 +193,7 @@ const useSleepTracks = () => {
 
   return {
     sleepTrack,
+    isSleepingTrack,
     deleteTrackForSleep,
     fetchSleepTracks,
     isSleepTracksFetching,

@@ -2319,6 +2319,7 @@ footer {
   padding: 14px 0;
   text-wrap: nowrap;
   cursor: pointer;
+  position: relative;
 }
 .track-more-menu__item img {
   width: 18px;
@@ -2329,6 +2330,12 @@ footer {
 }
 .track-more-menu__item:hover {
   background-color: rgba(255, 255, 255, 0.062745098);
+}
+.track-more-menu__item-spin-loader {
+  left: auto;
+  right: 0px;
+  width: 24px;
+  border-width: 4px;
 }
 
 .is-open-menu {

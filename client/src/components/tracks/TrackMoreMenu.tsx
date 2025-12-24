@@ -19,7 +19,7 @@ const TrackMoreMenu = () => {
 
   const openPlaylistSelectModal = usePlaylistSelectionStore.getState().openPlaylistSelectModal;
 
-  const { sleepTrack } = useSleepTracks();
+  const { sleepTrack, isSleepingTrack } = useSleepTracks();
   const menuRef = useRef<HTMLDivElement>(null);
   const isButtonHoveredRef = useRef<boolean>(null);
   const isNotSearchPage = window.location.pathname !== "/search";
@@ -83,13 +83,14 @@ const TrackMoreMenu = () => {
             </li>
             <li
               className="track-more-menu__item"
-              onClick={() => {
-                sleepTrack();
+              onClick={async () => {
+                await sleepTrack();
                 closeTrackMenu();
               }}
             >
               <img src={SLEEP_ICON_64PX} className="track-more-menu__item-icon-bored" />
               曲をスリープ
+              {isSleepingTrack && <div className="track-more-menu__item-spin-loader spin-loader"></div>}
             </li>
           </>
         )}
