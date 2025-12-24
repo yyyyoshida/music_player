@@ -8,10 +8,10 @@ type SleepTrackItemProps = {
   index: number;
   date: string;
   restoreSleepTrack: (trackId: string | undefined, playlistIds: string[]) => Promise<void>;
-  isRestoringTrack: boolean;
+  restoringTrackId: string | null;
 };
 
-const SleepTrackItem = ({ track, index, date, restoreSleepTrack, isRestoringTrack }: SleepTrackItemProps) => {
+const SleepTrackItem = ({ track, index, date, restoreSleepTrack, restoringTrackId }: SleepTrackItemProps) => {
   const { isCurrentTrack, isActiveTrack, handleClickTrackItem } = useTrackItem(track, index, date);
 
   const playDisable = usePlayerStore((state) => state.playDisable);
@@ -19,12 +19,13 @@ const SleepTrackItem = ({ track, index, date, restoreSleepTrack, isRestoringTrac
   const isLoading = playDisable;
   const isSelectedTrack = isCurrentTrack;
   const isPlayingTrack = isActiveTrack;
+  const isRestoringTrack = restoringTrackId === track.id;
 
   const isPlayingTrackLoaded = isPlayingTrack && !isLoading;
 
   return (
     <li
-      className={`sleep__track-item ${isSelectedTrack ? "is-current" : ""} ${isPlayingTrackLoaded ? "is-playing" : ""}`}
+      className={`sleep__track-item ${isSelectedTrack || isRestoringTrack ? "is-current" : ""} ${isPlayingTrackLoaded ? "is-playing" : ""}`}
       key={track.id}
       onClick={handleClickTrackItem}
     >

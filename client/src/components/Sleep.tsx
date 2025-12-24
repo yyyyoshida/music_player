@@ -10,7 +10,7 @@ import { getFetchedContentFadeAnimation } from "../lib/fetchedContentFadeAnimati
 
 const SleepTracks = () => {
   const tracks = usePlaylistStore((state) => state.tracks);
-  const { fetchSleepTracks, isSleepTracksFetching, isSleepTracksFromCache, restoreSleepTrack, isRestoringTrack } = useSleepTracks();
+  const { fetchSleepTracks, isSleepTracksFetching, isSleepTracksFromCache, restoreSleepTrack, restoringTrackId } = useSleepTracks();
   const isEmptySleepTracks = !isSleepTracksFetching && tracks !== null && tracks.length === 0;
   const showSkeleton = useSkeletonHandler({ isDataLoading: isSleepTracksFetching, skipSkeleton: isSleepTracksFromCache });
 
@@ -41,7 +41,7 @@ const SleepTracks = () => {
               index={index}
               date={date}
               restoreSleepTrack={restoreSleepTrack}
-              isRestoringTrack={isRestoringTrack}
+              restoringTrackId={restoringTrackId}
             />
           );
         })}
