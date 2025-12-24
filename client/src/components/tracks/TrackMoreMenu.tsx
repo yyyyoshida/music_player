@@ -48,7 +48,12 @@ const TrackMoreMenu = () => {
   }, [isTrackMenuVisible]);
 
   return (
-    <div className={`track-more-menu ${isTrackMenuVisible && "is-open-menu"}`} style={{ top: trackMenuPositionTop }} ref={menuRef}>
+    <div
+      className={`track-more-menu ${isTrackMenuVisible && "is-open-menu"}`}
+      style={{ top: trackMenuPositionTop }}
+      ref={menuRef}
+      onClick={(e) => e.stopPropagation()}
+    >
       <ul className="track-more-menu__list">
         <li
           className="track-more-menu__item"
