@@ -19,6 +19,7 @@ type MatchedTrack = {
 const useSleepTracks = () => {
   const [isSleepTracksFetching, setIsSleepTracksFetching] = useState(true);
   const [isSleepingTrack, setIsSleepingTrack] = useState(false);
+  const [isRestoringTrack, setIsRestoringTrack] = useState(false);
   const [isSleepTracksFromCache, setIsSleepTracksFromCache] = useState(false);
 
   const tracks = usePlaylistStore((state) => state.tracks);
@@ -69,6 +70,7 @@ const useSleepTracks = () => {
   }
 
   async function deleteTrackForSleep(trackId: string, playlistId: string) {
+    setIsRestoringTrack(true);
     try {
       if (!trackId) throw new Error("trackIdが無効");
       if (!playlistId) throw new Error("playlistIdが無効");
@@ -101,6 +103,8 @@ const useSleepTracks = () => {
     } catch (error) {
       console.error("スリープ曲の削除に失敗:", error);
       showMessage("deleteTrackFailed");
+    } finally {
+      setIsRestoringTrack(false);
     }
   }
 
@@ -199,6 +203,7 @@ const useSleepTracks = () => {
     isSleepTracksFetching,
     isSleepTracksFromCache,
     restoreSleepTrack,
+    isRestoringTrack,
   };
 };
 
