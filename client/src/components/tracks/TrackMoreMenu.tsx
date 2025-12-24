@@ -11,6 +11,7 @@ const TrackMoreMenu = () => {
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
   const menuTrackId = useTrackMoreMenuStore((state) => state.menuTrackId);
   const deleteTrack = usePlaylistStore.getState().deleteTrack;
+  const isDeletingTrack = usePlaylistStore((state) => state.isDeletingTrack);
 
   const isTrackMenuButtonHovered = useTrackMoreMenuStore((state) => state.isTrackMenuButtonHovered);
   const trackMenuPositionTop = useTrackMoreMenuStore((state) => state.trackMenuPositionTop);
@@ -19,7 +20,7 @@ const TrackMoreMenu = () => {
 
   const openPlaylistSelectModal = usePlaylistSelectionStore.getState().openPlaylistSelectModal;
 
-  const { sleepTrack } = useSleepTracks();
+  const { sleepTrack, isSleepingTrack } = useSleepTracks();
   const menuRef = useRef<HTMLDivElement>(null);
   const isButtonHoveredRef = useRef<boolean>(null);
   const isNotSearchPage = window.location.pathname !== "/search";
@@ -47,7 +48,12 @@ const TrackMoreMenu = () => {
   }, [isTrackMenuVisible]);
 
   return (
-    <div className={`track-more-menu ${isTrackMenuVisible && "is-open-menu"}`} style={{ top: trackMenuPositionTop }} ref={menuRef}>
+    <div
+      className={`track-more-menu ${isTrackMenuVisible && "is-open-menu"}`}
+      style={{ top: trackMenuPositionTop }}
+      ref={menuRef}
+      onClick={(e) => e.stopPropagation()}
+    >
       <ul className="track-more-menu__list">
         <li
           className="track-more-menu__item"
@@ -73,23 +79,25 @@ const TrackMoreMenu = () => {
           <>
             <li
               className="track-more-menu__item"
-              onClick={() => {
-                deleteTrack(menuTrackId);
+              onClick={async () => {
+                await deleteTrack(menuTrackId);
                 closeTrackMenu();
               }}
             >
               <img src="/img/delete.png" className="track-more-menu__ite-icon-delete" />
               プレイリストから削除
+              {isDeletingTrack && <div className="track-more-menu__item-spin-loader spin-loader"></div>}
             </li>
             <li
               className="track-more-menu__item"
-              onClick={() => {
-                sleepTrack();
+              onClick={async () => {
+                await sleepTrack();
                 closeTrackMenu();
               }}
             >
               <img src={SLEEP_ICON_64PX} className="track-more-menu__item-icon-bored" />
               曲をスリープ
+              {isSleepingTrack && <div className="track-more-menu__item-spin-loader spin-loader"></div>}
             </li>
           </>
         )}

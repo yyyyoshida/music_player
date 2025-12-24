@@ -21,6 +21,7 @@ type PlaylistStore = {
   tracks: TrackObject[];
   deletedTrackDuration: number;
   addedTrackDuration: number;
+  isDeletingTrack: boolean;
 
   errorMessage: string;
   isShaking: boolean;
@@ -36,6 +37,7 @@ type PlaylistStore = {
   setTracks: (value: TrackObject[] | ((prev: TrackObject[]) => TrackObject[])) => void;
   setDeletedTrackDuration: (deletedTrackDuration: number) => void;
   setAddedTrackDuration: (updater: number | ((prev: number) => number)) => number | void;
+  setIsDeletingTrack: (isDeletingTrack: boolean) => void;
 
   setErrorMessage: (errorMessage: string) => void;
   setIsShaking: (isShaking: boolean) => void;
@@ -68,6 +70,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   tracks: [],
   deletedTrackDuration: 0,
   addedTrackDuration: 0,
+  isDeletingTrack: false,
 
   errorMessage: "",
   isShaking: false,
@@ -93,6 +96,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     set((state) => ({
       addedTrackDuration: typeof updater === "function" ? updater(state.addedTrackDuration) : updater,
     })),
+  setIsDeletingTrack: (isDeletingTrack) => set({ isDeletingTrack }),
   setErrorMessage: (errorMessage) => set({ errorMessage }),
   setIsShaking: (isShaking) => set({ isShaking }),
   setIsCoverImageFading: (isCoverImageFading) => set({ isCoverImageFading }),
@@ -146,8 +150,16 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   fadeCoverImages: () => set({ isCoverImageFading: true }),
 
   deleteTrack: async (trackId, isShowMessage = true, selectedPlaylistId = null) => {
-    const { currentPlaylistId, setPlaylistInfo, deletedTrackDuration, tracks, fadeCoverImages } = get();
+    const {
+      currentPlaylistId,
+      setPlaylistInfo,
+      deletedTrackDuration,
+      tracks,
+      fadeCoverImages,
+      setIsDeletingTrack,
+    } = get();
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
+    setIsDeletingTrack(true);
 
     try {
       if (!currentPlaylistId) throw new Error("currentPlaylistIdが無効");
@@ -187,6 +199,8 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       clearPlaylistCache(playlistId);
     } catch (error) {
       showMessage("deleteTrackFailed");
+    } finally {
+      setIsDeletingTrack(false);
     }
   },
 }));

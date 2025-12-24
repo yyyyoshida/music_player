@@ -8,9 +8,10 @@ type SleepTrackItemProps = {
   index: number;
   date: string;
   restoreSleepTrack: (trackId: string | undefined, playlistIds: string[]) => Promise<void>;
+  restoringTrackId: string | null;
 };
 
-const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackItemProps) => {
+const SleepTrackItem = ({ track, index, date, restoreSleepTrack, restoringTrackId }: SleepTrackItemProps) => {
   const { isCurrentTrack, isActiveTrack, handleClickTrackItem } = useTrackItem(track, index, date);
 
   const playDisable = usePlayerStore((state) => state.playDisable);
@@ -18,12 +19,13 @@ const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackIte
   const isLoading = playDisable;
   const isSelectedTrack = isCurrentTrack;
   const isPlayingTrack = isActiveTrack;
+  const isRestoringTrack = restoringTrackId === track.id;
 
   const isPlayingTrackLoaded = isPlayingTrack && !isLoading;
 
   return (
     <li
-      className={`sleep__track-item ${isSelectedTrack ? "is-current" : ""} ${isPlayingTrackLoaded ? "is-playing" : ""}`}
+      className={`sleep__track-item ${isSelectedTrack || isRestoringTrack ? "is-current" : ""} ${isPlayingTrackLoaded ? "is-playing" : ""}`}
       key={track.id}
       onClick={handleClickTrackItem}
     >
@@ -51,7 +53,7 @@ const SleepTrackItem = ({ track, index, date, restoreSleepTrack }: SleepTrackIte
         >
           <img src="img/restore.png" className="sleep__track-restore-button-icon" />
         </button>
-        {isLoading && isSelectedTrack && <div className="spin-loader"></div>}
+        {((isLoading && isSelectedTrack) || isRestoringTrack) && <div className="spin-loader"></div>}
 
         <div className="equalizer">
           <div className="bar"></div>

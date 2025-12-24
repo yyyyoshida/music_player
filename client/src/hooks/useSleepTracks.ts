@@ -18,6 +18,8 @@ type MatchedTrack = {
 
 const useSleepTracks = () => {
   const [isSleepTracksFetching, setIsSleepTracksFetching] = useState(true);
+  const [isSleepingTrack, setIsSleepingTrack] = useState(false);
+  const [restoringTrackId, setRestoringTrackId] = useState<string | null>(null);
   const [isSleepTracksFromCache, setIsSleepTracksFromCache] = useState(false);
 
   const tracks = usePlaylistStore((state) => state.tracks);
@@ -29,6 +31,7 @@ const useSleepTracks = () => {
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
   async function sleepTrack() {
+    setIsSleepingTrack(true);
     const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
     const cachedTracks = cached ? JSON.parse(cached) : [];
 
@@ -61,6 +64,8 @@ const useSleepTracks = () => {
       } else {
         showMessage("sleepFailed");
       }
+    } finally {
+      setIsSleepingTrack(false);
     }
   }
 
@@ -132,31 +137,25 @@ const useSleepTracks = () => {
   }
 
   async function restoreSleepTrack(trackId: string | undefined, playlistIds: string[]) {
-    let removedTrack = null;
-    const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
-    const cachedTracks: (SpotifyTrack | LocalTrack)[] = JSON.parse(cached!);
+    let removedTrack: SpotifyTrack | LocalTrack | null = null;
 
-    try {
-      if (!trackId) throw new Error("trackIdが無効");
-      if (!playlistIds || playlistIds.length === 0) throw new Error("playlistIdsが無効");
-
-      const response = await fetch(API.deleteSleepSpotifyTracks(trackId), { method: "DELETE" });
-      if (!response.ok) throw new Error(response.statusText);
-
-      removedTrack = await response.json();
-
-      const updateTracks = cachedTracks.filter((track) => track.id !== trackId);
-      setTracks(updateTracks);
-      setQueue(updateTracks);
-      localStorage.setItem(STORAGE_KEYS.SLEEP_TRACKS, JSON.stringify(updateTracks));
-    } catch (error) {
-      console.error("スリープ曲の復元に失敗:", error);
+    if (!trackId || !playlistIds || playlistIds.length === 0) {
+      console.error("スリープ曲の復元に失敗: trackIdまたはplaylistIdsが無効");
       showMessage("sleepSpotifyRestoreFailed");
       return;
     }
 
+    setRestoringTrackId(trackId || null);
+
     try {
-      const response = await fetch(API.RESTORE_SLEEP_SPOTIFY_TRACKS, {
+      // スリープ（非表示曲一覧）から削除
+      const deleteResponse = await fetch(API.deleteSleepSpotifyTracks(trackId), { method: "DELETE" });
+      if (!deleteResponse.ok) throw new Error(deleteResponse.statusText);
+
+      removedTrack = await deleteResponse.json();
+
+      // プレイリストへ復元
+      const restoreResponse = await fetch(API.RESTORE_SLEEP_SPOTIFY_TRACKS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -164,9 +163,9 @@ const useSleepTracks = () => {
         body: JSON.stringify(removedTrack),
       });
 
-      if (!response.ok) throw new Error(response.statusText);
+      if (!restoreResponse.ok) throw new Error(restoreResponse.statusText);
 
-      const data = await response.json();
+      const data = await restoreResponse.json();
       const restoredTracks = data.restoredTracks;
       const updatedPlaylistsInfo = data.updatedPlaylists;
 
@@ -180,20 +179,34 @@ const useSleepTracks = () => {
         updatePlaylistsCacheFromSleep(playlistId, restoredTrack);
       }
 
+      //UIの更新
+      const cached = localStorage.getItem(STORAGE_KEYS.SLEEP_TRACKS);
+      const cachedTracks: (SpotifyTrack | LocalTrack)[] = JSON.parse(cached!);
+
+      const updateTracks = cachedTracks.filter((track) => track.id !== trackId);
+
+      setTracks(updateTracks);
+      setQueue(updateTracks);
+      localStorage.setItem(STORAGE_KEYS.SLEEP_TRACKS, JSON.stringify(updateTracks));
+
       showMessage("sleepTrackRestore");
-    } catch (error) {
-      console.error("スリープ曲の復元に失敗:", error);
+    } catch {
+      console.error("スリープ曲の復元に失敗:", trackId, playlistIds);
       showMessage("sleepSpotifyRestoreFailed");
+    } finally {
+      setRestoringTrackId(null);
     }
   }
 
   return {
     sleepTrack,
+    isSleepingTrack,
     deleteTrackForSleep,
     fetchSleepTracks,
     isSleepTracksFetching,
     isSleepTracksFromCache,
     restoreSleepTrack,
+    restoringTrackId,
   };
 };
 
