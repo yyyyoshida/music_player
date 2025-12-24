@@ -286,6 +286,7 @@
     transition: background-color 0.2s ease;
     user-select: none;
     cursor: pointer;
+    position: relative;
     &:hover {
       background-color: $hover-gray;
       box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
@@ -319,6 +320,11 @@
     left: 47%;
     width: 24px;
     height: 24px;
+  }
+
+  &__item-spin-loader {
+    left: auto;
+    right: 10px;
   }
 
   .playlist-cover-fallback-wrapper img {

@@ -1680,6 +1680,7 @@ footer {
      -moz-user-select: none;
           user-select: none;
   cursor: pointer;
+  position: relative;
 }
 .playlist-selection__item:hover {
   background-color: #444;
@@ -1711,6 +1712,10 @@ footer {
   left: 47%;
   width: 24px;
   height: 24px;
+}
+.playlist-selection__item-spin-loader {
+  left: auto;
+  right: 10px;
 }
 .playlist-selection .playlist-cover-fallback-wrapper img {
   width: 12px;
