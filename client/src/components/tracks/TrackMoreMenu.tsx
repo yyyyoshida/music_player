@@ -11,6 +11,7 @@ const TrackMoreMenu = () => {
   const showMessage = useActionSuccessMessageStore.getState().showMessage;
   const menuTrackId = useTrackMoreMenuStore((state) => state.menuTrackId);
   const deleteTrack = usePlaylistStore.getState().deleteTrack;
+  const isDeletingTrack = usePlaylistStore((state) => state.isDeletingTrack);
 
   const isTrackMenuButtonHovered = useTrackMoreMenuStore((state) => state.isTrackMenuButtonHovered);
   const trackMenuPositionTop = useTrackMoreMenuStore((state) => state.trackMenuPositionTop);
@@ -73,13 +74,14 @@ const TrackMoreMenu = () => {
           <>
             <li
               className="track-more-menu__item"
-              onClick={() => {
-                deleteTrack(menuTrackId);
+              onClick={async () => {
+                await deleteTrack(menuTrackId);
                 closeTrackMenu();
               }}
             >
               <img src="/img/delete.png" className="track-more-menu__ite-icon-delete" />
               プレイリストから削除
+              {isDeletingTrack && <div className="track-more-menu__item-spin-loader spin-loader"></div>}
             </li>
             <li
               className="track-more-menu__item"
