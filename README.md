@@ -27,11 +27,9 @@
 
 
 ### デモリンク
-URL：https://hogehogehoge <br>
-Password：yyyyoshida
+[https://music-player-beryl-five.vercel.app/](https://music-player-beryl-five.vercel.app/) <br>
 
-※ 外部アクセス防止のため簡易パスワードを設定しています。  
-※ 曲の追加・削除など、自由に操作してOKです。
+※ 曲の追加・削除など、いろいろ自由に操作してOKです。
 
 # 開発者向け情報
 本アプリは Spotify API と Firebaseを使用しており、 環境変数は公開できないため<br>
@@ -229,6 +227,7 @@ async function initTokenFromCache(): Promise<boolean> {
 - Spotify APIの認証周りのテストコード
   - その他主要機能のテストコード
 - FirebaseをSupabaseに移行してSQLにチャレンジ
+
 
 
 
