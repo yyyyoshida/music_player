@@ -83,9 +83,7 @@ const Home = () => {
       <h1 className="home__title">ホーム</h1>
       <p className="home__text">最近再生した曲一覧</p>
 
-      <p className="home__text-info">
-        ※ 現在、他のタスクを優先しているため、ローカル曲へはまだ未対応です。エラー回避のため、この一覧は一時的に非表示にしています。
-      </p>
+      <p className="home__text-info">※ 現在、一部機能が未対応のため、この一覧は一時的に非表示にしています。</p>
     </div>
     // <div className="home">
     //   <h1 className="home__title">ホーム</h1>
