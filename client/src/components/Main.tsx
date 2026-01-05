@@ -54,9 +54,9 @@ const Main = () => {
               <Route path="/sleep" element={<Sleep />} />
             </Routes>
             <PlayerControls />
-            <ActionSuccessMessage />
           </TrackInfoProvider>
         </main>
+        <ActionSuccessMessage />
         {/* <Footer /> */}
       </div>
     </>
