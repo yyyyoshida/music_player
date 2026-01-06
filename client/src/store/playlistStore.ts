@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { clearPlaylistCache } from "../features/playlist/playlistCache";
 import { getPlaylistInfo } from "../features/playlist/playlistActions";
+import { deletePlaylist } from "../features/playlist/playlistService";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import type { TrackObject } from "../types/tracksType";
 import type { PlaylistObject } from "../types/playlistType";
@@ -130,11 +131,7 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     const showMessage = useActionSuccessMessageStore.getState().showMessage;
 
     try {
-      const response = await fetch(API.playlist(playlistId), {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("プレイリスト削除失敗");
+      await deletePlaylist(playlistId);
 
       clearPlaylistCache(playlistId);
       navigate("/playlist");

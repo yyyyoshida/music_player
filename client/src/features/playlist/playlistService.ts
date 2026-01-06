@@ -16,6 +16,14 @@ export async function createPlaylist(name: string) {
   return data;
 }
 
+export async function deletePlaylist(playlistId: string) {
+  const response = await fetch(API.playlist(playlistId), {
+    method: "DELETE",
+  });
+
+  if (!response.ok) throw new Error("プレイリスト削除失敗");
+}
+
 export async function fetchPlaylistInfo(id: string) {
   const response = await fetch(API.playlistInfo(id));
 
