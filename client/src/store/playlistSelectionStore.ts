@@ -4,10 +4,10 @@ import usePlaybackStore from "./playbackStore";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import useUploadModalStore from "./uploadModalStore";
 import { clearPlaylistCache } from "../features/playlist/playlistCache";
+import { addSpotifyTrack, addLocalTrack, addNewLocalTrack } from "../features/playlist/playlistService";
 import type { TrackObject, fromSearchResultTrackObject } from "../types/tracksType";
 import type { ActionType } from "../types/actionType";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
-import { API } from "../api/apis";
 
 type PlaylistSelectStore = {
   isSelectVisible: boolean;
@@ -64,35 +64,17 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
   // executeTrackSave関数でtry-catchをラップしてるから不要↓
   saveTrackToFirestore: async (playlistId) => {
     const { addTrackToList, selectedTrack } = get();
+    if (!selectedTrack) throw new Error("selectedTrackが存在しない");
 
-    const response = await fetch(API.playlistSpotifyTracks(playlistId), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedTrack),
-    });
-
-    if (!response.ok) throw new Error("addFailedSpotify");
-
-    const { addedTrack } = await response.json();
+    const addedTrack = await addSpotifyTrack(playlistId, selectedTrack);
     addTrackToList(playlistId, addedTrack);
   },
 
   saveUploadedLocalTrack: async (playlistId) => {
     const { addTrackToList, selectedTrack } = get();
+    if (!selectedTrack) throw new Error("selectedTrackが存在しない");
 
-    const response = await fetch(API.playlistLocalTracks(playlistId), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedTrack),
-    });
-
-    if (!response.ok) throw new Error("addFailedLocal");
-
-    const { addedTrack } = await response.json();
+    const addedTrack = await addLocalTrack(playlistId, selectedTrack);
     addTrackToList(playlistId, addedTrack);
   },
 
@@ -131,14 +113,7 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
     formData.append("audio", uploadTrackFile);
     formData.append("track", JSON.stringify(selectedTrack));
 
-    const response = await fetch(API.playlistNewLocalTracks(playlistId), {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) throw new Error("addFailedNewLocal");
-
-    const { addedTrack } = await response.json();
+    const addedTrack = await addNewLocalTrack(playlistId, formData);
     addTrackToList(playlistId, addedTrack);
   },
 
