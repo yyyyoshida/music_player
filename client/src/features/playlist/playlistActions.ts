@@ -1,15 +1,9 @@
-import type { ActionType } from "../types/actionType";
-import type { TrackObject } from "../types/tracksType";
-import { API } from "../api/apis";
-import { STORAGE_KEYS } from "./storageKeys";
-import validatePlaylistName from "./validatePlaylistName";
-import { createPlaylist } from "../features/playlist/playlistService";
-import {
-  getPlaylistInfoCache,
-  setPlaylistInfoCache,
-  clearPlaylistInfoCache,
-} from "../features/playlist/playlistCache";
-import { fetchPlaylistInfo } from "../features/playlist/playlistService";
+import type { ActionType } from "../../types/actionType";
+import type { TrackObject } from "../../types/tracksType";
+import validatePlaylistName from "../../utils/validatePlaylistName";
+import { getPlaylistInfoCache, setPlaylistInfoCache, clearPlaylistInfoCache } from "./playlistCache";
+import { createPlaylist } from "./playlistService";
+import { fetchPlaylistInfo } from "./playlistService";
 
 type CreatePlaylistActions = {
   hideCreatePlaylistModal: () => void;
@@ -21,6 +15,9 @@ type CreatePlaylistActions = {
   addTrackToPlaylist: (playlistId: string) => Promise<void>;
 };
 
+// ====================
+// 新規プレイリスト作成
+// ====================
 export async function handleCreatePlaylist(name: string, actions: CreatePlaylistActions): Promise<void> {
   const validationError = validatePlaylistName(name);
 
@@ -44,6 +41,9 @@ export async function handleCreatePlaylist(name: string, actions: CreatePlaylist
   }
 }
 
+// ====================
+// プレイリスト詳細取得
+// ====================
 export async function getPlaylistInfo(
   currentPlaylistId: string,
   setPlaylistInfo: (info: { name: string; totalDuration: number }) => void,

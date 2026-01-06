@@ -6,7 +6,7 @@ import usePlaybackStore from "../store/playbackStore";
 import type { ActionType } from "../types/actionType";
 import type { SpotifyTrack, LocalTrack } from "../types/tracksType";
 import { API } from "../api/apis";
-import { getPlaylistInfo } from "../utils/playlistUtils";
+import { getPlaylistInfo } from "../features/playlist/playlistActions";
 import { STORAGE_KEYS } from "../utils/storageKeys";
 import { clearPlaylistCache } from "../features/playlist/playlistCache";
 import { updatePlaylistsCacheFromSleep } from "../features/playlist/playlistCache";

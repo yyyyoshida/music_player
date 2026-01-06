@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { clearPlaylistCache } from "../features/playlist/playlistCache";
-import { getPlaylistInfo } from "../utils/playlistUtils";
+import { getPlaylistInfo } from "../features/playlist/playlistActions";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import type { TrackObject } from "../types/tracksType";
 import type { PlaylistObject } from "../types/playlistType";

@@ -1,4 +1,4 @@
-import { getPlaylistInfo } from "../playlistUtils";
+import { getPlaylistInfo } from "../../features/playlist/playlistActions";
 import { STORAGE_KEYS } from "../storageKeys";
 
 const ONE_MINUTE = 60 * 1000;

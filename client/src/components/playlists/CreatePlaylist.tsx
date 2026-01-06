@@ -4,7 +4,7 @@ import usePlaylistStore from "../../store/playlistStore";
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import type { TrackObject } from "../../types/tracksType";
-import { handleCreatePlaylist } from "../../utils/playlistUtils";
+import { handleCreatePlaylist } from "../../features/playlist/playlistActions";
 
 function getPlaylistCover(track: TrackObject | null): string {
   if (!track) return FALLBACK_COVER_IMAGE;

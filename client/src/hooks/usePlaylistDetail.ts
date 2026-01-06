@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPlaylistInfo } from "../utils/playlistUtils";
+import { getPlaylistInfo } from "../features/playlist/playlistActions";
 import usePlaylistStore from "../store/playlistStore";
 import usePlaybackStore from "../store/playbackStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
