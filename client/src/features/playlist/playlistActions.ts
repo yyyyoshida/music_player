@@ -1,8 +1,13 @@
 import type { ActionType } from "../../types/actionType";
 import type { TrackObject } from "../../types/tracksType";
 import validatePlaylistName from "../../utils/validatePlaylistName";
-import { getPlaylistInfoCache, setPlaylistInfoCache, clearPlaylistInfoCache } from "./playlistCache";
-import { createPlaylist } from "./playlistService";
+import {
+  getPlaylistInfoCache,
+  setPlaylistInfoCache,
+  clearPlaylistInfoCache,
+  clearPlaylistCache,
+} from "./playlistCache";
+import { createPlaylist, deletePlaylist } from "./playlistService";
 import { fetchPlaylistInfo } from "./playlistService";
 
 type CreatePlaylistActions = {
@@ -13,6 +18,11 @@ type CreatePlaylistActions = {
   closePlaylistSelectModal: () => void;
   showMessage: (msg: ActionType) => void;
   addTrackToPlaylist: (playlistId: string) => Promise<void>;
+};
+
+type DeletePlaylistActions = {
+  hideDeletePlaylistModal: () => void;
+  showMessage: (msg: ActionType) => void;
 };
 
 // ====================
@@ -38,6 +48,28 @@ export async function handleCreatePlaylist(name: string, actions: CreatePlaylist
   } catch {
     actions.showMessage("newPlaylistFailed");
     actions.hideCreatePlaylistModal();
+  }
+}
+
+// =================
+// プレイリスト削除
+// =================
+export async function handleDeletePlaylist(
+  playlistId: string,
+  navigate: (url: string) => void,
+  actions: DeletePlaylistActions
+): Promise<void> {
+  try {
+    await deletePlaylist(playlistId);
+
+    clearPlaylistCache(playlistId);
+    navigate("/playlist");
+    actions.showMessage("deletePlaylist");
+  } catch (error) {
+    actions.showMessage("deletePlaylistFailed");
+    console.error(error);
+  } finally {
+    actions.hideDeletePlaylistModal();
   }
 }
 

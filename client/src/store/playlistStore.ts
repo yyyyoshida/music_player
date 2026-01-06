@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { clearPlaylistCache } from "../features/playlist/playlistCache";
 import { getPlaylistInfo } from "../features/playlist/playlistActions";
-import { deletePlaylist } from "../features/playlist/playlistService";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import type { TrackObject } from "../types/tracksType";
 import type { PlaylistObject } from "../types/playlistType";
@@ -52,7 +51,6 @@ type PlaylistStore = {
   showDeletePlaylistModal: () => void;
   hideDeletePlaylistModal: () => void;
   triggerError: (message: string) => void;
-  deletePlaylist: (playlistId: string, navigate: (url: string) => void) => Promise<void>;
   showCoverImages: () => void;
   fadeCoverImages: () => void;
   deleteTrack: (
@@ -124,23 +122,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
 
   triggerError: (message) => {
     set({ errorMessage: message, isShaking: true });
-  },
-
-  deletePlaylist: async (playlistId, navigate) => {
-    const { hideDeletePlaylistModal } = get();
-    const showMessage = useActionSuccessMessageStore.getState().showMessage;
-
-    try {
-      await deletePlaylist(playlistId);
-
-      clearPlaylistCache(playlistId);
-      navigate("/playlist");
-      showMessage("deletePlaylist");
-    } catch {
-      showMessage("deletePlaylistFailed");
-    } finally {
-      hideDeletePlaylistModal();
-    }
   },
 
   showCoverImages: () => set({ isCoverImageFading: false }),
