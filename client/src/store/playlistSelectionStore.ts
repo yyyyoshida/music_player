@@ -3,7 +3,7 @@ import usePlaylistStore from "./playlistStore";
 import usePlaybackStore from "./playbackStore";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import useUploadModalStore from "./uploadModalStore";
-import { clearPlaylistCache } from "../utils/clearPlaylistCache";
+import { clearPlaylistCache } from "../features/playlist/clearPlaylistCache";
 import type { TrackObject, fromSearchResultTrackObject } from "../types/tracksType";
 import type { ActionType } from "../types/actionType";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";

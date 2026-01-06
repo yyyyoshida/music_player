@@ -1,4 +1,4 @@
-import { STORAGE_KEYS } from "./storageKeys";
+import { STORAGE_KEYS } from "../../utils/storageKeys";
 
 export function clearPlaylistCache(id: string): void {
   clearPlaylistsCache();
