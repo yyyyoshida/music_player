@@ -8,7 +8,7 @@ import type { SpotifyTrack, LocalTrack } from "../types/tracksType";
 import { API } from "../api/apis";
 import { getPlaylistInfo } from "../utils/playlistUtils";
 import { STORAGE_KEYS } from "../utils/storageKeys";
-import { clearPlaylistCache } from "../features/playlist/clearPlaylistCache";
+import { clearPlaylistCache } from "../features/playlist/playlistCache";
 import { updatePlaylistsCacheFromSleep } from "../features/playlist/playlistCache";
 
 type MatchedTrack = {

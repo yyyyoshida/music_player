@@ -33,3 +33,17 @@ export function updatePlaylistsCacheFromSleep(playlistId: string, track: Spotify
     localStorage.setItem(STORAGE_KEYS.PLAYLISTS, JSON.stringify(updatedPlaylists));
   }
 }
+
+export function clearPlaylistCache(id: string): void {
+  clearPlaylistsCache();
+  clearPlaylistDetailCache(id);
+}
+
+export function clearPlaylistDetailCache(id: string): void {
+  localStorage.removeItem(STORAGE_KEYS.getCachedTracksKey(id));
+  localStorage.removeItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id));
+}
+
+export function clearPlaylistsCache(): void {
+  localStorage.removeItem(STORAGE_KEYS.PLAYLISTS);
+}
