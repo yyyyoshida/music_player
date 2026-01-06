@@ -47,3 +47,19 @@ export function clearPlaylistDetailCache(id: string): void {
 export function clearPlaylistsCache(): void {
   localStorage.removeItem(STORAGE_KEYS.PLAYLISTS);
 }
+
+// プレイリスト詳細のキャッシュ操作
+
+export function getPlaylistInfoCache(id: string) {
+  const cached = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id));
+
+  return cached ? JSON.parse(cached) : null;
+}
+
+export function setPlaylistInfoCache(id: string, data: any) {
+  localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id), JSON.stringify(data));
+}
+
+export function clearPlaylistInfoCache(id: string) {
+  localStorage.removeItem(STORAGE_KEYS.getCachedPlaylistInfoKey(id));
+}

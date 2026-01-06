@@ -4,6 +4,11 @@ import { API } from "../api/apis";
 import { STORAGE_KEYS } from "./storageKeys";
 import validatePlaylistName from "./validatePlaylistName";
 import { createPlaylist } from "../features/playlist/playlistService";
+import {
+  getPlaylistInfoCache,
+  setPlaylistInfoCache,
+  clearPlaylistInfoCache,
+} from "../features/playlist/playlistCache";
 import { fetchPlaylistInfo } from "../features/playlist/playlistService";
 
 type CreatePlaylistActions = {
@@ -44,18 +49,17 @@ export async function getPlaylistInfo(
   setPlaylistInfo: (info: { name: string; totalDuration: number }) => void,
   showMessage: (key: ActionType) => void
 ): Promise<{ name: string; totalDuration: number }> {
-  const cachedPlaylistInfo = localStorage.getItem(STORAGE_KEYS.getCachedPlaylistInfoKey(currentPlaylistId));
+  const cached = getPlaylistInfoCache(currentPlaylistId);
 
-  if (cachedPlaylistInfo) {
-    setPlaylistInfo(JSON.parse(cachedPlaylistInfo));
-    return JSON.parse(cachedPlaylistInfo);
+  if (cached) {
+    setPlaylistInfo(cached);
+    return cached;
   }
 
   try {
     const data = await fetchPlaylistInfo(currentPlaylistId);
 
-    localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(currentPlaylistId), JSON.stringify(data));
-
+    setPlaylistInfoCache(currentPlaylistId, data);
     setPlaylistInfo(data);
     return data;
   } catch (error) {
@@ -65,7 +69,7 @@ export async function getPlaylistInfo(
 
   function getPlaylistInfoFailed(logValue: any) {
     console.error("プレイリストメタ情報取得失敗: ", logValue);
-    localStorage.removeItem(STORAGE_KEYS.getCachedPlaylistInfoKey(currentPlaylistId));
+    clearPlaylistInfoCache(currentPlaylistId);
     showMessage("fetchPlaylistInfoFailed");
     setPlaylistInfo({ name: "プレイリスト", totalDuration: 0 });
   }
