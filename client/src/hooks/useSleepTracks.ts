@@ -9,7 +9,7 @@ import { API } from "../api/apis";
 import { getPlaylistInfo } from "../utils/playlistUtils";
 import { STORAGE_KEYS } from "../utils/storageKeys";
 import { clearPlaylistCache } from "../features/playlist/clearPlaylistCache";
-import { updatePlaylistsCacheFromSleep } from "../utils/playlistCache";
+import { updatePlaylistsCacheFromSleep } from "../features/playlist/playlistCache";
 
 type MatchedTrack = {
   trackId: string;

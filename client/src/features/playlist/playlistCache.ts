@@ -1,5 +1,5 @@
-import { STORAGE_KEYS } from "./storageKeys";
-import type { SpotifyTrack } from "../types/tracksType";
+import { STORAGE_KEYS } from "../../utils/storageKeys";
+import type { SpotifyTrack } from "../../types/tracksType";
 
 type PlaylistsCache = {
   id: string;
