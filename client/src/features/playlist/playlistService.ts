@@ -15,3 +15,15 @@ export async function createPlaylist(name: string) {
 
   return data;
 }
+
+export async function fetchPlaylistInfo(id: string) {
+  const response = await fetch(API.playlistInfo(id));
+
+  if (!response.ok) throw new Error(String(response.status));
+
+  const data = await response.json();
+
+  if (!data) throw new Error("プレイリスト情報取得失敗");
+
+  return data;
+}

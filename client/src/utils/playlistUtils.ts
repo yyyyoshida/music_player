@@ -4,6 +4,7 @@ import { API } from "../api/apis";
 import { STORAGE_KEYS } from "./storageKeys";
 import validatePlaylistName from "./validatePlaylistName";
 import { createPlaylist } from "../features/playlist/playlistService";
+import { fetchPlaylistInfo } from "../features/playlist/playlistService";
 
 type CreatePlaylistActions = {
   hideCreatePlaylistModal: () => void;
@@ -51,13 +52,8 @@ export async function getPlaylistInfo(
   }
 
   try {
-    const response = await fetch(API.playlistInfo(currentPlaylistId));
+    const data = await fetchPlaylistInfo(currentPlaylistId);
 
-    if (!response.ok) {
-      throw new Error(String(response.status));
-    }
-
-    const data = await response.json();
     localStorage.setItem(STORAGE_KEYS.getCachedPlaylistInfoKey(currentPlaylistId), JSON.stringify(data));
 
     setPlaylistInfo(data);
