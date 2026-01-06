@@ -3,6 +3,7 @@ import type { TrackObject } from "../types/tracksType";
 import { API } from "../api/apis";
 import { STORAGE_KEYS } from "./storageKeys";
 import validatePlaylistName from "./validatePlaylistName";
+import { createPlaylist } from "../features/playlist/playlistService";
 
 type CreatePlaylistActions = {
   hideCreatePlaylistModal: () => void;
@@ -22,29 +23,9 @@ export async function handleCreatePlaylist(name: string, actions: CreatePlaylist
   }
 
   try {
-    const response = await fetch(API.PLAYLISTS, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name }),
-    });
+    const { playlistId } = await createPlaylist(name);
 
-    if (!response.ok) {
-      try {
-        const data = await response.json();
-        actions.triggerError(data.error);
-      } catch (error) {
-        // バリデーション以外のエラー
-        console.error("プレイリスト名バリデーション以外のエラー", error);
-        actions.showMessage("newPlaylistFailed");
-        actions.hideCreatePlaylistModal();
-      }
-      return;
-    }
-
-    const { playlistId } = await response.json();
-    actions.addTrackToPlaylist(playlistId);
+    await actions.addTrackToPlaylist(playlistId);
 
     actions.setSelectedTrack(null);
     actions.setRefreshTrigger((prev) => prev + 1);
