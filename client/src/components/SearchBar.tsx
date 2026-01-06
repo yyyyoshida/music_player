@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { useSearchContext } from "../contexts/SearchContext";
 import useTokenStore from "../store/tokenStore";
 import { useNavigate, useLocation } from "react-router-dom";
-import { fetchSpotifyAPI } from "../utils/spotifyAuth";
+import { fetchSpotifyAPI } from "../features/spotify/spotifyService";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import { API } from "../api/apis";
 import { STORAGE_KEYS } from "../utils/storageKeys";

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { RefObject } from "react";
-import { fetchSpotifyAPI, initSpotifyPlayer } from "../utils/spotifyAuth";
+import { fetchSpotifyAPI, initSpotifyPlayer } from "../features/spotify/spotifyService";
 import useTokenStore from "./tokenStore";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import { API } from "../api/apis";

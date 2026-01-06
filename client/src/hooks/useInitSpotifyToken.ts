@@ -1,5 +1,10 @@
 import { useEffect } from "react";
-import { isValidToken, getNewAccessToken, getRefreshToken, saveRefreshToken } from "../utils/spotifyAuth";
+import {
+  isValidToken,
+  getNewAccessToken,
+  getRefreshToken,
+  saveRefreshToken,
+} from "../features/spotify/spotifyService";
 import useTokenStore from "../store/tokenStore";
 import { API } from "../api/apis";
 import { STORAGE_KEYS } from "../utils/storageKeys";

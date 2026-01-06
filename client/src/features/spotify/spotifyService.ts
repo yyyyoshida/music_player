@@ -1,5 +1,5 @@
-import { API } from "../api/apis";
-import { STORAGE_KEYS } from "./storageKeys";
+import { API } from "../../api/apis";
+import { STORAGE_KEYS } from "../../utils/storageKeys";
 
 type TokenResponse = {
   access_token: string;
@@ -7,6 +7,9 @@ type TokenResponse = {
   expires_in?: number;
 };
 
+// ===================================================================================
+// 渡された or キャッシュにあるリフレッシュトークンを使って新しいトークンを保存・返す
+// ===================================================================================
 export async function getNewAccessToken(refreshToken: string | null = null): Promise<string> {
   const refreshTokenToUse = refreshToken || localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
   if (!refreshTokenToUse) throw new Error("リフレッシュトークンが存在しない");
@@ -17,6 +20,9 @@ export async function getNewAccessToken(refreshToken: string | null = null): Pro
   return tokenResponse.access_token;
 }
 
+// =============================
+// 新しいアクセストークンを取得
+// =============================
 async function requestNewToken(refreshToken: string) {
   const response = await fetch(API.NEW_TOKEN_URL, {
     method: "POST",
@@ -31,6 +37,9 @@ async function requestNewToken(refreshToken: string) {
   return await response.json();
 }
 
+// ===================
+// トークン情報を保存
+// ===================
 function saveTokenData(tokenResponse: TokenResponse) {
   localStorage.setItem(STORAGE_KEYS.TOKEN, tokenResponse.access_token);
 
@@ -44,6 +53,9 @@ function saveTokenData(tokenResponse: TokenResponse) {
   }
 }
 
+// ===========================
+// リフレッシュトークンを保存
+// ===========================
 export async function saveRefreshToken(refreshToken: string): Promise<void> {
   const res = await fetch(API.SAVE_REFRESH_TOKEN_URL, {
     method: "POST",
@@ -57,6 +69,9 @@ export async function saveRefreshToken(refreshToken: string): Promise<void> {
   await res.json();
 }
 
+// ===========================
+// リフレッシュトークンを取得
+// ===========================
 export async function getRefreshToken(): Promise<string> {
   const res = await fetch(API.NEW_REFRESH_TOKEN_URL, {
     method: "POST",
@@ -79,7 +94,9 @@ export function isValidToken() {
   return Date.now() < expiry - FIVE_MINUTES_MS;
 }
 
-// Spotify API系の通信はこのトークン切れ更新付きのこの関数で行う。↙
+// ====================================================================
+// Spotify API を叩くときに、トークンが切れてたら自動で更新するwrapper
+// ====================================================================
 export async function fetchSpotifyAPI(
   url: string,
   options: RequestInit = {},

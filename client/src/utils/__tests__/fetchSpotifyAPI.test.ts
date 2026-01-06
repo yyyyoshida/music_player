@@ -1,4 +1,4 @@
-import { fetchSpotifyAPI } from "../spotifyAuth";
+import { fetchSpotifyAPI } from "../../features/spotify/spotifyService";
 import { STORAGE_KEYS } from "../storageKeys";
 
 describe("fetchSpotifyAPI", () => {
