@@ -15,21 +15,10 @@ import {
   addNewLocalTrack,
 } from "./playlistService";
 import { fetchPlaylistInfo } from "./playlistService";
-//
 import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import usePlaylistStore from "../../store/playlistStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import useUploadModalStore from "../../store/uploadModalStore";
-
-type CreatePlaylistActions = {
-  hideCreatePlaylistModal: () => void;
-  triggerError: (msg: string) => void;
-  setSelectedTrack: (val: TrackObject | null) => void;
-  setRefreshTrigger: (updater: (prev: number) => number) => void;
-  closePlaylistSelectModal: () => void;
-  showMessage: (msg: ActionType) => void;
-  handleAddTrackToPlaylist: (playlistId: string) => Promise<void>;
-};
 
 type DeletePlaylistActions = {
   hideDeletePlaylistModal: () => void;
@@ -39,26 +28,29 @@ type DeletePlaylistActions = {
 // ====================
 // 新規プレイリスト作成
 // ====================
-export async function handleCreatePlaylist(name: string, actions: CreatePlaylistActions): Promise<void> {
+export async function handleCreatePlaylist(name: string): Promise<void> {
+  const { hideCreatePlaylistModal, triggerError, setRefreshTrigger } = usePlaylistStore.getState();
+  const { closePlaylistSelectModal, setSelectedTrack } = usePlaylistSelectionStore.getState();
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
   const validationError = validatePlaylistName(name);
 
   if (validationError) {
-    return actions.triggerError(validationError);
+    return triggerError(validationError);
   }
 
   try {
     const { playlistId } = await createPlaylist(name);
 
-    await actions.handleAddTrackToPlaylist(playlistId);
+    await handleAddTrackToPlaylist(playlistId);
 
-    actions.setSelectedTrack(null);
-    actions.setRefreshTrigger((prev) => prev + 1);
-    actions.closePlaylistSelectModal();
-    actions.hideCreatePlaylistModal();
-    actions.showMessage("newPlaylist");
+    setSelectedTrack(null);
+    setRefreshTrigger((prev) => prev + 1);
+    closePlaylistSelectModal();
+    showMessage("newPlaylist");
   } catch {
-    actions.showMessage("newPlaylistFailed");
-    actions.hideCreatePlaylistModal();
+    showMessage("newPlaylistFailed");
+  } finally {
+    hideCreatePlaylistModal();
   }
 }
 
