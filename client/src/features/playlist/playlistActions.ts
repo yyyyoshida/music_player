@@ -7,8 +7,19 @@ import {
   clearPlaylistInfoCache,
   clearPlaylistCache,
 } from "./playlistCache";
-import { createPlaylist, deletePlaylist } from "./playlistService";
+import {
+  createPlaylist,
+  deletePlaylist,
+  addSpotifyTrack,
+  addLocalTrack,
+  addNewLocalTrack,
+} from "./playlistService";
 import { fetchPlaylistInfo } from "./playlistService";
+//
+import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
+import usePlaylistStore from "../../store/playlistStore";
+import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
+import useUploadModalStore from "../../store/uploadModalStore";
 
 type CreatePlaylistActions = {
   hideCreatePlaylistModal: () => void;
@@ -17,7 +28,7 @@ type CreatePlaylistActions = {
   setRefreshTrigger: (updater: (prev: number) => number) => void;
   closePlaylistSelectModal: () => void;
   showMessage: (msg: ActionType) => void;
-  addTrackToPlaylist: (playlistId: string) => Promise<void>;
+  handleAddTrackToPlaylist: (playlistId: string) => Promise<void>;
 };
 
 type DeletePlaylistActions = {
@@ -38,7 +49,7 @@ export async function handleCreatePlaylist(name: string, actions: CreatePlaylist
   try {
     const { playlistId } = await createPlaylist(name);
 
-    await actions.addTrackToPlaylist(playlistId);
+    await actions.handleAddTrackToPlaylist(playlistId);
 
     actions.setSelectedTrack(null);
     actions.setRefreshTrigger((prev) => prev + 1);
@@ -105,4 +116,117 @@ export async function getPlaylistInfo(
     showMessage("fetchPlaylistInfoFailed");
     setPlaylistInfo({ name: "プレイリスト", totalDuration: 0 });
   }
+}
+// =======================
+// プレイリストに曲を追加
+// =======================
+export async function handleAddTrackToPlaylist(playlistId: string): Promise<void> {
+  const { selectedTrack, closePlaylistSelectModal } = usePlaylistSelectionStore.getState();
+  const showUploadModal = useUploadModalStore.getState().showUploadModal;
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
+  const hideUploadModal = useUploadModalStore.getState().hideUploadModal;
+
+  if (!selectedTrack || !("source" in selectedTrack)) return;
+
+  const isSpotifyTrack = "trackUri" in selectedTrack;
+  const isLocalTrack = "audioURL" in selectedTrack;
+  const isNewLocalTrack = selectedTrack.source === "local-upload" && !("audioURL" in selectedTrack);
+
+  try {
+    if (isSpotifyTrack) {
+      await addSpotifyTrackToPlaylist(playlistId);
+      await afterTrackAdded(playlistId);
+      return;
+    }
+
+    if (isLocalTrack) {
+      await addLocalTrackToPlaylist(playlistId);
+      await afterTrackAdded(playlistId);
+      return;
+    }
+
+    if (isNewLocalTrack) {
+      showUploadModal();
+      await addNewLocalTrackToPlaylist(playlistId);
+      await afterTrackAdded(playlistId);
+    }
+  } catch (error: unknown) {
+    console.error(error);
+
+    hideUploadModal();
+    closePlaylistSelectModal();
+
+    if (typeof error === "object" && error !== null && "message" in error) {
+      const message = (error as { message: string }).message;
+
+      showMessage(message as ActionType);
+    } else {
+      showMessage("addFailed");
+    }
+  }
+}
+
+// ==============================
+// プレイリストにSpotify曲を追加
+// ==============================
+async function addSpotifyTrackToPlaylist(playlistId: string) {
+  const { addTrackToList, selectedTrack } = usePlaylistSelectionStore.getState();
+  if (!selectedTrack) throw new Error("selectedTrackが存在しない");
+
+  const addedTrack = await addSpotifyTrack(playlistId, selectedTrack);
+  addTrackToList(playlistId, addedTrack);
+}
+
+// =====================================
+// プレイリストに既存のローカル曲を追加
+// =====================================
+async function addLocalTrackToPlaylist(playlistId: string) {
+  const { addTrackToList, selectedTrack } = usePlaylistSelectionStore.getState();
+  if (!selectedTrack) throw new Error("selectedTrackが存在しない");
+
+  const addedTrack = await addLocalTrack(playlistId, selectedTrack);
+  addTrackToList(playlistId, addedTrack);
+}
+
+// ===================================
+// プレイリストに新規ローカル曲を追加
+// ===================================
+async function addNewLocalTrackToPlaylist(playlistId: string) {
+  const { blobUrlToFile, localCoverImageUrl, uploadTrackFile, selectedTrack, addTrackToList } =
+    usePlaylistSelectionStore.getState();
+  const formData = new FormData();
+
+  const coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
+
+  if (!uploadTrackFile) {
+    console.error("音声ファイルがありません");
+    throw new Error("addFailedNewLocal");
+  }
+  if (!selectedTrack) {
+    console.error("トラック情報がありません");
+    throw new Error("addFailedNewLocal");
+  }
+
+  if (coverImageFile) formData.append("cover", coverImageFile);
+  formData.append("audio", uploadTrackFile);
+  formData.append("track", JSON.stringify(selectedTrack));
+
+  const addedTrack = await addNewLocalTrack(playlistId, formData);
+  addTrackToList(playlistId, addedTrack);
+}
+
+// =============================
+// プレイリストに曲追加後の処理
+// =============================
+async function afterTrackAdded(playlistId: string): Promise<void> {
+  const closePlaylistSelectModal = usePlaylistSelectionStore.getState().closePlaylistSelectModal;
+  const fadeCoverImages = usePlaylistStore.getState().fadeCoverImages;
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
+  const hideUploadModal = useUploadModalStore.getState().hideUploadModal;
+
+  fadeCoverImages();
+  showMessage("add");
+  closePlaylistSelectModal();
+  hideUploadModal();
+  clearPlaylistCache(playlistId);
 }

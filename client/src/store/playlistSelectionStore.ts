@@ -1,12 +1,7 @@
 import { create } from "zustand";
 import usePlaylistStore from "./playlistStore";
 import usePlaybackStore from "./playbackStore";
-import useActionSuccessMessageStore from "./actionSuccessMessageStore";
-import useUploadModalStore from "./uploadModalStore";
-import { clearPlaylistCache } from "../features/playlist/playlistCache";
-import { addSpotifyTrack, addLocalTrack, addNewLocalTrack } from "../features/playlist/playlistService";
 import type { TrackObject, fromSearchResultTrackObject } from "../types/tracksType";
-import type { ActionType } from "../types/actionType";
 import { FALLBACK_COVER_IMAGE } from "../assets/icons";
 
 type PlaylistSelectStore = {
@@ -22,12 +17,7 @@ type PlaylistSelectStore = {
   openPlaylistSelectModal: () => void;
   closePlaylistSelectModal: () => void;
   addTrackToList: (playlistId: string, addedTrack: TrackObject) => void;
-  saveTrackToFirestore: (playlistId: string) => Promise<void>;
-  saveUploadedLocalTrack: (playlistId: string) => Promise<void>;
   blobUrlToFile: (blobUrl: string | null, filename: string) => Promise<File | null>;
-  saveUploadAndNewTrack: (playlistId: string) => Promise<void>;
-  executeTrackSave: (actionFunction: () => void, playlistId: string) => Promise<void>;
-  addTrackToPlaylist: (playlistId: string) => Promise<void>;
   handleTrackSelect: (
     track: TrackObject | fromSearchResultTrackObject,
     type: "search" | "playlist" | "local-upload",
@@ -61,23 +51,6 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
     setAddedTrackDuration((prev) => prev + addedTrack.duration_ms);
   },
 
-  // executeTrackSave関数でtry-catchをラップしてるから不要↓
-  saveTrackToFirestore: async (playlistId) => {
-    const { addTrackToList, selectedTrack } = get();
-    if (!selectedTrack) throw new Error("selectedTrackが存在しない");
-
-    const addedTrack = await addSpotifyTrack(playlistId, selectedTrack);
-    addTrackToList(playlistId, addedTrack);
-  },
-
-  saveUploadedLocalTrack: async (playlistId) => {
-    const { addTrackToList, selectedTrack } = get();
-    if (!selectedTrack) throw new Error("selectedTrackが存在しない");
-
-    const addedTrack = await addLocalTrack(playlistId, selectedTrack);
-    addTrackToList(playlistId, addedTrack);
-  },
-
   blobUrlToFile: async (blobUrl, filename) => {
     try {
       if (!blobUrl) throw new Error("Blob URLが無効");
@@ -92,99 +65,6 @@ const usePlaylistSelectionStore = create<PlaylistSelectStore>((set, get) => ({
     } catch {
       return null;
     }
-  },
-
-  saveUploadAndNewTrack: async (playlistId) => {
-    const { blobUrlToFile, localCoverImageUrl, uploadTrackFile, selectedTrack, addTrackToList } = get();
-    const formData = new FormData();
-
-    const coverImageFile = await blobUrlToFile(localCoverImageUrl, "cover.webp");
-
-    if (!uploadTrackFile) {
-      console.error("音声ファイルがありません");
-      throw new Error("addFailedNewLocal");
-    }
-    if (!selectedTrack) {
-      console.error("トラック情報がありません");
-      throw new Error("addFailedNewLocal");
-    }
-
-    if (coverImageFile) formData.append("cover", coverImageFile);
-    formData.append("audio", uploadTrackFile);
-    formData.append("track", JSON.stringify(selectedTrack));
-
-    const addedTrack = await addNewLocalTrack(playlistId, formData);
-    addTrackToList(playlistId, addedTrack);
-  },
-
-  executeTrackSave: async (actionFunction, playlistId) => {
-    const { closePlaylistSelectModal } = get();
-    const { fadeCoverImages } = usePlaylistStore.getState();
-    const { showMessage } = useActionSuccessMessageStore.getState();
-    const { hideUploadModal } = useUploadModalStore.getState();
-
-    try {
-      await actionFunction();
-      fadeCoverImages();
-      showMessage("add");
-      closePlaylistSelectModal();
-      hideUploadModal();
-      clearPlaylistCache(playlistId);
-    } catch (error: unknown) {
-      console.error(error);
-      hideUploadModal();
-      closePlaylistSelectModal();
-      // ※ saveUploadAndNewTrack などで throw されたエラーコード（例: "addFailedNewLocal"）を受け取る
-      // ActionSuccessMessage.js 側でユーザー向けメッセージに変換して表示している ↙
-
-      // 既知のエラー以外は汎用の "addFailed" を表示
-      if (typeof error === "object" && error !== null && "message" in error) {
-        const message = (error as { message: string }).message;
-
-        showMessage(message as ActionType);
-      } else {
-        showMessage("addFailed");
-      }
-    }
-  },
-
-  addTrackToPlaylist: async (playlistId) => {
-    const {
-      selectedTrack,
-      closePlaylistSelectModal,
-      executeTrackSave,
-      saveTrackToFirestore,
-      saveUploadedLocalTrack,
-      saveUploadAndNewTrack,
-    } = get();
-    const { showUploadModal } = useUploadModalStore.getState();
-
-    if (!selectedTrack || !("source" in selectedTrack)) return;
-
-    const isNewLocalTrack = selectedTrack.source === "local-upload" && !("audioURL" in selectedTrack);
-
-    const isSpotifyTrack = "trackUri" in selectedTrack;
-    const isUploadedLocalTrack = "audioURL" in selectedTrack;
-
-    if (isNewLocalTrack) {
-      closePlaylistSelectModal();
-      showUploadModal();
-    }
-    // elseを使わず、returnで区切ったほうが個人的に読みやすかったのだが、
-    // それ以降の共通処理 catch()とかが実行されないので
-    // try-catch関数でラップして共通処理を走らせるようにした ↓↓↓
-
-    if (isSpotifyTrack) {
-      await executeTrackSave(() => saveTrackToFirestore(playlistId), playlistId);
-      return;
-    }
-
-    if (isUploadedLocalTrack) {
-      await executeTrackSave(() => saveUploadedLocalTrack(playlistId), playlistId);
-      return;
-    }
-
-    await executeTrackSave(() => saveUploadAndNewTrack(playlistId), playlistId);
   },
 
   handleTrackSelect: (track, type, shouldToggle = true, file = null, imageUrl = null) => {

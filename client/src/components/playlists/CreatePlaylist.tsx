@@ -5,6 +5,7 @@ import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import type { TrackObject } from "../../types/tracksType";
 import { handleCreatePlaylist } from "../../features/playlist/playlistActions";
+import { handleAddTrackToPlaylist } from "../../features/playlist/playlistActions";
 
 function getPlaylistCover(track: TrackObject | null): string {
   if (!track) return FALLBACK_COVER_IMAGE;
@@ -28,7 +29,6 @@ const CreatePlaylist = () => {
   const isShaking = usePlaylistStore((state) => state.isShaking);
   const setIsShaking = usePlaylistStore.getState().setIsShaking;
   const selectedTrack = usePlaylistSelectionStore((state) => state.selectedTrack);
-  const addTrackToPlaylist = usePlaylistSelectionStore.getState().addTrackToPlaylist;
 
   const { hideCreatePlaylistModal, triggerError, setRefreshTrigger } = usePlaylistStore.getState();
   const { closePlaylistSelectModal, setSelectedTrack } = usePlaylistSelectionStore.getState();
@@ -41,7 +41,7 @@ const CreatePlaylist = () => {
     setRefreshTrigger,
     closePlaylistSelectModal,
     showMessage,
-    addTrackToPlaylist,
+    handleAddTrackToPlaylist,
   };
 
   const playlistNameRef = useRef<HTMLInputElement>(null);
