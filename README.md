@@ -3,7 +3,8 @@
 <img width="300" height="180" alt="FireShot Capture 026 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/09b5d1b5-db46-4392-af5a-7af5ff844f94" />
 <img width="300" height="180" alt="FireShot Capture 025 - 音楽プレイヤー -  localhost" src="https://github.com/user-attachments/assets/7e8243f8-80ef-4baa-b444-1e33fbe75c2d" />
 
-このアプリは自分用に作ったSpotify曲とPCに保存した曲を共有でプレイリストに管理できるアプリです。
+このアプリは、Spotifyの曲とPCに保存した曲を、同じプレイリスト内で管理できる自分専用アプリです。
+
 
 # 主な機能
   
@@ -231,6 +232,7 @@ async function initTokenFromCache(): Promise<boolean> {
 - Spotify APIの認証周りのテストコード
   - その他主要機能のテストコード
 - FirebaseをSupabaseに移行してSQLにチャレンジ
+
 
 
 
