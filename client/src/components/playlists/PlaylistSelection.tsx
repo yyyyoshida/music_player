@@ -8,12 +8,13 @@ import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import usePlaylistStore from "../../store/playlistStore";
 import { FALLBACK_COVER_IMAGE } from "../../assets/icons";
 import { getFetchedContentFadeAnimation } from "../../lib/fetchedContentFadeAnimation";
+import { handleAddTrackToPlaylist } from "../../features/playlist/playlistActions";
 
 const PlaylistSelection = () => {
   const [addingToPlaylistId, setAddingToPlaylistId] = useState<string | null>(null);
   const showCreatePlaylistModal = usePlaylistStore.getState().showCreatePlaylistModal;
   const isSelectVisible = usePlaylistSelectionStore((state) => state.isSelectVisible);
-  const { openPlaylistSelectModal, closePlaylistSelectModal, addTrackToPlaylist } = usePlaylistSelectionStore.getState();
+  const { openPlaylistSelectModal, closePlaylistSelectModal } = usePlaylistSelectionStore.getState();
 
   const { playlists, isPlaylistsLoading, isPlaylistsFromCache } = useFetchPlaylists();
   const isPlaylistsEmpty = playlists.length === 0;
@@ -21,7 +22,7 @@ const PlaylistSelection = () => {
 
   async function handleClickPlaylist(playlistId: string) {
     setAddingToPlaylistId(playlistId);
-    await addTrackToPlaylist(playlistId);
+    await handleAddTrackToPlaylist(playlistId);
 
     setAddingToPlaylistId(null);
   }

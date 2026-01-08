@@ -2,6 +2,7 @@ import PlaylistCoverImageGrid from "./PlaylistCoverImageGrid";
 import usePlaylistStore from "../../store/playlistStore";
 import { useNavigate } from "react-router-dom";
 import type { SpotifyTrack, LocalTrack } from "../../types/tracksType";
+import { handleDeletePlaylist } from "../../features/playlist/playlistActions";
 
 type DeletePlaylistModalProps = {
   tracks: (SpotifyTrack | LocalTrack)[];
@@ -10,7 +11,7 @@ type DeletePlaylistModalProps = {
 
 const DeletePlaylistModal = ({ tracks, id }: DeletePlaylistModalProps) => {
   const isDeleteVisible = usePlaylistStore((state) => state.isDeleteVisible);
-  const { hideDeletePlaylistModal, deletePlaylist } = usePlaylistStore.getState();
+  const hideDeletePlaylistModal = usePlaylistStore.getState().hideDeletePlaylistModal;
   const navigate = useNavigate();
 
   return (
@@ -34,7 +35,7 @@ const DeletePlaylistModal = ({ tracks, id }: DeletePlaylistModalProps) => {
             <button
               className="delete-playlist-modal__delete modal-cancel-submit-button modal-submit-button"
               onClick={() => {
-                deletePlaylist(id, navigate);
+                handleDeletePlaylist(id, navigate);
               }}
             >
               決定

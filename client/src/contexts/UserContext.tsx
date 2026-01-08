@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import type { ReactNode } from "react";
-import { fetchSpotifyAPI } from "../utils/spotifyAuth";
+import { fetchSpotifyAPI } from "../features/spotify/spotifyService";
 import useTokenStore from "../store/tokenStore";
 import useActionSuccessMessageStore from "../store/actionSuccessMessageStore";
 import { API } from "../api/apis";

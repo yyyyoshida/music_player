@@ -1,4 +1,9 @@
-import { getNewAccessToken, saveRefreshToken, getRefreshToken, isValidToken } from "../spotifyAuth";
+import {
+  getNewAccessToken,
+  saveRefreshToken,
+  getRefreshToken,
+  isValidToken,
+} from "../../features/spotify/spotifyService";
 
 import { STORAGE_KEYS } from "../storageKeys";
 

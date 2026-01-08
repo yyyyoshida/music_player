@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { clearPlaylistCache } from "../utils/clearPlaylistCache";
-import { getPlaylistInfo } from "../utils/playlistUtils";
+import { clearPlaylistCache } from "../features/playlist/playlistCache";
+import { getPlaylistInfo } from "../features/playlist/playlistActions";
 import useActionSuccessMessageStore from "./actionSuccessMessageStore";
 import type { TrackObject } from "../types/tracksType";
 import type { PlaylistObject } from "../types/playlistType";
@@ -51,7 +51,6 @@ type PlaylistStore = {
   showDeletePlaylistModal: () => void;
   hideDeletePlaylistModal: () => void;
   triggerError: (message: string) => void;
-  deletePlaylist: (playlistId: string, navigate: (url: string) => void) => Promise<void>;
   showCoverImages: () => void;
   fadeCoverImages: () => void;
   deleteTrack: (
@@ -123,27 +122,6 @@ const usePlaylistStore = create<PlaylistStore>((set, get) => ({
 
   triggerError: (message) => {
     set({ errorMessage: message, isShaking: true });
-  },
-
-  deletePlaylist: async (playlistId, navigate) => {
-    const { hideDeletePlaylistModal } = get();
-    const showMessage = useActionSuccessMessageStore.getState().showMessage;
-
-    try {
-      const response = await fetch(API.playlist(playlistId), {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("プレイリスト削除失敗");
-
-      clearPlaylistCache(playlistId);
-      navigate("/playlist");
-      showMessage("deletePlaylist");
-    } catch {
-      showMessage("deletePlaylistFailed");
-    } finally {
-      hideDeletePlaylistModal();
-    }
   },
 
   showCoverImages: () => set({ isCoverImageFading: false }),

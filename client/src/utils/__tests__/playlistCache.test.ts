@@ -1,4 +1,4 @@
-import { updatePlaylistsCacheFromSleep } from "../playlistCache";
+import { updatePlaylistsCacheFromSleep } from "../../features/playlist/playlistCache";
 import { STORAGE_KEYS } from "../storageKeys";
 import type { SpotifyTrack } from "../../types/tracksType";
 
