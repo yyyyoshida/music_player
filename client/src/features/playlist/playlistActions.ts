@@ -1,5 +1,4 @@
 import type { ActionType } from "../../types/actionType";
-import type { TrackObject } from "../../types/tracksType";
 import validatePlaylistName from "../../utils/validatePlaylistName";
 import {
   getPlaylistInfoCache,
@@ -19,11 +18,6 @@ import usePlaylistSelectionStore from "../../store/playlistSelectionStore";
 import usePlaylistStore from "../../store/playlistStore";
 import useActionSuccessMessageStore from "../../store/actionSuccessMessageStore";
 import useUploadModalStore from "../../store/uploadModalStore";
-
-type DeletePlaylistActions = {
-  hideDeletePlaylistModal: () => void;
-  showMessage: (msg: ActionType) => void;
-};
 
 // ====================
 // 新規プレイリスト作成
@@ -59,20 +53,22 @@ export async function handleCreatePlaylist(name: string): Promise<void> {
 // =================
 export async function handleDeletePlaylist(
   playlistId: string,
-  navigate: (url: string) => void,
-  actions: DeletePlaylistActions
+  navigate: (url: string) => void
 ): Promise<void> {
+  const showMessage = useActionSuccessMessageStore.getState().showMessage;
+  const hideDeletePlaylistModal = usePlaylistStore.getState().hideDeletePlaylistModal;
+
   try {
     await deletePlaylist(playlistId);
 
     clearPlaylistCache(playlistId);
     navigate("/playlist");
-    actions.showMessage("deletePlaylist");
+    showMessage("deletePlaylist");
   } catch (error) {
-    actions.showMessage("deletePlaylistFailed");
+    showMessage("deletePlaylistFailed");
     console.error(error);
   } finally {
-    actions.hideDeletePlaylistModal();
+    hideDeletePlaylistModal();
   }
 }
 
